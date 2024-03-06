@@ -3,20 +3,20 @@
  ** Copyright (C) 2011-2024 Lukas Spies                                  **
  ** Contact: https://photoqt.org                                         **
  **                                                                      **
- ** This file is part of PhotoQt.                                        **
+ ** This file is part of PreviewQt.                                      **
  **                                                                      **
- ** PhotoQt is free software: you can redistribute it and/or modify      **
+ ** PreviewQt is free software: you can redistribute it and/or modify    **
  ** it under the terms of the GNU General Public License as published by **
  ** the Free Software Foundation, either version 2 of the License, or    **
  ** (at your option) any later version.                                  **
  **                                                                      **
- ** PhotoQt is distributed in the hope that it will be useful,           **
+ ** PreviewQt is distributed in the hope that it will be useful,         **
  ** but WITHOUT ANY WARRANTY; without even the implied warranty of       **
  ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        **
  ** GNU General Public License for more details.                         **
  **                                                                      **
  ** You should have received a copy of the GNU General Public License    **
- ** along with PhotoQt. If not, see <http://www.gnu.org/licenses/>.      **
+ ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
 
@@ -87,7 +87,7 @@ QString PQCLoadImageDevil::load(QString filename, QSize maxSize, QSize &origSize
 /*
     // this would be the way to load images directly from DevIL into QImage,
     // but DevIL seems has some issues with being used simultaneously from different threads
-    // this *will* make PhotoQt crash often (possibly not always)
+    // this *will* make PreviewQt crash often (possibly not always)
     ILubyte *bt = ilGetData();
     if(bt == NULL) LOG << "bt is NULL!!" << NL;
     QImage tmpimg(bt, width, height, QImage::Format_ARGB32);
@@ -111,7 +111,7 @@ QString PQCLoadImageDevil::load(QString filename, QSize maxSize, QSize &origSize
 */
 
     // This is the temporary file we will load the image into
-    QString tempimage = QDir::tempPath() + "/photoqtdevil.ppm";
+    QString tempimage = QDir::tempPath() + "/previewqtdevil.ppm";
 
     // Make sure DevIL can overwrite any previously created file
     ilEnable(IL_FILE_OVERWRITE);
@@ -171,7 +171,7 @@ QString PQCLoadImageDevil::load(QString filename, QSize maxSize, QSize &origSize
 #endif
 
     origSize = QSize(-1,-1);
-    errormsg = "Failed to load image, DevIL not supported by this build of PhotoQt!";
+    errormsg = "Failed to load image, DevIL not supported by this build of PreviewQt!";
     qWarning() << errormsg;
     return errormsg;
 
