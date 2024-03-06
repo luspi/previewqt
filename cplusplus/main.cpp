@@ -3,31 +3,31 @@
 #include <QFileInfo>
 #include <clocale>
 
-#include <vqc_messagehandler.h>
-#include <vqc_scripts.h>
-#include <vqc_providerfull.h>
+#include <pqc_messagehandler.h>
+#include <pqc_scripts.h>
+#include <pqc_providerfull.h>
 
-#ifdef VQMGRAPHICSMAGICK
+#ifdef PQMGRAPHICSMAGICK
 #include <GraphicsMagick/Magick++.h>
 #endif
 
-#ifdef VQMIMAGEMAGICK
+#ifdef PQMIMAGEMAGICK
 #include <Magick++.h>
 #endif
 
-#ifdef VQMDEVIL
+#ifdef PQMDEVIL
 #include <IL/il.h>
 #endif
 
-#ifdef VQMLIBVIPS
+#ifdef PQMLIBVIPS
 #include <vips/vips.h>
 #endif
 
-#ifdef VQMVIDEOMPV
-#include <vqc_mpvobject.h>
+#ifdef PQMVIDEOMPV
+#include <pqc_mpvobject.h>
 #endif
 
-#ifdef VQMFREEIMAGE
+#ifdef PQMFREEIMAGE
 #include <FreeImage.h>
 #endif
 
@@ -40,50 +40,50 @@ int main(int argc, char *argv[]) {
     QApplication::setApplicationName("ViewQt");
     QApplication::setOrganizationName("");
     QApplication::setOrganizationDomain("photoqt.org");
-    QApplication::setApplicationVersion(VQMVERSION);
+    QApplication::setApplicationVersion(PQMVERSION);
     QApplication::setQuitOnLastWindowClosed(true);
 
     // custom message handler for qDebug/qLog/qInfo/etc.
-    qInstallMessageHandler(vqcMessageHandler);
+    qInstallMessageHandler(pqcMessageHandler);
 
     QApplication app(argc, argv);
 
-#ifdef VQMVIDEOMPV
+#ifdef PQMVIDEOMPV
     // Qt sets the locale in the QGuiApplication constructor, but libmpv
     // requires the LC_NUMERIC category to be set to "C", so change it back.
     std::setlocale(LC_NUMERIC, "C");
 #endif
 
 // only one of them will be defined at a time
-#if defined(VQMGRAPHICSMAGICK) || defined(VQMIMAGEMAGICK)
+#if defined(PQMGRAPHICSMAGICK) || defined(PQMIMAGEMAGICK)
     // Initialise Magick as early as possible
     // this needs to happen BEFORE startup check as this might call into Magick
     Magick::InitializeMagick(*argv);
 #endif
 
-#ifdef VQMDEVIL
+#ifdef PQMDEVIL
     ilInit();
 #endif
 
-#ifdef VQMFREEIMAGE
+#ifdef PQMFREEIMAGE
     FreeImage_Initialise();
 #endif
 
-#ifdef VQMLIBVIPS
+#ifdef PQMLIBVIPS
     VIPS_INIT(argv[0]);
 #endif
 
     QQmlApplicationEngine engine;
-    const QUrl url(u"qrc:/src/qml/VQMainWindow.qml"_qs);
+    const QUrl url(u"qrc:/src/qml/PQMainWindow.qml"_qs);
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
         &app, [url](QObject *obj, const QUrl &objUrl) {
             if (!obj && url == objUrl)
                 QCoreApplication::exit(-1);
         }, Qt::QueuedConnection);
 
-    qmlRegisterSingletonInstance("VQCScripts", 1, 0, "VQCScripts", &VQCScripts::get());
+    qmlRegisterSingletonInstance("PQCScripts", 1, 0, "PQCScripts", &PQCScripts::get());
 
-    engine.addImageProvider("full", new VQCProviderFull);
+    engine.addImageProvider("full", new PQCProviderFull);
 
     engine.load(url);
 
