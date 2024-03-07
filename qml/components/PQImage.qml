@@ -44,6 +44,23 @@ Item {
         }
     }
 
+    MouseArea {
+        id: imagemouse
+        anchors.fill: parent
+        anchors.margins: -5
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
+        onClicked: (mouse) => {
+            fileDialog.open()
+        }
+        onPositionChanged: (mouse) => {
+            if(mouse.y < 30)
+                toprow.makeVisible = true
+            else
+                toprow.makeVisible = false
+        }
+    }
+
     // the actual image
     Loader {
 
@@ -62,23 +79,6 @@ Item {
 
         source: "imageitems/" + nameOfImage
 
-    }
-
-    MouseArea {
-        id: imagemouse
-        anchors.fill: parent
-        anchors.margins: -5
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onClicked: (mouse) => {
-            fileDialog.open()
-        }
-        onPositionChanged: (mouse) => {
-            if(mouse.y < 30)
-                toprow.makeVisible = true
-            else
-                toprow.makeVisible = false
-        }
     }
 
     Component.onCompleted: {

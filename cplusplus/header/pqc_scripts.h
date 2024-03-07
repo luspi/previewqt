@@ -44,8 +44,13 @@ public:
     Q_INVOKABLE static QString cleanPath(QString path);
     Q_INVOKABLE static QString cleanPath_windows(QString path);
     Q_INVOKABLE bool fileExists(QString path);
+    Q_INVOKABLE QString getBasename(QString fullpath);
     Q_INVOKABLE QString getFilename(QString path);
-    Q_INVOKABLE QString openFile();
+    Q_INVOKABLE QString getDir(QString fullpath);
+
+    Q_INVOKABLE int isMotionPhoto(QString path);
+    Q_INVOKABLE QString extractMotionPhoto(QString path);
+    Q_INVOKABLE int getExifOrientation(QString path);
 
     Q_INVOKABLE QStringList listArchiveContent(QString path, bool insideFilenameOnly = false);
 

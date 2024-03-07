@@ -22,6 +22,7 @@
 
 #include <pqc_scripts.h>
 #include <pqc_imageformats.h>
+#include <pqc_configfiles.h>
 
 #include <QDir>
 #include <QFileInfo>
@@ -33,6 +34,10 @@
 #ifdef PQMLIBARCHIVE
 #include <archive.h>
 #include <archive_entry.h>
+#endif
+
+#ifdef PQMEXIV2
+#include <exiv2/exiv2.hpp>
 #endif
 
 PQCScripts::PQCScripts() {}
@@ -98,25 +103,6 @@ QString PQCScripts::getFilename(QString path) {
     qDebug() << "args: path =" << path;
 
     return QFileInfo(cleanPath(path)).fileName();
-
-}
-
-QString PQCScripts::openFile() {
-
-    qDebug() << "";
-
-    QFileDialog diag;
-    diag.setWindowTitle("Select file");
-    diag.setDirectory(QDir::homePath());
-    diag.setNameFilter(QString("Images (*.%1)").arg(PQCImageFormats::get().getAllFormats().join(" *.")));
-    if(diag.exec()) {
-        auto l = diag.selectedFiles();
-        diag.close();
-        return cleanPath(l[0]);
-    }
-    diag.close();
-
-    return "";
 
 }
 
@@ -236,5 +222,258 @@ QStringList PQCScripts::listArchiveContent(QString path, bool insideFilenameOnly
     std::sort(ret.begin(), ret.end(), [&collator](const QString &file1, const QString &file2) { return collator.compare(file1, file2) < 0; });
 
     return ret;
+
+}
+
+int PQCScripts::isMotionPhoto(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+#ifndef PQMMOTIONPHOTO
+    return 0;
+#endif
+
+    path = cleanPath(path);
+
+    // 1 = Apple Live Photos
+    // 2 = Motion Photo
+    // 3 = Micro Video
+
+    QFileInfo info(path);
+    const QString suffix = info.suffix().toLower();
+
+    if(suffix == "jpg" || suffix == "jpeg" || suffix == "heic" || suffix == "heif") {
+
+        /***********************************/
+        // check for Apply Live Photos
+
+        QString videopath = QString("%1/%2.mov").arg(info.absolutePath(), info.baseName());
+        QFileInfo videoinfo(videopath);
+        if(videoinfo.exists())
+            return 1;
+
+        /***********************************/
+        // Access EXIV2 data
+
+#if defined(PQMEXIV2) && defined(PQMEXIV2_ENABLE_BMFF)
+
+#if EXIV2_TEST_VERSION(0, 28, 0)
+        Exiv2::Image::UniquePtr image;
+#else
+        Exiv2::Image::AutoPtr image;
+#endif
+
+        try {
+            image = Exiv2::ImageFactory::open(path.toStdString());
+            image->readMetadata();
+        } catch (Exiv2::Error& e) {
+            // An error code of kerFileContainsUnknownImageType (older version: 11) means unknown file type
+            // Since we always try to read any file's meta data, this happens a lot
+#if EXIV2_TEST_VERSION(0, 28, 0)
+            if(e.code() != Exiv2::ErrorCode::kerFileContainsUnknownImageType)
+#else
+            if(e.code() != 11)
+#endif
+                qWarning() << "ERROR reading exiv data (caught exception):" << e.what();
+            else
+                qDebug() << "ERROR reading exiv data (caught exception):" << e.what();
+
+            return 0;
+        }
+
+        Exiv2::XmpData xmpData;
+        try {
+            xmpData = image->xmpData();
+        } catch(Exiv2::Error &e) {
+            qDebug() << "ERROR: Unable to read xmp metadata:" << e.what();
+            return 0;
+        }
+
+        for(Exiv2::XmpData::const_iterator it_xmp = xmpData.begin(); it_xmp != xmpData.end(); ++it_xmp) {
+
+            QString familyName = QString::fromStdString(it_xmp->familyName());
+            QString groupName = QString::fromStdString(it_xmp->groupName());
+            QString tagName = QString::fromStdString(it_xmp->tagName());
+
+            /***********************************/
+            // check for Motion Photo
+            if(familyName == "Xmp" && groupName == "GCamera" && tagName == "MotionPhoto") {
+
+                // check value == 1
+                if(QString::fromStdString(Exiv2::toString(it_xmp->value())) == "1")
+                    return 2;
+            }
+
+            /***********************************/
+            // check for Micro Video
+
+            if(familyName == "Xmp" && groupName == "GCamera" && tagName == "MicroVideo") {
+
+                // check value == 1
+                if(QString::fromStdString(Exiv2::toString(it_xmp->value())) == "1")
+                    return 3;
+
+            }
+
+        }
+
+#endif
+
+    }
+
+    return 0;
+
+}
+
+QString PQCScripts::extractMotionPhoto(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    path = cleanPath(path);
+
+    // at this point we assume that the check for google motion photo has already been done
+    // and we wont need to check again
+
+    // the approach taken in this function is inspired by the analysis found at:
+    // https://linuxreviews.org/Google_Pixel_%22Motion_Photo%22
+
+    QFileInfo info(path);
+    if(!info.exists())
+        return "";
+
+    const QString videofilename = QString("%1/motionphotos/%2.mp4").arg(PQCConfigFiles::CACHE_DIR(), info.baseName());
+    if(QFileInfo::exists(videofilename)) {
+        return videofilename;
+    }
+
+    // we assume header for type==2
+    QStringList headerbytes = {"00000018667479706d703432",
+                               "0000001c6674797069736f6d"};
+
+    char *data = new char[info.size()];
+
+    QFile file(path);
+    if(!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Unable to open file for reading";
+        delete[] data;
+        return "";
+    }
+
+    QDataStream in(&file);
+    in.readRawData(data, info.size());
+
+    // we look for the offset of the header of size 12
+    // it looks like this: 00000018667479706d703432
+    for(int i = 0; i < info.size()-12; ++i) {
+
+        // we inspect the current 3
+        QByteArray firstthree(&data[i], 3);
+
+        if(firstthree.toHex() == "000000") {
+
+            // read the full 12 bytes
+            QByteArray array(&data[i], 12);
+
+            // if it matches we found the video
+            if(headerbytes.contains(array.toHex())) {
+
+                // get the video data
+                QByteArray videodata(&data[i], info.size()-i);
+
+                // make sure cache folder exists
+                QDir dir;
+                dir.mkpath(QFileInfo(videofilename).absolutePath());
+
+                // write video to temporary file
+                QFile outfile(videofilename);
+                outfile.open(QIODevice::WriteOnly);
+                QDataStream out(&outfile);
+                out.writeRawData(videodata, info.size()-i);
+                outfile.close();
+
+                delete[] data;
+
+                return outfile.fileName();
+
+            }
+        }
+    }
+
+    delete[] data;
+
+    return "";
+
+}
+
+int PQCScripts::getExifOrientation(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+#ifdef PQMEXIV2
+
+    path = cleanPath(path);
+
+#if EXIV2_TEST_VERSION(0, 28, 0)
+    Exiv2::Image::UniquePtr image;
+#else
+    Exiv2::Image::AutoPtr image;
+#endif
+    try {
+        image  = Exiv2::ImageFactory::open(path.toStdString());
+        image->readMetadata();
+    } catch (Exiv2::Error& e) {
+        // An error code of kerFileContainsUnknownImageType (older version: 11) means unknown file type \
+        // Since we always try to read any file's meta data, this happens a lot
+#if EXIV2_TEST_VERSION(0, 28, 0)
+        if(e.code() != Exiv2::ErrorCode::kerFileContainsUnknownImageType)
+#else
+        if(e.code() != 11)
+#endif
+            qWarning() << "ERROR reading exif data (caught exception):" << e.what();
+        else
+            qDebug() << "ERROR reading exif data (caught exception):" << e.what();
+
+        return 1;
+    }
+
+    Exiv2::ExifData exifData;
+
+    try {
+        exifData = image->exifData();
+    } catch(Exiv2::Error &e) {
+        qDebug() << "ERROR: Unable to read exif metadata:" << e.what();
+        return 1;
+    }
+
+    Exiv2::ExifData::iterator iter = exifData.findKey(Exiv2::ExifKey("Exif.Image.Orientation"));
+    if(iter != exifData.end()) {
+
+        const int val = QString::fromStdString(Exiv2::toString(iter->value())).toInt();
+        if(val >= 1 && val <= 8)
+            return val;
+
+    }
+
+#endif
+
+    return 1;
+
+}
+
+QString PQCScripts::getBasename(QString fullpath) {
+
+    if(fullpath == "")
+        return "";
+
+    return QFileInfo(cleanPath(fullpath)).baseName();
+
+}
+
+QString PQCScripts::getDir(QString fullpath) {
+
+    if(fullpath == "")
+        return "";
+
+    return QFileInfo(cleanPath(fullpath)).absolutePath();
 
 }
