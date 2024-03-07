@@ -50,6 +50,12 @@ set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_mpvobject.h")
 
 set(d "qml")
 set(previewqt_QML "${d}/PQMainWindow.qml")
+set(d "qml/elements")
+set(previewqt_QML ${previewqt_QML} "${d}/PQIconButton.qml")
+set(d "qml/components")
+set(previewqt_QML ${previewqt_QML} "${d}/PQTopRow.qml" "${d}/PQImage.qml")
+set(d "qml/components/imageitems")
+set(previewqt_QML ${previewqt_QML} "${d}/PQImageNormal.qml")
 
 #############################################
 #### OPTIONS THAT CAN BE SET BY THE USER ####
@@ -72,7 +78,7 @@ option(RESVG "Replace Qt's SVG engine with resvg for better SVG support" OFF)
 #### FIND REQUIRED PACKAGES ####
 ################################
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Svg Sql DBus)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Svg Sql)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
@@ -150,7 +156,7 @@ add_definitions(-DQT_MESSAGELOGCONTEXT)
 #### Add the executeable ####
 #############################
 
-qt_add_executable(previewqt ${previewqt_SRC})
+qt_add_executable(previewqt ${previewqt_SRC} img/img.qrc misc/misc.qrc)
 
 # add qml files
 qt_add_qml_module(previewqt URI src VERSION 1.0 QML_FILES ${previewqt_QML} RESOURCE_PREFIX)
@@ -167,7 +173,7 @@ set_target_properties(previewqt PROPERTIES
 target_include_directories(previewqt PRIVATE "cplusplus/header")
 
 # link executable
-target_link_libraries(previewqt PRIVATE Qt6::Quick Qt6::Widgets Qt6::Svg Qt6::Sql Qt6::DBus)
+target_link_libraries(previewqt PRIVATE Qt6::Quick Qt6::Widgets Qt6::Svg Qt6::Sql)
 
 ########################
 #### CUSTOM OPTIONS ####

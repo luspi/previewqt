@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>about.svg</file>
+        <file>exit.svg</file>
+        <file>external.svg</file>
+        <file>open.svg</file>
+        <file>settings.svg</file>
+    </qresource>
+</RCC>

@@ -105,7 +105,18 @@ QString PQCScripts::openFile() {
 
     qDebug() << "";
 
-    return QFileDialog::getOpenFileName(nullptr, "Select a file", QDir::homePath(), QString("Images (*.%1)").arg(PQCImageFormats::get().getAllFormats().join(" *.")));
+    QFileDialog diag;
+    diag.setWindowTitle("Select file");
+    diag.setDirectory(QDir::homePath());
+    diag.setNameFilter(QString("Images (*.%1)").arg(PQCImageFormats::get().getAllFormats().join(" *.")));
+    if(diag.exec()) {
+        auto l = diag.selectedFiles();
+        diag.close();
+        return cleanPath(l[0]);
+    }
+    diag.close();
+
+    return "";
 
 }
 

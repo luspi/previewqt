@@ -27,6 +27,7 @@
 
 #include <pqc_messagehandler.h>
 #include <pqc_scripts.h>
+#include <pqc_imageformats.h>
 #include <pqc_providerfull.h>
 
 #ifdef PQMGRAPHICSMAGICK
@@ -59,7 +60,7 @@ int main(int argc, char *argv[]) {
     qputenv("QT_QUICK_CONTROLS_IGNORE_CUSTOMIZATION_WARNINGS", "1");
 
     // Set app information
-    QApplication::setApplicationName("ViewQt");
+    QApplication::setApplicationName("PreviewQt");
     QApplication::setOrganizationName("");
     QApplication::setOrganizationDomain("photoqt.org");
     QApplication::setApplicationVersion(PQMVERSION);
@@ -104,6 +105,7 @@ int main(int argc, char *argv[]) {
         }, Qt::QueuedConnection);
 
     qmlRegisterSingletonInstance("PQCScripts", 1, 0, "PQCScripts", &PQCScripts::get());
+    qmlRegisterSingletonInstance("PQCImageFormats", 1, 0, "PQCImageFormats", &PQCImageFormats::get());
 
     engine.addImageProvider("full", new PQCProviderFull);
 
