@@ -49,13 +49,19 @@ ApplicationWindow {
     signal keyPress(var modifiers, var keycode)
 
     onClosing: {
-        clearSetImage.restart()
+        if(PQCSettings.hideToSystemTray)
+            clearSetImage.restart()
+        else
+            PQCScripts.deleteTemporaryFiles()
     }
 
     Timer {
         id: clearSetImage
         interval: 200
-        onTriggered: image.imageSource = ""
+        onTriggered: {
+            image.imageSource = ""
+            PQCScripts.deleteTemporaryFiles()
+        }
     }
 
     Item {

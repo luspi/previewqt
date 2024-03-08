@@ -1117,6 +1117,16 @@ bool PQCScripts::doesFileExist(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    return QFileInfo(path).exists();
+    return QFileInfo::exists(path);
+
+}
+
+void PQCScripts::deleteTemporaryFiles() {
+
+    QDir dir(PQCConfigFiles::CACHE_DIR() + "/archive");
+    dir.removeRecursively();
+
+    QDir dir2(PQCConfigFiles::CACHE_DIR() + "/motionphotos");
+    dir2.removeRecursively();
 
 }

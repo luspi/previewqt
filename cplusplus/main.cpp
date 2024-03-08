@@ -23,6 +23,7 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QFileInfo>
+#include <QDir>
 #include <clocale>
 
 #include <pqc_messagehandler.h>
@@ -31,6 +32,7 @@
 #include <pqc_providerfull.h>
 #include <pqc_settings.h>
 #include <pqc_singleinstance.h>
+#include <pqc_configfiles.h>
 
 #ifdef PQMGRAPHICSMAGICK
 #include <GraphicsMagick/Magick++.h>
@@ -78,6 +80,29 @@ int main(int argc, char *argv[]) {
 
     // custom message handler for qDebug/qLog/qInfo/etc.
     qInstallMessageHandler(pqcMessageHandler);
+
+    // make sure config directory exists and contains imageformats file
+    if(!QFileInfo::exists(PQCConfigFiles::CONFIG_DIR())) {
+        QDir dir(PQCConfigFiles::CONFIG_DIR());
+        if(!dir.mkpath(PQCConfigFiles::CONFIG_DIR())) {
+            qFatal() << "Error creating config directory!";
+            qFatal() << "Unable to continue.";
+            std::exit(1);
+        }
+        if(!dir.mkpath(PQCConfigFiles::CACHE_DIR())) {
+            qCritical() << "Error creating cache directory!";
+            qCritical() << "Continuing, but not everything might work.";
+        }
+        if(!QFileInfo::exists(PQCConfigFiles::IMAGEFORMATS_DB())) {
+            if(!QFile::copy(":/imageformats.db", PQCConfigFiles::IMAGEFORMATS_DB())) {
+                qFatal() << "Unable to create default imageformats database!";
+                std::exit(1);
+            } else {
+                QFile file(PQCConfigFiles::IMAGEFORMATS_DB());
+                file.setPermissions(file.permissions()|QFileDevice::WriteOwner);
+            }
+        }
+    }
 
     PQCSingleInstance app(argc, argv);
 

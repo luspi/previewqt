@@ -38,10 +38,6 @@ public:
         return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
     }
 
-    static const QString GENERIC_CACHE_DIR() {
-        return QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation);
-    }
-
     static const QString IMAGEFORMATS_DB() {
         return QString("%1/imageformats.db").arg(CONFIG_DIR());
     }

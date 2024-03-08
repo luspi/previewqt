@@ -71,6 +71,8 @@ public:
 
     Q_INVOKABLE bool amIOnWindows();
 
+    Q_INVOKABLE void deleteTemporaryFiles();
+
 private:
     PQCScripts();
 
