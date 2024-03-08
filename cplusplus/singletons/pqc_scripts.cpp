@@ -23,6 +23,7 @@
 #include <pqc_scripts.h>
 #include <pqc_imageformats.h>
 #include <pqc_configfiles.h>
+#include <pqc_settings.h>
 
 #include <QDir>
 #include <QFileInfo>
@@ -33,6 +34,8 @@
 #include <QMimeDatabase>
 #include <QImageReader>
 #include <QKeyEvent>
+#include <thread>
+#include <chrono>
 
 #ifdef PQMLIBARCHIVE
 #include <archive.h>
@@ -817,5 +820,303 @@ QString PQCScripts::generateArchiveId(QString path) {
 
     QFileInfo info(path);
     return QString("%1_%2").arg(info.lastModified().toMSecsSinceEpoch()).arg(info.absoluteFilePath());
+
+}
+
+QString PQCScripts::keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key keycode) {
+
+    QStringList mods;
+    QStringList keys;
+
+    if(modifiers & Qt::ControlModifier)
+        mods.append("Ctrl");
+    if(modifiers & Qt::AltModifier)
+        mods.append("Alt");
+    if(modifiers & Qt::ShiftModifier)
+        mods.append("Shift");
+    if(modifiers & Qt::MetaModifier)
+        mods.append("Meta");
+    if(modifiers & Qt::KeypadModifier)
+        mods.append("Keypad");
+
+    switch(keycode) {
+        case Qt::Key_Control:
+        case Qt::Key_Alt:
+        case Qt::Key_Shift:
+        case Qt::Key_Meta:
+            break;
+        case Qt::Key_Escape:
+            keys.append("Esc");
+            break;
+        case Qt::Key_Right:
+            keys.append("Right");
+            break;
+        case Qt::Key_Left:
+            keys.append("Left");
+            break;
+        case Qt::Key_Up:
+            keys.append("Up");
+            break;
+        case Qt::Key_Down:
+            keys.append("Down");
+            break;
+        case Qt::Key_Space:
+            keys.append("Space");
+            break;
+        case Qt::Key_Delete:
+            keys.append("Delete");
+            break;
+        case Qt::Key_Home:
+            keys.append("Home");
+            break;
+        case Qt::Key_End:
+            keys.append("End");
+            break;
+        case Qt::Key_PageUp:
+            keys.append("Page Up");
+            break;
+        case Qt::Key_PageDown:
+            keys.append("Page Down");
+            break;
+        case Qt::Key_Insert:
+            keys.append("Insert");
+            break;
+        case Qt::Key_Tab:
+            keys.append("Tab");
+            break;
+        case Qt::Key_Backtab:
+            keys.append("Tab");
+            break;
+        case Qt::Key_Return:
+            keys.append("Return");
+            break;
+        case Qt::Key_Enter:
+            keys.append("Enter");
+            break;
+        case Qt::Key_Pause:
+            keys.append("Pause");
+            break;
+        case Qt::Key_Print:
+            keys.append("Print");
+            break;
+        case Qt::Key_SysReq:
+            keys.append("SysReq");
+            break;
+        case Qt::Key_Clear:
+            keys.append("Clear");
+            break;
+        case Qt::Key_CapsLock:
+            keys.append("CapsLock");
+            break;
+        case Qt::Key_NumLock:
+            keys.append("NumLock");
+            break;
+        case Qt::Key_ScrollLock:
+            keys.append("ScrollLock");
+            break;
+        case Qt::Key_Super_L:
+            keys.append("Super L");
+            break;
+        case Qt::Key_Super_R:
+            keys.append("Super R");
+            break;
+        case Qt::Key_Menu:
+            keys.append("Menu");
+            break;
+        case Qt::Key_Hyper_L:
+            keys.append("Hyper L");
+            break;
+        case Qt::Key_Hyper_R:
+            keys.append("Hyper R");
+            break;
+        case Qt::Key_Help:
+            keys.append("Help");
+            break;
+        case Qt::Key_Direction_L:
+            keys.append("Direction L");
+            break;
+        case Qt::Key_Direction_R:
+            keys.append("Direction R");
+            break;
+        case Qt::Key_F1:
+            keys.append("F1");
+            break;
+        case Qt::Key_F2:
+            keys.append("F2");
+            break;
+        case Qt::Key_F3:
+            keys.append("F3");
+            break;
+        case Qt::Key_F4:
+            keys.append("F4");
+            break;
+        case Qt::Key_F5:
+            keys.append("F5");
+            break;
+        case Qt::Key_F6:
+            keys.append("F6");
+            break;
+        case Qt::Key_F7:
+            keys.append("F7");
+            break;
+        case Qt::Key_F8:
+            keys.append("F8");
+            break;
+        case Qt::Key_F9:
+            keys.append("F9");
+            break;
+        case Qt::Key_F10:
+            keys.append("F10");
+            break;
+        case Qt::Key_F11:
+            keys.append("F11");
+            break;
+        case Qt::Key_F12:
+            keys.append("F12");
+            break;
+        case Qt::Key_F13:
+            keys.append("F13");
+            break;
+        case Qt::Key_F14:
+            keys.append("F14");
+            break;
+        case Qt::Key_F15:
+            keys.append("F15");
+            break;
+        case Qt::Key_F16:
+            keys.append("F16");
+            break;
+        case Qt::Key_F17:
+            keys.append("F17");
+            break;
+        case Qt::Key_F18:
+            keys.append("F18");
+            break;
+        case Qt::Key_F19:
+            keys.append("F19");
+            break;
+        case Qt::Key_F20:
+            keys.append("F20");
+            break;
+        case Qt::Key_F21:
+            keys.append("F21");
+            break;
+        case Qt::Key_F22:
+            keys.append("F22");
+            break;
+        case Qt::Key_F23:
+            keys.append("F23");
+            break;
+        case Qt::Key_F24:
+            keys.append("F24");
+            break;
+        case Qt::Key_F25:
+            keys.append("F25");
+            break;
+        case Qt::Key_F26:
+            keys.append("F26");
+            break;
+        case Qt::Key_F27:
+            keys.append("F27");
+            break;
+        case Qt::Key_F28:
+            keys.append("F28");
+            break;
+        case Qt::Key_F29:
+            keys.append("F29");
+            break;
+        case Qt::Key_F30:
+            keys.append("F30");
+            break;
+        case Qt::Key_F31:
+            keys.append("F31");
+            break;
+        case Qt::Key_F32:
+            keys.append("F32");
+            break;
+        case Qt::Key_F33:
+            keys.append("F33");
+            break;
+        case Qt::Key_F34:
+            keys.append("F34");
+            break;
+        case Qt::Key_F35:
+            keys.append("F35");
+            break;
+        default: {
+            const QString k = QKeySequence(keycode).toString();
+            if(k != "")
+                keys.append(k);
+        }
+
+    }
+
+    QString ret = mods.join("+");
+    if(ret != "")
+        ret += "+";
+    ret += keys.join("+");
+
+    return ret;
+
+}
+
+bool PQCScripts::openInDefault(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    if(path == "")
+        return true;
+
+    QFileInfo info(path);
+    const QString suffix = info.suffix().toLower();
+
+    QString exe = "photoqt";
+
+    if(PQCImageFormats::get().getAllFormatsPoppler().contains(suffix)) {
+
+        exe = PQCSettings::get().getDefaultAppDocuments();
+
+    } else if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suffix)) {
+
+        exe = PQCSettings::get().getDefaultAppArchives();
+
+    } else if(PQCImageFormats::get().getAllFormatsLibmpv().contains(suffix) || PQCImageFormats::get().getAllFormatsVideo().contains(suffix)) {
+
+        exe = PQCSettings::get().getDefaultAppVideos();
+
+    } else if(PQCImageFormats::get().getAllFormatsQt().contains(suffix) || PQCImageFormats::get().getAllFormatsFreeImage().contains(suffix) ||
+        PQCImageFormats::get().getAllFormatsDevIL().contains(suffix) || PQCImageFormats::get().getAllFormatsLibRaw().contains(suffix) ||
+        PQCImageFormats::get().getAllFormatsLibVips().contains(suffix) || PQCImageFormats::get().getAllFormatsMagick().contains(suffix) ||
+        PQCImageFormats::get().getAllFormatsResvg().contains(suffix) || PQCImageFormats::get().getAllFormatsXCFTools().contains(suffix)) {
+
+        exe = PQCSettings::get().getDefaultAppImages();
+
+    }
+
+    QProcess proc;
+    proc.setProgram(QDir::toNativeSeparators(exe));
+    proc.setArguments({cleanPath(path)});
+    proc.startDetached();
+
+    // this is to make sure the app is actually started and detached before closing
+    if(PQCSettings::get().getCloseAfterDefaultApp())
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+    return true;
+
+}
+
+bool PQCScripts::amIOnWindows() {
+#ifdef Q_OS_WIN
+    return true;
+#endif
+    return false;
+}
+
+bool PQCScripts::doesFileExist(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    return QFileInfo(path).exists();
 
 }

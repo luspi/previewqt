@@ -31,7 +31,7 @@ endif()
 set(d "cplusplus")
 set(previewqt_SRC "${d}/main.cpp")
 set(d "cplusplus/singletons")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scripts.cpp" "${d}/pqc_imageformats.cpp")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scripts.cpp" "${d}/pqc_imageformats.cpp" "${d}/pqc_settings.cpp")
 set(d "cplusplus/images")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadimage.cpp" "${d}/pqc_providerfull.cpp")
 set(d "cplusplus/images/plugins")
@@ -42,25 +42,31 @@ set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadimage_qt.cpp" "${d}/pqc_loadima
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadimage_resvg.cpp" "${d}/pqc_loadimage_unrar.cpp" "${d}/pqc_loadimage_video.cpp")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadimage_xcf.cpp")
 set(d "cplusplus/other")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_mpvobject.cpp" "${d}/pqc_photosphere.cpp" "${d}/pqc_photosphereitem.cpp" "${d}/pqc_photosphererenderer.cpp")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_photosphere.cpp" "${d}/pqc_photosphereitem.cpp" "${d}/pqc_photosphererenderer.cpp")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_singleinstance.cpp")
 
 
 set(d "cplusplus/header")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_imageformats.h" "${d}/pqc_scripts.h" "${d}/pqc_messagehandler.h")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_mpvobject.h" "${d}/pqc_photosphere.h" "${d}/pqc_photosphereitem.h" "${d}/pqc_photosphererenderer.h")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_photosphere.h" "${d}/pqc_photosphereitem.h" "${d}/pqc_photosphererenderer.h")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_settings.h" "${d}/pqc_singleinstance.h")
 
 set(d "qml")
 set(previewqt_QML "${d}/PQMainWindow.qml")
 set(d "qml/elements")
 set(previewqt_QML ${previewqt_QML} "${d}/PQIconButton.qml")
 set(d "qml/components")
-set(previewqt_QML ${previewqt_QML} "${d}/PQTopRow.qml" "${d}/PQImage.qml")
+set(previewqt_QML ${previewqt_QML} "${d}/PQTopRow.qml" "${d}/PQImage.qml" "${d}/PQSettings.qml" "${d}/PQTrayIcon.qml")
 set(d "qml/components/imageitems")
 set(previewqt_QML ${previewqt_QML} "${d}/PQImageNormal.qml" "${d}/PQVideoQt.qml" "${d}/PQVideoMpv.qml" "${d}/PQImageAnimated.qml")
 set(previewqt_QML ${previewqt_QML} "${d}/PQDocument.qml" "${d}/PQArchive.qml")
 
 if(PHOTOSPHERE)
     set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQPhotoSphere.qml")
+endif()
+
+if(VIDEO_MPV)
+    set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_mpvobject.cpp" "${d}/pqc_mpvobject.h")
 endif()
 
 #############################################

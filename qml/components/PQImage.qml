@@ -1,16 +1,16 @@
 import QtQuick
 import PQCScripts
+import PQCSettings
 
 Item {
 
     id: image_top
 
     x: 5
-    y: 5
-    // y: (toprow.y > -5 ? toprow.height : 0)+5
+    y: (PQCSettings.topBarAutoHide ? 0 : toprow.height)+5
     width: toplevel.width-2*5
-    // height: toplevel.height-toprow.height-2*5
-    height: toplevel.height-2*5
+    height: toplevel.height-(PQCSettings.topBarAutoHide ? 0 : toprow.height)-2*5
+    // height: toplevel.height-2*5
 
     clip: true
 
@@ -27,7 +27,8 @@ Item {
     property int windowWidth: 200
     property int windowHeight: 200
 
-    signal keyPress(var keycode)
+    signal keyPress(var modifiers, var keycode)
+    signal doubleClick()
 
     Timer {
         id: updateWindowSize
@@ -64,6 +65,10 @@ Item {
             else
                 toprow.makeVisible = false
         }
+
+        onDoubleClicked: {
+            image_top.doubleClick()
+        }
     }
 
     // the actual image
@@ -95,8 +100,8 @@ Item {
 
     Connections {
         target: toplevel
-        function onKeyPress(keycode) {
-            image_top.keyPress(keycode)
+        function onKeyPress(modifiers, keycode) {
+            image_top.keyPress(modifiers, keycode)
         }
     }
 

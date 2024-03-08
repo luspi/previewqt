@@ -16,5 +16,6 @@
         <file>forwards.svg</file>
         <file>img.qrc</file>
         <file>last.svg</file>
+        <file>logo.svg</file>
     </qresource>
 </RCC>

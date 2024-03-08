@@ -57,6 +57,8 @@ public:
     Q_INVOKABLE bool isArchive(QString path);
     Q_INVOKABLE bool isComicBook(QString path);
     Q_INVOKABLE QString toPercentEncoding(QString str);
+    Q_INVOKABLE QString keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key keycode);
+    Q_INVOKABLE bool doesFileExist(QString path);
 
     Q_INVOKABLE bool isPhotoSphere(QString path);
     Q_INVOKABLE int isMotionPhoto(QString path);
@@ -65,11 +67,18 @@ public:
 
     Q_INVOKABLE QStringList listArchiveContent(QString path, bool insideFilenameOnly = false);
 
+    Q_INVOKABLE bool openInDefault(QString path);
+
+    Q_INVOKABLE bool amIOnWindows();
+
 private:
     PQCScripts();
 
     QMap<QString,QStringList> archiveContents;
     QString generateArchiveId(QString path);
+
+signals:
+    void commandLineArgumentReceived(QString msg);
 
 };
 

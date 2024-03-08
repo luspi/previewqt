@@ -21,11 +21,13 @@
  **************************************************************************/
 
 import QtCore
+import Qt.labs.platform
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import PQCScripts
 import PQCImageFormats
+import PQCSettings
 
 import "./components"
 
@@ -37,12 +39,24 @@ ApplicationWindow {
     height: 600
     minimumWidth: 200
     minimumHeight: 200
-    visible: true
+    visible: false
     title: "PreviewQt"
 
-    color: "#bb000000"
+    property bool isFullscreen: toplevel.visibility === Window.FullScreen
 
-    signal keyPress(var keycode)
+    color: "#dd000000"
+
+    signal keyPress(var modifiers, var keycode)
+
+    onClosing: {
+        clearSetImage.restart()
+    }
+
+    Timer {
+        id: clearSetImage
+        interval: 200
+        onTriggered: image.imageSource = ""
+    }
 
     Item {
 
@@ -53,9 +67,15 @@ ApplicationWindow {
             forceActiveFocus()
 
         Keys.onPressed: (event) => {
-            toplevel.keyPress(event.key)
+            toplevel.keyPress(event.modifiers, event.key)
         }
 
+    }
+
+    Timer {
+        interval: 200
+        running: true
+        onTriggered: focusitem.forceActiveFocus()
     }
 
     Text {
@@ -71,9 +91,28 @@ ApplicationWindow {
 
     PQTopRow { id: toprow }
 
+    PQTrayIcon { id: trayicon }
+
+    PQSettings { id: settings }
+
     Component.onCompleted: {
+
+        toplevel.width = PQCSettings.defaultWindowWidth
+        toplevel.height = PQCSettings.defaultWindowHeight
+        if(PQCSettings.defaultWindowMaximized)
+            showMaximized()
+        else
+            showNormal()
+
+        if(PQCSettings.launchHiddenToSystemTray)
+            PQCSettings.hideToSystemTray = true
+
         if(Qt.application.arguments.length > 1 && PQCScripts.fileExists(Qt.application.arguments[1]))
-            image.imageSource = "image://full/" + PQCScripts.cleanPath(Qt.application.arguments[1])
+            image.imageSource = PQCScripts.toPercentEncoding(PQCScripts.cleanPath(Qt.application.arguments[1]))
+        else if(PQCSettings.launchHiddenToSystemTray) {
+            toplevel.close()
+            trayicon.showMessage("PreviewQt launched", "PreviewQt has been launched hidden to the system tray.", SystemTrayIcon.Information, 5000)
+        }
     }
 
     FileDialog {
@@ -81,6 +120,80 @@ ApplicationWindow {
         currentFolder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
         nameFilters: "Images (*.%1)".arg(PQCImageFormats.getAllFormats().join(" *."))
         onAccepted: image.loadImage(selectedFile)
+    }
+
+    onKeyPress: (modifiers, keycode) => {
+
+        var txt = PQCScripts.keycodeToString(modifiers, keycode)
+
+        if(txt === "Esc") {
+
+            if(isFullscreen)
+                toplevel.showNormal()
+            else
+                toplevel.close()
+
+        } else if(txt === "Ctrl+Q") {
+            Qt.quit()
+        } else if(txt === PQCSettings.defaultAppShortcut) {
+            PQCScripts.openInDefault(image.imageSource)
+            if(PQCSettings.closeAfterDefaultApp)
+                toplevel.close()
+        }
+    }
+
+    Connections {
+
+        target: image
+
+        function onDoubleClick() {
+
+            if(isFullscreen)
+                toplevel.showNormal()
+            else
+                toplevel.showFullScreen()
+
+        }
+
+    }
+
+    Connections {
+
+        target: PQCScripts
+
+        function onCommandLineArgumentReceived(msg) {
+
+            if(msg === ":/:/:") {
+                if(!toplevel.visible) {
+                    if(PQCSettings.defaultWindowMaximized)
+                        toplevel.showMaximized()
+                    else
+                        toplevel.showNormal()
+                }
+                toplevel.raise()
+                toplevel.requestActivate()
+            } else {
+
+                if(!PQCScripts.doesFileExist(PQCScripts.cleanPath(msg))) {
+                    trayicon.showMessage("File does not exist.", "The requested file does not exist...")
+                    return
+                }
+
+                image.imageSource = PQCScripts.toPercentEncoding(PQCScripts.cleanPath(msg))
+
+                if(!toplevel.visible) {
+                    if(PQCSettings.defaultWindowMaximized)
+                        toplevel.showMaximized()
+                    else
+                        toplevel.showNormal()
+                }
+                toplevel.raise()
+                toplevel.requestActivate()
+
+            }
+
+        }
+
     }
 
 }

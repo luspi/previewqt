@@ -46,10 +46,12 @@ Image {
 
     Rectangle {
 
+        parent: image_top
+
         id: controlitem
 
         x: (parent.width-width)/2
-        y: Math.max(Math.min(0.8*parent.height, parent.height-height-10), parent.height-100)
+        y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)
         width: controlrow.width+20
         height: 40
         radius: 5
@@ -240,15 +242,26 @@ Image {
 
         target: image_top
 
-        function onKeyPress(keycode) {
+        function onKeyPress(modifiers, keycode) {
+
+            if(modifiers !== Qt.NoModifier)
+                return
 
             if(keycode === Qt.Key_Left) {
 
-                image.currentPage = (image.currentPage+image.pageCount-1)%image.pageCount
+                currentPage = (currentPage+pageCount-1)%pageCount
 
             } else if(keycode === Qt.Key_Right || keycode === Qt.Key_Space) {
 
-                image.currentPage = (image.currentPage+1)%image.pageCount
+                currentPage = (currentPage+1)%pageCount
+
+            } else if(keycode === Qt.Key_Home) {
+
+                currentPage = 0
+
+            } else if(keycode === Qt.Key_End) {
+
+                currentPage = pageCount-1
 
             }
 

@@ -36,7 +36,7 @@ Item {
     x: (image_top.width-width)/2
     y: (image_top.height-height)/2
 
-    scale: (width>image_top.width||height>image_top.height) ? Math.min(image_top.height/height, image_top.width/width) : 1
+    scale: Math.min(image_top.width/width, image_top.height/height)
 
     width: 100
     height: 100
@@ -113,13 +113,13 @@ Item {
 
     Rectangle {
 
+        parent: image_top
+
         x: (parent.width-width)/2
-        y: 0.9*parent.height
+        y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)
         width: controlrow.width+10
         height: 30
         radius: 5
-
-        scale: 1/parent.scale
 
         color: "#88000000"
         opacity: controlsmouse.containsMouse||playpausemouse.containsMouse||slider.hovered/*||volumemouse.containsMouse*/ ? 1 : 0.4
@@ -225,7 +225,10 @@ Item {
 
         target: image_top
 
-        function onKeyPress(keycode) {
+        function onKeyPress(modifiers, keycode) {
+
+            if(modifiers !== Qt.NoModifier)
+                return
 
             if(keycode === Qt.Key_Space) {
 
@@ -247,6 +250,14 @@ Item {
                 else
                     volumeIndex = 0
                 video.setProperty("volume", volumeList[volumeIndex])
+
+            } else if(keycode === Qt.Key_Home) {
+
+                video.command(["seek", 0, "absolute"])
+
+            } else if(keycode === Qt.Key_End) {
+
+                video.command(["seek", videoDuration, "absolute"])
 
             }
 

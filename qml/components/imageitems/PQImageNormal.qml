@@ -45,6 +45,7 @@ Image {
         if(status == Image.Error)
             source = "image://svg/:/other/errorimage.svg"
         else if(status == Image.Ready) {
+            asynchronous = false
             if(extrasCheckedFor !== image_top.imageSource)
                 checkForExtras.restart()
         }

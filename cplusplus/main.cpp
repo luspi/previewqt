@@ -29,6 +29,8 @@
 #include <pqc_scripts.h>
 #include <pqc_imageformats.h>
 #include <pqc_providerfull.h>
+#include <pqc_settings.h>
+#include <pqc_singleinstance.h>
 
 #ifdef PQMGRAPHICSMAGICK
 #include <GraphicsMagick/Magick++.h>
@@ -77,7 +79,7 @@ int main(int argc, char *argv[]) {
     // custom message handler for qDebug/qLog/qInfo/etc.
     qInstallMessageHandler(pqcMessageHandler);
 
-    QApplication app(argc, argv);
+    PQCSingleInstance app(argc, argv);
 
 #ifdef PQMVIDEOMPV
     // Qt sets the locale in the QGuiApplication constructor, but libmpv
@@ -112,6 +114,7 @@ int main(int argc, char *argv[]) {
                 QCoreApplication::exit(-1);
         }, Qt::QueuedConnection);
 
+    qmlRegisterSingletonInstance("PQCSettings", 1, 0, "PQCSettings", &PQCSettings::get());
     qmlRegisterSingletonInstance("PQCScripts", 1, 0, "PQCScripts", &PQCScripts::get());
     qmlRegisterSingletonInstance("PQCImageFormats", 1, 0, "PQCImageFormats", &PQCImageFormats::get());
 
