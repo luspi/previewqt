@@ -78,6 +78,7 @@ Rectangle {
             height: toprow.height-1
             source: "/about.svg"
             onClicked: {
+                about.show()
             }
         }
 

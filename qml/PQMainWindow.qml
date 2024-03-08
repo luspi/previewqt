@@ -101,6 +101,8 @@ ApplicationWindow {
 
     PQSettings { id: settings }
 
+    PQAbout { id: about }
+
     Component.onCompleted: {
 
         toplevel.width = PQCSettings.defaultWindowWidth
@@ -145,6 +147,8 @@ ApplicationWindow {
             fileDialog.open()
         } else if(txt === "Ctrl+P") {
             settings.show()
+        } else if(txt === "Ctrl+I") {
+            about.show()
         } else if(txt === PQCSettings.defaultAppShortcut) {
             PQCScripts.openInDefault(image.imageSource)
             if(PQCSettings.closeAfterDefaultApp)
