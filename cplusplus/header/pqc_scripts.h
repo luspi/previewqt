@@ -24,8 +24,9 @@
 #define PQCSCRIPTS_H
 
 #include <QObject>
-#include <QTranslator>
-#include <QQmlEngine>
+#include <QMap>
+
+class QProcess;
 
 class PQCScripts : public QObject {
 

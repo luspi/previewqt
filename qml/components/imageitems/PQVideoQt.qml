@@ -34,7 +34,6 @@ Video {
     // earlier versions of Qt6 seem to struggle if only one slash is used
     source: image_top.imageSource!=="" ? ((PQCScripts.isQtAtLeast6_5() ? "file:/" : "file://") + image_top.imageSource) : ""
     onSourceChanged: {
-        console.warn("SRC:", source)
         video.play()
     }
 

@@ -62,8 +62,6 @@ Image {
 
             var motion = PQCScripts.isMotionPhoto(image_top.imageSource)
 
-            console.warn("motion =", motion)
-
             if(motion === 1) {
 
                 mediaplayer_wrapper.forceRotation = 0

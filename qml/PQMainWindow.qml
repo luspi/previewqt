@@ -141,6 +141,10 @@ ApplicationWindow {
 
         } else if(txt === "Ctrl+Q") {
             Qt.quit()
+        } else if(txt === "Ctrl+O") {
+            fileDialog.open()
+        } else if(txt === "Ctrl+P") {
+            settings.show()
         } else if(txt === PQCSettings.defaultAppShortcut) {
             PQCScripts.openInDefault(image.imageSource)
             if(PQCSettings.closeAfterDefaultApp)

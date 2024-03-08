@@ -21,7 +21,7 @@ Window {
             if(shortcutbut.checked) {
 
                 var txt = PQCScripts.keycodeToString(event.modifiers, event.key)
-                var reserved = ["Esc", "Space", "Left", "Right", "M", "Home", "End", "Ctrl+Q"]
+                var reserved = ["Esc", "Space", "Left", "Right", "M", "Home", "End", "Ctrl+Q", "Ctrl+O", "Ctrl+P"]
 
                 if(txt === "Esc") {
                     shortcutbut.text = shortcutbut.backupshortcut

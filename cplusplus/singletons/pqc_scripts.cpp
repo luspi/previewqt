@@ -1096,11 +1096,11 @@ bool PQCScripts::openInDefault(QString path) {
     QProcess proc;
     proc.setProgram(QDir::toNativeSeparators(exe));
     proc.setArguments({cleanPath(path)});
-    proc.startDetached();
+    if(!proc.startDetached())
+        qWarning() << "Could not start process!";
 
-    // this is to make sure the app is actually started and detached before closing
     if(PQCSettings::get().getCloseAfterDefaultApp())
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     return true;
 
