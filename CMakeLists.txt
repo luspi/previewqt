@@ -42,11 +42,12 @@ set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadimage_qt.cpp" "${d}/pqc_loadima
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadimage_resvg.cpp" "${d}/pqc_loadimage_unrar.cpp" "${d}/pqc_loadimage_video.cpp")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadimage_xcf.cpp")
 set(d "cplusplus/other")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_mpvobject.cpp")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_mpvobject.cpp" "${d}/pqc_photosphere.cpp" "${d}/pqc_photosphereitem.cpp" "${d}/pqc_photosphererenderer.cpp")
+
 
 set(d "cplusplus/header")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_imageformats.h" "${d}/pqc_scripts.h" "${d}/pqc_messagehandler.h")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_mpvobject.h")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_mpvobject.h" "${d}/pqc_photosphere.h" "${d}/pqc_photosphereitem.h" "${d}/pqc_photosphererenderer.h")
 
 set(d "qml")
 set(previewqt_QML "${d}/PQMainWindow.qml")
@@ -55,7 +56,12 @@ set(previewqt_QML ${previewqt_QML} "${d}/PQIconButton.qml")
 set(d "qml/components")
 set(previewqt_QML ${previewqt_QML} "${d}/PQTopRow.qml" "${d}/PQImage.qml")
 set(d "qml/components/imageitems")
-set(previewqt_QML ${previewqt_QML} "${d}/PQImageNormal.qml")
+set(previewqt_QML ${previewqt_QML} "${d}/PQImageNormal.qml" "${d}/PQVideoQt.qml" "${d}/PQVideoMpv.qml" "${d}/PQImageAnimated.qml")
+set(previewqt_QML ${previewqt_QML} "${d}/PQDocument.qml" "${d}/PQArchive.qml")
+
+if(PHOTOSPHERE)
+    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQPhotoSphere.qml")
+endif()
 
 #############################################
 #### OPTIONS THAT CAN BE SET BY THE USER ####

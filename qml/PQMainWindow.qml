@@ -33,14 +33,39 @@ ApplicationWindow {
 
     id: toplevel
 
-    width: 640
-    height: 480
+    width: 800
+    height: 600
     minimumWidth: 200
     minimumHeight: 200
     visible: true
     title: "PreviewQt"
 
     color: "#bb000000"
+
+    signal keyPress(var keycode)
+
+    Item {
+
+        id: focusitem
+
+        // this is for catching key presses
+        Component.onCompleted:
+            forceActiveFocus()
+
+        Keys.onPressed: (event) => {
+            toplevel.keyPress(event.key)
+        }
+
+    }
+
+    Text {
+        anchors.centerIn: parent
+        color: "white"
+        text: "Click to open file"
+        font.pointSize: 12
+        font.bold: true
+        visible: image.imageSource===""
+    }
 
     PQImage { id: image }
 
@@ -55,7 +80,7 @@ ApplicationWindow {
         id: fileDialog
         currentFolder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
         nameFilters: "Images (*.%1)".arg(PQCImageFormats.getAllFormats().join(" *."))
-        onAccepted: image.imageSource = "image://full/" + PQCScripts.cleanPath(selectedFile)
+        onAccepted: image.loadImage(selectedFile)
     }
 
 }

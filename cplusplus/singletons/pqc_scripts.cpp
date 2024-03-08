@@ -30,6 +30,9 @@
 #include <QProcess>
 #include <QStringDecoder>
 #include <QCollator>
+#include <QMimeDatabase>
+#include <QImageReader>
+#include <QKeyEvent>
 
 #ifdef PQMLIBARCHIVE
 #include <archive.h>
@@ -38,6 +41,15 @@
 
 #ifdef PQMEXIV2
 #include <exiv2/exiv2.hpp>
+#endif
+
+#ifdef PQMQTPDF
+#include <QtPdf/QPdfDocument>
+#include <QtPdf/QtPdf>
+#endif
+
+#ifdef PQMPOPPLER
+#include <poppler/qt6/poppler-qt6.h>
 #endif
 
 PQCScripts::PQCScripts() {}
@@ -93,7 +105,7 @@ bool PQCScripts::fileExists(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    QFileInfo info(cleanPath(path));
+    QFileInfo info(path);
     return info.exists();
 
 }
@@ -102,7 +114,7 @@ QString PQCScripts::getFilename(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    return QFileInfo(cleanPath(path)).fileName();
+    return QFileInfo(path).fileName();
 
 }
 
@@ -233,8 +245,6 @@ int PQCScripts::isMotionPhoto(QString path) {
     return 0;
 #endif
 
-    path = cleanPath(path);
-
     // 1 = Apple Live Photos
     // 2 = Motion Photo
     // 3 = Micro Video
@@ -329,8 +339,6 @@ QString PQCScripts::extractMotionPhoto(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    path = cleanPath(path);
-
     // at this point we assume that the check for google motion photo has already been done
     // and we wont need to check again
 
@@ -411,8 +419,6 @@ int PQCScripts::getExifOrientation(QString path) {
 
 #ifdef PQMEXIV2
 
-    path = cleanPath(path);
-
 #if EXIV2_TEST_VERSION(0, 28, 0)
     Exiv2::Image::UniquePtr image;
 #else
@@ -465,7 +471,7 @@ QString PQCScripts::getBasename(QString fullpath) {
     if(fullpath == "")
         return "";
 
-    return QFileInfo(cleanPath(fullpath)).baseName();
+    return QFileInfo(fullpath).baseName();
 
 }
 
@@ -474,6 +480,342 @@ QString PQCScripts::getDir(QString fullpath) {
     if(fullpath == "")
         return "";
 
-    return QFileInfo(cleanPath(fullpath)).absolutePath();
+    return QFileInfo(fullpath).absolutePath();
+
+}
+
+bool PQCScripts::isPhotoSphere(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+#ifdef PQMPHOTOSPHERE
+
+#if defined(PQMEXIV2) && defined(PQMEXIV2_ENABLE_BMFF)
+
+#if EXIV2_TEST_VERSION(0, 28, 0)
+    Exiv2::Image::UniquePtr image;
+#else
+    Exiv2::Image::AutoPtr image;
+#endif
+
+    try {
+        image = Exiv2::ImageFactory::open(path.toStdString());
+        image->readMetadata();
+    } catch (Exiv2::Error& e) {
+        // An error code of kerFileContainsUnknownImageType (older version: 11) means unknown file type
+        // Since we always try to read any file's meta data, this happens a lot
+#if EXIV2_TEST_VERSION(0, 28, 0)
+        if(e.code() != Exiv2::ErrorCode::kerFileContainsUnknownImageType)
+#else
+        if(e.code() != 11)
+#endif
+            qWarning() << "ERROR reading exiv data (caught exception):" << e.what();
+        else
+            qDebug() << "ERROR reading exiv data (caught exception):" << e.what();
+
+        return false;
+    }
+
+    Exiv2::XmpData xmpData;
+    try {
+        xmpData = image->xmpData();
+    } catch(Exiv2::Error &e) {
+        qDebug() << "ERROR: Unable to read xmp metadata:" << e.what();
+        return false;
+    }
+
+    for(Exiv2::XmpData::const_iterator it_xmp = xmpData.begin(); it_xmp != xmpData.end(); ++it_xmp) {
+
+        QString familyName = QString::fromStdString(it_xmp->familyName());
+        QString groupName = QString::fromStdString(it_xmp->groupName());
+        QString tagName = QString::fromStdString(it_xmp->tagName());
+
+        /***********************************/
+        // check for Motion Photo
+        if(familyName == "Xmp" && groupName == "GPano" && tagName == "ProjectionType") {
+
+            // check value == equirectangular
+            if(QString::fromStdString(Exiv2::toString(it_xmp->value())) == "equirectangular")
+                return true;
+        }
+
+    }
+
+#endif
+
+#endif
+
+    return false;
+
+}
+
+bool PQCScripts::isQtAtLeast6_5() {
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 5, 0))
+    return true;
+#endif
+    return false;
+}
+
+bool PQCScripts::isMpvVideo(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    bool supported = false;
+
+#ifdef PQMVIDEOMPV
+
+    QString suf = QFileInfo(path).suffix().toLower();
+    if(PQCImageFormats::get().getAllFormatsLibmpv().contains(suf)) {
+
+        supported = true;
+
+    } else {
+
+        QMimeDatabase db;
+        QString mimetype = db.mimeTypeForFile(path).name();
+        if(PQCImageFormats::get().getAllMimeTypesLibmpv().contains(mimetype))
+            supported = true;
+
+    }
+
+#endif
+
+    return supported;
+
+}
+
+bool PQCScripts::isQtVideo(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    bool supported = false;
+
+#ifdef PQMVIDEOQT
+
+    QString suf = QFileInfo(path).suffix().toLower();
+    if(PQCImageFormats::get().getAllFormatsVideo().contains(suf)) {
+
+        supported = true;
+
+    } else {
+
+        QMimeDatabase db;
+        QString mimetype = db.mimeTypeForFile(path).name();
+        if(PQCImageFormats::get().getAllMimeTypesVideo().contains(mimetype))
+            supported = true;
+
+    }
+
+#endif
+
+    return supported;
+
+}
+
+bool PQCScripts::isItAnimated(QString filename) {
+    QImageReader reader(filename);
+    return (reader.supportsAnimation()&&reader.imageCount()>1);
+}
+
+bool PQCScripts::isPDFDocument(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    QString suf = QFileInfo(path).suffix().toLower();
+    if(PQCImageFormats::get().getAllFormatsPoppler().contains(suf))
+        return true;
+
+    QMimeDatabase db;
+    QString mimetype = db.mimeTypeForFile(path).name();
+    if(PQCImageFormats::get().getAllMimeTypesPoppler().contains(mimetype))
+        return true;
+
+    return false;
+
+}
+
+int PQCScripts::getDocumentPageCount(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+#ifdef PQMQTPDF
+
+    if(path.contains("::PDF::"))
+        path = path.split("::PDF::").at(1);
+
+    QPdfDocument doc;
+    doc.load(path);
+
+    QPdfDocument::Error err = doc.error();
+    if(err != QPdfDocument::Error::None) {
+        qWarning() << "Error occured loading PDF";
+        return 0;
+    }
+
+    return doc.pageCount();
+
+#elif PQMPOPPLER
+
+    std::unique_ptr<Poppler::Document> document = Poppler::Document::load(path);
+    if(!document || document->isLocked()) {
+        qWarning() << "Invalid PDF document, unable to load!";
+        return 0;
+    }
+
+    return document->numPages();
+
+#endif
+
+}
+
+QStringList PQCScripts::getArchiveContent(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    QString theid = generateArchiveId(path);
+    if(archiveContents.contains(theid)) {
+        return archiveContents[theid];
+    }
+
+    QStringList ret;
+
+    const QFileInfo info(path);
+
+#ifndef Q_OS_WIN
+
+    QProcess which;
+    which.setStandardOutputFile(QProcess::nullDevice());
+    which.start("which", QStringList() << "unrar");
+    which.waitForFinished();
+
+    if(!which.exitCode()) {
+
+        QProcess p;
+        p.start("unrar", QStringList() << "lb" << info.absoluteFilePath());
+
+        if(p.waitForStarted()) {
+
+            QByteArray outdata = "";
+
+            while(p.waitForReadyRead())
+                outdata.append(p.readAll());
+
+            auto toUtf16 = QStringDecoder(QStringDecoder::Utf8);
+            QStringList allfiles = QString(toUtf16(outdata)).split('\n', Qt::SkipEmptyParts);
+
+            allfiles.sort();
+
+            for(const QString &f : std::as_const(allfiles)) {
+                if(PQCImageFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
+                    ret.append(f);
+            }
+
+        }
+
+    }
+
+    // this either means there is nothing in that archive
+    // or something went wrong above with unrar
+    if(ret.length() == 0) {
+
+#endif
+
+#ifdef PQMLIBARCHIVE
+
+        // Create new archive handler
+        struct archive *a = archive_read_new();
+
+        // We allow any type of compression and format
+        archive_read_support_filter_all(a);
+        archive_read_support_format_all(a);
+
+        // Read file
+        int r = archive_read_open_filename(a, info.absoluteFilePath().toLocal8Bit().data(), 10240);
+
+        // If something went wrong, output error message and stop here
+        if(r != ARCHIVE_OK) {
+            qWarning() << "ERROR: archive_read_open_filename() returned code of" << r;
+            return ret;
+        }
+
+        // Loop over entries in archive
+        struct archive_entry *entry;
+        QStringList allfiles;
+        while(archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+
+            // Read the current file entry
+            // We use the '_w' variant here, as otherwise on Windows this call causes a segfault when a file in an archive contains non-latin characters
+            QString filenameinside = QString::fromWCharArray(archive_entry_pathname_w(entry));
+
+            // If supported file format, append to temporary list
+            if((PQCImageFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix())))
+                allfiles.append(filenameinside);
+
+        }
+
+        // Sort the temporary list and add to global list
+        allfiles.sort();
+
+        ret = allfiles;
+
+        // Close archive
+        r = archive_read_free(a);
+        if(r != ARCHIVE_OK)
+            qWarning() << "ERROR: archive_read_free() returned code of" << r;
+
+#endif
+
+#ifndef Q_OS_WIN
+    }
+#endif
+
+    QCollator collator;
+    collator.setCaseSensitivity(Qt::CaseInsensitive);
+    collator.setIgnorePunctuation(true);
+    collator.setNumericMode(true);
+
+    std::sort(ret.begin(), ret.end(), [&collator](const QString &file1, const QString &file2) { return collator.compare(file1, file2) < 0; });
+
+    archiveContents[theid] = ret;
+
+    return ret;
+
+}
+
+bool PQCScripts::isArchive(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    QString suf = QFileInfo(path).suffix().toLower();
+    if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suf))
+        return true;
+
+    QMimeDatabase db;
+    QString mimetype = db.mimeTypeForFile(path).name();
+    if(PQCImageFormats::get().getAllMimeTypesLibArchive().contains(mimetype))
+        return true;
+
+    return false;
+
+}
+
+bool PQCScripts::isComicBook(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    const QString suffix = QFileInfo(path).suffix().toLower();
+
+    return (suffix=="cbt" || suffix=="cbr" || suffix=="cbz" || suffix=="cb7");
+
+}
+
+QString PQCScripts::toPercentEncoding(QString str) {
+    return QUrl::toPercentEncoding(str);
+}
+
+QString PQCScripts::generateArchiveId(QString path) {
+
+    QFileInfo info(path);
+    return QString("%1_%2").arg(info.lastModified().toMSecsSinceEpoch()).arg(info.absoluteFilePath());
 
 }

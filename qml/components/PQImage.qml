@@ -1,4 +1,5 @@
 import QtQuick
+import PQCScripts
 
 Item {
 
@@ -15,15 +16,18 @@ Item {
 
     property string imageSource: ""
 
-    property bool isDocument: false//PQCScriptsImages.isPDFDocument(deleg.imageSource)
-    property bool isArchive: false//!isDocument && PQCScriptsImages.isArchive(deleg.imageSource)
-    property bool isMpv: false//!isDocument && !isArchive && PQCScriptsImages.isMpvVideo(deleg.imageSource)
-    property bool isQtVideo: false//!isDocument && !isArchive && !isMpv && PQCScriptsImages.isQtVideo(deleg.imageSource)
-    property bool isAnimated: false//!isDocument && !isArchive && !isMpv && !isQtVideo && PQCScriptsImages.isItAnimated(deleg.imageSource)
+    property bool isDocument: PQCScripts.isPDFDocument(imageSource)
+    property bool isArchive: !isDocument && PQCScripts.isArchive(imageSource)
+    property bool isMpv: !isDocument && !isArchive && PQCScripts.isMpvVideo(imageSource)
+    property bool isQtVideo: !isDocument && !isArchive && !isMpv && PQCScripts.isQtVideo(imageSource)
+    property bool isAnimated: !isDocument && !isArchive && !isMpv && !isQtVideo && PQCScripts.isItAnimated(imageSource)
+    property bool isPhotoSphere: !isDocument && !isArchive && !isMpv && !isQtVideo && !isAnimated && PQCScripts.isPhotoSphere(imageSource)
 
     // these are used for a delay in reloading the image
     property int windowWidth: 200
     property int windowHeight: 200
+
+    signal keyPress(var keycode)
 
     Timer {
         id: updateWindowSize
@@ -49,9 +53,10 @@ Item {
         anchors.fill: parent
         anchors.margins: -5
         hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
+        cursorShape: image.imageSource == "" ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: (mouse) => {
-            fileDialog.open()
+            if(image.imageSource == "")
+                fileDialog.open()
         }
         onPositionChanged: (mouse) => {
             if(mouse.y < 30)
@@ -75,7 +80,9 @@ Item {
                                "PQDocument.qml" :
                                (isArchive ?
                                     "PQArchive.qml" :
-                                    "PQImageNormal.qml"))))
+                                    (isPhotoSphere ?
+                                         "PQPhotoSphere.qml" :
+                                         "PQImageNormal.qml")))))
 
         source: "imageitems/" + nameOfImage
 
@@ -86,9 +93,22 @@ Item {
         windowHeight = image_top.height
     }
 
+    Connections {
+        target: toplevel
+        function onKeyPress(keycode) {
+            image_top.keyPress(keycode)
+        }
+    }
+
     // show the image
     function showImage() {
         opacity = 1
+    }
+
+    function loadImage(path) {
+
+        isPhotoSphere = PQCScripts.isPhotoSphere(path)
+        imageSource = PQCScripts.cleanPath(path)
     }
 
 }

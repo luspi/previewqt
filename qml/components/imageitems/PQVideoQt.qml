@@ -1,0 +1,199 @@
+/**************************************************************************
+ **                                                                      **
+ ** Copyright (C) 2011-2024 Lukas Spies                                  **
+ ** Contact: https://photoqt.org                                         **
+ **                                                                      **
+ ** This file is part of PhotoQt.                                        **
+ **                                                                      **
+ ** PhotoQt is free software: you can redistribute it and/or modify      **
+ ** it under the terms of the GNU General Public License as published by **
+ ** the Free Software Foundation, either version 2 of the License, or    **
+ ** (at your option) any later version.                                  **
+ **                                                                      **
+ ** PhotoQt is distributed in the hope that it will be useful,           **
+ ** but WITHOUT ANY WARRANTY; without even the implied warranty of       **
+ ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        **
+ ** GNU General Public License for more details.                         **
+ **                                                                      **
+ ** You should have received a copy of the GNU General Public License    **
+ ** along with PhotoQt. If not, see <http://www.gnu.org/licenses/>.      **
+ **                                                                      **
+ **************************************************************************/
+
+import QtQuick
+import QtQuick.Controls
+import QtMultimedia
+import PQCScripts
+
+Video {
+
+    id: video
+
+    // earlier versions of Qt6 seem to struggle if only one slash is used
+    source: image_top.imageSource!=="" ? ((PQCScripts.isQtAtLeast6_5() ? "file:/" : "file://") + image_top.imageSource) : ""
+    onSourceChanged: {
+        console.warn("SRC:", source)
+        video.play()
+    }
+
+    property var volumeList: [1.0, 0.8, 0.45, 0]
+    property int volumeIndex: 0
+    property var volumeIcon: ["high", "medium", "low", "mute"]
+
+    volume: volumeList[volumeIndex]
+
+    x: (image_top.width-width)/2
+    y: (image_top.height-height)/2
+
+    scale: (width>image_top.width||height>image_top.height) ? Math.min(image_top.height/height, image_top.width/width) : 1
+
+    onPositionChanged: {
+        if(position >= duration-100) {
+            video.seek(0)
+        }
+    }
+
+    onPlaybackStateChanged: {
+
+        if(playbackState === MediaPlayer.StoppedState) {
+
+            // earlier versions of Qt6 seem to struggle if only one slash is used
+            if(PQCScripts.isQtAtLeast6_5())
+                video.source = "file:/" + image_top.imageSource
+            else
+                video.source = "file://" + image_top.imageSource
+
+            video.play()
+        }
+    }
+
+    property int videoPosition: 0
+    onVideoPositionChanged:
+        video.position = videoPosition*1000
+
+    Rectangle {
+
+        x: (parent.width-width)/2
+        y: 0.9*parent.height
+        width: controlrow.width+10
+        height: 30
+        radius: 5
+
+        scale: 1/parent.scale
+
+        color: "#88000000"
+        opacity: controlsmouse.containsMouse||playpausemouse.containsMouse||slider.hovered||volumemouse.containsMouse ? 1 : 0.4
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+
+        MouseArea {
+            id: controlsmouse
+            anchors.fill: parent
+            hoverEnabled: true
+        }
+
+        Row {
+            id: controlrow
+            x: 5
+            y: (parent.height-height)/2
+            spacing: 5
+            Image {
+                y: (parent.height-height)/2
+                width: height
+                height: 20
+                sourceSize: Qt.size(width, height)
+                source: video.playbackState===MediaPlayer.PlayingState ? "/pause.svg" : "/play.svg"
+                MouseArea {
+                    id: playpausemouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        if(video.playbackState===MediaPlayer.PlayingState)
+                            video.pause()
+                        else
+                            video.play()
+                    }
+                }
+            }
+            Text {
+                y: (parent.height-height)/2
+                color: "white"
+                text: Math.round(video.position/1000) + "s"
+            }
+
+            Slider {
+                id: slider
+                y: (parent.height-height)/2
+                orientation: Qt.Horizontal
+                width: 100
+                from: 0
+                value: Math.round(video.position/1000)
+                to: Math.round(video.duration/1000)
+                onValueChanged: {
+                    if(pressed)
+                        videoPosition = value
+                }
+            }
+            Text {
+                y: (parent.height-height)/2
+                color: "white"
+                text: Math.round(video.duration/1000) + "s"
+            }
+            Image {
+                y: (parent.height-height)/2
+                visible: video.hasAudio
+                width: height
+                height: 20
+                sourceSize: Qt.size(width, height)
+                source: "/volume_" + volumeIcon[volumeIndex] + ".svg"
+                MouseArea {
+                    id: volumemouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        volumeIndex = (volumeIndex+1)%4
+                    }
+                }
+            }
+
+
+        }
+
+    }
+
+    Connections {
+
+        target: image_top
+
+        function onKeyPress(keycode) {
+
+            if(keycode === Qt.Key_Space) {
+
+                if(video.playbackState===MediaPlayer.PlayingState)
+                    video.pause()
+                else
+                    video.play()
+
+            } else if(keycode === Qt.Key_Left) {
+
+                video.seek(video.position-5000)
+
+            } else if(keycode === Qt.Key_Right) {
+
+                video.seek(video.position+5000)
+
+            } else if(keycode === Qt.Key_M) {
+
+                if(volumeIndex != 3)
+                    volumeIndex = 3
+                else
+                    volumeIndex = 0
+
+            }
+
+        }
+
+    }
+
+}

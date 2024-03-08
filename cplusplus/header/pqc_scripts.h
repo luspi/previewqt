@@ -47,7 +47,18 @@ public:
     Q_INVOKABLE QString getBasename(QString fullpath);
     Q_INVOKABLE QString getFilename(QString path);
     Q_INVOKABLE QString getDir(QString fullpath);
+    Q_INVOKABLE bool isQtAtLeast6_5();
+    Q_INVOKABLE bool isMpvVideo(QString path);
+    Q_INVOKABLE bool isQtVideo(QString path);
+    Q_INVOKABLE bool isItAnimated(QString filename);
+    Q_INVOKABLE bool isPDFDocument(QString path);
+    Q_INVOKABLE int getDocumentPageCount(QString path);
+    Q_INVOKABLE QStringList getArchiveContent(QString path);
+    Q_INVOKABLE bool isArchive(QString path);
+    Q_INVOKABLE bool isComicBook(QString path);
+    Q_INVOKABLE QString toPercentEncoding(QString str);
 
+    Q_INVOKABLE bool isPhotoSphere(QString path);
     Q_INVOKABLE int isMotionPhoto(QString path);
     Q_INVOKABLE QString extractMotionPhoto(QString path);
     Q_INVOKABLE int getExifOrientation(QString path);
@@ -56,6 +67,9 @@ public:
 
 private:
     PQCScripts();
+
+    QMap<QString,QStringList> archiveContents;
+    QString generateArchiveId(QString path);
 
 };
 

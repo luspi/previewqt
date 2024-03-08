@@ -54,6 +54,14 @@
 #include <FreeImage.h>
 #endif
 
+#ifdef PQMPHOTOSPHERE
+#include <pqc_photosphere.h>
+#endif
+
+#ifdef PQMVIDEOMPV
+#include <pqc_mpvobject.h>
+#endif
+
 int main(int argc, char *argv[]) {
 
     // avoids warning for customizing native styles (observed in particular on Windows)
@@ -108,6 +116,14 @@ int main(int argc, char *argv[]) {
     qmlRegisterSingletonInstance("PQCImageFormats", 1, 0, "PQCImageFormats", &PQCImageFormats::get());
 
     engine.addImageProvider("full", new PQCProviderFull);
+
+#ifdef PQMPHOTOSPHERE
+    qmlRegisterType<PQCPhotoSphere>("PQCPhotoSphere", 1, 0, "PQCPhotoSphere");
+#endif
+
+#ifdef PQMVIDEOMPV
+    qmlRegisterType<PQCMPVObject>("PQCMPVObject", 1, 0, "PQCMPVObject");
+#endif
 
     engine.load(url);
 

@@ -7,5 +7,14 @@
         <file>settings.svg</file>
         <file>play.svg</file>
         <file>pause.svg</file>
+        <file>volume_high.svg</file>
+        <file>volume_low.svg</file>
+        <file>volume_medium.svg</file>
+        <file>volume_mute.svg</file>
+        <file>backwards.svg</file>
+        <file>first.svg</file>
+        <file>forwards.svg</file>
+        <file>img.qrc</file>
+        <file>last.svg</file>
     </qresource>
 </RCC>
