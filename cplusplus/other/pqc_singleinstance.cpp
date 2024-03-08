@@ -41,6 +41,34 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     if(argc == 2)
         message = argv[1];
 
+    if(message == "-h" || message == "--help") {
+
+        std::cout << std::endl;
+        std::cout << "Usage: previewqt [options] [filename]" << std::endl;
+        std::cout << "Preview files." << std::endl;
+        std::cout << std::endl;
+        std::cout << "Options:" << std::endl;
+        std::cout << std::setw(15) << std::right << "  -h, --help" << "   " << "Displays help on commandline options." << std::endl;
+        std::cout << std::setw(15) << std::right << "  -v, --version" << "   " << "Displays version information." << std::endl;
+        std::cout << std::endl;
+        std::cout << "Arguments:" << std::endl;
+        std::cout << std::setw(15) << std::right << "  [filename]" << "   " << "Image file to open." << std::endl;
+        std::cout << std::endl;
+
+        std::exit(0);
+        return;
+
+    } else if(message == "-v" || message == "--version") {
+
+        std::cout << std::endl;
+        std::cout << " PreviewQt " << PQMVERSION << std::endl;
+        std::cout << std::endl;
+
+        std::exit(0);
+        return;
+
+    }
+
 
     socket = nullptr;
     server = nullptr;
