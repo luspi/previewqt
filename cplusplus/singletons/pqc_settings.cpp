@@ -30,17 +30,6 @@ void PQCSettings::setTopBarAutoHide(bool val) {
     }
 }
 
-bool PQCSettings::getHideToSystemTray() {
-    return m_hideToSystemTray;
-}
-void PQCSettings::setHideToSystemTray(bool val) {
-    if(m_hideToSystemTray != val) {
-        m_hideToSystemTray = val;
-        saveTimer->start();
-        emit hideToSystemTrayChanged();
-    }
-}
-
 bool PQCSettings::getLaunchHiddenToSystemTray() {
     return m_launchHiddenToSystemTray;
 }
@@ -140,6 +129,17 @@ void PQCSettings::setDefaultAppVideos(QString val) {
     }
 }
 
+QString PQCSettings::getDefaultAppComicBooks() {
+    return m_defaultAppComicBooks;
+}
+void PQCSettings::setDefaultAppComicBooks(QString val) {
+    if(m_defaultAppComicBooks != val) {
+        m_defaultAppComicBooks = val;
+        saveTimer->start();
+        emit defaultAppComicBooksChanged();
+    }
+}
+
 bool PQCSettings::getCloseAfterDefaultApp() {
     return m_closeAfterDefaultApp;
 }
@@ -154,7 +154,6 @@ void PQCSettings::setCloseAfterDefaultApp(bool val) {
 void PQCSettings::loadSettings() {
 
     setTopBarAutoHide(settings->value("topBarAutoHide", false).toBool());
-    setHideToSystemTray(settings->value("hideToSystemTray", false).toBool());
     setLaunchHiddenToSystemTray(settings->value("launchHiddenToSystemTray", false).toBool());
     setDefaultWindowWidth(settings->value("defaultWindowWidth", 800).toInt());
     setDefaultWindowHeight(settings->value("defaultWindowHeight", 600).toInt());
@@ -164,6 +163,7 @@ void PQCSettings::loadSettings() {
     setDefaultAppDocuments(settings->value("defaultAppDocuments", "okular").toString());
     setDefaultAppArchives(settings->value("defaultAppArchives", "ark").toString());
     setDefaultAppVideos(settings->value("defaultAppVideos", "vlc").toString());
+    setDefaultAppComicBooks(settings->value("defaultAppComicBooks", "okular").toString());
     setCloseAfterDefaultApp(settings->value("closeAfterDefaultApp", true).toBool());
 
 }
@@ -171,7 +171,6 @@ void PQCSettings::loadSettings() {
 void PQCSettings::saveSettings() {
 
     settings->setValue("topBarAutoHide", m_topBarAutoHide);
-    settings->setValue("hideToSystemTray", m_hideToSystemTray);
     settings->setValue("launchHiddenToSystemTray", m_launchHiddenToSystemTray);
     settings->setValue("defaultWindowWidth", m_defaultWindowWidth);
     settings->setValue("defaultWindowHeight", m_defaultWindowHeight);
@@ -181,6 +180,7 @@ void PQCSettings::saveSettings() {
     settings->setValue("defaultAppDocuments", m_defaultAppDocuments);
     settings->setValue("defaultAppArchives", m_defaultAppArchives);
     settings->setValue("defaultAppVideos", m_defaultAppVideos);
+    settings->setValue("defaultAppComicBooks", m_defaultAppComicBooks);
     settings->setValue("closeAfterDefaultApp", m_closeAfterDefaultApp);
 
 }

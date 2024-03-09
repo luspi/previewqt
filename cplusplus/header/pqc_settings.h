@@ -46,10 +46,6 @@ public:
     bool getTopBarAutoHide();
     void setTopBarAutoHide(bool val);
 
-    Q_PROPERTY(bool hideToSystemTray READ getHideToSystemTray WRITE setHideToSystemTray NOTIFY hideToSystemTrayChanged)
-    bool getHideToSystemTray();
-    void setHideToSystemTray(bool val);
-
     Q_PROPERTY(bool launchHiddenToSystemTray READ getLaunchHiddenToSystemTray WRITE setLaunchHiddenToSystemTray NOTIFY launchHiddenToSystemTrayChanged)
     bool getLaunchHiddenToSystemTray();
     void setLaunchHiddenToSystemTray(bool val);
@@ -86,6 +82,10 @@ public:
     QString getDefaultAppVideos();
     void setDefaultAppVideos(QString val);
 
+    Q_PROPERTY(QString defaultAppComicBooks READ getDefaultAppComicBooks WRITE setDefaultAppComicBooks NOTIFY defaultAppComicBooksChanged)
+    QString getDefaultAppComicBooks();
+    void setDefaultAppComicBooks(QString val);
+
     Q_PROPERTY(bool closeAfterDefaultApp READ getCloseAfterDefaultApp WRITE setCloseAfterDefaultApp NOTIFY closeAfterDefaultAppChanged)
     bool getCloseAfterDefaultApp();
     void setCloseAfterDefaultApp(bool val);
@@ -94,7 +94,6 @@ private:
     PQCSettings();
 
     bool m_topBarAutoHide;
-    bool m_hideToSystemTray;
     bool m_launchHiddenToSystemTray;
     int m_defaultWindowWidth;
     int m_defaultWindowHeight;
@@ -104,6 +103,7 @@ private:
     QString m_defaultAppDocuments;
     QString m_defaultAppArchives;
     QString m_defaultAppVideos;
+    QString m_defaultAppComicBooks;
     bool m_closeAfterDefaultApp;
 
     QSettings *settings;
@@ -116,7 +116,6 @@ private slots:
 
 signals:
     void topBarAutoHideChanged();
-    void hideToSystemTrayChanged();
     void launchHiddenToSystemTrayChanged();
     void defaultWindowWidthChanged();
     void defaultWindowHeightChanged();
@@ -126,6 +125,7 @@ signals:
     void defaultAppDocumentsChanged();
     void defaultAppArchivesChanged();
     void defaultAppVideosChanged();
+    void defaultAppComicBooksChanged();
     void closeAfterDefaultAppChanged();
 
 };

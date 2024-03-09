@@ -35,24 +35,36 @@ ApplicationWindow {
 
     id: toplevel
 
+    // default stylings
     width: 800
     height: 600
     minimumWidth: 200
     minimumHeight: 200
+
+    // it is hidden by default until we set the stylings from the settings below
     visible: false
     title: "PreviewQt"
 
+    // convenience property to check whether window is in fullscreen
     property bool isFullscreen: toplevel.visibility === Window.FullScreen
 
+    // at startup the tray icon might not be ready when a message is supposed to be shown
+    // a message stored here will be shown once the tray icon is ready
+    property var messageWhenReady: ["",""]
+
+    // whether the top row is supposed to be shown or not
+    // we use a property here as the toprow is hidden behind an asynchronous loader
+    property bool toprowMakeVisible: false
+
+    // blakc background with slight transparency
     color: "#dd000000"
 
+    // keypress cuaght
     signal keyPress(var modifiers, var keycode)
 
+    // when hiding to tray, we do some cleanup with a short delay
     onClosing: {
-        if(PQCSettings.hideToSystemTray)
-            clearSetImage.restart()
-        else
-            PQCScripts.deleteTemporaryFiles()
+        clearSetImage.restart()
     }
 
     Timer {
@@ -64,11 +76,11 @@ ApplicationWindow {
         }
     }
 
+    // we keep focus on this item in order to catch key presses
     Item {
 
         id: focusitem
 
-        // this is for catching key presses
         Component.onCompleted:
             forceActiveFocus()
 
@@ -78,12 +90,14 @@ ApplicationWindow {
 
     }
 
+    // at startup we ensure the focus is set to the focusitem
     Timer {
         interval: 200
         running: true
         onTriggered: focusitem.forceActiveFocus()
     }
 
+    // Central message if no file is loaded
     Text {
         anchors.centerIn: parent
         color: "white"
@@ -93,36 +107,72 @@ ApplicationWindow {
         visible: image.imageSource===""
     }
 
+    // The main image item
     PQImage { id: image }
 
-    PQTopRow { id: toprow }
+    // The top row navigation
+    Loader {
+        id: toprow
+        active: true
+        asynchronous: true
+        source: "components/PQTopRow.qml"
+    }
 
-    PQTrayIcon { id: trayicon }
+    // The tray icon
+    Loader {
+        id: trayicon
+        active: true
+        asynchronous: true
+        source: "components/PQTrayIcon.qml"
+    }
 
-    PQSettings { id: settings }
+    // The settings window
+    Loader {
+        id: settings
+        active: false
+        source: "components/PQSettings.qml"
+    }
 
-    PQAbout { id: about }
+    // The about window
+    Loader {
+        id: about
+        active: false
+        source: "components/PQAbout.qml"
+    }
 
+    // some things are done once window is set up
     Component.onCompleted: {
 
+        // set the default window size
         toplevel.width = PQCSettings.defaultWindowWidth
         toplevel.height = PQCSettings.defaultWindowHeight
-        if(PQCSettings.defaultWindowMaximized)
-            showMaximized()
-        else
-            showNormal()
 
-        if(PQCSettings.launchHiddenToSystemTray)
-            PQCSettings.hideToSystemTray = true
+        // if PreviewQt is not supposed to be loaded hidden
+        if(!PQCSettings.launchHiddenToSystemTray) {
+            // show either maximized or normal
+            if(PQCSettings.defaultWindowMaximized)
+                showMaximized()
+            else
+                showNormal()
+        }
 
+        // if an image has been passed on, load that image
         if(Qt.application.arguments.length > 1 && PQCScripts.fileExists(Qt.application.arguments[1]))
+
             image.imageSource = PQCScripts.toPercentEncoding(PQCScripts.cleanPath(Qt.application.arguments[1]))
+
+        // if no image has been passed on and PreviewQt is supposed to be loaded hidden
         else if(PQCSettings.launchHiddenToSystemTray) {
-            toplevel.close()
-            trayicon.showMessage("PreviewQt launched", "PreviewQt has been launched hidden to the system tray.", SystemTrayIcon.Information, 5000)
+            // show launch message
+            var title = "PreviewQt launched"
+            var content = "PreviewQt has been launched hidden to the system tray."
+            messageWhenReady = [title, content]
+            if(trayicon.status == Loader.Ready)
+                trayicon.item.showMessage(title, content, SystemTrayIcon.Information, 5000)
         }
     }
 
+    // dialog for opening an image file
     FileDialog {
         id: fileDialog
         currentFolder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
@@ -130,10 +180,13 @@ ApplicationWindow {
         onAccepted: image.loadImage(selectedFile)
     }
 
+    // When a key combo has been pressed
     onKeyPress: (modifiers, keycode) => {
 
+        // convert to text
         var txt = PQCScripts.keycodeToString(modifiers, keycode)
 
+        // Escape either leaves fullscreen or closes the window
         if(txt === "Esc") {
 
             if(isFullscreen)
@@ -142,42 +195,42 @@ ApplicationWindow {
                 toplevel.close()
 
         } else if(txt === "Ctrl+Q") {
+
             Qt.quit()
+
         } else if(txt === "Ctrl+O") {
+
             fileDialog.open()
+
         } else if(txt === "Ctrl+P") {
-            settings.show()
+
+            settings.active = true
+            settings.item.show()
+
         } else if(txt === "Ctrl+I") {
-            about.show()
+
+            about.active = true
+            about.item.show()
+
         } else if(txt === PQCSettings.defaultAppShortcut) {
+
             PQCScripts.openInDefault(image.imageSource)
             if(PQCSettings.closeAfterDefaultApp)
                 toplevel.close()
+
         }
     }
 
-    Connections {
-
-        target: image
-
-        function onDoubleClick() {
-
-            if(isFullscreen)
-                toplevel.showNormal()
-            else
-                toplevel.showFullScreen()
-
-        }
-
-    }
-
+    // listen to command line arguments
     Connections {
 
         target: PQCScripts
 
         function onCommandLineArgumentReceived(msg) {
 
+            // empty message -> show window
             if(msg === ":/:/:") {
+
                 if(!toplevel.visible) {
                     if(PQCSettings.defaultWindowMaximized)
                         toplevel.showMaximized()
@@ -186,10 +239,13 @@ ApplicationWindow {
                 }
                 toplevel.raise()
                 toplevel.requestActivate()
+
+            // file passed on
             } else {
 
+                // check if file exists
                 if(!PQCScripts.doesFileExist(PQCScripts.cleanPath(msg))) {
-                    trayicon.showMessage("File does not exist.", "The requested file does not exist...")
+                    trayicon.item.showMessage("File does not exist.", "The requested file does not exist...")
                     return
                 }
 

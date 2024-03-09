@@ -6,22 +6,27 @@ import PQCScripts
 import "../elements"
 
 Rectangle {
+
     id: toprow
+
+    // location of top bar
     x: -1
-    y: makeVisible||!PQCSettings.topBarAutoHide ? -1 : -height-2
+    y: toplevel.toprowMakeVisible||!PQCSettings.topBarAutoHide ? -1 : -height-2
     Behavior on y { NumberAnimation { duration: 200 } }
 
-    width: parent.width+2
+    // some stylings
+    width: toplevel.width+2
     height: 40
     color: "#aa000000"
     border.width: 1
     border.color: "white"
 
-    property bool makeVisible: false
-
+    // left part of the bar
     Row {
+
         y: (parent.height-height)/2
 
+        // open a file
         PQIconButton {
             id: openbut
             y: (parent.height-height)/2
@@ -33,16 +38,19 @@ Rectangle {
             }
         }
 
+        // open settings
         PQIconButton {
             id: settingsbut
             y: (parent.height-height)/2
             height: toprow.height-1
             source: "/settings.svg"
             onClicked: {
-                settings.show()
+                settings.active = true
+                settings.item.show()
             }
         }
 
+        // open in external/default app
         PQIconButton {
             id: openwithdefaultbut
             y: (parent.height-height)/2
@@ -61,6 +69,7 @@ Rectangle {
 
         x: (parent.width-width)
 
+        // close window
         PQIconButton {
             id: exitbut
             y: (parent.height-height)/2
@@ -72,13 +81,15 @@ Rectangle {
             }
         }
 
+        // open about window
         PQIconButton {
             id: aboutbut
             y: (parent.height-height)/2
             height: toprow.height-1
             source: "/about.svg"
             onClicked: {
-                about.show()
+                about.active = true
+                about.item.show()
             }
         }
 

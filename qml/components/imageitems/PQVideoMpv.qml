@@ -223,7 +223,7 @@ Item {
 
     Connections {
 
-        target: image_top
+        target: toplevel
 
         function onKeyPress(modifiers, keycode) {
 

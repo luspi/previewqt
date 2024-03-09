@@ -45,8 +45,6 @@ AnimatedImage {
     onStatusChanged: {
         if(status == Image.Error)
             source = "image://svg/:/other/errorimage.svg"
-        else if(status == Image.Ready) {
-        }
     }
 
     Rectangle {
@@ -111,7 +109,7 @@ AnimatedImage {
 
     Connections {
 
-        target: image_top
+        target: toplevel
 
         function onKeyPress(modifiers, keycode) {
 

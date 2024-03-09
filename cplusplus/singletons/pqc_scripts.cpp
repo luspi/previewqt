@@ -1076,6 +1076,11 @@ bool PQCScripts::openInDefault(QString path) {
 
         exe = PQCSettings::get().getDefaultAppDocuments();
 
+    } else if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suffix) &&
+               (suffix == "cbr" || suffix == "cbt" || suffix == "cbz" || suffix == "cb7")) {
+
+        exe = PQCSettings::get().getDefaultAppComicBooks();
+
     } else if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppArchives();

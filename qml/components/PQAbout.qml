@@ -9,10 +9,12 @@ import PQCScripts
 Window {
 
     id: about_top
-    title: "Settings"
 
+    // some stylings
+    title: "About"
     visible: false
 
+    // in this window, this item catches all key presses
     Item {
         id: catchKeyPress
         Keys.onPressed: (event) => {
@@ -28,7 +30,6 @@ Window {
         anchors.fill: parent
         anchors.margins: 5
         anchors.bottomMargin: 40
-
         clip: true
 
         contentHeight: contcol.height
@@ -157,6 +158,7 @@ Window {
         }
     }
 
+    // when closing we re-focus on main key catcher
     onClosing: {
         focusitem.forceActiveFocus()
     }

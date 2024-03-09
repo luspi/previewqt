@@ -6,30 +6,22 @@ Item {
 
     id: image_top
 
+    // some stylings
     x: 5
-    y: (PQCSettings.topBarAutoHide ? 0 : toprow.height)+5
+    y: (PQCSettings.topBarAutoHide ? 0 : 40)+5
     width: toplevel.width-2*5
-    height: toplevel.height-(PQCSettings.topBarAutoHide ? 0 : toprow.height)-2*5
-    // height: toplevel.height-2*5
+    height: toplevel.height-(PQCSettings.topBarAutoHide ? 0 : 40)-2*5
 
     clip: true
 
+    // the source of the current image
     property string imageSource: ""
-
-    property bool isDocument: PQCScripts.isPDFDocument(imageSource)
-    property bool isArchive: !isDocument && PQCScripts.isArchive(imageSource)
-    property bool isMpv: !isDocument && !isArchive && PQCScripts.isMpvVideo(imageSource)
-    property bool isQtVideo: !isDocument && !isArchive && !isMpv && PQCScripts.isQtVideo(imageSource)
-    property bool isAnimated: !isDocument && !isArchive && !isMpv && !isQtVideo && PQCScripts.isItAnimated(imageSource)
-    property bool isPhotoSphere: !isDocument && !isArchive && !isMpv && !isQtVideo && !isAnimated && PQCScripts.isPhotoSphere(imageSource)
 
     // these are used for a delay in reloading the image
     property int windowWidth: 200
     property int windowHeight: 200
 
-    signal keyPress(var modifiers, var keycode)
-    signal doubleClick()
-
+    // react to window size changes with a delau
     Timer {
         id: updateWindowSize
         interval: 500
@@ -49,6 +41,12 @@ Item {
         }
     }
 
+    Component.onCompleted: {
+        windowWidth = image_top.width
+        windowHeight = image_top.height
+    }
+
+    // react to clicks, double clicks, and movements
     MouseArea {
         id: imagemouse
         anchors.fill: parent
@@ -61,48 +59,22 @@ Item {
         }
         onPositionChanged: (mouse) => {
             if(mouse.y < 30)
-                toprow.makeVisible = true
+                toplevel.toprowMakeVisible = true
             else
-                toprow.makeVisible = false
+                toplevel.toprowMakeVisible = false
         }
 
         onDoubleClicked: {
-            image_top.doubleClick()
+            if(toplevel.isFullscreen)
+                toplevel.showNormal()
+            else
+                toplevel.showFullScreen()
         }
     }
 
     // the actual image
     Loader {
-
-        property string nameOfImage:
-            isMpv ?
-                "PQVideoMpv.qml" :
-                (isQtVideo ?
-                     "PQVideoQt.qml" :
-                     (isAnimated ?
-                          "PQImageAnimated.qml" :
-                          (isDocument ?
-                               "PQDocument.qml" :
-                               (isArchive ?
-                                    "PQArchive.qml" :
-                                    (isPhotoSphere ?
-                                         "PQPhotoSphere.qml" :
-                                         "PQImageNormal.qml")))))
-
-        source: "imageitems/" + nameOfImage
-
-    }
-
-    Component.onCompleted: {
-        windowWidth = image_top.width
-        windowHeight = image_top.height
-    }
-
-    Connections {
-        target: toplevel
-        function onKeyPress(modifiers, keycode) {
-            image_top.keyPress(modifiers, keycode)
-        }
+        id: imageloader
     }
 
     // show the image
@@ -110,10 +82,26 @@ Item {
         opacity = 1
     }
 
+    // load a new image
     function loadImage(path) {
 
-        isPhotoSphere = PQCScripts.isPhotoSphere(path)
         imageSource = PQCScripts.cleanPath(path)
+
+        if(PQCScripts.isPDFDocument(imageSource))
+            imageloader.source = "imageitems/PQDocument.qml"
+        else if(PQCScripts.isArchive(imageSource))
+            imageloader.source = "imageitems/PQArchive.qml"
+        else if(PQCScripts.isMpvVideo(imageSource))
+            imageloader.source = "imageitems/PQVideoMpv.qml"
+        else if(PQCScripts.isQtVideo(imageSource))
+            imageloader.source = "imageitems/PQVideoQt.qml"
+        else if(PQCScripts.isItAnimated(imageSource))
+            imageloader.source = "imageitems/PQImageAnimated.qml"
+        else if(PQCScripts.isPhotoSphere(imageSource))
+            imageloader.source = "imageitems/PQImageNormal.qml"
+        else
+            imageloader.source = "imageitems/PQPhotoSphere.qml"
+
     }
 
 }
