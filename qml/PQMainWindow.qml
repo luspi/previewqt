@@ -71,7 +71,7 @@ ApplicationWindow {
         id: clearSetImage
         interval: 200
         onTriggered: {
-            image.imageSource = ""
+            image.loadImage("")
             PQCScripts.deleteTemporaryFiles()
         }
     }
@@ -159,7 +159,7 @@ ApplicationWindow {
         // if an image has been passed on, load that image
         if(Qt.application.arguments.length > 1 && PQCScripts.fileExists(Qt.application.arguments[1]))
 
-            image.imageSource = PQCScripts.toPercentEncoding(PQCScripts.cleanPath(Qt.application.arguments[1]))
+            image.loadImage(PQCScripts.toPercentEncoding(PQCScripts.cleanPath(Qt.application.arguments[1])))
 
         // if no image has been passed on and PreviewQt is supposed to be loaded hidden
         else if(PQCSettings.launchHiddenToSystemTray) {
@@ -249,7 +249,7 @@ ApplicationWindow {
                     return
                 }
 
-                image.imageSource = PQCScripts.toPercentEncoding(PQCScripts.cleanPath(msg))
+                image.loadImage(PQCScripts.toPercentEncoding(PQCScripts.cleanPath(msg)))
 
                 if(!toplevel.visible) {
                     if(PQCSettings.defaultWindowMaximized)

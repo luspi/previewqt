@@ -85,6 +85,12 @@ Item {
     // load a new image
     function loadImage(path) {
 
+        if(path === "") {
+            imageSource = ""
+            imageloader.source = ""
+            return
+        }
+
         imageSource = PQCScripts.cleanPath(path)
 
         if(PQCScripts.isPDFDocument(imageSource))
@@ -98,9 +104,9 @@ Item {
         else if(PQCScripts.isItAnimated(imageSource))
             imageloader.source = "imageitems/PQImageAnimated.qml"
         else if(PQCScripts.isPhotoSphere(imageSource))
-            imageloader.source = "imageitems/PQImageNormal.qml"
-        else
             imageloader.source = "imageitems/PQPhotoSphere.qml"
+        else
+            imageloader.source = "imageitems/PQImageNormal.qml"
 
     }
 
