@@ -60,6 +60,7 @@ Window {
     function show() {
         catchKeyPress.forceActiveFocus()
         visible = true
+        tabbar.currentIndex = 0
     }
 
     // the top bars
@@ -71,7 +72,7 @@ Window {
             width: settings_top.width/2
         }
         TabButton {
-            text: "Default applications"
+            text: "External applications"
             width: settings_top.width/2
         }
     }
@@ -155,6 +156,7 @@ Window {
 
                 Row {
 
+                    x: (parent.width-width)/2
                     spacing: 5
 
                     SpinBox {
@@ -232,14 +234,14 @@ Window {
                 }
 
                 Text {
-                    x: (settings_top.width-width)/2
+                    x: (defaultappsettings.usableWidth-width)/2
                     font.pointSize: 18
                     font.bold: true
                     text: "Settings"
                 }
 
                 Text {
-                    x: (settings_top.width-width)/2
+                    x: (defaultappsettings.usableWidth-width)/2
                     text: "Note: Settings will be saved automatically."
                 }
 
@@ -247,11 +249,12 @@ Window {
 
                 Text {
                     y: (shortcutbut.height-height)/2
-                    text: "Shortcut to launch in default application:"
+                    text: "Shortcut to launch in external application:"
                 }
 
                 Button {
                     id: shortcutbut
+                    x: (defaultappsettings.usableWidth-width)/2
                     width: 200
                     checkable: true
                     text: PQCSettings.defaultAppShortcut
@@ -261,7 +264,7 @@ Window {
 
                 Text {
                     id: reservederror
-                    width: settings_top.width
+                    width: defaultappsettings.usableWidth
                     visible: false
                     font.pointSize: 8
                     font.bold: true
@@ -279,7 +282,7 @@ Window {
                 /************************************/
 
                 CheckBox {
-                    text: "Close after opening external application"
+                    text: "Hide window afterwards"
                     checked: PQCSettings.closeAfterDefaultApp
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
@@ -291,7 +294,7 @@ Window {
                 Column {
 
                     Text {
-                        text: "Default application for images:"
+                        text: "External application for images:"
                     }
 
                     Row {
@@ -321,7 +324,7 @@ Window {
                 Column {
 
                     Text {
-                        text: "Default application for documents:"
+                        text: "External application for documents:"
                     }
 
                     Row {
@@ -351,7 +354,7 @@ Window {
                 Column {
 
                     Text {
-                        text: "Default application for videos:"
+                        text: "External application for videos:"
                     }
 
                     Row {
@@ -381,7 +384,7 @@ Window {
                 Column {
 
                     Text {
-                        text: "Default application for archives:"
+                        text: "External application for archives:"
                     }
 
                     Row {
@@ -411,7 +414,7 @@ Window {
                 Column {
 
                     Text {
-                        text: "Default application for comic books:"
+                        text: "External application for comic books:"
                     }
 
                     Row {
@@ -506,6 +509,12 @@ Window {
                 console.warn("Unknown category:", category)
 
         }
+    }
+
+    /************************************/
+
+    function selectTab(idx) {
+        tabbar.currentIndex = idx
     }
 
 }

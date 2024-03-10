@@ -43,7 +43,7 @@ ApplicationWindow {
 
     // it is hidden by default until we set the stylings from the settings below
     visible: false
-    title: "PreviewQt"
+    title: (image.imageSource == "" ? "" : (PQCScripts.getFilename(image.imageSource) + " | ")) + "PreviewQt"
 
     // convenience property to check whether window is in fullscreen
     property bool isFullscreen: toplevel.visibility === Window.FullScreen
@@ -62,19 +62,13 @@ ApplicationWindow {
     // keypress cuaght
     signal keyPress(var modifiers, var keycode)
 
-    // when hiding to tray, we do some cleanup with a short delay
+    // when hiding to tray, we do some cleanup
     onClosing: {
-        clearSetImage.restart()
+        image.loadImage("")
+        extNotSet.hide()
+        PQCScripts.deleteTemporaryFiles()
     }
 
-    Timer {
-        id: clearSetImage
-        interval: 200
-        onTriggered: {
-            image.loadImage("")
-            PQCScripts.deleteTemporaryFiles()
-        }
-    }
 
     // we keep focus on this item in order to catch key presses
     Item {
@@ -186,6 +180,18 @@ ApplicationWindow {
         // convert to text
         var txt = PQCScripts.keycodeToString(modifiers, keycode)
 
+        if(extNotSet.visible) {
+            if(txt === "Esc")
+                extNotSet.hide()
+            else if(txt === "Enter" || txt === "Return") {
+                extNotSet.hide()
+                settings.active = true
+                settings.item.show()
+                settings.item.selectTab(1)
+            }
+            return
+        }
+
         // Escape either leaves fullscreen or closes the window
         if(txt === "Esc") {
 
@@ -214,9 +220,13 @@ ApplicationWindow {
 
         } else if(txt === PQCSettings.defaultAppShortcut) {
 
-            PQCScripts.openInDefault(image.imageSource)
-            if(PQCSettings.closeAfterDefaultApp)
-                toplevel.close()
+            if(image.imageSource === "") return
+
+            if(PQCScripts.openInDefault(image.imageSource)) {
+                if(PQCSettings.closeAfterDefaultApp)
+                    toplevel.close()
+            } else
+                extNotSet.open()
 
         }
     }
@@ -262,6 +272,84 @@ ApplicationWindow {
 
             }
 
+        }
+
+    }
+
+    Rectangle {
+
+        id: extNotSet
+        anchors.fill: parent
+        color: "#ee222222"
+
+        opacity: 0
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+        visible: opacity>0
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: {}
+        }
+
+        Column {
+
+            x: (parent.width-width)/2
+            y: (parent.height-height)/2
+            spacing: 10
+
+            Text {
+                x: (parent.width-width)/2
+                width: Math.min(extNotSet.width, 500)
+                horizontalAlignment: Text.AlignHCenter
+                color: "white"
+                font.pointSize: 14
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                text: "Some of the external applications cannot be started or are not set up correctly."
+            }
+            Text {
+                x: (parent.width-width)/2
+                width: Math.min(extNotSet.width, 500)
+                horizontalAlignment: Text.AlignHCenter
+                color: "white"
+                font.pointSize: 14
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                text: "Please correct this in the settings."
+            }
+
+            Item {
+                width: 1
+                height: 1
+            }
+
+            Row {
+                x: (parent.width-width)/2
+                spacing: 5
+                Button {
+                    text: "Ok"
+                    onClicked:  {
+                        extNotSet.hide()
+                    }
+                }
+                Button {
+                    text: "Go to settings"
+                    onClicked: {
+                        extNotSet.hide()
+                        settings.active = true
+                        settings.item.show()
+                        settings.item.selectTab(1)
+                    }
+                }
+            }
+
+        }
+
+        function open() {
+            opacity = 1
+        }
+        function hide() {
+            opacity = 0
+            focusitem.forceActiveFocus()
         }
 
     }

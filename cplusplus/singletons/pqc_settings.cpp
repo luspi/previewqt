@@ -2,8 +2,14 @@
 #include <pqc_configfiles.h>
 #include <QSettings>
 #include <QTimer>
+#include <QFileInfo>
+#include <QProcess>
 
 PQCSettings::PQCSettings() {
+
+    bool detectDefaults = false;
+    if(!QFileInfo::exists(PQCConfigFiles::CONFIG_DIR() + "/settings"))
+        detectDefaults = true;
 
     settings = new QSettings(PQCConfigFiles::CONFIG_DIR() + "/settings", QSettings::IniFormat);
     saveTimer = new QTimer;
@@ -13,10 +19,64 @@ PQCSettings::PQCSettings() {
 
     loadSettings();
 
+    if(detectDefaults) {
+
+        const QStringList img = {"photoqt", "gwenview", "nomacs", "eog", "feh", "gthumb", "mirage", "geeqie"};
+        const QStringList doc = {"okular", "evince", "atril", "photoqt"};
+        const QStringList arc = {"ark", "photoqt"};
+        const QStringList com = {"okular", "photoqt"};
+        const QStringList vid = {"vlc", "mplayer", "photoqt"};
+
+        for(auto &ele : img) {
+            if(checkToolExistence(ele)) {
+                setDefaultAppImages(ele);
+                break;
+            }
+        }
+        for(auto &ele : doc) {
+            if(checkToolExistence(ele)) {
+                setDefaultAppDocuments(ele);
+                break;
+            }
+        }
+        for(auto &ele : arc) {
+            if(checkToolExistence(ele)) {
+                setDefaultAppArchives(ele);
+                break;
+            }
+        }
+        for(auto &ele : com) {
+            if(checkToolExistence(ele)) {
+                setDefaultAppComicBooks(ele);
+                break;
+            }
+        }
+        for(auto &ele : vid) {
+            if(checkToolExistence(ele)) {
+                setDefaultAppVideos(ele);
+                break;
+            }
+        }
+
+    }
+
 }
 
 PQCSettings::~PQCSettings() {
     delete settings;
+}
+
+bool PQCSettings::checkToolExistence(QString tool) {
+
+    qDebug() << "args: tool =" << tool;
+
+    QProcess which;
+    which.setStandardOutputFile(QProcess::nullDevice());
+    which.start("which", QStringList() << tool);
+    which.waitForFinished();
+
+    // success
+    return !which.exitCode();
 }
 
 bool PQCSettings::getTopBarAutoHide() {
@@ -158,12 +218,12 @@ void PQCSettings::loadSettings() {
     setDefaultWindowWidth(settings->value("defaultWindowWidth", 800).toInt());
     setDefaultWindowHeight(settings->value("defaultWindowHeight", 600).toInt());
     setDefaultWindowMaximized(settings->value("defaultWindowMaximized", false).toBool());
-    setDefaultAppShortcut(settings->value("defaultAppShortcut", "D").toString());
-    setDefaultAppImages(settings->value("defaultAppImages", "photoqt").toString());
-    setDefaultAppDocuments(settings->value("defaultAppDocuments", "okular").toString());
-    setDefaultAppArchives(settings->value("defaultAppArchives", "ark").toString());
-    setDefaultAppVideos(settings->value("defaultAppVideos", "vlc").toString());
-    setDefaultAppComicBooks(settings->value("defaultAppComicBooks", "okular").toString());
+    setDefaultAppShortcut(settings->value("defaultAppShortcut", "E").toString());
+    setDefaultAppImages(settings->value("defaultAppImages", "").toString());
+    setDefaultAppDocuments(settings->value("defaultAppDocuments", "").toString());
+    setDefaultAppArchives(settings->value("defaultAppArchives", "").toString());
+    setDefaultAppVideos(settings->value("defaultAppVideos", "").toString());
+    setDefaultAppComicBooks(settings->value("defaultAppComicBooks", "").toString());
     setCloseAfterDefaultApp(settings->value("closeAfterDefaultApp", true).toBool());
 
 }

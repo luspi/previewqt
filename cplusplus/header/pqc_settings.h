@@ -111,6 +111,8 @@ private:
 
     void loadSettings();
 
+    bool checkToolExistence(QString tool);
+
 private slots:
     void saveSettings();
 

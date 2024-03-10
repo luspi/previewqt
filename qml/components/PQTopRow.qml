@@ -12,7 +12,7 @@ Rectangle {
     // location of top bar
     x: -1
     y: toplevel.toprowMakeVisible||!PQCSettings.topBarAutoHide ? -1 : -height-2
-    Behavior on y { NumberAnimation { duration: 200 } }
+    Behavior on y { NumberAnimation { duration: 200; easing.type: Easing.InQuint } }
 
     // some stylings
     width: toplevel.width+2
@@ -44,6 +44,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-1
             source: "/settings.svg"
+            tooltip: "Open settings"
             onClicked: {
                 settings.active = true
                 settings.item.show()
@@ -55,11 +56,15 @@ Rectangle {
             id: openwithdefaultbut
             y: (parent.height-height)/2
             height: toprow.height-1
+            tooltip: "Open in external application"
             source: "/external.svg"
             onClicked: {
-                PQCScripts.openInDefault(image.imageSource)
-                if(PQCSettings.closeAfterDefaultApp)
-                    toplevel.close()
+                if(image.imageSource === "") return
+                if(PQCScripts.openInDefault(image.imageSource)) {
+                    if(PQCSettings.closeAfterDefaultApp)
+                        toplevel.close()
+                } else
+                    extNotSet.open()
             }
         }
 
@@ -76,8 +81,9 @@ Rectangle {
             borderLeft: true
             height: toprow.height-1
             source: "/exit.svg"
+            tooltip: "Quit PreviewQt"
             onClicked: {
-                toplevel.close()
+                Qt.quit()
             }
         }
 
@@ -87,6 +93,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-1
             source: "/about.svg"
+            tooltip: "About PreviewQt"
             onClicked: {
                 about.active = true
                 about.item.show()
