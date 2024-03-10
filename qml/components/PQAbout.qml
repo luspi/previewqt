@@ -103,6 +103,12 @@ Window {
                     Text {
                         width: parent.width
                         text: "GPL v2+"
+                        MouseArea {
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Qt.openUrlExternally("https://opensource.org/license/gpl-2-0")
+                        }
                     }
                     Text {
                         width: parent.width
