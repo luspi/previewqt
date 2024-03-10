@@ -1,0 +1,52 @@
+-------------------------------------
+              PreviewQt
+-------------------------------------
+
+ PreviewQt is a very simple applications that allows to do a very quick preview of all kinds of files, from images to videos, from documents to comic books. It is based on Qt/QML, published as open-source, and completely free.
+
+ 
+ FEATURES
+----------
+
+ PreviewQt is a very simple application for previewing a wide range of files. Its main aim is on speed, striving to provide a preview as instanteneously as possible. It tries to achieve this by being very lightweight and by the ability to sit idly in the background ready to show whatever is thrown at it.
+
+ Supported file formats include:
+
+- More than 140 IMAGE FORMATS - A list of all possibly supported image formats can be found on the website for PhotoQt: https://photoqt.org/formats
+- All of the common VIDEO FORMATS
+- PHOTO SPHERES and 360 DEGREE PANORAMAS (that use equirectangular prohections)
+- MOTION PHOTOS, MICRO VIDEOS, and APPLE LIVE PHOTOS
+- PDF DOCUMENTS including page navigation
+- ARCHIVES (zip, tar.gz, rar, 7-zip) with the ability to explore its content
+- COMIC BOOKS (cbz, cbt, cbr, cb7) including page navigation
+
+It is also possible to set up an external application for the categories of files. With a shortcut or button it is possible to pass a previewed file on to the provided external application for further processing.
+
+If you like the overall concept of PreviewQt but would like to have more features, check out the fully featured image viewer PhotoQt: https://photoqt.org
+
+
+ DOWNLOAD AND INSTALL
+----------------------
+
+ PreviewQt can be installed in various ways. You can find a selection of them (Windows installer, Flatpak, etc.) listed on the website: https://photoqt.org/previewqt
+
+ Instructions of how to build PreviewQt from source can be found in the INSTALL file in the root of the source directory.
+
+
+ CONTRIBUTING TO PREVIEWQT
+---------------------------
+
+ There are TWO EASY WAYS you can contribute directly to PreviewQt:
+
+1) Join the translation team over on Crowdin: https://translate.photoqt.org/ If your language is missing you can simply request it directly on Crowdin or send me an email and I can add it to the project.
+2) Give feedback about PreviewQt. To do so, simply open an issue on GitLab: https://gitlab.com/luspi/previewqt/-/issues/new.
+
+ If you want to support PreviewQt financially, please consider donating to the humanitarian relief in Ukraine instead, for example to the Ukrainian Red Cross: https://go.luspi.de/ukraine
+
+
+ LICENSE
+---------
+
+ PreviewQt is released under the GPLv2 (or later) license.
+
+
