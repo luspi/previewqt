@@ -1,6 +1,6 @@
 # PreviewQt
 
-PreviewQt is a very simple applications that allows you to **preview all kinds of files**, from **images** to **videos**, from **documents** to **comic books**. It is based on Qt/QML, published as open-source, and completely free.
+PreviewQt is a simple applications that allows you to **preview all kinds of files**, from **images** to **videos**, from **documents** to **comic books**. It is based on Qt/QML, published as open-source, and completely free.
 
 Visit its official website at https://photoqt.org/previewqt
 
