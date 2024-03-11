@@ -86,12 +86,14 @@ Item {
     function loadImage(path) {
 
         if(path === "") {
-            imageSource = ""
             imageloader.source = ""
+            imageSource = ""
             return
         }
 
         imageSource = PQCScripts.cleanPath(path)
+
+        PQCSettings.filedialogLocation = PQCScripts.getDir(imageSource)
 
         if(PQCScripts.isPDFDocument(imageSource))
             imageloader.source = "imageitems/PQDocument.qml"

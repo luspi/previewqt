@@ -9,6 +9,7 @@ Image {
     source: ""
 
     Component.onCompleted: {
+        if(image_top.imageSource === "") return
         if(image_top.imageSource.includes("::ARC::") || fileCount == 0)
             source = "image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)
         else
@@ -152,18 +153,26 @@ Image {
             id: controlrow
 
             x: 10
-            y: (parent.height-height)/2
-            spacing: 10
+            height: parent.height
 
             Row {
-                y: (parent.height-height)/2
 
-                Image {
-                    y: (parent.height-height)/2
-                    width: height
-                    height: controlitem.height/2.5
-                    sourceSize: Qt.size(width, height)
-                    source: "/first.svg"
+                height: parent.height
+
+                Rectangle {
+                    color: mousefirst.containsPress ? "#88000000" : (mousefirst.containsMouse ? "#88444444" : "transparent")
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    width: parent.height/2.5 + 4
+                    height: parent.height
+                    radius: 4
+                    Image {
+                        x: 2
+                        y: (parent.height-height)/2
+                        width: height
+                        height: controlitem.height/2.5
+                        sourceSize: Qt.size(width, height)
+                        source: "/first.svg"
+                    }
                     MouseArea {
                         id: mousefirst
                         anchors.fill: parent
@@ -173,12 +182,19 @@ Image {
                     }
                 }
 
-                Image {
-                    y: (parent.height-height)/2
-                    width: height
-                    height: controlitem.height/1.5
-                    sourceSize: Qt.size(width, height)
-                    source: "/backwards.svg"
+                Rectangle {
+                    color: mouseprev.containsPress ? "#88000000" : (mouseprev.containsMouse ? "#88444444" : "transparent")
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    width: parent.height/1.5
+                    height: parent.height
+                    radius: 4
+                    Image {
+                        y: (parent.height-height)/2
+                        width: height
+                        height: controlitem.height/1.5
+                        sourceSize: Qt.size(width, height)
+                        source: "/backwards.svg"
+                    }
                     MouseArea {
                         id: mouseprev
                         anchors.fill: parent
@@ -188,12 +204,19 @@ Image {
                     }
                 }
 
-                Image {
-                    y: (parent.height-height)/2
-                    width: height
-                    height: controlitem.height/1.5
-                    sourceSize: Qt.size(width, height)
-                    source: "/forwards.svg"
+                Rectangle {
+                    color: mousenext.containsPress ? "#88000000" : (mousenext.containsMouse ? "#88444444" : "transparent")
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    width: parent.height/1.5
+                    height: parent.height
+                    radius: 4
+                    Image {
+                        y: (parent.height-height)/2
+                        width: height
+                        height: controlitem.height/1.5
+                        sourceSize: Qt.size(width, height)
+                        source: "/forwards.svg"
+                    }
                     MouseArea {
                         id: mousenext
                         anchors.fill: parent
@@ -203,12 +226,20 @@ Image {
                     }
                 }
 
-                Image {
-                    y: (parent.height-height)/2
-                    width: height
-                    height: controlitem.height/2.5
-                    sourceSize: Qt.size(width, height)
-                    source: "/last.svg"
+                Rectangle {
+                    color: mouselast.containsPress ? "#88000000" : (mouselast.containsMouse ? "#88444444" : "transparent")
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    width: parent.height/2.5 + 4
+                    height: parent.height
+                    radius: 4
+                    Image {
+                        x: 2
+                        y: (parent.height-height)/2
+                        width: height
+                        height: controlitem.height/2.5
+                        sourceSize: Qt.size(width, height)
+                        source: "/last.svg"
+                    }
                     MouseArea {
                         id: mouselast
                         anchors.fill: parent
@@ -220,11 +251,21 @@ Image {
 
             }
 
+            Item {
+                width: 10
+                height: 1
+            }
+
             Rectangle {
                 y: (parent.height-height)/2
                 height: controlitem.height*0.75
                 width: 1
                 color: "white"
+            }
+
+            Item {
+                width: 10
+                height: 1
             }
 
             Item {

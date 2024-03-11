@@ -90,6 +90,10 @@ public:
     bool getCloseAfterDefaultApp();
     void setCloseAfterDefaultApp(bool val);
 
+    Q_PROPERTY(QString filedialogLocation READ getFiledialogLocation WRITE setFiledialogLocation NOTIFY filedialogLocationChanged)
+    QString getFiledialogLocation();
+    void setFiledialogLocation(QString val);
+
 private:
     PQCSettings();
 
@@ -105,6 +109,7 @@ private:
     QString m_defaultAppVideos;
     QString m_defaultAppComicBooks;
     bool m_closeAfterDefaultApp;
+    QString m_filedialogLocation;
 
     QSettings *settings;
     QTimer *saveTimer;
@@ -129,6 +134,7 @@ signals:
     void defaultAppVideosChanged();
     void defaultAppComicBooksChanged();
     void closeAfterDefaultAppChanged();
+    void filedialogLocationChanged();
 
 };
 

@@ -21,37 +21,48 @@ Window {
         "PhotoQt" : "photoqt",
         "GwenView" : "gwenview",
         "Showfoto" : "showfoto",
-        "GThumb" : "gthumb",
+        "Eye of Mate" : "eom",
         "Eye of Gnome" : "eog",
-        "Gimp" : "gimp",
+        "GThumb" : "gthumb",
+        "Geeqie" : "geeqie",
+        "Nomacs" : "nomacs",
+        "LXImage-Qt" : "lximage-qt",
+        "Ristretto" : "ristretto",
         "(custom)" : ""
     }
 
     property var docoptions: {
+        "PhotoQt" : "photoqt",
         "Okular" : "okular",
         "Evince" : "evince",
-        "PhotoQt" : "photoqt",
+        "Atril" : "atril",
         "(custom)" : ""
     }
 
     property var arcoptions: {
+        "PhotoQt" : "photoqt",
         "Ark" : "ark",
         "File Roller" : "file-roller",
-        "PhotoQt" : "photoqt",
+        "Engrampa" : "engrampa",
         "(custom)" : ""
     }
 
     property var comoptions: {
-        "Okular" : "okular",
-        "Calibre" : "calibre",
         "PhotoQt" : "photoqt",
+        "Okular" : "okular",
+        "Evince" : "evince",
+        "Calibre" : "calibre",
+        "MComix" : "mcomix",
         "(custom)" : ""
     }
 
     property var vidoptions: {
-        "VLC" : "vlc",
-        "MPlayer" : "mplayer",
         "PhotoQt" : "photoqt",
+        "VLC" : "vlc",
+        "SMPlayer" : "smplayer",
+        "Dragon Player" : "dragon",
+        "Totem" : "totem",
+        "Parole" : "parole",
         "(custom)" : ""
     }
 
@@ -369,6 +380,7 @@ Window {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: Object.keys(imgoptions)
+                        visible: !PQCScripts.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -382,7 +394,7 @@ Window {
 
                     Row {
                         spacing: 5
-                        visible: imgcombo.currentIndex === imgcombo.model.length-1
+                        visible: imgcombo.currentIndex === imgcombo.model.length-1 || PQCScripts.amIOnWindows()
                         TextField {
                             id: imgedit
                             y: (imgbut.height-height)/2
@@ -416,6 +428,7 @@ Window {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: Object.keys(docoptions)
+                        visible: !PQCScripts.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -429,7 +442,7 @@ Window {
 
                     Row {
                         spacing: 5
-                        visible: doccombo.currentIndex === doccombo.model.length-1
+                        visible: doccombo.currentIndex === doccombo.model.length-1 || PQCScripts.amIOnWindows()
                         TextField {
                             id: docedit
                             y: (docbut.height-height)/2
@@ -463,6 +476,7 @@ Window {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: Object.keys(vidoptions)
+                        visible: !PQCScripts.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -476,7 +490,7 @@ Window {
 
                     Row {
                         spacing: 5
-                        visible: vidcombo.currentIndex === vidcombo.model.length-1
+                        visible: vidcombo.currentIndex === vidcombo.model.length-1 || PQCScripts.amIOnWindows()
                         TextField {
                             id: videdit
                             y: (vidbut.height-height)/2
@@ -510,6 +524,7 @@ Window {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: Object.keys(arcoptions)
+                        visible: !PQCScripts.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -523,7 +538,7 @@ Window {
 
                     Row {
                         spacing: 5
-                        visible: arccombo.currentIndex === arccombo.model.length-1
+                        visible: arccombo.currentIndex === arccombo.model.length-1 || PQCScripts.amIOnWindows()
                         TextField {
                             id: arcedit
                             y: (arcbut.height-height)/2
@@ -557,6 +572,7 @@ Window {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: Object.keys(comoptions)
+                        visible: !PQCScripts.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -570,7 +586,7 @@ Window {
 
                     Row {
                         spacing: 5
-                        visible: comcombo.currentIndex === comcombo.model.length-1
+                        visible: comcombo.currentIndex === comcombo.model.length-1 || PQCScripts.amIOnWindows()
                         TextField {
                             id: comedit
                             y: (combut.height-height)/2

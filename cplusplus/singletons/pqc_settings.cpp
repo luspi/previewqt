@@ -215,6 +215,17 @@ void PQCSettings::setCloseAfterDefaultApp(bool val) {
     }
 }
 
+QString PQCSettings::getFiledialogLocation() {
+    return m_filedialogLocation;
+}
+void PQCSettings::setFiledialogLocation(QString val) {
+    if(m_filedialogLocation != val) {
+        m_filedialogLocation = val;
+        saveTimer->start();
+        emit filedialogLocationChanged();
+    }
+}
+
 void PQCSettings::loadSettings() {
 
     setTopBarAutoHide(settings->value("topBarAutoHide", false).toBool());
@@ -229,6 +240,7 @@ void PQCSettings::loadSettings() {
     setDefaultAppVideos(settings->value("defaultAppVideos", "").toString());
     setDefaultAppComicBooks(settings->value("defaultAppComicBooks", "").toString());
     setCloseAfterDefaultApp(settings->value("closeAfterDefaultApp", true).toBool());
+    setFiledialogLocation(settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString());
 
 }
 
@@ -246,5 +258,6 @@ void PQCSettings::saveSettings() {
     settings->setValue("defaultAppVideos", m_defaultAppVideos);
     settings->setValue("defaultAppComicBooks", m_defaultAppComicBooks);
     settings->setValue("closeAfterDefaultApp", m_closeAfterDefaultApp);
+    settings->setValue("filedialogLocation", m_filedialogLocation);
 
 }

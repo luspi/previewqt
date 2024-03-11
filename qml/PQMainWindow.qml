@@ -160,7 +160,7 @@ ApplicationWindow {
         // if an image has been passed on, load that image
         if(Qt.application.arguments.length > 1 && PQCScripts.fileExists(Qt.application.arguments[1]))
 
-            image.loadImage(PQCScripts.toPercentEncoding(PQCScripts.cleanPath(Qt.application.arguments[1])))
+            image.loadImage(PQCScripts.cleanPath(Qt.application.arguments[1]))
 
         // if no image has been passed on and PreviewQt is supposed to be loaded hidden
         else if(PQCSettings.launchHiddenToSystemTray) {
@@ -176,7 +176,7 @@ ApplicationWindow {
     // dialog for opening an image file
     FileDialog {
         id: fileDialog
-        currentFolder: StandardPaths.standardLocations(StandardPaths.PicturesLocation)[0]
+        currentFolder: "file://" + PQCSettings.filedialogLocation
         nameFilters: "Images (*.%1)".arg(PQCImageFormats.getAllFormats().join(" *."))
         onAccepted: image.loadImage(selectedFile)
     }
