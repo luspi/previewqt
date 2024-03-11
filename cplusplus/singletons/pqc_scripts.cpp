@@ -816,6 +816,10 @@ QString PQCScripts::toPercentEncoding(QString str) {
     return QUrl::toPercentEncoding(str);
 }
 
+QString PQCScripts::fromPercentEncoding(QByteArray str) {
+    return QUrl::fromPercentEncoding(str);
+}
+
 QString PQCScripts::generateArchiveId(QString path) {
 
     QFileInfo info(path);

@@ -66,8 +66,8 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 
     // resvg trumps Qt's SVG engine
 #ifdef PQMRESVG
-    if(VQCImageFormats::get().getAllFormatsResvg().contains(suffix))
-        err = VQCLoadImageResvg::load(filename, requestedSize, origSize, img);
+    if(PQCImageFormats::get().getAllFormatsResvg().contains(suffix))
+        err = PQCLoadImageResvg::load(filename, requestedSize, origSize, img);
 #endif
 
 #ifdef PQMPOPPLER
@@ -76,8 +76,8 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 #endif
 
 #ifdef PQMQTPDF
-    if(img.isNull() && VQCImageFormats::get().getAllFormatsPoppler().contains(suffix))
-        err = VQCLoadImageQtPDF::load(filename, requestedSize, origSize, img);
+    if(img.isNull() && PQCImageFormats::get().getAllFormatsPoppler().contains(suffix))
+        err = PQCLoadImageQtPDF::load(filename, requestedSize, origSize, img);
 #endif
 
     if(img.isNull() && PQCImageFormats::get().getAllFormatsQt().contains(suffix))
@@ -102,8 +102,8 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 #endif
 
 #ifdef PQMLIBVIPS
-    if((err != "" || img.isNull()) && VQCImageFormats::get().getAllFormatsLibVips().contains(suffix))
-        err = VQCLoadImageLibVips::load(filename, requestedSize, origSize, img);
+    if((err != "" || img.isNull()) && PQCImageFormats::get().getAllFormatsLibVips().contains(suffix))
+        err = PQCLoadImageLibVips::load(filename, requestedSize, origSize, img);
 #endif
 
 #ifdef PQMFREEIMAGE
@@ -132,8 +132,8 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 
             // resvg trumps Qt's SVG engine
 #ifdef PQMRESVG
-            if(VQCImageFormats::get().getAllMimeTypesResvg().contains(suffix))
-                err = VQCLoadImageResvg::load(filename, requestedSize, origSize, img);
+            if(PQCImageFormats::get().getAllMimeTypesResvg().contains(suffix))
+                err = PQCLoadImageResvg::load(filename, requestedSize, origSize, img);
 #endif
 
 #ifdef PQMPOPPLER
@@ -142,8 +142,8 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 #endif
 
 #ifdef PQMQTPDF
-            if(img.isNull() && VQCImageFormats::get().getAllMimeTypesPoppler().contains(mimetype))
-                err = VQCLoadImageQtPDF::load(filename, requestedSize, origSize, img);
+            if(img.isNull() && PQCImageFormats::get().getAllMimeTypesPoppler().contains(mimetype))
+                err = PQCLoadImageQtPDF::load(filename, requestedSize, origSize, img);
 #endif
 
             if(img.isNull() && PQCImageFormats::get().getAllMimeTypesQt().contains(mimetype))
@@ -168,8 +168,8 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 #endif
 
 #ifdef PQMLIBVIPS
-            if(img.isNull() && VQCImageFormats::get().getAllMimeTypesLibVips().contains(mimetype))
-                err = VQCLoadImageLibVips::load(filename, requestedSize, origSize, img);
+            if(img.isNull() && PQCImageFormats::get().getAllMimeTypesLibVips().contains(mimetype))
+                err = PQCLoadImageLibVips::load(filename, requestedSize, origSize, img);
 #endif
 
 #ifdef PQMFREEIMAGE

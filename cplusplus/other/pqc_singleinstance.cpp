@@ -37,11 +37,11 @@
 PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(argc, argv) {
 
     // This is the message string that we send to a running instance (if it exists
-    QByteArray message = ":/:/:";
+    QString passedon = ":/:/:";
     if(argc == 2)
-        message = argv[1];
+        passedon = argv[1];
 
-    if(message == "-h" || message == "--help") {
+    if(passedon == "-h" || passedon == "--help") {
 
         std::cout << std::endl;
         std::cout << "Usage: previewqt [options] [filename]" << std::endl;
@@ -58,7 +58,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         std::exit(0);
         return;
 
-    } else if(message == "-v" || message == "--version") {
+    } else if(passedon == "-v" || passedon == "--version") {
 
         std::cout << std::endl;
         std::cout << " PreviewQt " << PQMVERSION << std::endl;
@@ -68,6 +68,8 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         return;
 
     }
+
+    QByteArray message = QUrl::toPercentEncoding(passedon);
 
 
     socket = nullptr;
@@ -106,8 +108,6 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         server->removeServer(server_str);
         server->listen(server_str);
         connect(server, &QLocalServer::newConnection, this, &PQCSingleInstance::newConnection);
-
-        handleMessage(message);
 
     }
 

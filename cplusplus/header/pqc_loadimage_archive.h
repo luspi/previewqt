@@ -36,4 +36,4 @@ public:
 
 };
 
-#endif // VQCLOADIMAGEARCHIVE_H
+#endif // PQCLOADIMAGEARCHIVE_H

@@ -200,7 +200,7 @@ ApplicationWindow {
     // dialog for opening an image file
     FileDialog {
         id: fileDialog
-        currentFolder: "file://" + PQCSettings.filedialogLocation
+        currentFolder: (PQCScripts.amIOnWindows() ? "file:/" : "file://") + PQCSettings.filedialogLocation
         nameFilters: "Images (*.%1)".arg(PQCImageFormats.getAllFormats().join(" *."))
         onAccepted: image.loadImage(selectedFile)
     }
@@ -273,6 +273,8 @@ ApplicationWindow {
         target: PQCScripts
 
         function onCommandLineArgumentReceived(msg) {
+
+            msg = PQCScripts.fromPercentEncoding(msg)
 
             // empty message -> show window
             if(msg === ":/:/:") {

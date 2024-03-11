@@ -68,6 +68,23 @@
 
 int main(int argc, char *argv[]) {
 
+#ifdef Q_OS_WIN
+
+#ifdef PQMEXIV2
+    // Exiv2 0.28.x and above needs this locale in order to support proper unicode (e.g., CJK characters) in file names/paths
+    setlocale(LC_ALL, ".UTF8");
+#endif
+
+    QFileInfo f(argv[0]);
+    qputenv("PATH", QString("%1;%2").arg(qgetenv("PATH"),f.absolutePath().replace("/", "\\")).toLocal8Bit());
+    qputenv("MAGICK_CODER_MODULE_PATH", QString("%1").arg(f.absolutePath().replace("/", "\\") + "\\imagemagick\\coders").toLocal8Bit());
+    qputenv("MAGICK_FILTER_MODULE_PATH", QString("%1").arg(f.absolutePath().replace("/", "\\") + "\\imagemagick\\filters").toLocal8Bit());
+
+    // This allows for semi-transparent windows
+    // By default Qt6 uses Direct3D which does not seem to support this
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+#endif
+
     // avoids warning for customizing native styles (observed in particular on Windows)
     qputenv("QT_QUICK_CONTROLS_IGNORE_CUSTOMIZATION_WARNINGS", "1");
 

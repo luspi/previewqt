@@ -1,6 +1,6 @@
-#############################################
-# CMakeLists for PreviewQt: http://photoqt.org #
-#############################################
+##########################################################
+# CMakeLists for PreviewQt: http://photoqt.org/previewqt #
+##########################################################
 
 cmake_minimum_required(VERSION 3.16)
 project(previewqt LANGUAGES CXX)

@@ -23,6 +23,7 @@
 #include <pqc_loadimage_poppler.h>
 #include <QSize>
 #include <QImage>
+#include <QtDebug>
 #ifdef PQMPOPPLER
 #include <poppler/qt6/poppler-qt6.h>
 #endif
