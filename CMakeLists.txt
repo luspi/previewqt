@@ -193,6 +193,13 @@ target_include_directories(previewqt PRIVATE "cplusplus/header")
 # link executable
 target_link_libraries(previewqt PRIVATE Qt6::Quick Qt6::Widgets Qt6::Svg Qt6::Sql)
 
+##################################
+#### COMPOSE THE DESKTOP FILE ####
+##################################
+
+include("CMake/ComposeDesktopFile.cmake")
+composeDesktopFile()
+
 ########################
 #### CUSTOM OPTIONS ####
 ########################
@@ -417,11 +424,64 @@ endif()
 
 if(UNIX)
 
-    include(GNUInstallDirs)
-    install(TARGETS previewqt
-        BUNDLE DESTINATION .
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    # Install executeable
+    install(
+        TARGETS previewqt
+        DESTINATION bin/
     )
 
+    # Install desktop file
+    install(
+        FILES org.photoqt.PreviewQt.desktop
+        DESTINATION share/applications
+    )
+
+    # And install all the icons
+    install(
+        FILES icons/16x16/org.photoqt.PreviewQt.png
+        DESTINATION share/icons/hicolor/16x16/apps/
+    )
+    install(
+        FILES icons/32x32/org.photoqt.PreviewQt.png
+        DESTINATION share/icons/hicolor/32x32/apps/
+    )
+    install(
+        FILES icons/48x48/org.photoqt.PreviewQt.png
+        DESTINATION share/icons/hicolor/48x48/apps/
+    )
+    install(
+        FILES icons/64x64/org.photoqt.PreviewQt.png
+        DESTINATION share/icons/hicolor/64x64/apps/
+    )
+    install(
+        FILES icons/128x128/org.photoqt.PreviewQt.png
+        DESTINATION share/icons/hicolor/128x128/apps/
+    )
+    install(
+        FILES icons/256x256/org.photoqt.PreviewQt.png
+        DESTINATION share/icons/hicolor/256x256/apps/
+    )
+    install(
+        FILES icons/512x512/org.photoqt.PreviewQt.png
+        DESTINATION share/icons/hicolor/512x512/apps/
+    )
+    install(
+        FILES icons/1024x1024/org.photoqt.PreviewQt.png
+        DESTINATION share/icons/hicolor/1024x1024/apps/
+    )
+    install(
+        FILES org.photoqt.PreviewQt.metainfo.xml
+        DESTINATION share/metainfo/
+    )
+
+endif()
+
+
+##########################
+#### UNINSTALL TARGET ####
+##########################
+
+if(UNIX)
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/CMake/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
+    add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 endif()
