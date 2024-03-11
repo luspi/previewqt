@@ -44,7 +44,7 @@ AnimatedImage {
 
     onStatusChanged: {
         if(status == Image.Error)
-            source = "image://svg/:/other/errorimage.svg"
+            source = "image://svg/:/errorimage.svg"
     }
 
     Rectangle {
@@ -77,7 +77,7 @@ AnimatedImage {
                 width: height
                 height: 20
                 sourceSize: Qt.size(width, height)
-                source: image.playing ? "/pause.svg" : "/play.svg"
+                source: image.playing ? "image://svg/:/pause.svg" : "image://svg/:/play.svg"
                 MouseArea {
                     id: playpausemouse
                     anchors.fill: parent

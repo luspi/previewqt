@@ -141,7 +141,7 @@ Item {
                 width: height
                 height: 20
                 sourceSize: Qt.size(width, height)
-                source: videotop.videoPlaying ? "/pause.svg" : "/play.svg"
+                source: videotop.videoPlaying ? "image://svg/:/pause.svg" : "image://svg/:/play.svg"
                 MouseArea {
                     id: playpausemouse
                     anchors.fill: parent
@@ -195,7 +195,7 @@ Item {
                 width: height
                 height: 20
                 sourceSize: Qt.size(width, height)
-                source: "/volume_" + volumeIcon[volumeIndex] + ".svg"
+                source: "image://svg/:/volume_" + volumeIcon[volumeIndex] + ".svg"
                 MouseArea {
                     id: volumemouse
                     anchors.fill: parent

@@ -9,7 +9,10 @@ Image {
     source: ""
 
     Component.onCompleted: {
-        if(image_top.imageSource === "") return
+        if(image_top.imageSource === "") {
+            source = ""
+            return
+        }
         if(image_top.imageSource.includes("::ARC::") || fileCount == 0)
             source = "image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)
         else
@@ -31,7 +34,7 @@ Image {
 
     onStatusChanged: {
         if(status == Image.Error)
-            source = "image://svg/:/other/errorimage.svg"
+            source = "image://svg/:/errorimage.svg"
     }
 
     property var fileList: []
@@ -171,7 +174,7 @@ Image {
                         width: height
                         height: controlitem.height/2.5
                         sourceSize: Qt.size(width, height)
-                        source: "/first.svg"
+                        source: "image://svg/:/first.svg"
                     }
                     MouseArea {
                         id: mousefirst
@@ -193,7 +196,7 @@ Image {
                         width: height
                         height: controlitem.height/1.5
                         sourceSize: Qt.size(width, height)
-                        source: "/backwards.svg"
+                        source: "image://svg/:/backwards.svg"
                     }
                     MouseArea {
                         id: mouseprev
@@ -215,7 +218,7 @@ Image {
                         width: height
                         height: controlitem.height/1.5
                         sourceSize: Qt.size(width, height)
-                        source: "/forwards.svg"
+                        source: "image://svg/:/forwards.svg"
                     }
                     MouseArea {
                         id: mousenext
@@ -238,7 +241,7 @@ Image {
                         width: height
                         height: controlitem.height/2.5
                         sourceSize: Qt.size(width, height)
-                        source: "/last.svg"
+                        source: "image://svg/:/last.svg"
                     }
                     MouseArea {
                         id: mouselast

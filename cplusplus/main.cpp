@@ -30,6 +30,7 @@
 #include <pqc_scripts.h>
 #include <pqc_imageformats.h>
 #include <pqc_providerfull.h>
+#include <pqc_providersvg.h>
 #include <pqc_settings.h>
 #include <pqc_singleinstance.h>
 #include <pqc_configfiles.h>
@@ -166,6 +167,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterSingletonInstance("PQCImageFormats", 1, 0, "PQCImageFormats", &PQCImageFormats::get());
 
     engine.addImageProvider("full", new PQCProviderFull);
+    engine.addImageProvider("svg", new PQCProviderSVG);
 
 #ifdef PQMPHOTOSPHERE
     qmlRegisterType<PQCPhotoSphere>("PQCPhotoSphere", 1, 0, "PQCPhotoSphere");

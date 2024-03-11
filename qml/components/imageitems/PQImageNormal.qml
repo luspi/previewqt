@@ -43,7 +43,7 @@ Image {
 
     onStatusChanged: {
         if(status == Image.Error)
-            source = "image://svg/:/other/errorimage.svg"
+            source = "image://svg/:/errorimage.svg"
         else if(status == Image.Ready) {
             asynchronous = false
             if(extrasCheckedFor !== image_top.imageSource)
@@ -177,7 +177,7 @@ Image {
             anchors.fill: parent
             anchors.margins: 5
             sourceSize: Qt.size(width, height)
-            source: mediaplayer.playbackState == MediaPlayer.PlayingState ? "/pause.svg" : "/play.svg"
+            source: mediaplayer.playbackState == MediaPlayer.PlayingState ? "image://svg/:/pause.svg" : "image://svg/:/play.svg"
         }
 
         MouseArea {

@@ -52,9 +52,9 @@ Item {
         anchors.fill: parent
         anchors.margins: -5
         hoverEnabled: true
-        cursorShape: image.imageSource == "" ? Qt.PointingHandCursor : Qt.ArrowCursor
+        cursorShape: image.imageSource === "" ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: (mouse) => {
-            if(image.imageSource == "")
+            if(image.imageSource === "")
                 fileDialog.open()
         }
         onPositionChanged: (mouse) => {
@@ -94,8 +94,9 @@ Item {
     // load a new image
     function loadImage(path) {
 
+        imageloader.source = ""
+
         if(path === "") {
-            imageloader.source = ""
             imageSource = ""
             return
         }

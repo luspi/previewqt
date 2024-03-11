@@ -81,6 +81,7 @@ Video {
         width: controlrow.width+10
         height: 30
         radius: 5
+        z: 1
 
         color: "#88000000"
         opacity: controlsmouse.containsMouse||playpausemouse.containsMouse||slider.hovered||volumemouse.containsMouse ? 1 : 0.4
@@ -102,7 +103,7 @@ Video {
                 width: height
                 height: 20
                 sourceSize: Qt.size(width, height)
-                source: video.playbackState===MediaPlayer.PlayingState ? "/pause.svg" : "/play.svg"
+                source: video.playbackState===MediaPlayer.PlayingState ? "image://svg/:/pause.svg" : "image://svg/:/play.svg"
                 MouseArea {
                     id: playpausemouse
                     anchors.fill: parent
@@ -146,7 +147,7 @@ Video {
                 width: height
                 height: 20
                 sourceSize: Qt.size(width, height)
-                source: "/volume_" + volumeIcon[volumeIndex] + ".svg"
+                source: "image://svg/:/volume_" + volumeIcon[volumeIndex] + ".svg"
                 MouseArea {
                     id: volumemouse
                     anchors.fill: parent

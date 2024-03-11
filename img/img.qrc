@@ -18,5 +18,6 @@
         <file>last.svg</file>
         <file>logo.svg</file>
         <file>help.svg</file>
+        <file>errorimage.svg</file>
     </qresource>
 </RCC>

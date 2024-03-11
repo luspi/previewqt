@@ -32,6 +32,8 @@ Rectangle {
         height: parent.height*0.5
         source: control.source
         sourceSize: Qt.size(width, height)
+        mipmap: false
+        smooth: false
     }
 
     Rectangle {

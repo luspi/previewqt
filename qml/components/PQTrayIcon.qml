@@ -6,7 +6,7 @@ SystemTrayIcon {
 
     // style tray icon
     visible: true
-    icon.source: "qrc:/logo.svg"
+    icon.source: "image://svg/:/logo.svg"
 
     // show/hide application window
     onActivated: {
