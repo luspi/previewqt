@@ -13,6 +13,47 @@ Window {
 
     title: "Settings"
     visible: false
+    modality: Qt.ApplicationModal
+
+    property bool optionsLoaded: false
+
+    property var imgoptions: {
+        "PhotoQt" : "photoqt",
+        "GwenView" : "gwenview",
+        "Showfoto" : "showfoto",
+        "GThumb" : "gthumb",
+        "Eye of Gnome" : "eog",
+        "Gimp" : "gimp",
+        "(custom)" : ""
+    }
+
+    property var docoptions: {
+        "Okular" : "okular",
+        "Evince" : "evince",
+        "PhotoQt" : "photoqt",
+        "(custom)" : ""
+    }
+
+    property var arcoptions: {
+        "Ark" : "ark",
+        "File Roller" : "file-roller",
+        "PhotoQt" : "photoqt",
+        "(custom)" : ""
+    }
+
+    property var comoptions: {
+        "Okular" : "okular",
+        "Calibre" : "calibre",
+        "PhotoQt" : "photoqt",
+        "(custom)" : ""
+    }
+
+    property var vidoptions: {
+        "VLC" : "vlc",
+        "MPlayer" : "mplayer",
+        "PhotoQt" : "photoqt",
+        "(custom)" : ""
+    }
 
     // For this window, this item catches all key presses
     Item {
@@ -20,10 +61,10 @@ Window {
 
         Keys.onPressed: (event) => {
 
-            if(tabbar.currentIndex == 1 && shortcutbut.checked) {
+            if(tabbar.currentIndex === 1 && shortcutbut.checked) {
 
                 var txt = PQCScripts.keycodeToString(event.modifiers, event.key)
-                var reserved = ["Esc", "Space", "Left", "Right", "M", "Home", "End", "Ctrl+Q", "Ctrl+O", "Ctrl+P", "Ctrl+I"]
+                var reserved = ["Esc", "Space", "Left", "Right", "M", "Home", "End", "Ctrl+Q", "Ctrl+O", "Ctrl+P", "Ctrl+I", "F1", "Ctrl+Tab"]
 
                 if(txt === "Esc") {
                     shortcutbut.text = shortcutbut.backupshortcut
@@ -33,21 +74,26 @@ Window {
 
                 if(reserved.indexOf(txt) > -1) {
                     reservederror.visible = true
+                    shortcutbut.text = shortcutbut.backupshortcut
+                    shortcutbut.checked = false
                     return
                 }
 
                 reservederror.visible = false
 
                 shortcutbut.text = txt
-                PQCSettings.defaultAppShortcut = txt
 
                 if(!txt.endsWith("+")) {
+                    PQCSettings.defaultAppShortcut = txt
                     shortcutbut.backupshortcut = txt
                     shortcutbut.checked = false
                 }
 
-            } else if(event.key === Qt.Key_Escape)
+            } else if(event.key === Qt.Key_Escape || event.key === Qt.Key_Enter || event.key === Qt.Key_Return)
                 settings_top.close()
+
+            else if(event.key === Qt.Key_Tab && event.modifiers&Qt.ControlModifier)
+                tabbar.currentIndex = (tabbar.currentIndex+1)%2
 
         }
 
@@ -61,6 +107,24 @@ Window {
         catchKeyPress.forceActiveFocus()
         visible = true
         tabbar.currentIndex = 0
+
+        var imgindex = Object.values(imgoptions).indexOf(PQCSettings.defaultAppImages)
+        imgcombo.currentIndex = (imgindex===-1 ? imgcombo.currentIndex=imgcombo.model.length-1 : imgindex)
+
+        var docindex = Object.values(docoptions).indexOf(PQCSettings.defaultAppDocuments)
+        doccombo.currentIndex = (docindex===-1 ? doccombo.currentIndex=doccombo.model.length-1 : docindex)
+
+        var vidindex = Object.values(vidoptions).indexOf(PQCSettings.defaultAppVideos)
+        vidcombo.currentIndex = (vidindex===-1 ? vidcombo.currentIndex=vidcombo.model.length-1 : vidindex)
+
+        var arcindex = Object.values(arcoptions).indexOf(PQCSettings.defaultAppArchives)
+        arccombo.currentIndex = (arcindex===-1 ? arccombo.currentIndex=arccombo.model.length-1 : arcindex)
+
+        var comindex = Object.values(comoptions).indexOf(PQCSettings.defaultAppComicBooks)
+        comcombo.currentIndex = (comindex===-1 ? comcombo.currentIndex=comcombo.model.length-1 : comindex)
+
+        optionsLoaded = true
+
     }
 
     // the top bars
@@ -69,10 +133,12 @@ Window {
         width: parent.width
         TabButton {
             text: "General"
+            font.bold: tabbar.currentIndex===0
             width: settings_top.width/2
         }
         TabButton {
             text: "External applications"
+            font.bold: tabbar.currentIndex===1
             width: settings_top.width/2
         }
     }
@@ -84,7 +150,7 @@ Window {
         x: 0
         y: tabbar.height
         width: parent.width
-        height: parent.height - 40 - tabbar.height
+        height: parent.height - 45 - tabbar.height
 
         currentIndex: tabbar.currentIndex
         onCurrentIndexChanged:
@@ -161,7 +227,7 @@ Window {
 
                     SpinBox {
                         id: defwin_w
-                        width: 75
+                        width: 150
                         from: 200
                         to: 99999
                         value: PQCSettings.defaultWindowWidth
@@ -178,7 +244,7 @@ Window {
 
                     SpinBox {
                         id: defwin_h
-                        width: 75
+                        width: 150
                         from: 200
                         to: 99999
                         value: PQCSettings.defaultWindowHeight
@@ -255,7 +321,7 @@ Window {
                 Button {
                     id: shortcutbut
                     x: (defaultappsettings.usableWidth-width)/2
-                    width: 200
+                    width: Math.min(300, parent.width*0.8)
                     checkable: true
                     text: PQCSettings.defaultAppShortcut
                     property string backupshortcut: PQCSettings.defaultAppShortcut
@@ -282,7 +348,8 @@ Window {
                 /************************************/
 
                 CheckBox {
-                    text: "Hide window afterwards"
+                    width: defaultappsettings.usableWidth
+                    text: "Hide window after launching external application"
                     checked: PQCSettings.closeAfterDefaultApp
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
@@ -297,8 +364,25 @@ Window {
                         text: "External application for images:"
                     }
 
+                    ComboBox {
+                        id: imgcombo
+                        x: (defaultappsettings.usableWidth-width)/2
+                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                        model: Object.keys(imgoptions)
+                        onCurrentIndexChanged: {
+                            if(!optionsLoaded) return
+                            catchKeyPress.forceActiveFocus()
+                            if(currentIndex < imgcombo.model.length-1) {
+                                PQCSettings.defaultAppImages = imgoptions[model[currentIndex]]
+                            } else {
+                                imgedit.text = PQCSettings.defaultAppImages
+                            }
+                        }
+                    }
+
                     Row {
                         spacing: 5
+                        visible: imgcombo.currentIndex === imgcombo.model.length-1
                         TextField {
                             id: imgedit
                             y: (imgbut.height-height)/2
@@ -327,8 +411,25 @@ Window {
                         text: "External application for documents:"
                     }
 
+                    ComboBox {
+                        id: doccombo
+                        x: (defaultappsettings.usableWidth-width)/2
+                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                        model: Object.keys(docoptions)
+                        onCurrentIndexChanged: {
+                            if(!optionsLoaded) return
+                            catchKeyPress.forceActiveFocus()
+                            if(currentIndex < doccombo.model.length-1) {
+                                PQCSettings.defaultAppDocuments = docoptions[model[currentIndex]]
+                            } else {
+                                docedit.text = PQCSettings.defaultAppDocuments
+                            }
+                        }
+                    }
+
                     Row {
                         spacing: 5
+                        visible: doccombo.currentIndex === doccombo.model.length-1
                         TextField {
                             id: docedit
                             y: (docbut.height-height)/2
@@ -357,8 +458,25 @@ Window {
                         text: "External application for videos:"
                     }
 
+                    ComboBox {
+                        id: vidcombo
+                        x: (defaultappsettings.usableWidth-width)/2
+                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                        model: Object.keys(vidoptions)
+                        onCurrentIndexChanged: {
+                            if(!optionsLoaded) return
+                            catchKeyPress.forceActiveFocus()
+                            if(currentIndex < vidcombo.model.length-1) {
+                                PQCSettings.defaultAppVideos = vidoptions[model[currentIndex]]
+                            } else {
+                                videdit.text = PQCSettings.defaultAppVideos
+                            }
+                        }
+                    }
+
                     Row {
                         spacing: 5
+                        visible: vidcombo.currentIndex === vidcombo.model.length-1
                         TextField {
                             id: videdit
                             y: (vidbut.height-height)/2
@@ -387,8 +505,25 @@ Window {
                         text: "External application for archives:"
                     }
 
+                    ComboBox {
+                        id: arccombo
+                        x: (defaultappsettings.usableWidth-width)/2
+                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                        model: Object.keys(arcoptions)
+                        onCurrentIndexChanged: {
+                            if(!optionsLoaded) return
+                            catchKeyPress.forceActiveFocus()
+                            if(currentIndex < arccombo.model.length-1) {
+                                PQCSettings.defaultAppArchives = arcoptions[model[currentIndex]]
+                            } else {
+                                arcedit.text = PQCSettings.defaultAppArchives
+                            }
+                        }
+                    }
+
                     Row {
                         spacing: 5
+                        visible: arccombo.currentIndex === arccombo.model.length-1
                         TextField {
                             id: arcedit
                             y: (arcbut.height-height)/2
@@ -417,8 +552,25 @@ Window {
                         text: "External application for comic books:"
                     }
 
+                    ComboBox {
+                        id: comcombo
+                        x: (defaultappsettings.usableWidth-width)/2
+                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                        model: Object.keys(comoptions)
+                        onCurrentIndexChanged: {
+                            if(!optionsLoaded) return
+                            catchKeyPress.forceActiveFocus()
+                            if(currentIndex < comcombo.model.length-1) {
+                                PQCSettings.defaultAppComicBooks = comoptions[model[currentIndex]]
+                            } else {
+                                comedit.text = PQCSettings.defaultAppComicBooks
+                            }
+                        }
+                    }
+
                     Row {
                         spacing: 5
+                        visible: comcombo.currentIndex === comcombo.model.length-1
                         TextField {
                             id: comedit
                             y: (combut.height-height)/2
@@ -457,7 +609,7 @@ Window {
     /************************************/
     Rectangle {
         x: 0
-        y: parent.height-40
+        y: parent.height-45
         width: parent.width
         height: 1
         color: "black"
@@ -467,7 +619,8 @@ Window {
     Button {
 
         x: (parent.width-width)/2
-        y: parent.height-40 + (40-height)/2
+        y: parent.height-45 + (45-height)/2
+        width: Math.min(200, parent.width*0.5)
         text: "Close"
         onClicked:
             settings_top.close()

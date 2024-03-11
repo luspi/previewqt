@@ -17,5 +17,6 @@
         <file>img.qrc</file>
         <file>last.svg</file>
         <file>logo.svg</file>
+        <file>help.svg</file>
     </qresource>
 </RCC>

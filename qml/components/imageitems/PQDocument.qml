@@ -10,9 +10,9 @@ Image {
 
     Component.onCompleted: {
         if(image_top.imageSource.includes("::PDF::"))
-            source = "image://full/" + image_top.imageSource
+            source = "image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)
         else
-            source = "image://full/%1::PDF::%2".arg(currentPage).arg(image_top.imageSource)
+            source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource))
     }
 
     asynchronous: true
@@ -37,9 +37,9 @@ Image {
     onCurrentPageChanged: {
         image.asynchronous = false
         if(image_top.imageSource.includes("::PDF::")) {
-            image.source = "image://full/" + "%1::PDF::%2".arg(image.currentPage).arg(image_top.imageSource.split("::PDF::")[1])
+            image.source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(image.currentPage).arg(image_top.imageSource.split("::PDF::")[1]))
         } else {
-            image.source = "image://full/" + "%1::PDF::%2".arg(image.currentPage).arg(image_top.imageSource)
+            image.source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(image.currentPage).arg(image_top.imageSource))
         }
         image.asynchronous = true
     }

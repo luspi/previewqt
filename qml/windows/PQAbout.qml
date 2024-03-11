@@ -13,6 +13,7 @@ Window {
     // some stylings
     title: "About"
     visible: false
+    modality: Qt.ApplicationModal
 
     // in this window, this item catches all key presses
     Item {
@@ -29,7 +30,7 @@ Window {
 
         anchors.fill: parent
         anchors.margins: 5
-        anchors.bottomMargin: 40
+        anchors.bottomMargin: 45
         clip: true
 
         contentHeight: contcol.height
@@ -177,7 +178,7 @@ Window {
 
     Rectangle {
         x: 0
-        y: parent.height-40
+        y: parent.height-45
         width: parent.width
         height: 1
         color: "black"
@@ -185,7 +186,7 @@ Window {
 
     Button {
         x: (parent.width-width)/2
-        y: parent.height-40 + (40-height)/2
+        y: parent.height-45 + (45-height)/2
         text: "Close"
         onClicked:
             about_top.close()

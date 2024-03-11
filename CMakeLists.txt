@@ -53,13 +53,13 @@ set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_settings.h" "${d}/pqc_singleinstanc
 
 set(d "qml")
 set(previewqt_QML "${d}/PQMainWindow.qml")
-set(d "qml/elements")
-set(previewqt_QML ${previewqt_QML} "${d}/PQIconButton.qml")
 set(d "qml/components")
-set(previewqt_QML ${previewqt_QML} "${d}/PQTopRow.qml" "${d}/PQImage.qml" "${d}/PQSettings.qml" "${d}/PQTrayIcon.qml" "${d}/PQAbout.qml")
+set(previewqt_QML ${previewqt_QML} "${d}/PQTopRow.qml" "${d}/PQImage.qml" "${d}/PQIconButton.qml" "${d}/PQTrayIcon.qml")
 set(d "qml/components/imageitems")
 set(previewqt_QML ${previewqt_QML} "${d}/PQImageNormal.qml" "${d}/PQVideoQt.qml" "${d}/PQVideoMpv.qml" "${d}/PQImageAnimated.qml")
 set(previewqt_QML ${previewqt_QML} "${d}/PQDocument.qml" "${d}/PQArchive.qml")
+set(d "qml/windows")
+set(previewqt_QML ${previewqt_QML} "${d}/PQSettings.qml" "${d}/PQAbout.qml" "${d}/PQHelp.qml")
 
 if(PHOTOSPHERE)
     set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQPhotoSphere.qml")

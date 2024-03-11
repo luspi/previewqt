@@ -117,7 +117,7 @@ QString PQCScripts::getFilename(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    return QFileInfo(path).fileName();
+    return QFileInfo(QByteArray::fromPercentEncoding(path.toUtf8())).fileName();
 
 }
 

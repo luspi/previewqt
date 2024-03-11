@@ -28,7 +28,7 @@ Image {
 
     id: image
 
-    source: image_top.imageSource!=="" ? ("image://full/" + image_top.imageSource) : ""
+    source: image_top.imageSource!=="" ? ("image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)) : ""
 
     asynchronous: true
 

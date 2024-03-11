@@ -24,8 +24,6 @@ import QtQuick
 import PQCPhotoSphere
 import PQCScripts
 
-import "../../elements"
-
 Item {
 
     id: sphere_top
@@ -39,7 +37,7 @@ Item {
         id: thesphere
         anchors.fill: parent
 
-        source: image_top.imageSource!=="" ? image_top.imageSource : ""
+        source: image_top.imageSource!=="" ? PQCScripts.toPercentEncoding(image_top.imageSource) : ""
         onSourceChanged: {
             azimuth = 180
             elevation = 0

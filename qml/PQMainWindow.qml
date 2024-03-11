@@ -124,14 +124,21 @@ ApplicationWindow {
     Loader {
         id: settings
         active: false
-        source: "components/PQSettings.qml"
+        source: "windows/PQSettings.qml"
     }
 
     // The about window
     Loader {
         id: about
         active: false
-        source: "components/PQAbout.qml"
+        source: "windows/PQAbout.qml"
+    }
+
+    // The help window
+    Loader {
+        id: help
+        active: false
+        source: "windows/PQHelp.qml"
     }
 
     // some things are done once window is set up
@@ -218,6 +225,11 @@ ApplicationWindow {
             about.active = true
             about.item.show()
 
+        } else if(txt === "F1") {
+
+            help.active = true
+            help.item.show()
+
         } else if(txt === PQCSettings.defaultAppShortcut) {
 
             if(image.imageSource === "") return
@@ -259,7 +271,7 @@ ApplicationWindow {
                     return
                 }
 
-                image.loadImage(PQCScripts.toPercentEncoding(PQCScripts.cleanPath(msg)))
+                image.loadImage(PQCScripts.cleanPath(msg))
 
                 if(!toplevel.visible) {
                     if(PQCSettings.defaultWindowMaximized)

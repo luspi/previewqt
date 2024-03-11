@@ -3,7 +3,6 @@ import QtQuick.Controls
 
 import PQCSettings
 import PQCScripts
-import "../elements"
 
 Rectangle {
 
@@ -68,17 +67,10 @@ Rectangle {
             }
         }
 
-    }
-
-    Row {
-
-        x: (parent.width-width)
-
         // close window
         PQIconButton {
             id: exitbut
             y: (parent.height-height)/2
-            borderLeft: true
             height: toprow.height-1
             source: "/exit.svg"
             tooltip: "Quit PreviewQt"
@@ -87,16 +79,36 @@ Rectangle {
             }
         }
 
+    }
+
+    Row {
+
+        x: (parent.width-width)
+
         // open about window
         PQIconButton {
             id: aboutbut
             y: (parent.height-height)/2
+            borderLeft: true
             height: toprow.height-1
             source: "/about.svg"
             tooltip: "About PreviewQt"
             onClicked: {
                 about.active = true
                 about.item.show()
+            }
+        }
+
+        // open help window
+        PQIconButton {
+            id: helpbut
+            y: (parent.height-height)/2
+            height: toprow.height-1
+            source: "/help.svg"
+            tooltip: "Help"
+            onClicked: {
+                help.active = true
+                help.item.show()
             }
         }
 

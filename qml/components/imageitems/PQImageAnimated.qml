@@ -28,7 +28,7 @@ AnimatedImage {
 
     id: image
 
-    source: image_top.imageSource!=="" ? ("file:/" + image_top.imageSource) : ""
+    source: image_top.imageSource!=="" ? ("file:/" + PQCScripts.toPercentEncoding(image_top.imageSource)) : ""
 
     asynchronous: true
 
