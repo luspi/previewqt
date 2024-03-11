@@ -222,6 +222,16 @@ Window {
                     }
                 }
 
+                CheckBox {
+                    text: qsTr("Hide PreviewQt when losing focus")
+                    checked: PQCSettings.closeWhenLosingFocus
+                    onCheckedChanged: {
+                        catchKeyPress.forceActiveFocus()
+                        if(PQCSettings.closeWhenLosingFocus !== checked)
+                            PQCSettings.closeWhenLosingFocus = checked
+                    }
+                }
+
                 /************************************/
                 Rectangle {
                     width: settings_top.width-20

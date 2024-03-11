@@ -104,6 +104,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+
     PQCSingleInstance app(argc, argv);
 
 #ifdef PQMVIDEOMPV

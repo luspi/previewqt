@@ -69,6 +69,17 @@ ApplicationWindow {
         PQCScripts.deleteTemporaryFiles()
     }
 
+    onActiveChanged: {
+        if(!PQCSettings.closeWhenLosingFocus) return
+        if(!active) {
+            if((settings.status == Loader.Ready && settings.item.visible) ||
+                    (about.status == Loader.Ready && about.item.visible) ||
+                    (help.status == Loader.Ready && help.item.visible))
+                return
+            toplevel.close()
+        }
+    }
+
 
     // we keep focus on this item in order to catch key presses
     Item {

@@ -94,6 +94,10 @@ public:
     QString getFiledialogLocation();
     void setFiledialogLocation(QString val);
 
+    Q_PROPERTY(bool closeWhenLosingFocus READ getCloseWhenLosingFocus WRITE setCloseWhenLosingFocus NOTIFY closeWhenLosingFocusChanged)
+    bool getCloseWhenLosingFocus();
+    void setCloseWhenLosingFocus(bool val);
+
 private:
     PQCSettings();
 
@@ -110,6 +114,7 @@ private:
     QString m_defaultAppComicBooks;
     bool m_closeAfterDefaultApp;
     QString m_filedialogLocation;
+    bool m_closeWhenLosingFocus;
 
     QSettings *settings;
     QTimer *saveTimer;
@@ -135,6 +140,7 @@ signals:
     void defaultAppComicBooksChanged();
     void closeAfterDefaultAppChanged();
     void filedialogLocationChanged();
+    void closeWhenLosingFocusChanged();
 
 };
 

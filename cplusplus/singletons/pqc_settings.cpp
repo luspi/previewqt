@@ -226,6 +226,17 @@ void PQCSettings::setFiledialogLocation(QString val) {
     }
 }
 
+bool PQCSettings::getCloseWhenLosingFocus() {
+    return m_closeWhenLosingFocus;
+}
+void PQCSettings::setCloseWhenLosingFocus(bool val) {
+    if(m_closeWhenLosingFocus != val) {
+        m_closeWhenLosingFocus = val;
+        saveTimer->start();
+        emit closeWhenLosingFocusChanged();
+    }
+}
+
 void PQCSettings::loadSettings() {
 
     setTopBarAutoHide(settings->value("topBarAutoHide", false).toBool());
@@ -241,6 +252,7 @@ void PQCSettings::loadSettings() {
     setDefaultAppComicBooks(settings->value("defaultAppComicBooks", "").toString());
     setCloseAfterDefaultApp(settings->value("closeAfterDefaultApp", true).toBool());
     setFiledialogLocation(settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString());
+    setCloseWhenLosingFocus(settings->value("closeWhenLosingFocus", false).toBool());
 
 }
 
@@ -259,5 +271,6 @@ void PQCSettings::saveSettings() {
     settings->setValue("defaultAppComicBooks", m_defaultAppComicBooks);
     settings->setValue("closeAfterDefaultApp", m_closeAfterDefaultApp);
     settings->setValue("filedialogLocation", m_filedialogLocation);
+    settings->setValue("closeWhenLosingFocus", m_closeWhenLosingFocus);
 
 }
