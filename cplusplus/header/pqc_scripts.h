@@ -61,6 +61,7 @@ public:
     Q_INVOKABLE QString fromPercentEncoding(QByteArray str);
     Q_INVOKABLE QString keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key keycode);
     Q_INVOKABLE bool doesFileExist(QString path);
+    Q_INVOKABLE bool isFileSupported(QString path);
 
     Q_INVOKABLE bool isPhotoSphere(QString path);
     Q_INVOKABLE int isMotionPhoto(QString path);

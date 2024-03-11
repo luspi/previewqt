@@ -1134,10 +1134,24 @@ bool PQCScripts::doesFileExist(QString path) {
 
 void PQCScripts::deleteTemporaryFiles() {
 
+    qDebug() << "";
+
     QDir dir(PQCConfigFiles::CACHE_DIR() + "/archive");
     dir.removeRecursively();
 
     QDir dir2(PQCConfigFiles::CACHE_DIR() + "/motionphotos");
     dir2.removeRecursively();
+
+}
+
+bool PQCScripts::isFileSupported(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    if(!QFileInfo::exists(path))
+        return false;
+
+    const QString suffix = QFileInfo(path).suffix().toLower();
+    return PQCImageFormats::get().getAllFormats().contains(suffix);
 
 }

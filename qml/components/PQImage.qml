@@ -72,6 +72,15 @@ Item {
         }
     }
 
+    DropArea {
+        anchors.fill: parent
+        onDropped: (drop) => {
+            var src = PQCScripts.cleanPath(drop.text)
+            if(PQCScripts.isFileSupported(src))
+                loadImage(src)
+        }
+    }
+
     // the actual image
     Loader {
         id: imageloader
