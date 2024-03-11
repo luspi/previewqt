@@ -34,6 +34,10 @@
 #include <pqc_singleinstance.h>
 #include <pqc_configfiles.h>
 
+#ifdef Q_OS_WIN
+#include <QQuickWindow>
+#endif
+
 #ifdef PQMGRAPHICSMAGICK
 #include <GraphicsMagick/Magick++.h>
 #endif
