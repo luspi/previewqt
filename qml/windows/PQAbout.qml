@@ -47,7 +47,7 @@ Window {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
                 text: qsTr("About PreviewQt")
-                font.pointSize: 20
+                font.pointSize: 25
                 font.bold: true
             }
 
@@ -58,38 +58,37 @@ Window {
                 height: Math.min(flickable.width/4, 200)
                 sourceSize: Qt.size(width, height)
 
-                source: "/logo.svg"
+                source: "image://svg/:/logo.svg"
 
             }
 
             Row {
 
+                x: (parent.width-width)/2
                 spacing: 5
 
                 Column {
 
                     spacing: 5
 
-                    width: (12*flickable.width)/25
-
                     Text {
-                        width: parent.width
-                        horizontalAlignment: Text.AlignRight
+                        font.bold: true
+                        font.pointSize: 11
                         text: qsTr("License:")
                     }
                     Text {
-                        width: parent.width
-                        horizontalAlignment: Text.AlignRight
+                        font.bold: true
+                        font.pointSize: 11
                         text: qsTr("Website:")
                     }
                     Text {
-                        width: parent.width
-                        horizontalAlignment: Text.AlignRight
-                        text: qsTr("Developed by:")
+                        font.bold: true
+                        font.pointSize: 11
+                        text: qsTr("Developer:")
                     }
                     Text {
-                        width: parent.width
-                        horizontalAlignment: Text.AlignRight
+                        font.bold: true
+                        font.pointSize: 11
                         text: qsTr("Contact:")
                     }
 
@@ -99,10 +98,8 @@ Window {
 
                     spacing: 5
 
-                    width: (13*flickable.width)/25
-
                     Text {
-                        width: parent.width
+                        font.pointSize: 12
                         text: "GPL v2+"
                         MouseArea {
                             anchors.fill: parent
@@ -112,18 +109,18 @@ Window {
                         }
                     }
                     Text {
-                        width: parent.width
-                        text: "https://photoqt.org"
+                        text: "https://photoqt.org/PreviewQt"
+                        font.pointSize: 12
                         MouseArea {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: Qt.openUrlExternally("https://photoqt.org")
+                            onClicked: Qt.openUrlExternally("https://photoqt.org/PreviewQt")
                         }
                     }
                     Text {
-                        width: parent.width
                         text: "Lukas Spies"
+                        font.pointSize: 12
                         MouseArea {
                             anchors.fill: parent
                             hoverEnabled: true
@@ -132,8 +129,8 @@ Window {
                         }
                     }
                     Text {
-                        width: parent.width
                         text: "Lukas@photoqt.org"
+                        font.pointSize: 12
                         MouseArea {
                             anchors.fill: parent
                             hoverEnabled: true
