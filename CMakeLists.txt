@@ -174,7 +174,11 @@ add_definitions(-DQT_MESSAGELOGCONTEXT)
 #### Add the executeable ####
 #############################
 
-qt_add_executable(previewqt ${previewqt_SRC} img/img.qrc misc/misc.qrc)
+if(WIN32)
+    qt_add_executable(previewqt ${previewqt_SRC} img/img.qrc misc/misc.qrc windowsicons.rc)
+else()
+    qt_add_executable(previewqt ${previewqt_SRC} img/img.qrc misc/misc.qrc)
+endif()
 
 # add qml files
 qt_add_qml_module(previewqt URI src VERSION 1.0 QML_FILES ${previewqt_QML} RESOURCE_PREFIX)
