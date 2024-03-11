@@ -1155,3 +1155,7 @@ bool PQCScripts::isFileSupported(QString path) {
     return PQCImageFormats::get().getAllFormats().contains(suffix);
 
 }
+
+QString PQCScripts::getVersion() {
+    return PQMVERSION;
+}

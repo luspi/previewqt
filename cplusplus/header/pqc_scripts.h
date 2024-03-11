@@ -75,6 +75,7 @@ public:
     Q_INVOKABLE bool amIOnWindows();
 
     Q_INVOKABLE void deleteTemporaryFiles();
+    Q_INVOKABLE QString getVersion();
 
 private:
     PQCScripts();

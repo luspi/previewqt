@@ -1,6 +1,7 @@
 import QtCore
 import QtQuick
 import QtQuick.Controls
+import PQCScripts
 
 Window {
 
@@ -74,6 +75,11 @@ Window {
                     Text {
                         font.bold: true
                         font.pointSize: 11
+                        text: qsTr("Version:")
+                    }
+                    Text {
+                        font.bold: true
+                        font.pointSize: 11
                         text: qsTr("License:")
                     }
                     Text {
@@ -97,6 +103,11 @@ Window {
                 Column {
 
                     spacing: 5
+
+                    Text {
+                        font.pointSize: 12
+                        text: "PreviewQt v" + PQCScripts.getVersion()
+                    }
 
                     Text {
                         font.pointSize: 12
