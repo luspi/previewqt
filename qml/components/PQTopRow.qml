@@ -29,7 +29,7 @@ Rectangle {
         PQIconButton {
             id: openbut
             y: (parent.height-height)/2
-            height: toprow.height-1
+            height: toprow.height-2
             source: "/open.svg"
             tooltip: qsTr("Open a file")
             onClicked: {
@@ -41,7 +41,7 @@ Rectangle {
         PQIconButton {
             id: settingsbut
             y: (parent.height-height)/2
-            height: toprow.height-1
+            height: toprow.height-2
             source: "/settings.svg"
             tooltip: qsTr("Open settings")
             onClicked: {
@@ -54,7 +54,7 @@ Rectangle {
         PQIconButton {
             id: openwithdefaultbut
             y: (parent.height-height)/2
-            height: toprow.height-1
+            height: toprow.height-2
             tooltip: qsTr("Open in external application")
             source: "/external.svg"
             onClicked: {
@@ -71,7 +71,7 @@ Rectangle {
         PQIconButton {
             id: exitbut
             y: (parent.height-height)/2
-            height: toprow.height-1
+            height: toprow.height-2
             source: "/exit.svg"
             tooltip: qsTr("Quit PreviewQt")
             onClicked: {
@@ -90,7 +90,7 @@ Rectangle {
             id: aboutbut
             y: (parent.height-height)/2
             borderLeft: true
-            height: toprow.height-1
+            height: toprow.height-2
             source: "/about.svg"
             tooltip: qsTr("About PreviewQt")
             onClicked: {
@@ -103,7 +103,7 @@ Rectangle {
         PQIconButton {
             id: helpbut
             y: (parent.height-height)/2
-            height: toprow.height-1
+            height: toprow.height-2
             source: "/help.svg"
             tooltip: qsTr("Help")
             onClicked: {
