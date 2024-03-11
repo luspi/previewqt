@@ -98,6 +98,8 @@ public:
     bool getCloseWhenLosingFocus();
     void setCloseWhenLosingFocus(bool val);
 
+    Q_INVOKABLE bool getFirstStart() { return firstStart; }
+
 private:
     PQCSettings();
 
@@ -122,6 +124,8 @@ private:
     void loadSettings();
 
     bool checkToolExistence(QString tool);
+
+    bool firstStart;
 
 private slots:
     void saveSettings();

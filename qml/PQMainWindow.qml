@@ -152,6 +152,13 @@ ApplicationWindow {
         source: "windows/PQHelp.qml"
     }
 
+    // The help window
+    Loader {
+        id: welcome
+        active: false
+        source: "windows/PQWelcome.qml"
+    }
+
     // some things are done once window is set up
     Component.onCompleted: {
 
@@ -182,6 +189,12 @@ ApplicationWindow {
             if(trayicon.status == Loader.Ready)
                 trayicon.item.showMessage(title, content, SystemTrayIcon.Information, 5000)
         }
+
+        if(PQCSettings.getFirstStart()) {
+            welcome.active = true
+            welcome.item.show()
+        }
+
     }
 
     // dialog for opening an image file

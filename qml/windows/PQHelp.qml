@@ -6,11 +6,14 @@ Window {
 
     id: help_top
 
-    // some stylings
     //: window title
     title: qsTr("Help")
+
+    // some stylings
     visible: false
     modality: Qt.ApplicationModal
+    width: 500
+    height: 500
 
     // in this window, this item catches all key presses
     Item {

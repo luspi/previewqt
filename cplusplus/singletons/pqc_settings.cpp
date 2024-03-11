@@ -7,11 +7,9 @@
 
 PQCSettings::PQCSettings() {
 
-#ifndef Q_OS_WIN
-    bool detectDefaults = false;
+    firstStart = false;
     if(!QFileInfo::exists(PQCConfigFiles::CONFIG_DIR() + "/settings"))
-        detectDefaults = true;
-#endif
+        firstStart = true;
 
     settings = new QSettings(PQCConfigFiles::CONFIG_DIR() + "/settings", QSettings::IniFormat);
     saveTimer = new QTimer;
@@ -22,7 +20,7 @@ PQCSettings::PQCSettings() {
     loadSettings();
 
 #ifndef Q_OS_WIN
-    if(detectDefaults) {
+    if(firstStart) {
 
         const QStringList img = {"photoqt", "gwenview", "nomacs", "eog", "feh", "gthumb", "mirage", "geeqie"};
         const QStringList doc = {"okular", "evince", "atril", "photoqt"};

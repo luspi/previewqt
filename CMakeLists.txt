@@ -59,7 +59,7 @@ set(d "qml/components/imageitems")
 set(previewqt_QML ${previewqt_QML} "${d}/PQImageNormal.qml" "${d}/PQVideoQt.qml" "${d}/PQVideoMpv.qml" "${d}/PQImageAnimated.qml")
 set(previewqt_QML ${previewqt_QML} "${d}/PQDocument.qml" "${d}/PQArchive.qml")
 set(d "qml/windows")
-set(previewqt_QML ${previewqt_QML} "${d}/PQSettings.qml" "${d}/PQAbout.qml" "${d}/PQHelp.qml")
+set(previewqt_QML ${previewqt_QML} "${d}/PQSettings.qml" "${d}/PQAbout.qml" "${d}/PQHelp.qml" "${d}/PQWelcome.qml")
 
 if(PHOTOSPHERE)
     set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQPhotoSphere.qml")

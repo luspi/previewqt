@@ -14,6 +14,8 @@ Window {
     title: qsTr("Settings")
     visible: false
     modality: Qt.ApplicationModal
+    width: 500
+    height: 500
 
     property bool optionsLoaded: false
 
