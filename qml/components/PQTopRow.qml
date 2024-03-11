@@ -31,7 +31,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-1
             source: "/open.svg"
-            tooltip: "Open a file"
+            tooltip: qsTr("Open a file")
             onClicked: {
                 fileDialog.open()
             }
@@ -43,7 +43,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-1
             source: "/settings.svg"
-            tooltip: "Open settings"
+            tooltip: qsTr("Open settings")
             onClicked: {
                 settings.active = true
                 settings.item.show()
@@ -55,7 +55,7 @@ Rectangle {
             id: openwithdefaultbut
             y: (parent.height-height)/2
             height: toprow.height-1
-            tooltip: "Open in external application"
+            tooltip: qsTr("Open in external application")
             source: "/external.svg"
             onClicked: {
                 if(image.imageSource === "") return
@@ -73,7 +73,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-1
             source: "/exit.svg"
-            tooltip: "Quit PreviewQt"
+            tooltip: qsTr("Quit PreviewQt")
             onClicked: {
                 Qt.quit()
             }
@@ -92,7 +92,7 @@ Rectangle {
             borderLeft: true
             height: toprow.height-1
             source: "/about.svg"
-            tooltip: "About PreviewQt"
+            tooltip: qsTr("About PreviewQt")
             onClicked: {
                 about.active = true
                 about.item.show()
@@ -105,7 +105,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-1
             source: "/help.svg"
-            tooltip: "Help"
+            tooltip: qsTr("Help")
             onClicked: {
                 help.active = true
                 help.item.show()

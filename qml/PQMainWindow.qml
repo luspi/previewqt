@@ -95,7 +95,7 @@ ApplicationWindow {
     Text {
         anchors.centerIn: parent
         color: "white"
-        text: "Click to open file"
+        text: qsTr("Click to open file")
         font.pointSize: 12
         font.bold: true
         visible: image.imageSource===""
@@ -165,8 +165,8 @@ ApplicationWindow {
         // if no image has been passed on and PreviewQt is supposed to be loaded hidden
         else if(PQCSettings.launchHiddenToSystemTray) {
             // show launch message
-            var title = "PreviewQt launched"
-            var content = "PreviewQt has been launched hidden to the system tray."
+            var title = qsTr("PreviewQt launched")
+            var content = qsTr("PreviewQt has been launched and hidden to the system tray.")
             messageWhenReady = [title, content]
             if(trayicon.status == Loader.Ready)
                 trayicon.item.showMessage(title, content, SystemTrayIcon.Information, 5000)
@@ -267,7 +267,7 @@ ApplicationWindow {
 
                 // check if file exists
                 if(!PQCScripts.doesFileExist(PQCScripts.cleanPath(msg))) {
-                    trayicon.item.showMessage("File does not exist.", "The requested file does not exist...")
+                    trayicon.item.showMessage(qsTr("File does not exist."), qsTr("The requested file does not exist..."))
                     return
                 }
 
@@ -317,7 +317,7 @@ ApplicationWindow {
                 color: "white"
                 font.pointSize: 14
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "Some of the external applications cannot be started or are not set up correctly."
+                text: qsTr("Some of the external applications cannot be started or are not set up correctly.")
             }
             Text {
                 x: (parent.width-width)/2
@@ -326,7 +326,7 @@ ApplicationWindow {
                 color: "white"
                 font.pointSize: 14
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "Please correct this in the settings."
+                text: qsTr("Please correct this in the settings.")
             }
 
             Item {
@@ -338,13 +338,13 @@ ApplicationWindow {
                 x: (parent.width-width)/2
                 spacing: 5
                 Button {
-                    text: "Ok"
+                    text: qsTr("Ok")
                     onClicked:  {
                         extNotSet.hide()
                     }
                 }
                 Button {
-                    text: "Go to settings"
+                    text: qsTr("Go to settings")
                     onClicked: {
                         extNotSet.hide()
                         settings.active = true

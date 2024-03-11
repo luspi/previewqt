@@ -215,7 +215,7 @@ Image {
                         id: pagetitletxt
 
                         y: (parent.height-height)/2
-                        text: qsTranslate("image", "Page")
+                        text: qsTr("Page")
                         color: "white"
 
                         MouseArea {

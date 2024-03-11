@@ -23,13 +23,13 @@ SystemTrayIcon {
     menu: Menu {
         visible: false
         MenuItem {
-            text: toplevel.visible ? "Hide window" : "Show window"
+            text: toplevel.visible ? qsTr("Hide window") : qsTr("Show window")
             onTriggered: {
                 toplevel.visible = !toplevel.visible
             }
         }
         MenuItem {
-            text: "Quit PreviewQt"
+            text: qsTr("Quit PreviewQt")
             onTriggered:
                 Qt.quit()
         }

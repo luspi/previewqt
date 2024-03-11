@@ -7,7 +7,8 @@ Window {
     id: help_top
 
     // some stylings
-    title: "Help"
+    //: window title
+    title: qsTr("Help")
     visible: false
     modality: Qt.ApplicationModal
 
@@ -42,7 +43,7 @@ Window {
             Text {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
-                text: "Help"
+                text: qsTr("Help")
                 font.pointSize: 20
                 font.bold: true
             }
@@ -50,25 +51,29 @@ Window {
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "<b>In the main application window</b>, combining the Control modifier with either of O, P, or I launches the action to open a file, the settings, or the About information, respectively. F1 opens this help message, Escape hides the application, and Ctrl+Q quits it altogether. Double clicking on a loaded image toggles the fullscreen mode. Then there exists a customizable shortcut for opening a loaded file in an external application."
+                //: Please keep the html tags for bold text in place as they help with parsing this block of text
+                text: qsTr("<b>In the main application window</b>, combining the Control modifier with either of O, P, or I launches the action to open a file, the settings, or the About information, respectively. F1 opens this help message, Escape hides the application, and Ctrl+Q quits it altogether. Double clicking on a loaded image toggles the fullscreen mode. Then there exists a customizable shortcut for opening a loaded file in an external application.")
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "<b>In the settings window</b>, Escape, Enter, and Return all close the window, and Ctrl+Tab switches between the two tabs."
+                //: Please keep the html tags for bold text in place as they help with parsing this block of text
+                text: qsTr("<b>In the settings window</b>, Escape, Enter, and Return all close the window, and Ctrl+Tab switches between the two tabs.")
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "<b>In both the Help and About window</b>, either one of Escape, Enter, and Return close the window."
+                //: Please keep the html tags for bold text in place as they help with parsing this block of text
+                text: qsTr("<b>In both the Help and About window</b>, either one of Escape, Enter, and Return close the window.")
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                text: "When <b>archives and documents</b> are loaded, the arrow keys allow switching between pages/files, and Home/End go to the beginning/end of the loaded document. Similarly, when <b>video files</b> are loaded, the space bar toggles the play status, the arrow keys jump left/right in the video file, and Home/End go to the start and end of the video."
+                //: Please keep the html tags for bold text in place as they help with parsing this block of text
+                text: qsTr("When <b>archives and documents</b> are loaded, the arrow keys allow switching between pages/files, and Home/End go to the beginning/end of the loaded document. Similarly, when <b>video files</b> are loaded, the space bar toggles the play status, the arrow keys jump left/right in the video file, and Home/End go to the start and end of the video.")
             }
 
             Column {
@@ -78,7 +83,8 @@ Window {
                 Text {
                     width: parent.width
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                    text: "<b>Need more help?</b> Then check out the website for PreviewQt:"
+                    //: Please keep the html tags for bold text in place as they help with parsing this block of text
+                    text: qsTr("<b>Need more help?</b> Then check out the website for PreviewQt:")
                 }
 
                 Text {
@@ -123,7 +129,7 @@ Window {
     Button {
         x: (parent.width-width)/2
         y: parent.height-45 + (45-height)/2
-        text: "Close"
+        text: qsTr("Close")
         onClicked:
             help_top.close()
 

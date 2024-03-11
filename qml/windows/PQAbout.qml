@@ -11,7 +11,8 @@ Window {
     id: about_top
 
     // some stylings
-    title: "About"
+    //: window title
+    title: qsTr("About")
     visible: false
     modality: Qt.ApplicationModal
 
@@ -46,7 +47,7 @@ Window {
             Text {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
-                text: "About PreviewQt"
+                text: qsTr("About PreviewQt")
                 font.pointSize: 20
                 font.bold: true
             }
@@ -75,22 +76,22 @@ Window {
                     Text {
                         width: parent.width
                         horizontalAlignment: Text.AlignRight
-                        text: "License:"
+                        text: qsTr("License:")
                     }
                     Text {
                         width: parent.width
                         horizontalAlignment: Text.AlignRight
-                        text: "Website:"
+                        text: qsTr("Website:")
                     }
                     Text {
                         width: parent.width
                         horizontalAlignment: Text.AlignRight
-                        text: "Developed by:"
+                        text: qsTr("Developed by:")
                     }
                     Text {
                         width: parent.width
                         horizontalAlignment: Text.AlignRight
-                        text: "Contact:"
+                        text: qsTr("Contact:")
                     }
 
                 }
@@ -150,7 +151,7 @@ Window {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
-                text: "PreviewQt is a lightweight application allowing for quickly previewing a wide range of files, from images and videos to documents and archives. It supports the same file types as supported by PhotoQt and uses some of the same code behind the scenes."
+                text: qsTr("PreviewQt is a lightweight application allowing for quickly previewing a wide range of files, from images and videos to documents and archives. It supports the same file types as supported by PhotoQt and uses some of the same code behind the scenes.")
 
             }
 
@@ -158,7 +159,7 @@ Window {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
-                text: "If you like PreviewQt but would like to have a more featured viewer along the same lines, check out the full-featured viewer application PhotoQt."
+                text: qsTr("If you like PreviewQt but would like to have a more featured viewer along the same lines, check out the full-featured viewer application PhotoQt.")
 
             }
 
@@ -187,7 +188,7 @@ Window {
     Button {
         x: (parent.width-width)/2
         y: parent.height-45 + (45-height)/2
-        text: "Close"
+        text: qsTr("Close")
         onClicked:
             about_top.close()
 

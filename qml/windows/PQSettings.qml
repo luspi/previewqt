@@ -11,7 +11,7 @@ Window {
 
     id: settings_top
 
-    title: "Settings"
+    title: qsTr("Settings")
     visible: false
     modality: Qt.ApplicationModal
 
@@ -143,12 +143,14 @@ Window {
         id: tabbar
         width: parent.width
         TabButton {
-            text: "General"
+            //: Tab name: general settings
+            text: qsTr("General")
             font.bold: tabbar.currentIndex===0
             width: settings_top.width/2
         }
         TabButton {
-            text: "External applications"
+            //: Tab name
+            text: qsTr("External applications")
             font.bold: tabbar.currentIndex===1
             width: settings_top.width/2
         }
@@ -188,18 +190,20 @@ Window {
                     x: (settings_top.width-width)/2
                     font.pointSize: 18
                     font.bold: true
-                    text: "Settings"
+                    //: Same as tab name but used as title
+                    text: qsTr("Settings")
                 }
 
                 Text {
                     x: (settings_top.width-width)/2
-                    text: "Note: Settings will be saved automatically."
+                    text: qsTr("Note: Settings will be saved automatically.")
                 }
 
                 /************************************/
 
                 CheckBox {
-                    text: "Keep top bar always visible"
+                    //: the top bar is the bar with the buttons
+                    text: qsTr("Keep top bar always visible")
                     checked: !PQCSettings.topBarAutoHide
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
@@ -209,7 +213,7 @@ Window {
                 }
 
                 CheckBox {
-                    text: "Launch PreviewQt hidden to system tray"
+                    text: qsTr("Launch PreviewQt hidden to system tray")
                     checked: PQCSettings.launchHiddenToSystemTray
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
@@ -228,7 +232,7 @@ Window {
 
                 Text {
                     y: (defwin_w.height-height)/2
-                    text: "Default window size at launch:"
+                    text: qsTr("Default window size at launch:")
                 }
 
                 Row {
@@ -266,7 +270,7 @@ Window {
                     }
                 }
                 CheckBox {
-                    text: "Launch PreviewQt maximized"
+                    text: qsTr("Launch PreviewQt maximized")
                     checked: PQCSettings.defaultWindowMaximized
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
@@ -314,19 +318,19 @@ Window {
                     x: (defaultappsettings.usableWidth-width)/2
                     font.pointSize: 18
                     font.bold: true
-                    text: "Settings"
+                    text: qsTr("Settings")
                 }
 
                 Text {
                     x: (defaultappsettings.usableWidth-width)/2
-                    text: "Note: Settings will be saved automatically."
+                    text: qsTr("Note: Settings will be saved automatically.")
                 }
 
                 /************************************/
 
                 Text {
                     y: (shortcutbut.height-height)/2
-                    text: "Shortcut to launch in external application:"
+                    text: qsTr("Shortcut to launch in external application:")
                 }
 
                 Button {
@@ -346,7 +350,7 @@ Window {
                     font.pointSize: 8
                     font.bold: true
                     color: "red"
-                    text: "This is a reserved shortcut for PreviewQt."
+                    text: qsTr("This is a reserved shortcut for PreviewQt.")
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
 
@@ -360,7 +364,7 @@ Window {
 
                 CheckBox {
                     width: defaultappsettings.usableWidth
-                    text: "Hide window after launching external application"
+                    text: qsTr("Hide window after launching external application")
                     checked: PQCSettings.closeAfterDefaultApp
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
@@ -372,7 +376,7 @@ Window {
                 Column {
 
                     Text {
-                        text: "External application for images:"
+                        text: qsTr("External application for images:")
                     }
 
                     ComboBox {
@@ -420,7 +424,7 @@ Window {
                 Column {
 
                     Text {
-                        text: "External application for documents:"
+                        text: qsTr("External application for documents:")
                     }
 
                     ComboBox {
@@ -468,7 +472,7 @@ Window {
                 Column {
 
                     Text {
-                        text: "External application for videos:"
+                        text: qsTr("External application for videos:")
                     }
 
                     ComboBox {
@@ -516,7 +520,7 @@ Window {
                 Column {
 
                     Text {
-                        text: "External application for archives:"
+                        text: qsTr("External application for archives:")
                     }
 
                     ComboBox {
@@ -564,7 +568,7 @@ Window {
                 Column {
 
                     Text {
-                        text: "External application for comic books:"
+                        text: qsTr("External application for comic books:")
                     }
 
                     ComboBox {
@@ -637,7 +641,8 @@ Window {
         x: (parent.width-width)/2
         y: parent.height-45 + (45-height)/2
         width: Math.min(200, parent.width*0.5)
-        text: "Close"
+        //: written on button
+        text: qsTr("Close")
         onClicked:
             settings_top.close()
 
