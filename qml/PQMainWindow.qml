@@ -63,7 +63,9 @@ ApplicationWindow {
     signal keyPress(var modifiers, var keycode)
 
     // when hiding to tray, we do some cleanup
-    onClosing: {
+    onClosing: (close) => {
+        close.accepted = false
+        toplevel.visibility = Window.Hidden
         image.loadImage("")
         extNotSet.hide()
         PQCScripts.deleteTemporaryFiles()
