@@ -47,7 +47,7 @@ Window {
             Text {
                 width: parent.width
                 horizontalAlignment: Text.AlignHCenter
-                text: qsTr("About PreviewQt")
+                text: qsTr("About")
                 font.pointSize: 25
                 font.bold: true
             }
