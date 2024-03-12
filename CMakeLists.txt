@@ -155,8 +155,6 @@ endif()
 
 if(VIDEO_MPV)
     find_package(Libmpv)
-    # TODO
-    # set(previewqt_SOURCES ${previewqt_SOURCES} ${previewqt_libmpv_SOURCES})
 endif()
 
 if(QTPDF)

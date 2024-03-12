@@ -194,9 +194,9 @@ void PQCImageFormats::readFromDatabase() {
         if(resvg) {
             supportedByAnyLibrary = true;
             all << "resvg";
-            formats_resvg << endings.split(",");
+            m_formats_resvg << endings.split(",");
             if(mimetypes != "")
-                mimetypes_resvg << mimetypes.split(",");
+                m_mimetypes_resvg << mimetypes.split(",");
         }
 #endif
 
@@ -204,9 +204,9 @@ void PQCImageFormats::readFromDatabase() {
         if(libvips) {
             supportedByAnyLibrary = true;
             all << "libvips";
-            formats_libvips << endings.split(",");
+            m_formats_libvips << endings.split(",");
             if(mimetypes != "")
-                mimetypes_libvips << mimetypes.split(",");
+                m_mimetypes_libvips << mimetypes.split(",");
         }
 #endif
 
