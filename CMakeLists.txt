@@ -97,6 +97,9 @@ option(PHOTOSPHERE "Enable support for photo spheres and 360 degree panoramic vi
 ################################
 
 find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Svg Sql)
+if(QTPDF)
+    find_package(Qt6 6.2 REQUIRED COMPONENTS Pdf)
+endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
 
@@ -194,6 +197,9 @@ target_include_directories(previewqt PRIVATE "cplusplus/header")
 
 # link executable
 target_link_libraries(previewqt PRIVATE Qt6::Quick Qt6::Widgets Qt6::Svg Qt6::Sql)
+if(QTPDF)
+    target_link_libraries(previewqt PRIVATE Qt6::Pdf)
+endif()
 
 ##################################
 #### COMPOSE THE DESKTOP FILE ####
