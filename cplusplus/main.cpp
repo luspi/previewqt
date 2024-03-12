@@ -107,8 +107,8 @@ int main(int argc, char *argv[]) {
     if(!QFileInfo::exists(PQCConfigFiles::CONFIG_DIR())) {
         QDir dir(PQCConfigFiles::CONFIG_DIR());
         if(!dir.mkpath(PQCConfigFiles::CONFIG_DIR())) {
-            qFatal() << "Error creating config directory!";
-            qFatal() << "Unable to continue.";
+            qCritical() << "Error creating config directory!";
+            qCritical() << "Unable to continue.";
             std::exit(1);
         }
         if(!dir.mkpath(PQCConfigFiles::CACHE_DIR())) {
@@ -117,7 +117,7 @@ int main(int argc, char *argv[]) {
         }
         if(!QFileInfo::exists(PQCConfigFiles::IMAGEFORMATS_DB())) {
             if(!QFile::copy(":/imageformats.db", PQCConfigFiles::IMAGEFORMATS_DB())) {
-                qFatal() << "Unable to create default imageformats database!";
+                qCritical() << "Unable to create default imageformats database!";
                 std::exit(1);
             } else {
                 QFile file(PQCConfigFiles::IMAGEFORMATS_DB());
