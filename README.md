@@ -25,7 +25,7 @@ If you like the overall concept of PreviewQt but would like to have more feature
 
 ## Download and Install
 
-PreviewQt can be installed in various ways. You can find a selection of them (Windows installer, Flatpak, etc.) [listed on the website:](https://photoqt.org/previewqt)
+PreviewQt can be installed in various ways. You can find a selection of them (Windows installer, Flatpak, etc.) [listed on the website: https://photoqt.org/previewqt](https://photoqt.org/previewqt)
 
 Instructions of how to build PreviewQt from source can be found in the INSTALL file in the root of the source directory.
 
@@ -34,8 +34,8 @@ Instructions of how to build PreviewQt from source can be found in the INSTALL f
 
 There are **two easy ways** you can contribute directly to PreviewQt:
 
-1. **Join the translation team** over on [Crowdin](https://translate.photoqt.org/). If your language is missing you can simply request it directly on Crowdin or send me an email and I can add it to the project.
-2. **Give feedback** about PreviewQt. To give feedback, simply [open an issue on GitLab](https://gitlab.com/luspi/previewqt/-/issues/new).
+1. **Join the translation team** over on [Crowdin](https://translate.photoqt.org/). If your language is missing you can simply request it directly on Crowdin or send me an email/message and I will add it to the project.
+2. **Give feedback** about PreviewQt. To do so, [send me an email](https://photoqt.org.about) or [open an issue on GitLab](https://gitlab.com/luspi/previewqt/-/issues/new).
 
 If you want to support PreviewQt financially, please **consider donating to the humanitarian relief in Ukraine** instead, for example to the [Ukrainian Red Cross](https://go.luspi.de/ukraine).
 
