@@ -440,45 +440,45 @@ if(UNIX)
 
     # Install desktop file
     install(
-        FILES org.photoqt.PreviewQt.desktop
+        FILES org.previewqt.PreviewQt.desktop
         DESTINATION share/applications
     )
 
     # And install all the icons
     install(
-        FILES icons/16x16/org.photoqt.PreviewQt.png
+        FILES icons/16x16/org.previewqt.PreviewQt.png
         DESTINATION share/icons/hicolor/16x16/apps/
     )
     install(
-        FILES icons/32x32/org.photoqt.PreviewQt.png
+        FILES icons/32x32/org.previewqt.PreviewQt.png
         DESTINATION share/icons/hicolor/32x32/apps/
     )
     install(
-        FILES icons/48x48/org.photoqt.PreviewQt.png
+        FILES icons/48x48/org.previewqt.PreviewQt.png
         DESTINATION share/icons/hicolor/48x48/apps/
     )
     install(
-        FILES icons/64x64/org.photoqt.PreviewQt.png
+        FILES icons/64x64/org.previewqt.PreviewQt.png
         DESTINATION share/icons/hicolor/64x64/apps/
     )
     install(
-        FILES icons/128x128/org.photoqt.PreviewQt.png
+        FILES icons/128x128/org.previewqt.PreviewQt.png
         DESTINATION share/icons/hicolor/128x128/apps/
     )
     install(
-        FILES icons/256x256/org.photoqt.PreviewQt.png
+        FILES icons/256x256/org.previewqt.PreviewQt.png
         DESTINATION share/icons/hicolor/256x256/apps/
     )
     install(
-        FILES icons/512x512/org.photoqt.PreviewQt.png
+        FILES icons/512x512/org.previewqt.PreviewQt.png
         DESTINATION share/icons/hicolor/512x512/apps/
     )
     install(
-        FILES icons/1024x1024/org.photoqt.PreviewQt.png
+        FILES icons/1024x1024/org.previewqt.PreviewQt.png
         DESTINATION share/icons/hicolor/1024x1024/apps/
     )
     install(
-        FILES org.photoqt.PreviewQt.metainfo.xml
+        FILES org.previewqt.PreviewQt.metainfo.xml
         DESTINATION share/metainfo/
     )
 

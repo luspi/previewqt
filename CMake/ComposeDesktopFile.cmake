@@ -1,13 +1,13 @@
 function(composeDesktopFile)
 
-    set(fname "org.photoqt.PreviewQt.desktop")
+    set(fname "org.previewqt.PreviewQt.desktop")
 
     file(WRITE  "${fname}" "[Desktop Entry]\n")
     file(APPEND "${fname}" "Name=PreviewQt\n")
     file(APPEND "${fname}" "GenericName=Previewer\n")
     file(APPEND "${fname}" "Comment=Preview all kinds of files\n")
     file(APPEND "${fname}" "Exec=previewqt %f\n")
-    file(APPEND "${fname}" "Icon=org.photoqt.PreviewQt\n")
+    file(APPEND "${fname}" "Icon=org.previewqt.PreviewQt\n")
     file(APPEND "${fname}" "Type=Application\n")
     file(APPEND "${fname}" "Terminal=false\n")
     file(APPEND "${fname}" "Categories=Graphics;Viewer;\n")
