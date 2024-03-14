@@ -1,7 +1,7 @@
 /**************************************************************************
  **                                                                      **
- ** Copyright (C) 2011-2024 Lukas Spies                                  **
- ** Contact: https://photoqt.org                                         **
+ ** Copyright (C) 2024 Lukas Spies                                       **
+ ** Contact: https://previewqt.org                                       **
  **                                                                      **
  ** This file is part of PreviewQt.                                      **
  **                                                                      **

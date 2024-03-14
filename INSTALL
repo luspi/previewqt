@@ -2,7 +2,7 @@
          Installing PreviewQt
 --------------------------------------
 
- The instructions below serve as a guide to compile and install PreviewQt from source. There are various means of installing PreviewQt (Windows installer, Flatpak, etc.) listed on the website at https://photoqt.org/previewqt.
+ The instructions below serve as a guide to compile and install PreviewQt from source. There are various means of installing PreviewQt (Windows installer, Flatpak, etc.) listed on the website at https://previewqt.org.
 
  DEPENDENCIES
 --------------
@@ -101,7 +101,7 @@
 ---------------------
 
  PreviewQt offers installers for pre-built binaries on its website:
- https://photoqt.org/previewqt
+ https://previewqt.org
 
  If you prefer to build it yourself, this process is not as hard as it might seem at
  first. The main challenge in building PreviewQt on Windows lies in getting the environment
@@ -140,5 +140,5 @@
  dependencies by specifying target_include_directories() and target_link_libraries().
 
  Once all the requried and desired dependencies are installed, then the source code of
- PreviewQt can be fetched from the website (https://photoqt.og/previewqt). Then simply follow
+ PreviewQt can be fetched from the website (https://previewqt.org). Then simply follow
  the instructions in the 'BUILDING AND INSTALLING' section above
