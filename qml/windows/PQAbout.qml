@@ -90,7 +90,7 @@ Window {
                     cursorShape: Qt.PointingHandCursor
                     ToolTip {
                         visible: parent.containsMouse
-                        text: "Click here to show configuration of this build"
+                        text: qsTr("Click here to show configuration of this build")
                     }
                     onClicked: {
                         configcontainer.opacity = 1
@@ -210,6 +210,14 @@ Window {
         visible: opacity>0
         Behavior on opacity { NumberAnimation { duration: 200 } }
 
+        property bool configLoaded: false
+        onVisibleChanged: {
+            if(visible && !configLoaded) {
+                configtxt.text = PQCScripts.getConfigInfo()
+                configLoaded = true
+            }
+        }
+
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
@@ -232,12 +240,27 @@ Window {
                     x: (parent.width-width)/2
                     font.pointSize: 18
                     font.bold: true
-                    text: "Configuration"
+                    text: qsTr("Configuration")
+                }
+
+                Button {
+                    x: (parent.width-width)/2
+                    text: qsTr("Copy to clipboard")
+                    onClicked: {
+                        PQCScripts.copyTextToClipboard(PQCScripts.getConfigInfo(false))
+                        catchKeyPress.forceActiveFocus()
+                    }
                 }
 
                 Text {
+                    id: configtxt
                     x: (parent.width-width)/2
-                    text: PQCScripts.getConfigInfo()
+                    text: ""
+                }
+
+                Item {
+                    width: 1
+                    height: 20
                 }
 
             }
@@ -271,9 +294,10 @@ Window {
         y: parent.height-45 + (45-height)/2
         text: qsTr("Close")
         onClicked: {
-            if(configcontainer.visible)
+            if(configcontainer.visible) {
                 configcontainer.opacity = 0
-            else
+                focusitem.forceActiveFocus()
+            } else
                 about_top.close()
         }
 

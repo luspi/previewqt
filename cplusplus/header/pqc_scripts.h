@@ -78,6 +78,7 @@ public:
     Q_INVOKABLE QString getVersion();
 
     Q_INVOKABLE QString getConfigInfo(bool formatHTML = true);
+    Q_INVOKABLE void copyTextToClipboard(QString txt);
 
 private:
     PQCScripts();

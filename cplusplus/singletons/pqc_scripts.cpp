@@ -1270,3 +1270,11 @@ QString PQCScripts::getConfigInfo(bool formatHTML) {
     return txt;
 
 }
+
+void PQCScripts::copyTextToClipboard(QString txt) {
+
+    qDebug() << "args: txt.length =" << txt.length();
+
+    qApp->clipboard()->setText(txt, QClipboard::Clipboard);
+
+}
