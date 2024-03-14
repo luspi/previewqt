@@ -42,8 +42,12 @@ Window {
     Item {
         id: catchKeyPress
         Keys.onPressed: (event) => {
-            if(event.key === Qt.Key_Escape || event.key === Qt.Key_Return || event.key === Qt.Key_Enter)
-                about_top.close()
+            if(event.key === Qt.Key_Escape || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                if(configcontainer.visible)
+                    configcontainer.opacity = 0
+                else
+                    about_top.close()
+            }
         }
     }
 
@@ -56,32 +60,42 @@ Window {
         anchors.bottomMargin: 45
         clip: true
 
+        opacity: 1 - configcontainer.opacity
+        visible: opacity>0
+
         contentHeight: contcol.height
 
         Column {
 
             id: contcol
 
-            spacing: 10
+            spacing: 0
 
             width: parent.width
-
-            Text {
-                width: parent.width
-                horizontalAlignment: Text.AlignHCenter
-                text: qsTr("About")
-                font.pointSize: 25
-                font.bold: true
-            }
 
             Image {
 
                 x: (parent.width-width)/2
-                width: height
-                height: Math.min(flickable.width/4, 200)
+                width: Math.min(flickable.width/2, 300)
+                height: width
                 sourceSize: Qt.size(width, height)
+                smooth: true
+                mipmap: false
 
-                source: "image://svg/:/logo.svg"
+                source: "image://svg/:/logo_full.svg"
+
+                MouseArea {
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    ToolTip {
+                        visible: parent.containsMouse
+                        text: "Click here to show configuration of this build"
+                    }
+                    onClicked: {
+                        configcontainer.opacity = 1
+                    }
+                }
 
             }
 
@@ -96,27 +110,22 @@ Window {
 
                     Text {
                         font.bold: true
-                        font.pointSize: 11
                         text: qsTr("Version:")
                     }
                     Text {
                         font.bold: true
-                        font.pointSize: 11
                         text: qsTr("License:")
                     }
                     Text {
                         font.bold: true
-                        font.pointSize: 11
                         text: qsTr("Website:")
                     }
                     Text {
                         font.bold: true
-                        font.pointSize: 11
                         text: qsTr("Developer:")
                     }
                     Text {
                         font.bold: true
-                        font.pointSize: 11
                         text: qsTr("Contact:")
                     }
 
@@ -127,12 +136,10 @@ Window {
                     spacing: 5
 
                     Text {
-                        font.pointSize: 12
                         text: "PreviewQt v" + PQCScripts.getVersion()
                     }
 
                     Text {
-                        font.pointSize: 12
                         text: "GPL v2+"
                         MouseArea {
                             anchors.fill: parent
@@ -173,27 +180,75 @@ Window {
 
             }
 
-            Text {
-                width: parent.width
-                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-
-                text: qsTr("PreviewQt is a lightweight application allowing for quickly previewing a wide range of files, from images and videos to documents and archives. It supports the same file types as supported by PhotoQt and uses some of the same code behind the scenes.")
-
+            Item {
+                width: 1
+                height: 10
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
-                text: qsTr("If you like PreviewQt but would like to have a more featured viewer along the same lines, check out the full-featured viewer application PhotoQt.")
+                text: qsTr("PreviewQt is a lightweight application allowing for quickly previewing a wide range of files, from images and videos to documents and archives. A list of supported file formats can be found on its website, though the number of actually supported formats might be even higher. If you like PreviewQt and would like to have a fully featured image viewer along the same lines, why not check out PhotoQt.")
 
+            }
+
+            Item {
+                width: 1
+                height: 10
             }
 
         }
     }
 
+    Rectangle {
+        id: configcontainer
+        anchors.fill: parent
+        anchors.bottomMargin: 45
+        clip: true
+        opacity: 0
+        visible: opacity>0
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+        }
+
+        Flickable {
+            id: configflick
+            anchors.fill: parent
+
+            contentHeight: configcol.height
+
+            Column {
+
+                id: configcol
+
+                width: configflick.width
+                spacing: 10
+
+                Text {
+                    x: (parent.width-width)/2
+                    font.pointSize: 18
+                    font.bold: true
+                    text: "Configuration"
+                }
+
+                Text {
+                    x: (parent.width-width)/2
+                    text: PQCScripts.getConfigInfo()
+                }
+
+            }
+
+        }
+
+    }
+
     // when closing we re-focus on main key catcher
     onClosing: {
+        configcontainer.opacity = 0
         focusitem.forceActiveFocus()
     }
 
@@ -215,8 +270,12 @@ Window {
         x: (parent.width-width)/2
         y: parent.height-45 + (45-height)/2
         text: qsTr("Close")
-        onClicked:
-            about_top.close()
+        onClicked: {
+            if(configcontainer.visible)
+                configcontainer.opacity = 0
+            else
+                about_top.close()
+        }
 
     }
 

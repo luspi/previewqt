@@ -37,22 +37,42 @@
 #include <thread>
 #include <chrono>
 
-#ifdef PQMLIBARCHIVE
-#include <archive.h>
-#include <archive_entry.h>
-#endif
-
-#ifdef PQMEXIV2
-#include <exiv2/exiv2.hpp>
-#endif
-
 #ifdef PQMQTPDF
 #include <QtPdf/QPdfDocument>
 #include <QtPdf/QtPdf>
 #endif
 
+#ifdef PQMLIBARCHIVE
+#include <archive.h>
+#include <archive_entry.h>
+#endif
+
+#ifdef PQMRAW
+#include <libraw/libraw.h>
+#endif
+
 #ifdef PQMPOPPLER
-#include <poppler/qt6/poppler-qt6.h>
+#include <poppler/qt6/poppler-version.h>
+#endif
+
+#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
+#include <Magick++/Include.h>
+#endif
+
+#ifdef PQMDEVIL
+#include <IL/il.h>
+#endif
+
+#ifdef PQMFREEIMAGE
+#include <FreeImage.h>
+#endif
+
+#ifdef PQMVIDEOMPV
+#include <pqc_mpvobject.h>
+#endif
+
+#ifdef PQMEXIV2
+#include <exiv2/exiv2.hpp>
 #endif
 
 PQCScripts::PQCScripts() {}
@@ -669,6 +689,8 @@ int PQCScripts::getDocumentPageCount(QString path) {
 
 #endif
 
+    return 0;
+
 }
 
 QStringList PQCScripts::getArchiveContent(QString path) {
@@ -1158,4 +1180,93 @@ bool PQCScripts::isFileSupported(QString path) {
 
 QString PQCScripts::getVersion() {
     return PQMVERSION;
+}
+
+QString PQCScripts::getConfigInfo(bool formatHTML) {
+
+    qDebug() << "";
+
+    QString bold1 = "";
+    QString bold2 = "";
+    QString nl = "\n";
+    QString spacing = "    ";
+    if(formatHTML) {
+        bold1 = "<b>";
+        bold2 = "</b>";
+        nl = "<br>";
+        spacing = "&nbsp;&nbsp;&nbsp;";
+    }
+
+    QString txt = "";
+
+    txt += QString(" - Compiled with %1Qt %2%3, running with %4Qt %5%6%7").arg(bold1, QT_VERSION_STR, bold2, bold1, qVersion(), bold2, nl);
+
+#ifdef PQMEXIV2
+    txt += QString(" - %1Exiv2%2: %3%4").arg(bold1, bold2, Exiv2::version(), nl);
+#endif
+
+#ifdef PQMRAW
+    txt += QString(" - %1LibRaw%2: %3%4").arg(bold1, bold2, LibRaw::version(), nl);
+#endif
+
+#ifdef PQMPOPPLER
+    txt += QString(" - %1Poppler%2: %3%4").arg(bold1, bold2, POPPLER_VERSION, nl);
+#endif
+
+#ifdef PQMQTPDF
+    txt += QString(" - %1QtPDF%2%3").arg(bold1, bold2, nl);
+#endif
+
+#ifdef PQMLIBARCHIVE
+    txt += QString(" - %1LibArchive%2: %3%4").arg(bold1, bold2, ARCHIVE_VERSION_ONLY_STRING, nl);
+#endif
+
+#ifdef PQMIMAGEMAGICK
+    txt += QString(" - %1ImageMagick%2: %3%4").arg(bold1, bold2, MagickLibVersionText, nl);
+#endif
+
+#ifdef PQMGRAPHICSMAGICK
+    txt += QString(" - %1GraphicsMagick%2: %3%4").arg(bold1, bold2, MagickLibVersionText, nl);
+#endif
+
+#ifdef PQMFREEIMAGE
+    txt += QString(" - %1FreeImage%2: %3.%4%5").arg(bold1, bold2).arg(FREEIMAGE_MAJOR_VERSION).arg(FREEIMAGE_MINOR_VERSION).arg(nl);
+#endif
+
+#ifdef PQMDEVIL
+    txt += QString(" - %1DevIL%2: %3%4").arg(bold1, bold2).arg(IL_VERSION).arg(nl);
+#endif
+
+#ifdef PQMMOTIONPHOTO
+    txt += QString(" - %1Motion Photo%2%3").arg(bold1, bold2, nl);
+#endif
+
+#ifdef PQMPHOTOSPHERE
+    txt += QString(" - %1Photosphere%2%3").arg(bold1, bold2, nl);
+#endif
+
+#ifdef PQMVIDEOQT
+    txt += QString(" - %1Video%2 through Qt%3").arg(bold1, bold2, nl);
+#endif
+
+#ifdef PQMVIDEOMPV
+    mpv_handle *mpv = mpv_create();
+    if(mpv_initialize(mpv) < 0)
+        throw std::runtime_error("could not initialize mpv context");
+    txt += QString(" - %1libmpv%2: %3 (ffmpeg: %4)%5").arg(bold1, bold2, mpv::qt::get_property(mpv, "mpv-version").toString(), mpv::qt::get_property(mpv, "ffmpeg-version").toString(), nl);
+#endif
+
+    txt += QString(" - %1Qt%2 image formats available:%3%4").arg(bold1, bold2, nl, spacing);
+    QImageReader reader;
+    auto formats = reader.supportedImageFormats();
+    for(int i = 0; i < formats.length(); ++i) {
+        if(i != 0 && i%10 == 0)
+            txt += QString("%1%2").arg(nl, spacing);
+        txt += QString("%1, ").arg(QString(formats[i]), 5);
+    }
+
+    txt += nl;
+
+    return txt;
+
 }

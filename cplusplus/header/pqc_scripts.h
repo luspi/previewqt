@@ -77,6 +77,8 @@ public:
     Q_INVOKABLE void deleteTemporaryFiles();
     Q_INVOKABLE QString getVersion();
 
+    Q_INVOKABLE QString getConfigInfo(bool formatHTML = true);
+
 private:
     PQCScripts();
 
