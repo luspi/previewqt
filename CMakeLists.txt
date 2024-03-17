@@ -92,6 +92,16 @@ option(EXIV2_ENABLE_BMFF "Enable BMFF format support in Exiv2 (if available)" ON
 option(MOTIONPHOTO "Enable support for Google Motion Photos and Apple Live Photos" ON)
 option(PHOTOSPHERE "Enable support for photo spheres and 360 degree panoramic views" ON)
 
+option(BUILD_PREVIEWQT_REMOTE "Build remote helper application to PreviewQt" ON)
+
+########################################
+#### Add other CMake subdirectories ####
+########################################
+
+if(BUILD_PREVIEWQT_REMOTE)
+    add_subdirectory("previewqtremote")
+endif()
+
 ################################
 #### FIND REQUIRED PACKAGES ####
 ################################
