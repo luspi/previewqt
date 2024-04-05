@@ -1,8 +1,8 @@
 # PreviewQt
 
-PreviewQt is a simple applications that allows you to **preview all kinds of files**, from **images** to **videos**, from **documents** to **comic books**. It is based on Qt/QML, published as open-source, and completely free.
+PreviewQt is a simple applications that allows you to **preview all kinds of files**, from **images** to **videos**, from **documents** to **archives**. It is based on Qt/QML, published as open-source, and completely free.
 
-Visit its official website at https://photoqt.org/previewqt
+Visit its official website at https://previewqt.org/
 
 ## Features
 
@@ -22,10 +22,15 @@ It is also possible to set up an external application for the categories of file
 
 If you like the overall concept of PreviewQt but would like to have more features, [check out the fully featured image viewer PhotoQt](https://photoqt.org).
 
+## Companion applications
+
+There are some companion application to PreviewQt:
+1. There is a remote control application (called `PreviewQtRemote`), shipped as part of the PreviewQt source code, that is anothing but a small square that stays in the foreground and can be moved anywhere out of the way. Dropping any file on that square passes that file on to PreviewQt.
+2. If you are running KDE Plasma 6, there is a plasmoid that itegrates nicely into your desktop. Dropping any file on that plasmoid shows an immediate preview with basic interaction. Double clicking that preview open PreviewQt for further handling.
 
 ## Download and Install
 
-PreviewQt can be installed in various ways. You can find a selection of them (Windows installer, Flatpak, etc.) [listed on the website: https://photoqt.org/previewqt](https://photoqt.org/previewqt)
+PreviewQt can be installed in various ways. You can find a selection of them (Windows installer, Flatpak, etc.) [listed on the website: https://photoqt.org/previewqt](https://previewqt.org/)
 
 Instructions of how to build PreviewQt from source can be found in the INSTALL file in the root of the source directory.
 
@@ -35,7 +40,7 @@ Instructions of how to build PreviewQt from source can be found in the INSTALL f
 There are **two easy ways** you can contribute directly to PreviewQt:
 
 1. **Join the translation team** over on [Crowdin](https://translate.photoqt.org/). If your language is missing you can simply request it directly on Crowdin or send me an email/message and I will add it to the project.
-2. **Give feedback** about PreviewQt. To do so, [send me an email](https://photoqt.org.about) or [open an issue on GitLab](https://gitlab.com/luspi/previewqt/-/issues/new).
+2. **Give feedback** about PreviewQt. To do so, [send me an email](https://previewqt.org/about) or [open an issue on GitLab](https://gitlab.com/lspies/previewqt/-/issues/new).
 
 If you want to support PreviewQt financially, please **consider donating to the humanitarian relief in Ukraine** instead, for example to the [Ukrainian Red Cross](https://go.luspi.de/ukraine).
 

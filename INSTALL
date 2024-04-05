@@ -78,6 +78,9 @@
      cmake -DCMAKE_INSTALL_PREFIX=/usr ..
 
      # At this step you can also en-/disable any compile time features.
+     # For example the remote previewqt application can be turned off by
+
+     cmake -DBUILD_PREVIEWQT_REMOTE=OFF ..
 
 3) make  # This creates an executeable previewqt binary located in the ./build/ folder
 

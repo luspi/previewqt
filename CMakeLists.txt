@@ -9,7 +9,7 @@ project(previewqt LANGUAGES CXX)
 ####  GLOBAL VERSION STRING FOR ALL FILES (INCLUDING CPP/QML) ####
 ##################################################################
 
-SET(APPVERSION "1.0")
+SET(APPVERSION "2.0")
 add_definitions(-DPQMVERSION="${APPVERSION}")
 
 ########################################

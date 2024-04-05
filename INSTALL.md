@@ -1,6 +1,6 @@
 # Installing PreviewQt
 
-The instructions below serve as a guide to compile and install PreviewQt from source. There are various means of installing PreviewQt (Windows installer, Flatpak, etc.) listed on the website at https://photoqt.org/previewqt.
+The instructions below serve as a guide to compile and install PreviewQt from source. There are various means of installing PreviewQt (Windows installer, Flatpak, etc.) listed on the website at https://previewqt.org/.
 
 ## DEPENDENCIES
 
@@ -66,6 +66,9 @@ These are some libraries and tools that can add additional formats to PreviewQt 
     _cmake -DCMAKE\_INSTALL\_PREFIX=/usr .._
 
     \# At this step you can also en-/disable any compile time features.
+    \# For example the remote previewqt application can be turned off by
+
+    _cmake -DBUILD_PREVIEWQT_REMOTE=OFF .._
 
 3. _make_
 
@@ -86,7 +89,7 @@ If you want to uninstall PreviewQt, simply run __make uninstall__ as root. This 
 
 ## BUILDING ON WINDOWS
 
-PreviewQt offers installers for pre-built binaries on its website: https://photoqt.org/previewqt
+PreviewQt offers installers for pre-built binaries on its website: https://previewqt.org/
 
 If you prefer to build it yourself, this process is not as hard as it might seem at first. The main challenge in building PreviewQt on Windows lies in getting the environment set up and all dependencies installed.
 
@@ -114,4 +117,4 @@ The following dependencies are recommended but can be disabled through CMake if 
 
 Make sure that any installed dependency is added to the system path, or otherwise you need to explicitely point CMake to the right location for each of them. Regardless, CMake might have to be explicitely pointed to the library/include paths of some of the dependencies by specifying `target_include_directories()` and `target_link_libraries()`.
 
-Once all the requried and desired dependencies are installed, then the source code of PreviewQt can be fetched from the website (https://photoqt.og/previewqt). Then simply follow the instructions in the `BUILDING AND INSTALLING` section above
+Once all the requried and desired dependencies are installed, then the source code of PreviewQt can be fetched from the website (https://previewqt.og/). Then simply follow the instructions in the `BUILDING AND INSTALLING` section above

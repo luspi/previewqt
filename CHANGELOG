@@ -1,7 +1,14 @@
-Changelog PreviewQt - Copyright (C) 2024, Lukas Spies (Lukas@photoqt.org), License: GPLv2 (or later)
+ Changelog PreviewQt - Copyright (C) 2024, Lukas Spies (Lukas@previewqt.org), License: GPLv2 (or later)
 ----------------------------------------------------------------------------------------------------------
 
+ Release 2.0 - 2024-04-05
+----------------------------
+- add: support for rotating images
+- add: remote control application (small square)
+- add: functionality to support KDE Plasma plasmoid
+- performance improvements
 
-Release 1.0 - 2024-03-12
+
+ Release 1.0 - 2024-03-12
 ----------------------------
 - initial release
