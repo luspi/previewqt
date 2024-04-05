@@ -75,7 +75,10 @@
 #include <exiv2/exiv2.hpp>
 #endif
 
-PQCScripts::PQCScripts() {}
+PQCScripts::PQCScripts() {
+    m_onlyWriteToTempFile = "";
+    m_startupMessage = "";
+}
 PQCScripts::~PQCScripts() {}
 
 QString PQCScripts::cleanPath(QString path) {
@@ -697,6 +700,9 @@ QStringList PQCScripts::getArchiveContent(QString path) {
 
     qDebug() << "args: path =" << path;
 
+    if(path.contains("::ARC::"))
+        path = path.split("::ARC::")[1];
+
     QString theid = generateArchiveId(path);
     if(archiveContents.contains(theid)) {
         return archiveContents[theid];
@@ -1276,5 +1282,11 @@ void PQCScripts::copyTextToClipboard(QString txt) {
     qDebug() << "args: txt.length =" << txt.length();
 
     qApp->clipboard()->setText(txt, QClipboard::Clipboard);
+
+}
+
+QString PQCScripts::toAbsolutePath(QString path) {
+
+    return QFileInfo(path).absoluteFilePath();
 
 }

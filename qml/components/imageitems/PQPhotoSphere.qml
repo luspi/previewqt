@@ -105,6 +105,13 @@ Item {
                     } else
                         thesphere.fieldOfView -=  wheel.angleDelta.y*0.05
                 }
+
+                onDoubleClicked: {
+                    if(toplevel.isFullscreen)
+                        toplevel.showNormal()
+                    else
+                        toplevel.showFullScreen()
+                }
             }
         }
 

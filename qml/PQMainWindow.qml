@@ -177,13 +177,26 @@ ApplicationWindow {
                 showNormal()
         }
 
-        // if an image has been passed on, load that image
-        if(Qt.application.arguments.length > 1 && PQCScripts.fileExists(Qt.application.arguments[1]))
+        var msg = PQCScripts.fromPercentEncoding(PQCScripts.getStartupMessage())
 
-            image.loadImage(PQCScripts.cleanPath(Qt.application.arguments[1]))
+        // if an image has been passed on, load that image
+        if(msg !== "-") {
+
+            if(!msg.includes(":/:/:"))
+                image.loadImage(PQCScripts.cleanPath(msg))
+            else {
+                var path = msg.split(":/:/:")[0]
+                var inside = msg.split(":/:/:")[1]
+                if(PQCScripts.isArchive(path))
+                    image.loadImage("%1::ARC::%2".arg(inside).arg(PQCScripts.cleanPath(path)))
+                else if(PQCScripts.isPDFDocument(path))
+                    image.loadImage("%1::PDF::%2".arg(inside).arg(PQCScripts.cleanPath(path)))
+                else
+                    image.loadImage(PQCScripts.cleanPath(msg))
+            }
 
         // if no image has been passed on and PreviewQt is supposed to be loaded hidden
-        else if(PQCSettings.launchHiddenToSystemTray) {
+        } else if(PQCSettings.launchHiddenToSystemTray) {
             // show launch message
             var title = qsTr("PreviewQt launched")
             var content = qsTr("PreviewQt has been launched and hidden to the system tray.")
@@ -278,8 +291,10 @@ ApplicationWindow {
 
             msg = PQCScripts.fromPercentEncoding(msg)
 
+            console.warn("** msg =", msg)
+
             // empty message -> show window
-            if(msg === ":/:/:") {
+            if(msg === "-") {
 
                 if(!toplevel.visible) {
                     if(PQCSettings.defaultWindowMaximized)
@@ -293,13 +308,30 @@ ApplicationWindow {
             // file passed on
             } else {
 
+                var fileInside = ""
+                var path = msg
+                if(msg.includes(":/:/:")) {
+                    path = PQCScripts.cleanPath(msg.split(":/:/:")[0])
+                    fileInside = msg.split(":/:/:")[1]
+                }
+
                 // check if file exists
-                if(!PQCScripts.doesFileExist(PQCScripts.cleanPath(msg))) {
-                    trayicon.item.showMessage(qsTr("File does not exist."), qsTr("The requested file does not exist..."))
+                if(!PQCScripts.doesFileExist(path)) {
+                    trayicon.item.showMessage(qsTr("File does not exist."), qsTr("The requested file does not exist:") + " %1".arg(path))
                     return
                 }
 
-                image.loadImage(PQCScripts.cleanPath(msg))
+                console.warn("**", path, "/", fileInside)
+
+                if(fileInside != "") {
+                    if(PQCScripts.isPDFDocument(path))
+                        image.loadImage("%1::PDF::%2".arg(fileInside).arg(path))
+                    else if(PQCScripts.isArchive(path))
+                        image.loadImage("%1::ARC::%2".arg(fileInside).arg(path))
+                    else
+                        image.loadImage(path)
+                } else
+                    image.loadImage(path)
 
                 if(!toplevel.visible) {
                     if(PQCSettings.defaultWindowMaximized)

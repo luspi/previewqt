@@ -28,11 +28,12 @@ Item {
 
     id: image_top
 
-    // some stylings
     x: 5
     y: (PQCSettings.topBarAutoHide ? 0 : 40)+5
     width: toplevel.width-2*5
     height: toplevel.height-(PQCSettings.topBarAutoHide ? 0 : 40)-2*5
+
+    property int setRotation: 0
 
     clip: true
 
@@ -42,6 +43,8 @@ Item {
     // these are used for a delay in reloading the image
     property int windowWidth: 200
     property int windowHeight: 200
+
+    property string currentType: ""
 
     // react to window size changes with a delau
     Timer {
@@ -117,6 +120,7 @@ Item {
     function loadImage(path) {
 
         imageloader.source = ""
+        setRotation = 0
 
         if(path === "") {
             imageSource = ""
@@ -127,20 +131,28 @@ Item {
 
         PQCSettings.filedialogLocation = PQCScripts.getDir(imageSource)
 
-        if(PQCScripts.isPDFDocument(imageSource))
+        if(PQCScripts.isPDFDocument(imageSource)) {
+            currentType = "doc"
             imageloader.source = "imageitems/PQDocument.qml"
-        else if(PQCScripts.isArchive(imageSource))
+        } else if(PQCScripts.isArchive(imageSource)) {
+            currentType = "ani"
             imageloader.source = "imageitems/PQArchive.qml"
-        else if(PQCScripts.isMpvVideo(imageSource))
+        } else if(PQCScripts.isMpvVideo(imageSource)) {
+            currentType = "arc"
             imageloader.source = "imageitems/PQVideoMpv.qml"
-        else if(PQCScripts.isQtVideo(imageSource))
+        } else if(PQCScripts.isQtVideo(imageSource)) {
+            currentType = "mpv"
             imageloader.source = "imageitems/PQVideoQt.qml"
-        else if(PQCScripts.isItAnimated(imageSource))
+        } else if(PQCScripts.isItAnimated(imageSource)) {
+            currentType = "vid"
             imageloader.source = "imageitems/PQImageAnimated.qml"
-        else if(PQCScripts.isPhotoSphere(imageSource))
+        } else if(PQCScripts.isPhotoSphere(imageSource)) {
+            currentType = "sph"
             imageloader.source = "imageitems/PQPhotoSphere.qml"
-        else
+        } else {
+            currentType = "img"
             imageloader.source = "imageitems/PQImageNormal.qml"
+        }
 
     }
 

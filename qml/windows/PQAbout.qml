@@ -189,7 +189,7 @@ Window {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
-                text: qsTr("PreviewQt is a lightweight application allowing for quickly previewing a wide range of files, from images and videos to documents and archives. A list of supported file formats can be found on its website, though the number of actually supported formats might be even higher. If you like PreviewQt and would like to have a fully featured image viewer along the same lines, why not check out PhotoQt.")
+                text: qsTr("PreviewQt is a lightweight application allowing for quickly previewing a wide range of files, from images and videos to documents and archives. A list of supported file formats can be found on its website, though the number of actually supported formats might be even higher. If you like PreviewQt and would like to have a fully featured image viewer along the same lines check out PhotoQt: https://photoqt.org")
 
             }
 

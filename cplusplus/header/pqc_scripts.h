@@ -62,6 +62,7 @@ public:
     Q_INVOKABLE QString keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key keycode);
     Q_INVOKABLE bool doesFileExist(QString path);
     Q_INVOKABLE bool isFileSupported(QString path);
+    QString toAbsolutePath(QString path);
 
     Q_INVOKABLE bool isPhotoSphere(QString path);
     Q_INVOKABLE int isMotionPhoto(QString path);
@@ -80,11 +81,20 @@ public:
     Q_INVOKABLE QString getConfigInfo(bool formatHTML = true);
     Q_INVOKABLE void copyTextToClipboard(QString txt);
 
+    Q_INVOKABLE QString getOnlyWriteToTempFile(){ return m_onlyWriteToTempFile; }
+    void setOnlyWriteToTempFile(QString val) { m_onlyWriteToTempFile = val; }
+
+    Q_INVOKABLE QString getStartupMessage(){ return m_startupMessage; }
+    void setStartupMessage(QString val) { m_startupMessage = val; }
+
 private:
     PQCScripts();
 
     QMap<QString,QStringList> archiveContents;
     QString generateArchiveId(QString path);
+
+    QString m_onlyWriteToTempFile;
+    QString m_startupMessage;
 
 signals:
     void commandLineArgumentReceived(QString msg);

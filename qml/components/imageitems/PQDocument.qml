@@ -24,37 +24,52 @@ import QtQuick
 import QtQuick.Controls
 import PQCScripts
 
-Image {
+Item {
 
     id: image
 
-    source: ""
+    x: (image_top.width-width)/2
+    y: (image_top.height-height)/2
 
-    Component.onCompleted: {
-        if(image_top.imageSource === "") {
-            source = ""
-            return
+    width: imageitem.width
+    height: imageitem.height
+
+    Image {
+
+        id: imageitem
+
+        source: ""
+
+        Component.onCompleted: {
+            if(image_top.imageSource === "") {
+                source = ""
+                return
+            }
+            if(image_top.imageSource.includes("::PDF::")) {
+                currentPage = image_top.imageSource.split("::PDF::")[0]*1
+                source = "image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)
+            } else
+                source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource))
         }
-        if(image_top.imageSource.includes("::PDF::"))
-            source = "image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)
-        else
-            source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource))
-    }
 
-    asynchronous: true
+        asynchronous: true
 
-    fillMode: Image.PreserveAspectFit
+        fillMode: Image.PreserveAspectFit
 
-    smooth: false
-    mipmap: false
+        smooth: false
+        mipmap: false
 
-    width: image_top.width
-    height: image_top.height
-    sourceSize: Qt.size(image_top.windowWidth, image_top.windowHeight)
+        rotation: image_top.setRotation
 
-    onStatusChanged: {
-        if(status == Image.Error)
-            source = "image://svg/:/errorimage.svg"
+        width: rotation%180===0 ? image_top.width : image_top.height
+        height: rotation%180===0 ? image_top.height : image_top.width
+        sourceSize: rotation%180===0 ? Qt.size(image_top.windowWidth, image_top.windowHeight) : Qt.size(image_top.windowHeight, image_top.windowWidth)
+
+        onStatusChanged: {
+            if(status == Image.Error)
+                source = "image://svg/:/errorimage.svg"
+        }
+
     }
 
     property int currentPage: 0
@@ -65,13 +80,13 @@ Image {
             source = ""
             return
         }
-        image.asynchronous = false
+        imageitem.asynchronous = false
         if(image_top.imageSource.includes("::PDF::")) {
-            image.source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(image.currentPage).arg(image_top.imageSource.split("::PDF::")[1]))
+            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource.split("::PDF::")[1]))
         } else {
-            image.source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(image.currentPage).arg(image_top.imageSource))
+            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource))
         }
-        image.asynchronous = true
+        imageitem.asynchronous = true
     }
 
     Rectangle {
@@ -88,7 +103,7 @@ Image {
         color: "#88000000"
 
         // only show when needed
-        opacity: image.pageCount>1 ? (hovered ? 1 : 0.3) : 0
+        opacity: pageCount>1 ? (hovered ? 1 : 0.3) : 0
         Behavior on opacity { NumberAnimation { duration: 200 } }
         visible: opacity>0
         enabled: visible
@@ -261,7 +276,7 @@ Image {
                         id: pagenumbertxt
 
                         y: (parent.height-height)/2
-                        text: "%1/%2".arg(image.currentPage+1).arg(image.pageCount)
+                        text: "%1/%2".arg(currentPage+1).arg(pageCount)
                         color: "white"
 
                         MouseArea {

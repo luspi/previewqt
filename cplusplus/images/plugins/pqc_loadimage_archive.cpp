@@ -67,8 +67,6 @@ QString PQCLoadImageArchive::load(QString filename, QSize maxSize, QSize &origSi
         compressedFilename = cont.at(0).split("::ARC::").at(0);
     }
 
-    qWarning() << "///" << compressedFilename << "/" << archivefile;
-
     if(!QFileInfo::exists(archivefile)) {
         errormsg = "File doesn't seem to exist...";
         qWarning() << errormsg;

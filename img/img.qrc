@@ -20,5 +20,7 @@
         <file>help.svg</file>
         <file>errorimage.svg</file>
         <file>logo_full.svg</file>
+        <file>rotateleft.svg</file>
+        <file>rotateright.svg</file>
     </qresource>
 </RCC>

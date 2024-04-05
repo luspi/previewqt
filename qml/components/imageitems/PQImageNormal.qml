@@ -23,32 +23,47 @@
 import QtQuick
 import QtMultimedia
 import PQCScripts
+import PQCSettings
 
-Image {
+Item {
 
     id: image
 
-    source: image_top.imageSource!=="" ? ("image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)) : ""
+    x: (image_top.width-width)/2
+    y: (image_top.height-height)/2
 
-    asynchronous: true
+    width: imageitem.width
+    height: imageitem.height
 
-    fillMode: Image.PreserveAspectFit
+    Image {
 
-    smooth: false
-    mipmap: false
+        id: imageitem
 
-    width: image_top.width
-    height: image_top.height
-    sourceSize: Qt.size(image_top.windowWidth, image_top.windowHeight)
+        source: image_top.imageSource!=="" ? ("image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)) : ""
 
-    onStatusChanged: {
-        if(status == Image.Error)
-            source = "image://svg/:/errorimage.svg"
-        else if(status == Image.Ready) {
-            asynchronous = false
-            if(extrasCheckedFor !== image_top.imageSource)
-                checkForExtras.restart()
+        asynchronous: true
+
+        fillMode: Image.PreserveAspectFit
+
+        smooth: false
+        mipmap: false
+
+        rotation: image_top.setRotation
+
+        width: rotation%180===0 ? image_top.width : image_top.height
+        height: rotation%180===0 ? image_top.height : image_top.width
+        sourceSize: rotation%180===0 ? Qt.size(image_top.windowWidth, image_top.windowHeight) : Qt.size(image_top.windowHeight, image_top.windowWidth)
+
+        onStatusChanged: {
+            if(status == Image.Error)
+                source = "image://svg/:/errorimage.svg"
+            else if(status == Image.Ready) {
+                asynchronous = false
+                if(extrasCheckedFor !== image_top.imageSource)
+                    checkForExtras.restart()
+            }
         }
+
     }
 
     property string extrasCheckedFor: ""
@@ -138,8 +153,9 @@ Image {
         property bool forceMirror: false
         property int forceRotation: 0
 
-        width: image.width
-        height: image.height
+        width: imageitem.width
+        height: imageitem.height
+        rotation: imageitem.rotation
 
         transform:
             Rotation {
@@ -152,7 +168,7 @@ Image {
             id: mediaplayer
             rotation: mediaplayer_wrapper.forceRotation
             anchors.fill: parent
-            anchors.margins: rotation%180==0 ? 0 : (image.paintedHeight-image.paintedWidth)/2
+            anchors.margins: rotation%180==0 ? 0 : (imageitem.paintedHeight-imageitem.paintedWidth)/2
             source: ""
         }
 
@@ -160,6 +176,7 @@ Image {
 
     Rectangle {
 
+        parent: image_top
         x: parent.width-width-10
         y: parent.height-height-10
 

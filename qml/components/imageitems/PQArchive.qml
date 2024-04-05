@@ -24,50 +24,57 @@ import QtQuick
 import QtQuick.Controls
 import PQCScripts
 
-Image {
+Item {
 
     id: image
 
-    source: ""
-
-    Component.onCompleted: {
-        if(image_top.imageSource === "") {
-            source = ""
-            return
-        }
-        if(image_top.imageSource.includes("::ARC::") || fileCount == 0)
-            source = "image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)
-        else
-            source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(image_top.imageSource))
-    }
-
-    asynchronous: true
-
-    fillMode: Image.PreserveAspectFit
-
-    smooth: false
-    mipmap: false
-
-    width: image_top.width
-    height: image_top.height
-    sourceSize: Qt.size(image_top.windowWidth, image_top.windowHeight)
-
     property bool thisIsAComicBook: PQCScripts.isComicBook(image_top.imageSource)
-
-    onStatusChanged: {
-        if(status == Image.Error)
-            source = "image://svg/:/errorimage.svg"
-    }
-
     property var fileList: []
     property int currentFile: 0
     property int fileCount: fileList.length
+
+    Image {
+
+        id: imageitem
+
+        source: ""
+
+        Component.onCompleted: {
+            if(image_top.imageSource === "") {
+                source = ""
+                return
+            }
+            if(image_top.imageSource.includes("::ARC::") || fileCount == 0)
+                source = "image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)
+            else
+                source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(image_top.imageSource))
+        }
+
+        asynchronous: true
+
+        fillMode: Image.PreserveAspectFit
+
+        smooth: false
+        mipmap: false
+
+        width: image_top.width
+        height: image_top.height
+        sourceSize: Qt.size(image_top.windowWidth, image_top.windowHeight)
+
+        onStatusChanged: {
+            if(status == Image.Error)
+                source = "image://svg/:/errorimage.svg"
+        }
+
+    }
 
     Timer {
         interval: 100
         running: true
         onTriggered: {
             fileList = PQCScripts.getArchiveContent(image_top.imageSource)
+            if(image_top.imageSource.includes("::ARC::"))
+                currentFile = fileList.indexOf(image_top.imageSource.split("::ARC::")[0])
         }
     }
 
@@ -85,13 +92,14 @@ Image {
     }
 
     function updateSource() {
-        image.asynchronous = false
+        imageitem.asynchronous = false
+        if(currentFile == -1 || currentFile >= fileList.length) return
         if(image_top.imageSource.includes("::ARC::")) {
-            image.source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(image_top.imageSource.split("::ARC::")[1]))
+            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(image_top.imageSource.split("::ARC::")[1]))
         } else {
-            image.source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(image_top.imageSource))
+            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(image_top.imageSource))
         }
-        image.asynchronous = true
+        imageitem.asynchronous = true
     }
 
     Rectangle {
@@ -108,7 +116,7 @@ Image {
         color: "#88000000"
 
         // only show when needed
-        opacity: !thisIsAComicBook && image.fileCount>1 ? (hovered ? 1 : 0.3) : 0
+        opacity: !thisIsAComicBook && fileCount>1 ? (hovered ? 1 : 0.3) : 0
         Behavior on opacity { NumberAnimation { duration: 200 } }
         visible: opacity>0
         enabled: visible
@@ -155,7 +163,7 @@ Image {
         color: "#88000000"
 
         // only show when needed
-        opacity: thisIsAComicBook && image.fileCount>1 ? (hovered ? 1 : 0.3) : 0
+        opacity: thisIsAComicBook && fileCount>1 ? (hovered ? 1 : 0.3) : 0
         Behavior on opacity { NumberAnimation { duration: 200 } }
         visible: opacity>0
         enabled: visible
@@ -328,7 +336,7 @@ Image {
                         id: pagenumbertxt
 
                         y: (parent.height-height)/2
-                        text: "%1/%2".arg(image.currentFile+1).arg(image.fileCount)
+                        text: "%1/%2".arg(currentFile+1).arg(fileCount)
                         color: "white"
 
                         MouseArea {

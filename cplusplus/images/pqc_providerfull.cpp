@@ -35,7 +35,14 @@ QImage PQCProviderFull::requestImage(const QString &url, QSize *origSize, const 
     qDebug() << "args: url =" << url;
     qDebug() << "args: requestedSize =" << requestedSize;
 
-    QString filename = PQCScripts::cleanPath(QByteArray::fromPercentEncoding(url.toUtf8()));
+    int rotation = 0;
+
+    QString path = QByteArray::fromPercentEncoding(url.toUtf8());
+    if(path.contains(":::")) {
+        rotation = path.split(":::")[0].toInt();
+        path = path.split(":::")[1];
+    }
+    QString filename = PQCScripts::cleanPath(path);
 
     QString filenameForChecking = filename;
     if(filenameForChecking.contains("::PDF::"))
@@ -50,19 +57,28 @@ QImage PQCProviderFull::requestImage(const QString &url, QSize *origSize, const 
         return QImage();
     }
 
+    QSize useRequestedSize = requestedSize;
+    if(abs(rotation%180) == 90) {
+        useRequestedSize = QSize(requestedSize.height(), requestedSize.width());
+    }
+
     // Load image
     QImage ret;
-    PQCLoadImage::get().load(filename, requestedSize, *origSize, ret);
+    PQCLoadImage::get().load(filename, useRequestedSize, *origSize, ret);
 
     // if returned image is not an error image ...
     if(ret.isNull())
         return QImage();
 
+    // apply rotation
+    QTransform transform;
+    transform.rotate(rotation);
+
     // return scaled version
-    if(requestedSize.width() > 2 && requestedSize.height() > 2 && origSize->width() > requestedSize.width() && origSize->height() > requestedSize.height())
-        return ret.scaled(requestedSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    if(requestedSize.width() > 2 && requestedSize.height() > 2 && origSize->width() > useRequestedSize.width() && origSize->height() > useRequestedSize.height())
+        return ret.transformed(transform).scaled(useRequestedSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
     // return full version
-    return ret;
+    return ret.transformed(transform);
 
 }

@@ -89,6 +89,32 @@ Rectangle {
             }
         }
 
+        // rotate left
+        PQIconButton {
+            id: rotleftbut
+            enabled: ["sph", "vid", "mpv"].indexOf(image.currentType)==-1
+            y: (parent.height-height)/2
+            height: toprow.height-2
+            tooltip: qsTr("Rotate image to the left")
+            source: "image://svg/:/rotateleft.svg"
+            onClicked: {
+                image.setRotation -= 90
+            }
+        }
+
+        // rotate right
+        PQIconButton {
+            id: rotrightbut
+            enabled: ["sph", "vid", "mpv"].indexOf(image.currentType)==-1
+            y: (parent.height-height)/2
+            height: toprow.height-2
+            tooltip: qsTr("Rotate image to the right")
+            source: "image://svg/:/rotateright.svg"
+            onClicked: {
+                image.setRotation += 90
+            }
+        }
+
         // close window
         PQIconButton {
             id: exitbut

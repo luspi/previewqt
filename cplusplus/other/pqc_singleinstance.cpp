@@ -30,46 +30,181 @@
 #include <QQmlApplicationEngine>
 #include <QLocalSocket>
 #include <QLocalServer>
+#include <QStandardPaths>
+#include <QMimeDatabase>
+#include <QImageReader>
 
 #include <pqc_singleinstance.h>
 #include <pqc_scripts.h>
+#include <pqc_loadimage.h>
+#include <pqc_imageformats.h>
 
 PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(argc, argv) {
 
-    // This is the message string that we send to a running instance (if it exists
-    QString passedon = ":/:/:";
-    if(argc == 2)
-        passedon = argv[1];
+    // some possible parameter handling
+    QString file = "";
+    bool processonly = false;
+    int fileNumInside = 0;
 
-    if(passedon == "-h" || passedon == "--help") {
+    for(int i = 1; i < argc; ++i) {
 
-        std::cout << std::endl;
-        std::cout << "Usage: previewqt [options] [filename]" << std::endl;
-        std::cout << "Preview files." << std::endl;
-        std::cout << std::endl;
-        std::cout << "Options:" << std::endl;
-        std::cout << std::setw(15) << std::right << "  -h, --help" << "   " << "Displays help on commandline options." << std::endl;
-        std::cout << std::setw(15) << std::right << "  -v, --version" << "   " << "Displays version information." << std::endl;
-        std::cout << std::endl;
-        std::cout << "Arguments:" << std::endl;
-        std::cout << std::setw(15) << std::right << "  [filename]" << "   " << "Image file to open." << std::endl;
-        std::cout << std::endl;
+        QString arg = argv[i];
 
-        std::exit(0);
-        return;
+        if(arg == "-h" || arg == "--help") {
 
-    } else if(passedon == "-v" || passedon == "--version") {
+            std::cout << std::endl;
+            std::cout << "Usage: previewqt [options] [filename]" << std::endl;
+            std::cout << "Preview files." << std::endl;
+            std::cout << std::endl;
+            std::cout << "Options:" << std::endl;
+            std::cout << std::setw(15) << std::right << "  -h, --help" << "   " << "Displays help on commandline options." << std::endl;
+            std::cout << std::setw(15) << std::right << "  -v, --version" << "   " << "Displays version information." << std::endl;
+            std::cout << std::setw(15) << std::right << "  --process-only" << "   " << "Process file, provide path to processed file, and print some information." << std::endl;
+            std::cout << std::setw(15) << std::right << "  --file-num <num>" << "   " << "Which file/page to load inside of a document/archive." << std::endl;
+            std::cout << std::endl;
+            std::cout << "Arguments:" << std::endl;
+            std::cout << std::setw(15) << std::right << "  [filename]" << "   " << "Image file to open." << std::endl;
+            std::cout << std::endl;
 
-        std::cout << std::endl;
-        std::cout << " PreviewQt " << PQMVERSION << std::endl;
-        std::cout << std::endl;
+            std::exit(0);
+            return;
+
+        } else if(arg == "-v" || arg == "--version") {
+
+            std::cout << std::endl;
+            std::cout << " PreviewQt " << PQMVERSION << std::endl;
+            std::cout << std::endl;
+
+            std::exit(0);
+            return;
+
+        } else if(arg == "--process-only") {
+
+            processonly = true;
+
+        } else if(arg == "--file-num" && i < argc-1) {
+
+            fileNumInside = atoi(argv[++i]);
+
+        } else {
+
+            file = arg;
+
+        }
+
+    }
+
+    QString filename = PQCScripts::get().toAbsolutePath(PQCScripts::cleanPath(file));
+
+    // only process file, exit and stop executing after
+    if(processonly && QFileInfo::exists(PQCScripts::get().cleanPath(file))) {
+
+        QString tmpfile = QString("%1/tmpfile.jpg").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+        if(QFileInfo::exists(tmpfile))
+            QFile::remove(tmpfile);
+
+        if(!QFileInfo::exists(filename)) {
+            std::cerr << "ERROR" << std::endl;
+            std::exit(0);
+            return;
+        }
+
+        // we print out some mime info
+        QMimeDatabase db;
+
+        // the suffix for convenience
+        QString suffix = QFileInfo(filename).suffix().toLower();
+
+        // is this a video?
+        if(PQCImageFormats::get().getAllFormatsVideo().indexOf(suffix) > -1) {
+
+            QString mime = db.mimeTypeForFile(filename).name();
+            std::cout << "display mime: " << mime.toStdString() << std::endl
+                      << "source mime: " << mime.toStdString() << std::endl
+                      << "tmp path: " << filename.toStdString() << std::endl
+                      << "file name: " << PQCScripts::get().getFilename(filename).toStdString() << std::endl
+                      << "video: yes" << std::endl;
+
+            std::exit(0);
+            return;
+
+        }
+
+        // is this format supported by Qt?
+        if(PQCImageFormats::get().getAllFormatsQt().indexOf(suffix) > -1) {
+
+            QString mime = db.mimeTypeForFile(filename).name();
+            std::cout << "display mime: " << mime.toStdString() << std::endl
+                      << "source mime: " << mime.toStdString() << std::endl
+                      << "tmp path: " << filename.toStdString() << std::endl
+                      << "file name: " << PQCScripts::get().getFilename(filename).toStdString() << std::endl;
+
+            QImageReader reader(filename);
+            if(reader.supportsAnimation())
+                std::cout << "animated: yes" << std::endl;
+
+            std::exit(0);
+            return;
+
+        }
+
+        bool isPDF = PQCScripts::get().isPDFDocument(filename);
+        bool isARC = PQCScripts::get().isArchive(filename);
+
+        QStringList archiveContent;
+        if(isARC)
+            archiveContent = PQCScripts::get().getArchiveContent(filename);
+\
+        QString filenameToLoad = filename;
+        if(isPDF)
+            filenameToLoad = QString("%1::PDF::%2").arg(fileNumInside).arg(filename);
+        else if(isARC && fileNumInside < archiveContent.length())
+            filenameToLoad = QString("%1::ARC::%2").arg(archiveContent[fileNumInside], filename);
+
+        // process file
+        QSize tmp;
+        QImage img;
+        PQCLoadImage::get().load(filenameToLoad, QSize(-1,-1), tmp, img);
+        img.save(tmpfile);
+
+        // display information
+        std::cout << "display mime: image/jpeg" << std::endl
+                  << "source mime: " << db.mimeTypeForFile(filename).name().toStdString() << std::endl
+                  << "tmp path: " << QString("%1/tmpfile.jpg").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).toStdString() << std::endl
+                  << "file name: " << PQCScripts::get().getFilename(filename).toStdString() << std::endl;
+
+        if(isPDF) {
+            std::cout << "file number: " << fileNumInside << std::endl;
+            std::cout << "file count: " << PQCScripts::get().getDocumentPageCount(filename) << std::endl;
+        } else if(isARC) {
+            std::cout << "file number: " << fileNumInside << std::endl;
+            std::cout << "file name (inside): " << archiveContent[fileNumInside].toStdString() << std::endl;
+            std::cout << "file count: " << archiveContent.length() << std::endl;
+        }
 
         std::exit(0);
         return;
 
     }
 
-    QByteArray message = QUrl::toPercentEncoding(passedon);
+    QByteArray message = "";
+    if(fileNumInside > 0) {
+        if(PQCScripts::get().isPDFDocument(filename)) {
+            message = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename).arg(fileNumInside));
+        } else if(PQCScripts::get().isArchive(filename)) {
+            QStringList cont = PQCScripts::get().getArchiveContent(filename);
+            if(fileNumInside < cont.length())
+                message = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename, cont[fileNumInside]));
+            else
+                message = QUrl::toPercentEncoding(filename);
+        } else
+            message = QUrl::toPercentEncoding(filename);
+
+    } else
+        message = QUrl::toPercentEncoding(filename);
+
+    if(message == "")
+        message = "-";
 
 
     socket = nullptr;
@@ -108,6 +243,8 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         server->removeServer(server_str);
         server->listen(server_str);
         connect(server, &QLocalServer::newConnection, this, &PQCSingleInstance::newConnection);
+
+        PQCScripts::get().setStartupMessage(message);
 
     }
 

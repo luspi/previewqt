@@ -30,7 +30,9 @@ Rectangle {
     width: height
     height: parent.height
 
-    color: control.down ? "#000000" : (control.hovered ? "#444444" : "#222222")
+    color: enabled ?
+               (control.down ? "#000000" : (control.hovered ? "#444444" : "#222222")) :
+               "#88666666"
     Behavior on color { ColorAnimation { duration: 200 } }
 
     property string tooltip: ""
@@ -56,6 +58,8 @@ Rectangle {
         sourceSize: Qt.size(width, height)
         mipmap: false
         smooth: false
+        opacity: enabled ? 1 : 0.5
+        Behavior on opacity { NumberAnimation { duration: 200 } }
     }
 
     Rectangle {
@@ -78,7 +82,7 @@ Rectangle {
 
     ToolTip {
         delay: 500
-        text: control.tooltip
+        text: parent.enabled ? control.tooltip : "Action not supported for this file type"
         visible: text!=="" && control.hovered
     }
 

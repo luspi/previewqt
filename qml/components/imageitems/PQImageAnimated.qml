@@ -24,27 +24,39 @@ import QtQuick
 import QtQuick.Controls
 import PQCScripts
 
-AnimatedImage {
+Item {
 
     id: image
-
-    source: image_top.imageSource!=="" ? ("file:/" + PQCScripts.toPercentEncoding(image_top.imageSource)) : ""
-
-    asynchronous: true
-
-    fillMode: Image.PreserveAspectFit
 
     x: (image_top.width-width)/2
     y: (image_top.height-height)/2
 
-    scale: Math.min(image_top.width/width, image_top.height/height)
+    width: imageitem.width
+    height: imageitem.height
 
-    smooth: scale<1
-    mipmap: scale<1
+    AnimatedImage {
 
-    onStatusChanged: {
-        if(status == Image.Error)
-            source = "image://svg/:/errorimage.svg"
+        id: imageitem
+
+        source: image_top.imageSource!=="" ? ("file:/" + PQCScripts.toPercentEncoding(image_top.imageSource)) : ""
+
+        asynchronous: true
+
+        fillMode: Image.PreserveAspectFit
+
+        smooth: Math.abs(sourceSize.width-width) > 100
+        mipmap: smooth
+
+        rotation: image_top.setRotation
+
+        width: rotation%180===0 ? image_top.width : image_top.height
+        height: rotation%180===0 ? image_top.height : image_top.width
+
+        onStatusChanged: {
+            if(status == Image.Error)
+                source = "image://svg/:/errorimage.svg"
+        }
+
     }
 
     Rectangle {
@@ -77,14 +89,14 @@ AnimatedImage {
                 width: height
                 height: 20
                 sourceSize: Qt.size(width, height)
-                source: image.playing ? "image://svg/:/pause.svg" : "image://svg/:/play.svg"
+                source: imageitem.playing ? "image://svg/:/pause.svg" : "image://svg/:/play.svg"
                 MouseArea {
                     id: playpausemouse
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked:
-                        image.playing = !image.playing
+                        imageitem.playing = !imageitem.playing
                 }
             }
 
@@ -94,11 +106,12 @@ AnimatedImage {
                 orientation: Qt.Horizontal
                 width: 100
                 from: 0
-                value: image.currentFrame
-                to: image.frameCount-1
+                value: imageitem.currentFrame
+                to: imageitem.frameCount-1
                 onValueChanged: {
                     if(pressed)
-                        image.currentFrame = value
+                        imageitem.currentFrame = value
+                    focusitem.forceActiveFocus()
                 }
             }
 
@@ -118,23 +131,23 @@ AnimatedImage {
 
             if(keycode === Qt.Key_Space) {
 
-                playing = !playing
+                imageitem.playing = !imageitem.playing
 
             } else if(keycode === Qt.Key_Left) {
 
-                currentFrame = (currentFrame+frameCount-1)%frameCount
+                imageitem.currentFrame = (imageitem.currentFrame+imageitem.frameCount-1)%imageitem.frameCount
 
             } else if(keycode === Qt.Key_Right || keycode === Qt.Key_Space) {
 
-                currentFrame = (currentFrame+1)%frameCount
+                imageitem.currentFrame = (imageitem.currentFrame+1)%imageitem.frameCount
 
             } else if(keycode === Qt.Key_Home) {
 
-                currentFrame = 0
+                imageitem.currentFrame = 0
 
             } else if(keycode === Qt.Key_End) {
 
-                currentFrame = frameCount-1
+                imageitem.currentFrame = imageitem.frameCount-1
 
             }
 
