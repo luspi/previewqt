@@ -18,6 +18,7 @@
             <li>Comic Books (cbz, cbt, cbr, cb7) including page navigation</li>
         </ul>
         <p>It is also possible to set up an external application for the categories of files. With a shortcut or button it is possible to pass a previewed file on to the provided external application for further processing.</p>
+        <p>You can pass files to PreviewQt by means of a remote application (small square) wth any file dropped on it passed on to PreviewQt. If you are running KDE Plasma 6, there is also a plasmoid that integrates nicely with your desktop.</p>
         <p>If you like the overall concept of PreviewQt but would like to have more features, check out the fully featured image viewer PhotoQt.</p>
     </description>
     <screenshots>
@@ -103,6 +104,14 @@
         <content_attribute id="money-gambling">none</content_attribute>
     </content_rating>
     <releases>
+        <release version="2.0" date="2024-04-05">
+            <description>
+                PreviewQt 2.0 brings some major improvements to its performance and functionality (including rotating images), including two new and convenient ways to interact with PreviewQt.
+            </description>
+            <url>
+                https://previewqt.org/news/previewqt-2.0
+            </url>
+        </release>
         <release version="1.0" date="2024-03-12">
             <description>
                 I would like to present a new member of PhotoQt's family, its little sibling PreviewQt. PreviewQt is a much simpler application than PhotoQt, intended - as the name suggests - to preview all kinds of files. Its focus is on speed and lightweight, aiming to provide as instantaneous of a preview as possible.
