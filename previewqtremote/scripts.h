@@ -24,6 +24,8 @@
 #define SCRIPTS_H
 
 #include <QObject>
+#include <QPoint>
+#include <QSize>
 
 class QProcess;
 class QSettings;
@@ -43,7 +45,7 @@ public:
     void operator=(PQCScripts const&) = delete;
 
     void loadConfiguration();
-    void storeConfiguration();
+    Q_INVOKABLE void storeConfiguration();
 
     bool verifyExecutable();
     Q_INVOKABLE void passToPreviewQt(QString path);
@@ -57,6 +59,12 @@ public:
     Q_INVOKABLE QString getPassedOnFilename() { return m_passedOnFilename; }
     Q_INVOKABLE void setPassedOnFilename(QString val) { m_passedOnFilename = val; }
 
+    Q_INVOKABLE QPoint getWindowPos() { return m_windowPos; }
+    Q_INVOKABLE void setWindowPos(QPoint val) { m_windowPos = val; }
+
+    Q_INVOKABLE QSize getWindowSize() { return m_windowSize; }
+    Q_INVOKABLE void setWindowSize(QSize val) { m_windowSize = val; }
+
 private:
     PQCScripts();
     QProcess *proc;
@@ -64,6 +72,8 @@ private:
 
     bool m_showText;
     QString m_previewQtExec;
+    QPoint m_windowPos;
+    QSize m_windowSize;
 
     QString m_passedOnFilename;
 

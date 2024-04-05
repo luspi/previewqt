@@ -45,6 +45,8 @@ void PQCScripts::loadConfiguration() {
 
     m_previewQtExec = set->value("executable", "previewqt").toString();
     m_showText = set->value("showText", true).toBool();
+    m_windowPos = set->value("windowPosition", QPoint(-1,-1)).toPoint();
+    m_windowSize = set->value("windowSize", QSize(200,200)).toSize();
 
 }
 
@@ -52,6 +54,8 @@ void PQCScripts::storeConfiguration() {
 
     set->setValue("executable", m_previewQtExec);
     set->setValue("showText", m_showText);
+    set->setValue("windowPosition", m_windowPos);
+    set->setValue("windowSize", m_windowSize);
 
 }
 

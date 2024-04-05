@@ -27,16 +27,31 @@ Window {
 
     id: remote_top
 
-    width: 100
-    height: 100
+    onXChanged: {
+        PQCScripts.setWindowPos(Qt.point(x, y))
+    }
+    onYChanged: {
+        PQCScripts.setWindowPos(Qt.point(x, y))
+    }
 
-    flags: Qt.FramelessWindowHint|Qt.Window|Qt.WindowStaysOnTopHint
+    onWidthChanged: {
+        PQCScripts.setWindowSize(Qt.size(width, height))
+    }
+    onHeightChanged: {
+        PQCScripts.setWindowSize(Qt.size(width, height))
+    }
+
+    flags: Qt.FramelessWindowHint|Qt.Tool|Qt.CustomizeWindowHint|Qt.WindowStaysOnTopHint
 
     visible: true
 
     color: "transparent"
 
     property int bordersize: 8
+
+    onClosing: {
+        PQCScripts.storeConfiguration()
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -177,6 +192,17 @@ Window {
     Component.onCompleted: {
         if(PQCScripts.getPassedOnFilename() !== "")
             PQCScripts.passToPreviewQt(PQCScripts.getPassedOnFilename())
+
+        var pos = PQCScripts.getWindowPos()
+        console.warn("POS =", pos)
+        if(pos.x !== -1 && pos.y !== -1) {
+            remote_top.setX(pos.x)
+            remote_top.setY(pos.y)
+        }
+
+        var sze = PQCScripts.getWindowSize()
+        remote_top.width = sze.width
+        remote_top.height = sze.height
     }
 
 }
