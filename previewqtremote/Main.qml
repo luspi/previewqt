@@ -86,10 +86,6 @@ Window {
         onPressed:
             remote_top.startSystemMove()
         onDoubleClicked: {
-            // if(!toplevel.visible)
-                // toplevel.show()
-            // toplevel.raise()
-            // toplevel.requestActivate()
             PQCScripts.passToPreviewQt("")
         }
     }
@@ -187,6 +183,11 @@ Window {
         onDropped: (drag) =>{
             PQCScripts.passToPreviewQt(drag.text)
         }
+    }
+
+    Keys.onPressed: (event) => {
+        if(event.key == Qt.Key_Escape || (event.key == Qt.Key_Q && event.modifiers&Qt.ControlModifier == Qt.ControlModifier))
+            remote_top.close()
     }
 
     Component.onCompleted: {
