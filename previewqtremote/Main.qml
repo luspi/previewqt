@@ -57,11 +57,13 @@ Window {
         anchors.fill: parent
         color: "#88000000"
         radius: 10
-        Keys.onEscapePressed: {
-            remote_top.close()
-        }
         Component.onCompleted:
             forceActiveFocus()
+
+        Keys.onPressed: (event) => {
+            if(event.key === Qt.Key_Escape)
+                remote_top.close()
+        }
     }
 
     Text {
@@ -183,11 +185,6 @@ Window {
         onDropped: (drag) =>{
             PQCScripts.passToPreviewQt(drag.text)
         }
-    }
-
-    Keys.onPressed: (event) => {
-        if(event.key == Qt.Key_Escape || (event.key == Qt.Key_Q && event.modifiers&Qt.ControlModifier == Qt.ControlModifier))
-            remote_top.close()
     }
 
     Component.onCompleted: {
