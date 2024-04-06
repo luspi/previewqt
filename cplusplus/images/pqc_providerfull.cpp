@@ -70,6 +70,9 @@ QImage PQCProviderFull::requestImage(const QString &url, QSize *origSize, const 
     if(ret.isNull())
         return QImage();
 
+    // check for embedded color profile
+    PQCScripts::get().applyEmbeddedColorProfile(ret);
+
     // apply rotation
     QTransform transform;
     transform.rotate(rotation);

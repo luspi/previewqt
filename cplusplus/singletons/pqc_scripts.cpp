@@ -75,6 +75,10 @@
 #include <exiv2/exiv2.hpp>
 #endif
 
+#ifdef PQMLCMS2
+#include <lcms2.h>
+#endif
+
 PQCScripts::PQCScripts() {
     m_onlyWriteToTempFile = "";
     m_startupMessage = "";
@@ -1288,5 +1292,112 @@ void PQCScripts::copyTextToClipboard(QString txt) {
 QString PQCScripts::toAbsolutePath(QString path) {
 
     return QFileInfo(path).absoluteFilePath();
+
+}
+
+bool PQCScripts::applyEmbeddedColorProfile(QImage &img) {
+
+    qDebug() << "args: img";
+
+    bool manualSelectionCausedError = false;
+
+    // if no color space is set then there obviously is no embedded one
+    bool colorSpaceManuallySet = false;
+    if(!img.colorSpace().isValid())
+        return true;
+
+#ifdef PQMLCMS2
+
+    qDebug() << "Checking for embedded color profiles";
+
+    cmsHPROFILE targetProfile = cmsOpenProfileFromMem(img.colorSpace().iccProfile().constData(),
+                                                      img.colorSpace().iccProfile().size());
+
+    if(targetProfile) {
+
+        int lcms2format = toLcmsFormat(img.format());
+
+        // Create a transformation from source (sRGB) to destination (provided ICC profile) color space
+        cmsHTRANSFORM transform = cmsCreateTransform(cmsCreate_sRGBProfile(), lcms2format, targetProfile, lcms2format, INTENT_PERCEPTUAL, 0);
+        if (!transform) {
+            // Handle error, maybe close profile and return original image or null image
+            cmsCloseProfile(targetProfile);
+            qWarning() << "Error creating transform for external color profile";
+            return false;
+        } else {
+
+            QImage ret(img.size(), img.format());
+            ret.fill(Qt::transparent);
+            // Perform color space conversion
+            cmsDoTransform(transform, img.constBits(), ret.bits(), img.width() * img.height());
+
+            const int bufSize = 100;
+            char buf[bufSize];
+
+#if LCMS_VERSION >= 2160
+            cmsGetProfileInfoUTF8(targetProfile, cmsInfoDescription,
+                                  "en", "US",
+                                  buf, bufSize);
+#else
+            cmsGetProfileInfoASCII(targetProfile, cmsInfoDescription,
+                                   "en", "US",
+                                   buf, bufSize);
+#endif
+
+            // Release resources
+            cmsDeleteTransform(transform);
+            cmsCloseProfile(targetProfile);
+
+            qDebug() << "Applying external color profile:" << buf;
+
+            img = ret;
+
+            return true;
+
+        }
+
+    } else
+        return false;
+
+#endif
+
+    return true;
+
+}
+
+int PQCScripts::toLcmsFormat(QImage::Format fmt) {
+
+#ifdef PQMLCMS2
+    switch (fmt) {
+
+    case QImage::Format_ARGB32:  //  (0xAARRGGBB)
+    case QImage::Format_RGB32:   //  (0xffRRGGBB)
+        return TYPE_BGRA_8;
+
+    case QImage::Format_RGB888:
+        return TYPE_RGB_8;       // 24-bit RGB format (8-8-8).
+
+    case QImage::Format_RGBX8888:
+    case QImage::Format_RGBA8888:
+        return TYPE_RGBA_8;
+
+    case QImage::Format_Grayscale8:
+        return TYPE_GRAY_8;
+
+    case QImage::Format_Grayscale16:
+        return TYPE_GRAY_16;
+
+    case QImage::Format_RGBA64:
+    case QImage::Format_RGBX64:
+        return TYPE_RGBA_16;
+
+    case QImage::Format_BGR888:
+        return TYPE_BGR_8;
+
+    default:
+        return 0;
+
+    }
+#endif
 
 }

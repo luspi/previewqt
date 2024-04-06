@@ -91,6 +91,7 @@ option(EXIV2_ENABLE_BMFF "Enable BMFF format support in Exiv2 (if available)" ON
 
 option(MOTIONPHOTO "Enable support for Google Motion Photos and Apple Live Photos" ON)
 option(PHOTOSPHERE "Enable support for photo spheres and 360 degree panoramic views" ON)
+option(LCMS2 "Enable advanced color management with LCMS2" ON)
 
 option(BUILD_PREVIEWQT_REMOTE "Build remote helper application to PreviewQt" ON)
 option(FLATPAKBUILD "Enable this if this is a build for Flatpak" OFF)
@@ -173,6 +174,10 @@ endif()
 
 if(QTPDF)
     find_package(Qt6 COMPONENTS Pdf REQUIRED)
+endif()
+
+if(LCMS2)
+    find_package(LCMS2)
 endif()
 
 ###############################
@@ -431,6 +436,19 @@ if(PHOTOSPHERE)
     add_definitions(-DPQMPHOTOSPHERE)
 else()
     message("** Support for photo spheres DISABLED")
+endif()
+
+if(LCMS2)
+    if(NOT ${LCMS2_FOUND})
+        message(FATAL_ERROR "** Unable to locate LCMS2... is it installed?")
+    else()
+        message("** Using LCMS2 " ${LCMS2_VERSION})
+        include_directories(${LCMS2_INCLUDE_DIR})
+        add_definitions(-DPQMLCMS2)
+        target_link_libraries(previewqt PRIVATE ${LCMS2_LIBRARIES})
+    endif()
+else()
+    message("** LCMS2 DISABLED")
 endif()
 
 

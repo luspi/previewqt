@@ -25,6 +25,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QImage>
 
 class QProcess;
 
@@ -86,6 +87,9 @@ public:
 
     Q_INVOKABLE QString getStartupMessage(){ return m_startupMessage; }
     void setStartupMessage(QString val) { m_startupMessage = val; }
+
+    int toLcmsFormat(QImage::Format fmt);
+    bool applyEmbeddedColorProfile(QImage &img);
 
 private:
     PQCScripts();
