@@ -34,6 +34,8 @@ Item {
     width: imageitem.width
     height: imageitem.height
 
+    property alias asynchronous: imageitem.asynchronous
+
     Image {
 
         id: imageitem

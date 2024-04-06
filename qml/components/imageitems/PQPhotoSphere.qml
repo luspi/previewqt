@@ -32,6 +32,9 @@ Item {
     anchors.fill: parent
     anchors.margins: -5
 
+    // dummy item
+    property bool asynchronous
+
     PQCPhotoSphere {
 
         id: thesphere

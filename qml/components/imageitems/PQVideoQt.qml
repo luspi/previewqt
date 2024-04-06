@@ -37,6 +37,9 @@ Video {
         video.play()
     }
 
+    // dummy item
+    property bool asynchronous
+
     property var volumeList: [1.0, 0.8, 0.45, 0]
     property int volumeIndex: 0
     property var volumeIcon: ["high", "medium", "low", "mute"]

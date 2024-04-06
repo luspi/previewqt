@@ -33,6 +33,8 @@ Item {
     property int currentFile: 0
     property int fileCount: fileList.length
 
+    property alias asynchronous: imageitem.asynchronous
+
     Image {
 
         id: imageitem

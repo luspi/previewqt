@@ -38,6 +38,9 @@ Item {
 
     scale: Math.min(image_top.width/width, image_top.height/height)
 
+    // dummy item
+    property bool asynchronous
+
     width: 100
     height: 100
 

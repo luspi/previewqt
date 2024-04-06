@@ -51,6 +51,8 @@ Item {
         id: updateWindowSize
         interval: 500
         onTriggered: {
+            if(imageloader.item != null)
+                imageloader.item.asynchronous = false
             windowWidth = image_top.width
             windowHeight = image_top.height
         }
