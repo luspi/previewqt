@@ -62,6 +62,8 @@ QString PQCLoadImageQtPDF::load(QString filename, QSize maxSize, QSize &origSize
     QSizeF _pageSize = (doc.pagePointSize(page)/72.0*qApp->primaryScreen()->physicalDotsPerInch())*(100/72.0);
     origSize = QSize(_pageSize.width(), _pageSize.height());
 
+    if(maxSize.width() != -1)
+        origSize.scale(maxSize, Qt::KeepAspectRatio);
     QImage p = doc.render(page, origSize);
 
     if(p.isNull()) {
@@ -78,18 +80,6 @@ QString PQCLoadImageQtPDF::load(QString filename, QSize maxSize, QSize &origSize
     QPainter paint(&img);
     paint.drawImage(QRect(QPoint(0,0), img.size()), p);
     paint.end();
-
-    // Scale image if necessary
-    if(maxSize.width() != -1) {
-
-        QSize finalSize = origSize;
-
-        if(finalSize.width() > maxSize.width() || finalSize.height() > maxSize.height())
-            finalSize = finalSize.scaled(maxSize, Qt::KeepAspectRatio);
-
-        img = img.scaled(finalSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-
-    }
 
     return "";
 
