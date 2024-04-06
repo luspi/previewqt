@@ -24,4 +24,4 @@ foreach (file ${files})
 endforeach(file)
 
 find_program(XDG xdg-desktop-menu)
-execute_process(COMMAND ${XDG} uninstall org.previewqt.PreviewQt.desktop)
+execute_process(COMMAND ${XDG} uninstall photoqt.desktop)

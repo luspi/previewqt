@@ -1,37 +1,105 @@
+################################################################
+# CMakeLists for PreviewQtRemote: http://photoqt.org/previewqt #
+################################################################
+
 cmake_minimum_required(VERSION 3.16)
+project(previewqtremote VERSION 0.2 LANGUAGES CXX)
 
-project(previewqtremote VERSION 0.1 LANGUAGES CXX)
+########################################
+####  SOME SETTINGS/FLAGS FOR CMAKE ####
+########################################
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Widgets)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
 
-qt_standard_project_setup()
+################################
+#### FIND REQUIRED PACKAGES ####
+################################
 
-qt_add_executable(previewqtremote
-    main.cpp scripts.cpp
-)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets)
 
+#############################
+#### Add the executeable ####
+#############################
+
+if(WIN32)
+    qt_add_executable(previewqtremote main.cpp scripts.cpp windowsicons.rc)
+else()
+    qt_add_executable(previewqtremote main.cpp scripts.cpp)
+endif()
+
+# add qml files
 qt_add_qml_module(previewqtremote URI src VERSION 1.0 QML_FILES Main.qml RESOURCE_PREFIX)
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
+# set some properties for executable
 set_target_properties(previewqtremote PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.previewqtremote
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+    MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(previewqtremote
-    PRIVATE Qt6::Quick Qt6::Widgets
-)
+# link executable
+target_link_libraries(previewqtremote PRIVATE Qt6::Quick Qt6::Widgets)
 
-include(GNUInstallDirs)
-install(TARGETS previewqtremote
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+##################################
+#### COMPOSE THE DESKTOP FILE ####
+##################################
+
+include("CMake/ComposeDesktopFile.cmake")
+composeDesktopFile()
+
+#######################
+#### INSTALL FILES ####
+#######################
+
+if(UNIX)
+
+    install(
+        TARGETS previewqtremote
+        DESTINATION bin/
+    )
+    install(
+        FILES org.previewqt.PreviewQtRemote.desktop
+        DESTINATION share/applications
+    )
+    install(
+        FILES icons/32x32/org.previewqt.PreviewQtRemote.png
+        DESTINATION share/icons/hicolor/32x32/apps/
+    )
+    install(
+        FILES icons/48x48/org.previewqt.PreviewQtRemote.png
+        DESTINATION share/icons/hicolor/48x48/apps/
+    )
+    install(
+        FILES icons/64x64/org.previewqt.PreviewQtRemote.png
+        DESTINATION share/icons/hicolor/64x64/apps/
+    )
+    install(
+        FILES icons/128x128/org.previewqt.PreviewQtRemote.png
+        DESTINATION share/icons/hicolor/128x128/apps/
+    )
+    install(
+        FILES icons/256x256/org.previewqt.PreviewQtRemote.png
+        DESTINATION share/icons/hicolor/256x256/apps/
+    )
+    install(
+        FILES icons/512x512/org.previewqt.PreviewQtRemote.png
+        DESTINATION share/icons/hicolor/512x512/apps/
+    )
+    if(NOT FLATPAKBUILD)
+        install(
+            FILES icons/1024x1024/org.previewqt.PreviewQtRemote.png
+            DESTINATION share/icons/hicolor/1024x1024/apps/
+        )
+    endif()
+    install(
+        FILES org.previewqt.PreviewQtRemote.metainfo.xml
+        DESTINATION share/metainfo/
+    )
+endif()

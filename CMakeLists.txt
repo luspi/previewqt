@@ -1,6 +1,6 @@
-##########################################################
-# CMakeLists for PreviewQt: http://photoqt.org/previewqt #
-##########################################################
+###################################################
+# CMakeLists for PreviewQt: http://previewqt.org/ #
+###################################################
 
 cmake_minimum_required(VERSION 3.16)
 project(previewqt LANGUAGES CXX)
@@ -93,6 +93,7 @@ option(MOTIONPHOTO "Enable support for Google Motion Photos and Apple Live Photo
 option(PHOTOSPHERE "Enable support for photo spheres and 360 degree panoramic views" ON)
 
 option(BUILD_PREVIEWQT_REMOTE "Build remote helper application to PreviewQt" ON)
+option(FLATPAKBUILD "Enable this if this is a build for Flatpak" OFF)
 
 ########################################
 #### Add other CMake subdirectories ####
@@ -337,11 +338,8 @@ if(IMAGEMAGICK)
         message(FATAL_ERROR "** Unable to locate ImageMagick... is it installed?")
     else()
         message("** Using ImageMagick ${ImageMagick_VERSION_STRING}")
-        # These checks are necessary to "fix" compiling preViewQt with both ImageMagick 6 and 7 available
-        if(ImageMagick_VERSION_STRING MATCHES "^6")
-            string(REPLACE "libMagick++-7." "libMagick++-6." ImageMagick_LIBRARIES "${ImageMagick_LIBRARIES}")
-            string(REPLACE "ImageMagick-7" "ImageMagick-6" ImageMagick_INCLUDE_DIRS "${ImageMagick_INCLUDE_DIRS}")
-        else()
+        # These checks are necessary to "fix" compiling PreviewQt with both ImageMagick 6 and 7 available
+        if(ImageMagick_VERSION_STRING MATCHES "^7")
             string(REPLACE "libMagick++-6." "libMagick++-7." ImageMagick_LIBRARIES "${ImageMagick_LIBRARIES}")
             string(REPLACE "ImageMagick-6" "ImageMagick-7" ImageMagick_INCLUDE_DIRS "${ImageMagick_INCLUDE_DIRS}")
         endif()
@@ -483,10 +481,12 @@ if(UNIX)
         FILES icons/512x512/org.previewqt.PreviewQt.png
         DESTINATION share/icons/hicolor/512x512/apps/
     )
-    install(
-        FILES icons/1024x1024/org.previewqt.PreviewQt.png
-        DESTINATION share/icons/hicolor/1024x1024/apps/
-    )
+    if(NOT FLATPAKBUILD)
+        install(
+            FILES icons/1024x1024/org.previewqt.PreviewQt.png
+            DESTINATION share/icons/hicolor/1024x1024/apps/
+        )
+    endif()
     install(
         FILES org.previewqt.PreviewQt.metainfo.xml
         DESTINATION share/metainfo/
