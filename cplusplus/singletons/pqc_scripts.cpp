@@ -36,6 +36,7 @@
 #include <QKeyEvent>
 #include <QApplication>
 #include <QClipboard>
+#include <QColorSpace>
 #include <thread>
 #include <chrono>
 
@@ -55,6 +56,7 @@
 
 #ifdef PQMPOPPLER
 #include <poppler/qt6/poppler-version.h>
+#include <poppler/qt6/poppler-qt6.h>
 #endif
 
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
