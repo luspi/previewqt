@@ -47,14 +47,16 @@ public:
     void loadConfiguration();
     Q_INVOKABLE void storeConfiguration();
 
-    bool verifyExecutable();
+    Q_INVOKABLE bool verifyExecutable();
     Q_INVOKABLE void passToPreviewQt(QString path);
 
-    Q_INVOKABLE bool getShowText() { return m_showText; }
-    Q_INVOKABLE void setShowText(bool val) { m_showText = val; }
+    Q_PROPERTY(bool showText READ getShowText WRITE setShowText NOTIFY showTextChanged)
+    bool getShowText();
+    void setShowText(bool val);
 
-    Q_INVOKABLE QString getPreviewQtExec() { return m_previewQtExec; }
-    Q_INVOKABLE void setPreviewQtExec(QString val) { m_previewQtExec = val; }
+    Q_PROPERTY(QString previewQtExec READ getPreviewQtExec WRITE setPreviewQtExec NOTIFY previewQtExecChanged)
+    QString getPreviewQtExec();
+    void setPreviewQtExec(QString val);
 
     Q_INVOKABLE QString getPassedOnFilename() { return m_passedOnFilename; }
     Q_INVOKABLE void setPassedOnFilename(QString val) { m_passedOnFilename = val; }
@@ -64,6 +66,14 @@ public:
 
     Q_INVOKABLE QSize getWindowSize() { return m_windowSize; }
     Q_INVOKABLE void setWindowSize(QSize val) { m_windowSize = val; }
+
+    Q_INVOKABLE static QString cleanPath(QString path);
+    Q_INVOKABLE static QString cleanPath_windows(QString path);
+    Q_INVOKABLE QString getDir(QString fullpath);
+    Q_INVOKABLE bool amIOnWindows();
+
+    void setOpenConfigStart(bool val) { m_openConfigStart = val; }
+    Q_INVOKABLE bool getOpenConfigStart() { return m_openConfigStart; }
 
 private:
     PQCScripts();
@@ -76,6 +86,12 @@ private:
     QSize m_windowSize;
 
     QString m_passedOnFilename;
+
+    bool m_openConfigStart;
+
+signals:
+    void showTextChanged();
+    void previewQtExecChanged();
 
 };
 

@@ -25,6 +25,7 @@
 #include <QSettings>
 #include <QFileInfo>
 #include <QStandardPaths>
+#include <QDir>
 
 PQCScripts::PQCScripts() {
 
@@ -32,6 +33,9 @@ PQCScripts::PQCScripts() {
     set = new QSettings(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/settings");
 
     m_passedOnFilename = "";
+    m_showText = true;
+    m_previewQtExec = "previewqt";
+    m_openConfigStart = false;
 
     loadConfiguration();
 
@@ -39,6 +43,30 @@ PQCScripts::PQCScripts() {
 PQCScripts::~PQCScripts() {
     delete proc;
     delete set;
+}
+
+
+bool PQCScripts::getShowText() {
+    return m_showText;
+}
+
+void PQCScripts::setShowText(bool val) {
+    if(val != m_showText) {
+        m_showText = val;
+        showTextChanged();
+    }
+}
+
+
+QString PQCScripts::getPreviewQtExec() {
+    return m_previewQtExec;
+}
+
+void PQCScripts::setPreviewQtExec(QString val) {
+    if(m_previewQtExec != val) {
+        m_previewQtExec = val;
+        previewQtExecChanged();
+    }
 }
 
 void PQCScripts::loadConfiguration() {
@@ -70,6 +98,8 @@ void PQCScripts::passToPreviewQt(QString path) {
 bool PQCScripts::verifyExecutable() {
 
     QFileInfo info(m_previewQtExec);
+    if(!m_previewQtExec.startsWith("/"))
+        info.setFile("/usr/bin/" + m_previewQtExec);
 
     if(!info.exists())
         return false;
@@ -78,5 +108,67 @@ bool PQCScripts::verifyExecutable() {
         return false;
 
     return true;
+
+}
+
+QString PQCScripts::getDir(QString fullpath) {
+
+    if(fullpath == "")
+        return "";
+
+    return QFileInfo(fullpath).absolutePath();
+
+}
+
+bool PQCScripts::amIOnWindows() {
+#ifdef Q_OS_WIN
+    return true;
+#endif
+    return false;
+}
+
+QString PQCScripts::cleanPath(QString path) {
+
+#ifdef Q_OS_WIN
+    return cleanPath_windows(path);
+#else
+    if(path.startsWith("file:////"))
+        path = path.remove(0, 8);
+    else if(path.startsWith("file:///"))
+        path = path.remove(0, 7);
+    else if(path.startsWith("file://"))
+        path = path.remove(0, 6);
+    else if(path.startsWith("image://full/"))
+        path = path.remove(0, 13);
+    else if(path.startsWith("image://thumb/"))
+        path = path.remove(0, 14);
+
+    QFileInfo info(path);
+    if(info.isSymLink() && info.exists())
+        path = info.symLinkTarget();
+
+    return QDir::cleanPath(path);
+#endif
+
+}
+
+QString PQCScripts::cleanPath_windows(QString path) {
+
+    if(path.startsWith("file:///"))
+        path = path.remove(0, 8);
+    else if(path.startsWith("file://"))
+        path = path.remove(0, 7);
+    else if(path.startsWith("file:/"))
+        path = path.remove(0, 6);
+    else if(path.startsWith("image://full/"))
+        path = path.remove(0, 13);
+    else if(path.startsWith("image://thumb/"))
+        path = path.remove(0, 14);
+
+    QFileInfo info(path);
+    if(info.isSymLink() && info.exists())
+        path = info.symLinkTarget();
+
+    return QDir::cleanPath(path);
 
 }

@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
-    const QUrl url(u"qrc:/src/Main.qml"_qs);
+    const QUrl url(u"qrc:/src/PQMainWindow.qml"_qs);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,
@@ -92,9 +92,8 @@ int main(int argc, char *argv[]) {
     }
 
     if(!PQCScripts::get().verifyExecutable()) {
-        QMessageBox::critical(0, "Missing PreviewQt executable", "PreviewQt has not (yet) been configured properly. You can configure this application by passing command line arguments. Any thus configured setting will be reused until changed.");
-        std::exit(0);
-        return 0;
+        QMessageBox::warning(0, "Missing PreviewQt executable", "PreviewQt has not (yet) been configured properly. You need to set an executable in the settings before you can use this application.");
+        PQCScripts::get().setOpenConfigStart(true);
     }
 
     PQCScripts::get().storeConfiguration();

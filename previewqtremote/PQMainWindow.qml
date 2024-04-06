@@ -21,6 +21,8 @@
  **************************************************************************/
 
 import QtQuick
+import QtQuick.Controls
+import Qt.labs.platform as Labs
 import PQCScripts
 
 Window {
@@ -54,6 +56,7 @@ Window {
     }
 
     Rectangle {
+        id: focusitem
         anchors.fill: parent
         color: "#88000000"
         radius: 10
@@ -72,7 +75,7 @@ Window {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-        visible: PQCScripts.getShowText()
+        visible: PQCScripts.showText
         text: "Drop files here to preview"
         font.pointSize: 8
         font.bold: true
@@ -85,8 +88,13 @@ Window {
         anchors.margins: bordersize
         hoverEnabled: true
         cursorShape: Qt.SizeAllCursor
-        onPressed:
-            remote_top.startSystemMove()
+        acceptedButtons: Qt.AllButtons
+        onPressed: (mouse) => {
+            if(mouse.button === Qt.RightButton)
+                menu.open()
+            else
+                remote_top.startSystemMove()
+        }
         onDoubleClicked: {
             PQCScripts.passToPreviewQt("")
         }
@@ -187,6 +195,24 @@ Window {
         }
     }
 
+    PQSettings {
+        id: settings
+    }
+
+    Labs.Menu {
+        id: menu
+        Labs.MenuItem {
+            text: "Settings"
+            onTriggered:
+                settings.show()
+        }
+        Labs.MenuItem {
+            text: "Quit"
+            onTriggered:
+                remote_top.close()
+        }
+    }
+
     Component.onCompleted: {
         if(PQCScripts.getPassedOnFilename() !== "")
             PQCScripts.passToPreviewQt(PQCScripts.getPassedOnFilename())
@@ -201,6 +227,10 @@ Window {
         var sze = PQCScripts.getWindowSize()
         remote_top.width = sze.width
         remote_top.height = sze.height
+
+        if(PQCScripts.getOpenConfigStart())
+            settings.show()
+
     }
 
 }

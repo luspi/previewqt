@@ -34,7 +34,7 @@ else()
 endif()
 
 # add qml files
-qt_add_qml_module(previewqtremote URI src VERSION 1.0 QML_FILES Main.qml RESOURCE_PREFIX)
+qt_add_qml_module(previewqtremote URI src VERSION 1.0 QML_FILES PQMainWindow.qml PQSettings.qml RESOURCE_PREFIX)
 
 # set some properties for executable
 set_target_properties(previewqtremote PROPERTIES
