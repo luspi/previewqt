@@ -151,6 +151,9 @@ Item {
         } else if(PQCScripts.isPhotoSphere(imageSource)) {
             currentType = "sph"
             imageloader.source = "imageitems/PQPhotoSphere.qml"
+        } else if(PQCScripts.isSVG(imageSource)) {
+            currentType = "svg"
+            imageloader.source = "imageitems/PQSVG.qml"
         } else {
             currentType = "img"
             imageloader.source = "imageitems/PQImageNormal.qml"

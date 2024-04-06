@@ -54,6 +54,7 @@ public:
     Q_INVOKABLE bool isQtVideo(QString path);
     Q_INVOKABLE bool isItAnimated(QString filename);
     Q_INVOKABLE bool isPDFDocument(QString path);
+    Q_INVOKABLE bool isSVG(QString path);
     Q_INVOKABLE int getDocumentPageCount(QString path);
     Q_INVOKABLE QStringList getArchiveContent(QString path);
     Q_INVOKABLE bool isArchive(QString path);

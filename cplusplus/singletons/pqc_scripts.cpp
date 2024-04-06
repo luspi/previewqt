@@ -1404,4 +1404,15 @@ int PQCScripts::toLcmsFormat(QImage::Format fmt) {
     }
 #endif
 
+    return 0;
+
+}
+
+bool PQCScripts::isSVG(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    const QString suffix = QFileInfo(path).suffix().toLower();
+    return (suffix == "svg" || suffix == "svgz");
+
 }

@@ -57,7 +57,7 @@ set(d "qml/components")
 set(previewqt_QML ${previewqt_QML} "${d}/PQTopRow.qml" "${d}/PQImage.qml" "${d}/PQIconButton.qml" "${d}/PQTrayIcon.qml")
 set(d "qml/components/imageitems")
 set(previewqt_QML ${previewqt_QML} "${d}/PQImageNormal.qml" "${d}/PQVideoQt.qml" "${d}/PQVideoMpv.qml" "${d}/PQImageAnimated.qml")
-set(previewqt_QML ${previewqt_QML} "${d}/PQDocument.qml" "${d}/PQArchive.qml")
+set(previewqt_QML ${previewqt_QML} "${d}/PQDocument.qml" "${d}/PQArchive.qml" "${d}/PQSVG.qml")
 set(d "qml/windows")
 set(previewqt_QML ${previewqt_QML} "${d}/PQSettings.qml" "${d}/PQAbout.qml" "${d}/PQHelp.qml" "${d}/PQWelcome.qml")
 
