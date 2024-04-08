@@ -30,7 +30,7 @@ There are some companion application to PreviewQt:
 
 ## Download and Install
 
-PreviewQt can be installed in various ways. You can find a selection of them (Windows installer, Flatpak, etc.) [listed on the website: https://photoqt.org/previewqt](https://previewqt.org/)
+PreviewQt can be installed in various ways. You can find a selection of them (Windows installer, Flatpak, etc.) [listed on the website: https://previewqt.org/](https://previewqt.org/)
 
 Instructions of how to build PreviewQt from source can be found in the INSTALL file in the root of the source directory.
 

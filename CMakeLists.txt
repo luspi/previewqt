@@ -9,8 +9,8 @@ project(previewqt LANGUAGES CXX)
 ####  GLOBAL VERSION STRING FOR ALL FILES (INCLUDING CPP/QML) ####
 ##################################################################
 
-SET(APPVERSION "2.0")
-add_definitions(-DPQMVERSION="${APPVERSION}")
+SET(PROJECT_VERSION "2.0")
+add_definitions(-DPQMVERSION="${PROJECT_VERSION}")
 
 ########################################
 ####  SOME SETTINGS/FLAGS FOR CMAKE ####
@@ -93,16 +93,7 @@ option(MOTIONPHOTO "Enable support for Google Motion Photos and Apple Live Photo
 option(PHOTOSPHERE "Enable support for photo spheres and 360 degree panoramic views" ON)
 option(LCMS2 "Enable advanced color management with LCMS2" ON)
 
-option(BUILD_PREVIEWQT_REMOTE "Build remote helper application to PreviewQt" ON)
 option(FLATPAKBUILD "Enable this if this is a build for Flatpak" OFF)
-
-########################################
-#### Add other CMake subdirectories ####
-########################################
-
-if(BUILD_PREVIEWQT_REMOTE)
-    add_subdirectory("previewqtremote")
-endif()
 
 ################################
 #### FIND REQUIRED PACKAGES ####
@@ -202,8 +193,8 @@ qt_add_qml_module(previewqt URI src VERSION 1.0 QML_FILES ${previewqt_QML} RESOU
 
 # set some properties for executable
 set_target_properties(previewqt PROPERTIES
-    MACOSX_BUNDLE_BUNDLE_VERSION "${APPVERSION}"
-    MACOSX_BUNDLE_SHORT_VERSION_STRING "${APPVERSION}"
+    MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+    MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
