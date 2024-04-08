@@ -71,9 +71,27 @@ ApplicationWindow {
         PQCScripts.deleteTemporaryFiles()
     }
 
+    onVisibleChanged: {
+        if(visible) {
+            ignoreActiveChanges = true
+            noLongerIgnoreActiveChanges.restart()
+        }
+    }
+
+    // this ignores changes to active for hiding when focus is lost
+    // this is necessary when 'focus follows mouse' is used and the window is, e.g., opened from the tray
+    property bool ignoreActiveChanges: false
+    Timer {
+        id: noLongerIgnoreActiveChanges
+        interval: 1000
+        onTriggered: {
+            ignoreActiveChanges = false
+        }
+    }
+
     onActiveChanged: {
         if(!PQCSettings.closeWhenLosingFocus) return
-        if(!active) {
+        if(!active && !ignoreActiveChanges) {
             if((settings.status == Loader.Ready && settings.item.visible) ||
                     (about.status == Loader.Ready && about.item.visible) ||
                     (help.status == Loader.Ready && help.item.visible))
