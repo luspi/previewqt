@@ -74,8 +74,9 @@ QString PQCLoadImageArchive::load(QString filename, QSize maxSize, QSize &origSi
     }
 
     QFileInfo info(archivefile);
+    const QString suffix = info.suffix().toLower();
 
-    if(info.suffix() == "cbr" || info.suffix() == "rar") {
+    if(suffix == "cbr" || suffix == "rar") {
 
         QProcess which;
         which.setStandardOutputFile(QProcess::nullDevice());
@@ -156,12 +157,9 @@ QString PQCLoadImageArchive::load(QString filename, QSize maxSize, QSize &origSi
             uchar *buff = new uchar[size];
 
             // And finally read the file into the buffer
-#ifdef WIN32
-            size_t r = archive_read_data(a, (void*)buff, size);
-#else
-            ssize_t r = archive_read_data(a, (void*)buff, size);
-#endif
-            if(r != size) {
+            la_ssize_t r = archive_read_data(a, (void*)buff, size);
+
+            if(r != size || size == 0) {
                 errormsg = QString("Failed to read image data, read size (%1) doesn't match expected size (%2)...").arg(r).arg(size);
                 qWarning() << errormsg;
                 return errormsg;

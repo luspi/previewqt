@@ -40,6 +40,10 @@ Video {
     // dummy item
     property bool asynchronous
 
+    property size sourceSize: Qt.size(video.width, video.height)
+    property int paintedWidth: video.width
+    property int paintedHeight: video.height
+
     property var volumeList: [1.0, 0.8, 0.45, 0]
     property int volumeIndex: 0
     property var volumeIcon: ["high", "medium", "low", "mute"]
@@ -68,6 +72,19 @@ Video {
                 video.source = "file://" + image_top.imageSource
 
             video.play()
+        }
+
+    }
+
+    onWidthChanged: {
+        if(width > 15 && height > 15) {
+            image.status = Image.Ready
+        }
+    }
+
+    onHeightChanged: {
+        if(width > 15 && height > 15) {
+            image.status = Image.Ready
         }
     }
 

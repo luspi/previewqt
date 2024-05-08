@@ -26,8 +26,6 @@ import PQCScripts
 
 Item {
 
-    id: image
-
     x: (image_top.width-width)/2
     y: (image_top.height-height)/2
 
@@ -68,6 +66,7 @@ Item {
         sourceSize: rotation%180===0 ? Qt.size(image_top.windowWidth, image_top.windowHeight) : Qt.size(image_top.windowHeight, image_top.windowWidth)
 
         onStatusChanged: {
+            image.status = status
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
         }

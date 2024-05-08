@@ -194,13 +194,23 @@ Window {
             catchKeyPress.forceActiveFocus()
 
         // the general settings
-        Item {
+        Flickable {
 
             id: generalsettings
-            width: settings_top.width-20
-            height: settings_top.height
+            width: stack.width
+            height: stack.height
+
+            contentHeight: general_col.height
+
+            ScrollBar.vertical: ScrollBar { id: scrollbargeneral }
+
+            property int usableWidth: width-20 - (scrollbargeneral.visible ? scrollbargeneral.width : 0)
+
+            clip: true
 
             Column {
+
+                id: general_col
 
                 x: 10
                 spacing: 10
@@ -211,7 +221,7 @@ Window {
                 }
 
                 Text {
-                    x: (settings_top.width-width)/2
+                    x: (generalsettings.usableWidth-width)/2
                     font.pointSize: 18
                     font.bold: true
                     //: Same as tab name but used as title
@@ -219,7 +229,7 @@ Window {
                 }
 
                 Text {
-                    x: (settings_top.width-width)/2
+                    x: (generalsettings.usableWidth-width)/2
                     text: qsTr("Note: Settings will be saved automatically.")
                 }
 
@@ -228,6 +238,7 @@ Window {
                 CheckBox {
                     //: the top bar is the bar with the buttons
                     text: qsTr("Keep top bar always visible")
+                    width: generalsettings.usableWidth
                     checked: !PQCSettings.topBarAutoHide
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
@@ -238,6 +249,7 @@ Window {
 
                 CheckBox {
                     text: qsTr("Launch PreviewQt hidden to system tray")
+                    width: generalsettings.usableWidth
                     checked: PQCSettings.launchHiddenToSystemTray
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
@@ -248,6 +260,7 @@ Window {
 
                 CheckBox {
                     text: qsTr("Hide PreviewQt when losing focus")
+                    width: generalsettings.usableWidth
                     checked: PQCSettings.closeWhenLosingFocus
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
@@ -258,25 +271,42 @@ Window {
 
                 /************************************/
                 Rectangle {
-                    width: settings_top.width-20
+                    width: generalsettings.usableWidth
                     height: 1
                     color: "black"
                 }
                 /************************************/
 
-                Text {
-                    y: (defwin_w.height-height)/2
-                    text: qsTr("Default window size at launch:")
+                CheckBox {
+                    text: qsTr("Launch PreviewQt maximized")
+                    width: generalsettings.usableWidth
+                    checked: PQCSettings.defaultWindowMaximized
+                    onCheckedChanged: {
+                        catchKeyPress.forceActiveFocus()
+                        if(PQCSettings.defaultWindowMaximized !== checked)
+                            PQCSettings.defaultWindowMaximized = checked
+                    }
                 }
 
-                Row {
+                Text {
+                    width: generalsettings.usableWidth
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    text: qsTr("Default window size:")
+                }
 
-                    x: (parent.width-width)/2
+                Flow {
+
                     spacing: 5
+                    width: generalsettings.usableWidth
+
+                    Item {
+                        width: 20
+                        height: 1
+                    }
 
                     SpinBox {
                         id: defwin_w
-                        width: 150
+                        width: 80
                         from: 200
                         to: 99999
                         value: PQCSettings.defaultWindowWidth
@@ -287,13 +317,14 @@ Window {
                     }
 
                     Text {
-                        y: (defwin_w.height-height)/2
+                        height: defwin_w.height
+                        verticalAlignment: Text.AlignVCenter
                         text: "x"
                     }
 
                     SpinBox {
                         id: defwin_h
-                        width: 150
+                        width: 80
                         from: 200
                         to: 99999
                         value: PQCSettings.defaultWindowHeight
@@ -303,16 +334,33 @@ Window {
                         }
                     }
                 }
-                CheckBox {
-                    text: qsTr("Launch PreviewQt maximized")
-                    checked: PQCSettings.defaultWindowMaximized
+
+                RadioButton {
+                    id: radio_defminmax
+                    width: generalsettings.usableWidth
+                    text: qsTr("Maximize image inside of this maximum size and adjust window")
+                    checked: PQCSettings.maximizeImageSizeAndAdjustWindow
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
-                        if(PQCSettings.defaultWindowMaximized !== checked)
-                            PQCSettings.defaultWindowMaximized = checked
+                        if(PQCSettings.maximizeImageSizeAndAdjustWindow !== checked)
+                            PQCSettings.maximizeImageSizeAndAdjustWindow = checked
                     }
                 }
 
+                RadioButton {
+                    id: radio_defsize
+                    width: generalsettings.usableWidth
+                    text: qsTr("Only set window size at launch")
+                    checked: !PQCSettings.maximizeImageSizeAndAdjustWindow
+                    onCheckedChanged:
+                        catchKeyPress.forceActiveFocus()
+                }
+
+                /************************************/
+                Item {
+                    width: 1
+                    height: 1
+                }
                 /************************************/
 
             }

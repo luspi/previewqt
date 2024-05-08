@@ -41,12 +41,23 @@ ApplicationWindow {
     minimumWidth: 200
     minimumHeight: 200
 
+    property bool manualWindowSizeChange: false
+    onWidthChanged: {
+        if(!toplevelAni.running)
+            manualWindowSizeChange = true
+    }
+    onHeightChanged: {
+        if(!toplevelAni.running)
+            manualWindowSizeChange = true
+    }
+
     // it is hidden by default until we set the stylings from the settings below
     visible: false
     title: (image.imageSource == "" ? "" : (PQCScripts.getFilename(image.imageSource) + " | ")) + "PreviewQt"
 
-    // convenience property to check whether window is in fullscreen
+    // convenience property to check whether window is in fullscreen or maximized
     property bool isFullscreen: toplevel.visibility === Window.FullScreen
+    property bool isMaximized: toplevel.visibility === Window.Maximized
 
     // at startup the tray icon might not be ready when a message is supposed to be shown
     // a message stored here will be shown once the tray icon is ready
@@ -146,7 +157,7 @@ ApplicationWindow {
     // The tray icon
     Loader {
         id: trayicon
-        active: true
+        active: false
         asynchronous: true
         source: "components/PQTrayIcon.qml"
     }
@@ -177,6 +188,35 @@ ApplicationWindow {
         id: welcome
         active: false
         source: "windows/PQWelcome.qml"
+    }
+
+    ParallelAnimation {
+
+        id: toplevelAni
+
+        property int w_from
+        property int w_to
+        property int h_from
+        property int h_to
+
+        SmoothedAnimation {
+            id: toplevelAniWidth
+            target: toplevel
+            duration: 200
+            property: "width"
+            from: toplevelAni.w_from
+            to: toplevelAni.w_to
+        }
+
+        SmoothedAnimation {
+            id: toplevelAniHeight
+            target: toplevel
+            duration: 200
+            property: "height"
+            from: toplevelAni.h_from
+            to: toplevelAni.h_to
+        }
+
     }
 
     // some things are done once window is set up
@@ -441,6 +481,22 @@ ApplicationWindow {
             opacity = 0
             focusitem.forceActiveFocus()
         }
+
+    }
+
+    function updateWindowSize(w, h) {
+
+        if(!PQCSettings.maximizeImageSizeAndAdjustWindow || isMaximized || isFullscreen || manualWindowSizeChange)
+            return
+
+        var fitsize = PQCScripts.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight)
+
+        toplevelAni.stop()
+        toplevelAni.w_from = toplevel.width
+        toplevelAni.w_to = Math.max(fitsize.width, 50)
+        toplevelAni.h_from = toplevel.height
+        toplevelAni.h_to = Math.max(fitsize.height + (PQCSettings.topBarAutoHide ? 1 : toprow.height), 50)
+        toplevelAni.start()
 
     }
 

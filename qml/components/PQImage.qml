@@ -46,6 +46,13 @@ Item {
 
     property string currentType: ""
 
+    property int status: Image.Null
+    onStatusChanged: {
+        if(status == Image.Ready) {
+            toplevel.updateWindowSize(imageloader.item.paintedWidth+10, imageloader.item.paintedHeight+10)
+        }
+    }
+
     // react to window size changes with a delau
     Timer {
         id: updateWindowSize
@@ -121,15 +128,19 @@ Item {
     // load a new image
     function loadImage(path) {
 
+        toplevel.manualWindowSizeChange = false
         imageloader.source = ""
         setRotation = 0
 
         if(path === "") {
             imageSource = ""
+            imageloader.source = ""
+            image.status = Image.Null
             return
         }
 
         imageSource = PQCScripts.cleanPath(path)
+        image.status = Image.Loading
 
         PQCSettings.filedialogLocation = PQCScripts.getDir(imageSource)
 

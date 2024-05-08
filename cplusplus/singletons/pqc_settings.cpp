@@ -125,6 +125,17 @@ void PQCSettings::setLaunchHiddenToSystemTray(bool val) {
     }
 }
 
+bool PQCSettings::getMaximizeImageSizeAndAdjustWindow() {
+    return m_maximizeImageSizeAndAdjustWindow;
+}
+void PQCSettings::setMaximizeImageSizeAndAdjustWindow(bool val) {
+    if(m_maximizeImageSizeAndAdjustWindow != val) {
+        m_maximizeImageSizeAndAdjustWindow = val;
+        saveTimer->start();
+        emit maximizeImageSizeAndAdjustWindowChanged();
+    }
+}
+
 int PQCSettings::getDefaultWindowWidth() {
     return m_defaultWindowWidth;
 }
@@ -261,8 +272,9 @@ void PQCSettings::loadSettings() {
 
     setTopBarAutoHide(settings->value("topBarAutoHide", false).toBool());
     setLaunchHiddenToSystemTray(settings->value("launchHiddenToSystemTray", false).toBool());
-    setDefaultWindowWidth(settings->value("defaultWindowWidth", 800).toInt());
-    setDefaultWindowHeight(settings->value("defaultWindowHeight", 600).toInt());
+    setMaximizeImageSizeAndAdjustWindow(settings->value("maximizeImageSizeAndAdjustWindow", true).toBool());
+    setDefaultWindowWidth(settings->value("defaultWindowWidth", 500).toInt());
+    setDefaultWindowHeight(settings->value("defaultWindowHeight", 400).toInt());
     setDefaultWindowMaximized(settings->value("defaultWindowMaximized", false).toBool());
     setDefaultAppShortcut(settings->value("defaultAppShortcut", "E").toString());
     setDefaultAppImages(settings->value("defaultAppImages", "").toString());
@@ -280,6 +292,7 @@ void PQCSettings::saveSettings() {
 
     settings->setValue("topBarAutoHide", m_topBarAutoHide);
     settings->setValue("launchHiddenToSystemTray", m_launchHiddenToSystemTray);
+    settings->setValue("maximizeImageSizeAndAdjustWindow", m_maximizeImageSizeAndAdjustWindow);
     settings->setValue("defaultWindowWidth", m_defaultWindowWidth);
     settings->setValue("defaultWindowHeight", m_defaultWindowHeight);
     settings->setValue("defaultWindowMaximized", m_defaultWindowMaximized);

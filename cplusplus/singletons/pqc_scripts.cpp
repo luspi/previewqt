@@ -234,7 +234,7 @@ QStringList PQCScripts::listArchiveContent(QString path, bool insideFilenameOnly
             QString filenameinside = QString::fromWCharArray(archive_entry_pathname_w(entry));
 
             // If supported file format, append to temporary list
-            if((PQCImageFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix())))
+            if((PQCImageFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix().toLower())))
                 allfiles.append(filenameinside);
 
         }
@@ -1414,5 +1414,13 @@ bool PQCScripts::isSVG(QString path) {
 
     const QString suffix = QFileInfo(path).suffix().toLower();
     return (suffix == "svg" || suffix == "svgz");
+
+}
+
+QSize PQCScripts::fitSizeInsideSize(int w, int h, int maxw, int maxh) {
+
+    qDebug() << "args: w h maxw maxh =" << w << h << maxw << maxh;
+
+    return QSize(w,h).scaled(QSize(maxw, maxh), Qt::KeepAspectRatio);
 
 }

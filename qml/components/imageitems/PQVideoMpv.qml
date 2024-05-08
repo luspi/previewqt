@@ -41,16 +41,35 @@ Item {
     // dummy item
     property bool asynchronous
 
-    width: 100
-    height: 100
+    width: 10
+    height: 10
 
     property int videoDuration: 0
     property int videoPosition: 0
     property bool videoPlaying: false
 
+    property int paintedWidth: video.width
+    property int paintedHeight: video.height
+
+    onVideoPlayingChanged: {
+        video.command(["set", "pause", (videoPlaying ? "no" : "yes")])
+    }
+
     property var volumeList: [100, 80, 45, 0]
     property int volumeIndex: 0
     property var volumeIcon: ["high", "medium", "low", "mute"]
+
+    onWidthChanged: {
+        if(width > 15 && height > 15) {
+            image.status = Image.Ready
+        }
+    }
+
+    onHeightChanged: {
+        if(width > 15 && height > 15) {
+            image.status = Image.Ready
+        }
+    }
 
     PQCMPVObject {
 
@@ -90,6 +109,7 @@ Item {
             videoDuration = video.getProperty("duration")
             video.setProperty("volume", volumeList[volumeIndex])
             getPosition.restart()
+            focusitem.forceActiveFocus()
         }
     }
 
@@ -156,7 +176,6 @@ Item {
                             videoPlaying = true
                         } else {
                             videoPlaying = !videoPlaying
-                            video.command(["cycle", "pause"])
                         }
                     }
                 }
@@ -179,7 +198,6 @@ Item {
                     if(pressed) {
                         if(video.getProperty("eof-reached")) {
                             video.command(["loadfile", image_top.imageSource])
-                            video.command(["cycle", "pause"])
                             videoPlaying = false
                             setPosTimeout.pos = value
                             setPosTimeout.restart()
@@ -236,7 +254,6 @@ Item {
             if(keycode === Qt.Key_Space) {
 
                 videoPlaying = !videoPlaying
-                video.command(["cycle", "pause"])
 
             } else if(keycode === Qt.Key_Left) {
 

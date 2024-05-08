@@ -50,6 +50,10 @@ public:
     bool getLaunchHiddenToSystemTray();
     void setLaunchHiddenToSystemTray(bool val);
 
+    Q_PROPERTY(bool maximizeImageSizeAndAdjustWindow READ getMaximizeImageSizeAndAdjustWindow WRITE setMaximizeImageSizeAndAdjustWindow NOTIFY maximizeImageSizeAndAdjustWindowChanged)
+    bool getMaximizeImageSizeAndAdjustWindow();
+    void setMaximizeImageSizeAndAdjustWindow(bool val);
+
     Q_PROPERTY(int defaultWindowWidth READ getDefaultWindowWidth WRITE setDefaultWindowWidth NOTIFY defaultWindowWidthChanged)
     int getDefaultWindowWidth();
     void setDefaultWindowWidth(int val);
@@ -105,6 +109,7 @@ private:
 
     bool m_topBarAutoHide;
     bool m_launchHiddenToSystemTray;
+    bool m_maximizeImageSizeAndAdjustWindow;
     int m_defaultWindowWidth;
     int m_defaultWindowHeight;
     bool m_defaultWindowMaximized;
@@ -133,6 +138,7 @@ private slots:
 signals:
     void topBarAutoHideChanged();
     void launchHiddenToSystemTrayChanged();
+    void maximizeImageSizeAndAdjustWindowChanged();
     void defaultWindowWidthChanged();
     void defaultWindowHeightChanged();
     void defaultWindowMaximizedChanged();

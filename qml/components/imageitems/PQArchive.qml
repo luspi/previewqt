@@ -22,25 +22,33 @@
 
 import QtQuick
 import QtQuick.Controls
+import QtMultimedia
 import PQCScripts
+import PQCSettings
 
 Item {
 
-    id: image
+    x: (image_top.width-width)/2
+    y: (image_top.height-height)/2
+
+    width: imageitem.width
+    height: imageitem.height
 
     property bool thisIsAComicBook: PQCScripts.isComicBook(image_top.imageSource)
     property var fileList: []
     property int currentFile: 0
     property int fileCount: fileList.length
 
+    property alias sourceSize: imageitem.sourceSize
     property alias asynchronous: imageitem.asynchronous
+    property alias paintedWidth: imageitem.paintedWidth
+    property alias paintedHeight: imageitem.paintedHeight
 
     Image {
 
         id: imageitem
 
         source: ""
-
         Component.onCompleted: {
             if(image_top.imageSource === "") {
                 source = ""
@@ -59,13 +67,23 @@ Item {
         smooth: false
         mipmap: false
 
-        width: image_top.width
-        height: image_top.height
-        sourceSize: Qt.size(image_top.windowWidth, image_top.windowHeight)
+        rotation: image_top.setRotation
+
+        property int defw: Math.max(50, PQCSettings.defaultWindowWidth)
+        property int defh: Math.max(50, PQCSettings.defaultWindowHeight)
+
+        width: rotation%180===0 ? image_top.width : image_top.height
+        height: rotation%180===0 ? image_top.height : image_top.width
+        sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !toplevel.isMaximized && !toplevel.isFullscreen && !toplevel.manualWindowSizeChange) ?
+                        (rotation%180===0 ? Qt.size(defw, defh) : Qt.size(defh, defw)) :
+                        (rotation%180===0 ? Qt.size(image_top.windowWidth, image_top.windowHeight) : Qt.size(image_top.windowHeight, image_top.windowWidth))
 
         onStatusChanged: {
+            image.status = status
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
+            else if(status == Image.Ready)
+                asynchronous = false
         }
 
     }
@@ -415,6 +433,5 @@ Item {
         }
 
     }
-
 
 }

@@ -26,8 +26,6 @@ import PQCScripts
 
 Item {
 
-    id: image
-
     x: (image_top.width-width)/2
     y: (image_top.height-height)/2
 
@@ -55,6 +53,7 @@ Item {
         height: rotation%180===0 ? image_top.height : image_top.width
 
         onStatusChanged: {
+            image.status = status
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
         }
