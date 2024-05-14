@@ -53,7 +53,8 @@ ApplicationWindow {
 
     // it is hidden by default until we set the stylings from the settings below
     visible: false
-    title: (image.imageSource == "" ? "" : (PQCScripts.getFilename(image.imageSource) + " | ")) + "PreviewQt"
+    property string overrideTitle: ""
+    title: (overrideTitle!= "" ? (overrideTitle+" | ") : (image.imageSource == "" ? "" : (PQCScripts.getFilename(image.imageSource) + " | "))) + "PreviewQt"
 
     // convenience property to check whether window is in fullscreen or maximized
     property bool isFullscreen: toplevel.visibility === Window.FullScreen

@@ -59,6 +59,7 @@ public:
     Q_INVOKABLE QStringList getArchiveContent(QString path);
     Q_INVOKABLE bool isArchive(QString path);
     Q_INVOKABLE bool isComicBook(QString path);
+    Q_INVOKABLE bool isEpub(QString path);
     Q_INVOKABLE QString toPercentEncoding(QString str);
     Q_INVOKABLE QString fromPercentEncoding(QByteArray str);
     Q_INVOKABLE QString keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key keycode);
@@ -92,6 +93,11 @@ public:
 
     int toLcmsFormat(QImage::Format fmt);
     bool applyEmbeddedColorProfile(QImage &img);
+
+    bool isUpgrade();
+
+    Q_INVOKABLE QVariantList loadEPUB(QString path);
+    Q_INVOKABLE QString getTextFromFile(QString path);
 
 private:
     PQCScripts();

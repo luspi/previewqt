@@ -24,6 +24,33 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+#############################################
+#### OPTIONS THAT CAN BE SET BY THE USER ####
+#############################################
+
+option(RAW "Use libraw library" ON)
+option(GRAPHICSMAGICK "Use GraphicsMagick library" OFF)
+option(IMAGEMAGICK "Use ImageMagick library" ON)
+option(DEVIL "Use DevIL library" ON)
+option(FREEIMAGE "Use FreeImage library" ON)
+option(POPPLER "Use Poppler library" ON)
+option(QTPDF "Use QtPDF module instead of Poppler" OFF)
+option(LIBARCHIVE "Enable features that require libarchive" ON)
+option(VIDEO_QT "Enable video support through Qt" ON)
+option(VIDEO_MPV "Enable video support through MPV" ON)
+option(LIBVIPS "Use libvips" OFF)
+option(RESVG "Replace Qt's SVG engine with resvg for better SVG support" OFF)
+
+option(EXIV2 "Use exiv2 library" ON)
+option(EXIV2_ENABLE_BMFF "Enable BMFF format support in Exiv2 (if available)" ON)
+
+option(MOTIONPHOTO "Enable support for Google Motion Photos and Apple Live Photos" ON)
+option(EPUB "Enable support for EPUB files" ON)
+option(PHOTOSPHERE "Enable support for photo spheres and 360 degree panoramic views" ON)
+option(LCMS2 "Enable advanced color management with LCMS2" ON)
+
+option(FLATPAKBUILD "Enable this if this is a build for Flatpak" OFF)
+
 #############################
 ####  SET list of files  ####
 #############################
@@ -61,6 +88,11 @@ set(previewqt_QML ${previewqt_QML} "${d}/PQDocument.qml" "${d}/PQArchive.qml" "$
 set(d "qml/windows")
 set(previewqt_QML ${previewqt_QML} "${d}/PQSettings.qml" "${d}/PQAbout.qml" "${d}/PQHelp.qml" "${d}/PQWelcome.qml")
 
+if(EPUB)
+    set(d "qml/components/imageitems")
+    set(previewqt_QML ${previewqt_QML} "${d}/PQEPUB.qml")
+endif()
+
 if(PHOTOSPHERE)
     set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQPhotoSphere.qml")
 endif()
@@ -79,32 +111,6 @@ if(VIDEO_MPV)
     set(previewqt_QML ${previewqt_QML} "${d}/PQVideoMpv.qml")
 endif()
 
-#############################################
-#### OPTIONS THAT CAN BE SET BY THE USER ####
-#############################################
-
-option(RAW "Use libraw library" ON)
-option(GRAPHICSMAGICK "Use GraphicsMagick library" OFF)
-option(IMAGEMAGICK "Use ImageMagick library" ON)
-option(DEVIL "Use DevIL library" ON)
-option(FREEIMAGE "Use FreeImage library" ON)
-option(POPPLER "Use Poppler library" ON)
-option(QTPDF "Use QtPDF module instead of Poppler" OFF)
-option(LIBARCHIVE "Enable features that require libarchive" ON)
-option(VIDEO_QT "Enable video support through Qt" ON)
-option(VIDEO_MPV "Enable video support through MPV" ON)
-option(LIBVIPS "Use libvips" OFF)
-option(RESVG "Replace Qt's SVG engine with resvg for better SVG support" OFF)
-
-option(EXIV2 "Use exiv2 library" ON)
-option(EXIV2_ENABLE_BMFF "Enable BMFF format support in Exiv2 (if available)" ON)
-
-option(MOTIONPHOTO "Enable support for Google Motion Photos and Apple Live Photos" ON)
-option(PHOTOSPHERE "Enable support for photo spheres and 360 degree panoramic views" ON)
-option(LCMS2 "Enable advanced color management with LCMS2" ON)
-
-option(FLATPAKBUILD "Enable this if this is a build for Flatpak" OFF)
-
 ################################
 #### FIND REQUIRED PACKAGES ####
 ################################
@@ -112,6 +118,15 @@ option(FLATPAKBUILD "Enable this if this is a build for Flatpak" OFF)
 find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Svg Sql)
 if(QTPDF)
     find_package(Qt6 6.2 REQUIRED COMPONENTS Pdf)
+endif()
+if(EPUB)
+    if(LIBARCHIVE)
+        find_package(Qt6 6.2 REQUIRED COMPONENTS WebEngineQuick)
+    else()
+        message("** EPUB support requires support for LibArchive")
+        message("** Disabling EPUB support")
+        set(EPUB OFF)
+    endif()
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
@@ -216,6 +231,9 @@ target_include_directories(previewqt PRIVATE "cplusplus/header")
 target_link_libraries(previewqt PRIVATE Qt6::Quick Qt6::Widgets Qt6::Svg Qt6::Sql)
 if(QTPDF)
     target_link_libraries(previewqt PRIVATE Qt6::Pdf)
+endif()
+if(EPUB)
+    target_link_libraries(previewqt PRIVATE Qt6::WebEngineQuick)
 endif()
 
 ##################################
@@ -437,6 +455,10 @@ if(PHOTOSPHERE)
     add_definitions(-DPQMPHOTOSPHERE)
 else()
     message("** Support for photo spheres DISABLED")
+endif()
+
+if(EPUB)
+    add_definitions(-DPQMEPUB)
 endif()
 
 if(LCMS2)

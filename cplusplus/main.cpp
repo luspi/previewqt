@@ -71,6 +71,10 @@
 #include <pqc_mpvobject.h>
 #endif
 
+#ifdef PQMEPUB
+#include <QtWebEngineQuick/QtWebEngineQuick>
+#endif
+
 int main(int argc, char *argv[]) {
 
 #ifdef Q_OS_WIN
@@ -88,6 +92,10 @@ int main(int argc, char *argv[]) {
     // This allows for semi-transparent windows
     // By default Qt6 uses Direct3D which does not seem to support this
     QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
+#endif
+
+#ifdef PQMEPUB
+    QtWebEngineQuick::initialize();
 #endif
 
     // avoids warning for customizing native styles (observed in particular on Windows)
@@ -126,8 +134,18 @@ int main(int argc, char *argv[]) {
         }
     }
 
-
     PQCSingleInstance app(argc, argv);
+
+    // Check for upgrade to PreviewQt
+    if(PQCScripts::get().isUpgrade()) {
+
+        // Validate image formats database
+        PQCImageFormats::get().validate();
+
+        // Update stored version number
+        PQCSettings::get().setVersion(PQMVERSION);
+
+    }
 
 #ifdef PQMVIDEOMPV
     // Qt sets the locale in the QGuiApplication constructor, but libmpv

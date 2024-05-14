@@ -49,7 +49,8 @@ Item {
     property int status: Image.Null
     onStatusChanged: {
         if(status == Image.Ready) {
-            toplevel.updateWindowSize(imageloader.item.paintedWidth+10, imageloader.item.paintedHeight+10)
+            if(imageloader.item != null)
+                toplevel.updateWindowSize(imageloader.item.paintedWidth+10, imageloader.item.paintedHeight+10)
         }
     }
 
@@ -131,6 +132,7 @@ Item {
         toplevel.manualWindowSizeChange = false
         imageloader.source = ""
         setRotation = 0
+        toplevel.overrideTitle = ""
 
         if(path === "") {
             imageSource = ""
@@ -147,6 +149,9 @@ Item {
         if(PQCScripts.isPDFDocument(imageSource)) {
             currentType = "doc"
             imageloader.source = "imageitems/PQDocument.qml"
+        } else if(PQCScripts.isEpub(imageSource)) {
+            currentType = "doc"
+            imageloader.source = "imageitems/PQEPUB.qml"
         } else if(PQCScripts.isArchive(imageSource)) {
             currentType = "ani"
             imageloader.source = "imageitems/PQArchive.qml"

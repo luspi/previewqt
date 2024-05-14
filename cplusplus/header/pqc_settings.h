@@ -42,6 +42,10 @@ public:
     PQCSettings(PQCSettings const&)     = delete;
     void operator=(PQCSettings const&) = delete;
 
+    Q_PROPERTY(QString version READ getVersion WRITE setVersion NOTIFY versionChanged)
+    QString getVersion();
+    void setVersion(QString val);
+
     Q_PROPERTY(bool topBarAutoHide READ getTopBarAutoHide WRITE setTopBarAutoHide NOTIFY topBarAutoHideChanged)
     bool getTopBarAutoHide();
     void setTopBarAutoHide(bool val);
@@ -107,6 +111,7 @@ public:
 private:
     PQCSettings();
 
+    QString m_version;
     bool m_topBarAutoHide;
     bool m_launchHiddenToSystemTray;
     bool m_maximizeImageSizeAndAdjustWindow;
@@ -136,6 +141,7 @@ private slots:
     void saveSettings();
 
 signals:
+    void versionChanged();
     void topBarAutoHideChanged();
     void launchHiddenToSystemTrayChanged();
     void maximizeImageSizeAndAdjustWindowChanged();

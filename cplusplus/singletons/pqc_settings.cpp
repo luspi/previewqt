@@ -103,6 +103,17 @@ bool PQCSettings::checkToolExistence(QString tool) {
     return !which.exitCode();
 }
 
+QString PQCSettings::getVersion() {
+    return m_version;
+}
+void PQCSettings::setVersion(QString val) {
+    if(m_version != val) {
+        m_version = val;
+        saveTimer->start();
+        emit versionChanged();
+    }
+}
+
 bool PQCSettings::getTopBarAutoHide() {
     return m_topBarAutoHide;
 }
@@ -270,6 +281,7 @@ void PQCSettings::setCloseWhenLosingFocus(bool val) {
 
 void PQCSettings::loadSettings() {
 
+    setVersion(settings->value("version", false).toString());
     setTopBarAutoHide(settings->value("topBarAutoHide", false).toBool());
     setLaunchHiddenToSystemTray(settings->value("launchHiddenToSystemTray", false).toBool());
     setMaximizeImageSizeAndAdjustWindow(settings->value("maximizeImageSizeAndAdjustWindow", true).toBool());
@@ -290,6 +302,7 @@ void PQCSettings::loadSettings() {
 
 void PQCSettings::saveSettings() {
 
+    settings->setValue("version", m_version);
     settings->setValue("topBarAutoHide", m_topBarAutoHide);
     settings->setValue("launchHiddenToSystemTray", m_launchHiddenToSystemTray);
     settings->setValue("maximizeImageSizeAndAdjustWindow", m_maximizeImageSizeAndAdjustWindow);

@@ -154,6 +154,8 @@ public:
 
     void closeDatabase();
 
+    void validate();
+
 private:
     PQCImageFormats();
 

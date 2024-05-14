@@ -39,6 +39,8 @@
 #include <QColorSpace>
 #include <thread>
 #include <chrono>
+#include <QXmlStreamReader>
+#include <QBuffer>
 
 #ifdef PQMQTPDF
 #include <QtPdf/QPdfDocument>
@@ -848,6 +850,22 @@ bool PQCScripts::isComicBook(QString path) {
 
 }
 
+bool PQCScripts::isEpub(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+#ifdef PQMEPUB
+
+    const QString suf = QFileInfo(path).suffix().toLower();
+
+    return (suf=="epub");
+
+#endif
+
+    return false;
+
+}
+
 QString PQCScripts::toPercentEncoding(QString str) {
     return QUrl::toPercentEncoding(str);
 }
@@ -1422,5 +1440,255 @@ QSize PQCScripts::fitSizeInsideSize(int w, int h, int maxw, int maxh) {
     qDebug() << "args: w h maxw maxh =" << w << h << maxw << maxh;
 
     return QSize(w,h).scaled(QSize(maxw, maxh), Qt::KeepAspectRatio);
+
+}
+
+bool PQCScripts::isUpgrade() {
+
+    return (PQCSettings::get().getVersion() != PQMVERSION);
+
+}
+
+QVariantList PQCScripts::loadEPUB(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    QVariantList ret;
+
+#ifdef PQMEPUB
+
+    // clean up all old files
+    QDir olddir(PQCConfigFiles::CACHE_DIR() + "/epub/");
+    olddir.removeRecursively();
+
+    const QFileInfo info(path);
+
+    // Create new archive handler
+    struct archive *a = archive_read_new();
+
+    // We allow any type of compression and format
+    archive_read_support_filter_all(a);
+    archive_read_support_format_all(a);
+
+    // Read file
+    int r = archive_read_open_filename(a, info.absoluteFilePath().toLocal8Bit().data(), 10240);
+
+    // If something went wrong, output error message and stop here
+    if(r != ARCHIVE_OK) {
+        qWarning() << "ERROR: archive_read_open_filename() returned code of" << r;
+        return ret;
+    }
+
+    // This will hold the opf file content
+    QString txt_metadata = "";
+
+    // we keep a list of all images found so that in case no cover image is explicitely specified we simply use the first image in that list for this purpose
+    QStringList imageFiles;
+
+    // Loop over entries in archive
+    struct archive_entry *entry;
+    while(archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+
+        // Read the current file entry
+        // We use the '_w' variant here, as otherwise on Windows this call causes a segfault when a file in an archive contains non-latin characters
+        QString filenameinside = QString::fromWCharArray(archive_entry_pathname_w(entry));
+
+        QFileInfo insideinfo(filenameinside);
+        const QString suffix = insideinfo.suffix().toLower();
+
+        // Find out the size of the data
+        int64_t size = archive_entry_size(entry);
+
+        // empty file? ignore
+        if(size == 0)
+            continue;
+
+        // Create a uchar buffer of that size to hold the image data
+        uchar *buff = new uchar[size];
+
+        // And finally read the file into the buffer
+        la_ssize_t r = archive_read_data(a, (void*)buff, size);
+
+        // Something went wrong reading file
+        if(r != size) {
+            qWarning() << "Unable to read file:" << filenameinside;
+            qWarning() << "EPUB cannot be displayed!";
+            return ret;
+        }
+
+        // we extract it to a temp location from where we can load it then
+        const QString temppath = PQCConfigFiles::CACHE_DIR() + "/epub/" + filenameinside;
+
+        // file handles
+        QFile file(temppath);
+        QFileInfo info(file);
+
+        // remove it if it exists, there is no way to know if it's the same file or not
+        // This should never happen as we remove the directory at the start, but better safe than sorry
+        if(file.exists()) file.remove();
+
+        // make sure the path exists
+        QDir dir(info.absolutePath());
+        if(!dir.exists())
+            dir.mkpath(info.absolutePath());
+
+        // write buffer to file
+        file.open(QIODevice::ReadWrite);
+        QDataStream out(&file);   // we will serialize the data into the file
+        out.writeRawData((const char*) buff,size);
+        delete[] buff;
+
+        // this is the metadata
+        if(suffix == "opf") {
+
+            file.seek(0);
+            QTextStream in(&file);
+            txt_metadata = in.readAll();
+
+        // this is an image, possibly a cover image
+        } else if(suffix == "jpg" || suffix == "jpeg") {
+
+            // Any image file with one of these basenames is given preferential treatment if no cover image is explicitely specified
+            QStringList coveroptions = {"cover", "_cover_", "coverimage", "_coverimage_", "coverimg", "_coverimg_"};
+
+            if(coveroptions.contains(info.baseName().toLower()))
+                imageFiles.prepend(temppath);
+            else
+                imageFiles.append(temppath);
+        }
+
+        file.close();
+
+    }
+
+
+    // compose some palatable overview of the book
+    QMap<QString,QString> idToFile;
+    QStringList idOrder;
+
+    // the reference file might be a duplicate -> ignore
+    QString referencefile = "";
+
+    // the file id for the cover image (if present)
+    QString coverid = "";
+
+    QXmlStreamReader reader(txt_metadata);
+    while(!reader.atEnd()) {
+
+        QXmlStreamReader::TokenType token = reader.readNext();
+
+        if(token == QXmlStreamReader::StartElement) {
+
+            const QString name = reader.name().toString();
+
+            // Store the title in the return map directly
+            if(name == "title") {
+
+                reader.readNext();
+                ret.append(reader.text().toString());
+
+            // some file
+            } else if(name == "item") {
+
+                idToFile.insert(reader.attributes().value("id").toString(),
+                                reader.attributes().value("href").toString());
+
+            // the current file (read in order)
+            } else if(name == "itemref") {
+
+                idOrder.append(reader.attributes().value("idref").toString());
+
+            // the reference file we want to ignore
+            } else if(name == "reference") {
+
+                referencefile = reader.attributes().value("href").toString();
+
+            // this might contain some information about the cover image
+            } else if(name == "meta") {
+
+                if(reader.attributes().value("name").toString() == "cover") {
+                    coverid = reader.attributes().value("content").toString();
+                    idOrder.append(coverid);
+                }
+
+            }
+
+        }
+    }
+
+    bool addedcover = false;
+
+    // loop through all files in the given order
+    for(auto &id : std::as_const(idOrder)) {
+
+        // file was not actually found -> something went wrong
+        if(!idToFile.contains(id)) {
+            qWarning() << "ID not found:" << id;
+            continue;
+        }
+
+        // the filename
+        const QString fn = idToFile.value(id);
+
+        // if this is the image cover then read file and store as base64 string
+        if(id == coverid) {
+
+            QImage img(PQCConfigFiles::CACHE_DIR() + "/epub/" + fn);
+            QBuffer buf;
+            buf.open(QIODevice::WriteOnly);
+            img.save(&buf, "JPEG");
+            buf.close();
+            // the image is stored in the second position
+            ret.insert(1, buf.buffer().toBase64());
+            addedcover = true;
+
+        // normal book file
+        } else if(referencefile != fn)
+
+            ret.append(QDir::cleanPath(PQCConfigFiles::CACHE_DIR() + "/epub/" + fn));
+    }
+
+    // If no cover was explicitely specified
+    if(!addedcover) {
+
+        // Take the first image file for this purpose (if any)
+        if(imageFiles.length() > 0) {
+            QImage img(imageFiles[0]);
+            QBuffer buf;
+            buf.open(QIODevice::WriteOnly);
+            img.save(&buf, "JPEG");
+            buf.close();
+            // the image is stored in the second position
+            ret.insert(1, buf.buffer().toBase64());
+
+        // oh well, no cover image
+        } else
+            ret.insert(1, "");
+    }
+
+    // Close archive
+    r = archive_read_free(a);
+    if(r != ARCHIVE_OK)
+        qWarning() << "ERROR: archive_read_free() returned code of" << r;
+
+#endif
+
+    return ret;
+
+}
+
+QString PQCScripts::getTextFromFile(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    QFile file(path);
+    file.open(QIODevice::ReadOnly);
+
+    QTextStream in(&file);
+    const QString txt = in.readAll();
+
+    file.close();
+
+    return txt;
 
 }
