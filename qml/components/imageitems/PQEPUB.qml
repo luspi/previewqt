@@ -109,6 +109,11 @@ Item {
 
         }
 
+        // disable context menu
+        onContextMenuRequested: (request) => {
+            request.accepted = true
+        }
+
     }
 
     // This makes sure that whenever the webengineview stole the focus we return it to the focusitem
