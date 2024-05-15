@@ -485,12 +485,12 @@ ApplicationWindow {
 
     }
 
-    function updateWindowSize(w, h) {
+    function updateWindowSize(w, h, useSpecifiedSizeExactly=false) {
 
         if(!PQCSettings.maximizeImageSizeAndAdjustWindow || isMaximized || isFullscreen || manualWindowSizeChange)
             return
 
-        var fitsize = PQCScripts.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight)
+        var fitsize = (useSpecifiedSizeExactly ? Qt.size(w,h) : PQCScripts.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight))
 
         toplevelAni.stop()
         toplevelAni.w_from = toplevel.width

@@ -97,6 +97,7 @@ public:
     bool isUpgrade();
 
     Q_INVOKABLE QVariantList loadEPUB(QString path);
+    void analyzeEpubMetaData(QString subfolder, QString txt, QString &title, QString &coverId, QMap<QString, QString> &outFileList, QStringList &outIdOrder);
     Q_INVOKABLE QString getTextFromFile(QString path);
 
 private:

@@ -1479,14 +1479,16 @@ QVariantList PQCScripts::loadEPUB(QString path) {
         return ret;
     }
 
-    // This will hold the opf file content
-    QString txt_metadata = "";
-
-    // The metadata file could be located in a subfolder that we need to take into account
-    QString metadatafolder = "";
-
     // we keep a list of all images found so that in case no cover image is explicitely specified we simply use the first image in that list for this purpose
     QStringList imageFiles;
+
+    // Title string
+    QString title = "";
+    // compose some palatable overview of the book
+    QMap<QString,QString> idToFile;
+    QStringList idOrder;
+    // the file id for the cover image (if present)
+    QString coverid = "";
 
     // Loop over entries in archive
     struct archive_entry *entry;
@@ -1541,25 +1543,29 @@ QVariantList PQCScripts::loadEPUB(QString path) {
         out.writeRawData((const char*) buff,size);
         delete[] buff;
 
-        // this is the metadata
-        if(suffix == "opf") {
+        // check if this file is located in a subfolder
+        // if it is, then we need to take that into account for paths listed inside
+        QFileInfo mi(filenameinside);
+        QString mp = mi.path();
 
-            // check if this file is located in a subfolder
-            // if it is, then we need to take that into account for paths listed inside
-            QFileInfo mi(filenameinside);
-            const QString mp = mi.path();
-            if(mp != "." && mp != "")
-                metadatafolder = mp;
+        // this is the metadata
+        if(suffix == "opf" && (idToFile.size() == 0 || mp == "" || mp == ".")) {
+
+            if(mp == ".")
+                mp = "";
 
             file.seek(0);
             QTextStream in(&file);
-            txt_metadata = in.readAll();
+
+            idToFile.clear();
+            idOrder.clear();
+            analyzeEpubMetaData(mp, in.readAll(), title, coverid, idToFile, idOrder);
 
         // this is an image, possibly a cover image
         } else if(suffix == "jpg" || suffix == "jpeg") {
 
             // Any image file with one of these basenames is given preferential treatment if no cover image is explicitely specified
-            QStringList coveroptions = {"cover", "_cover_", "coverimage", "_coverimage_", "coverimg", "_coverimg_"};
+            QStringList coveroptions = {"cover", "_cover_", "coverimage", "cover_image", "_cover_image_", "_coverimage_", "coverimg", "_coverimg_"};
 
             if(coveroptions.contains(info.baseName().toLower()))
                 imageFiles.append(temppath);
@@ -1570,65 +1576,9 @@ QVariantList PQCScripts::loadEPUB(QString path) {
 
     }
 
-    // compose some palatable overview of the book
-    QMap<QString,QString> idToFile;
-    QStringList idOrder;
-
-    // the reference file might be a duplicate -> ignore
-    QString referencefile = "";
-
-    // the file id for the cover image (if present)
-    QString coverid = "";
-
-    QXmlStreamReader reader(txt_metadata);
-    while(!reader.atEnd()) {
-
-        QXmlStreamReader::TokenType token = reader.readNext();
-
-        if(token == QXmlStreamReader::StartElement) {
-
-            const QString name = reader.name().toString();
-
-            // Store the title in the return map directly
-            if(name == "title") {
-
-                reader.readNext();
-                ret.append(reader.text().toString());
-
-            // some file
-            } else if(name == "item") {
-
-                if(metadatafolder == "")
-                    idToFile.insert(reader.attributes().value("id").toString(),
-                                    reader.attributes().value("href").toString());
-                else
-                    idToFile.insert(reader.attributes().value("id").toString(),
-                                    QString("%1/%2").arg(metadatafolder, reader.attributes().value("href").toString()));
-
-            // the current file (read in order)
-            } else if(name == "itemref") {
-
-                idOrder.append(reader.attributes().value("idref").toString());
-
-            // the reference file we want to ignore
-            } else if(name == "reference") {
-
-                referencefile = reader.attributes().value("href").toString();
-
-            // this might contain some information about the cover image
-            } else if(name == "meta") {
-
-                if(reader.attributes().value("name").toString() == "cover") {
-                    coverid = reader.attributes().value("content").toString();
-                    idOrder.append(coverid);
-                }
-
-            }
-
-        }
-    }
-
     bool addedcover = false;
+
+    ret.append(title);
 
     // loop through all files in the given order
     for(auto &id : std::as_const(idOrder)) {
@@ -1655,7 +1605,7 @@ QVariantList PQCScripts::loadEPUB(QString path) {
             addedcover = true;
 
         // normal book file
-        } else if(referencefile != fn)
+        } else
 
             ret.append(QDir::cleanPath(PQCConfigFiles::CACHE_DIR() + "/epub/" + fn));
     }
@@ -1689,6 +1639,67 @@ QVariantList PQCScripts::loadEPUB(QString path) {
 
 }
 
+void PQCScripts::analyzeEpubMetaData(QString subfolder, QString txt,
+                                     QString &title, QString &coverId,
+                                     QMap<QString, QString> &outFileList, QStringList &outIdOrder) {
+
+    QXmlStreamReader reader(txt);
+    while(!reader.atEnd()) {
+
+        QXmlStreamReader::TokenType token = reader.readNext();
+
+        if(token == QXmlStreamReader::StartElement) {
+
+            const QString name = reader.name().toString();
+
+            // Store the title in the return map directly
+            if(name == "title") {
+
+                reader.readNext();
+                title = reader.text().toString();
+
+            // some file
+            } else if(name == "item") {
+
+                const QString href = reader.attributes().value("href").toString();
+                const QString suffix = QFileInfo(href).suffix().toLower();
+
+                if(suffix != "xhtml" && suffix != "html" && suffix != "xml")
+                    continue;
+
+                if(subfolder == "")
+                    outFileList.insert(reader.attributes().value("id").toString(), href);
+                else
+                    outFileList.insert(reader.attributes().value("id").toString(), QString("%1/%2").arg(subfolder, href));
+
+            // the current file (read in order)
+            } else if(name == "itemref") {
+
+                outIdOrder.append(reader.attributes().value("idref").toString());
+
+            // the reference file we want to ignore
+            } else if(name == "reference") {
+
+                const QString referencefile = reader.attributes().value("href").toString();
+                if(outIdOrder.contains(referencefile))
+                    outIdOrder.remove(outIdOrder.indexOf(referencefile));
+
+                // this might contain some information about the cover image
+            } else if(name == "meta") {
+
+                if(reader.attributes().value("name").toString() == "cover") {
+                    coverId = reader.attributes().value("content").toString();
+
+                    outIdOrder.append(reader.attributes().value("content").toString());
+                }
+
+            }
+
+        }
+    }
+
+}
+
 QString PQCScripts::getTextFromFile(QString path) {
 
     qDebug() << "args: path =" << path;
@@ -1697,7 +1708,7 @@ QString PQCScripts::getTextFromFile(QString path) {
     file.open(QIODevice::ReadOnly);
 
     QTextStream in(&file);
-    const QString txt = in.readAll();
+    QString txt = in.readAll();
 
     file.close();
 

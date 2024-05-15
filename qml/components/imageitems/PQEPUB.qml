@@ -25,6 +25,7 @@ import QtQuick.Controls
 import PQCScripts
 import QtWebEngine
 import PQCSettings
+import PQCCache
 
 Item {
 
@@ -34,21 +35,44 @@ Item {
     width: view.width
     height: view.height
 
+    // during a short startup period we ignore any changes to the document/window
+    property bool startup: true
+    Timer {
+        interval: 1000
+        running: true
+        onTriggered:
+            startup = false
+    }
+
+    // store the currently manually changed window size
+    onWidthChanged:
+        storePagePos.restart()
+    onHeightChanged:
+        storePagePos.restart()
+
     property bool asynchronous: false
     property int paintedWidth: Math.max(view.contentsSize.width, (coverimage.source!=="" ? coverimage.paintedWidth : width))
     property int paintedHeight: Math.max(view.contentsSize.height, (coverimage.source!=="" ? coverimage.paintedHeight : height))
 
+    // where we are at in the e book
     property int documentCount: 1
     property int currentDocument: 0
 
-    onCurrentDocumentChanged:
+    // react to changes
+    onCurrentDocumentChanged: {
         loadBook()
+        storePagePos.restart()
+    }
 
     // the book contents
     // 0: title of book
     // 1: cover image (can be empty)
     // 2-: filepath for documents composing book
     property var book: []
+
+    // some specific cached properties to be loaded after setup
+    property int scrollToWhenSetup: -1
+    property size windowSizeWhenSetup: Qt.size(-1,-1)
 
     Component.onCompleted: {
 
@@ -61,24 +85,64 @@ Item {
         // store document count
         documentCount = book.length-2
 
+        // get cached values (if any)
+        var cached = PQCCache.getEntry(image_top.imageSource)
+        var haveCache = (cached!=="")   // note: *after* split() the length of an array is reported as 1
+        cached = cached.split("::")
+
+        // if this book was loaded before at a specific page
+        var overrideCurrentDocument = -1
+        if(haveCache) {
+            overrideCurrentDocument = cached[0]*1
+            windowSizeWhenSetup = Qt.size(cached[2], cached[3])
+        }
+
         // if we have a cover image, show that one (currentDocument := -1)
         if(book[1] !== "") {
 
             coverimage.source = "data:image/jpeg;base64," + book[1]
-            currentDocument = -1
+
+            // if overrideCurrentDocument is not set we want -1 which is the value of overrideCurrentDocument if not set
+            currentDocument = overrideCurrentDocument
 
         // if we don't have a cover image (currentDocument := 0)
         } else {
 
             coverimage.source = ""
-            currentDocument = 0
+            currentDocument = (overrideCurrentDocument===-1 ? 0 : overrideCurrentDocument)
 
-            // load the first page
+        }
+
+        // load the selected book page
+        if(currentDocument !== -1) {
             loadBook()
-
+            if(haveCache)
+                scrollToWhenSetup = cached[1]
         }
     }
 
+    // store current page and scroll position at exit
+    Component.onDestruction: {
+        storePagePos.stop()
+        storePagePos.triggered()
+    }
+
+    // with timeout store updates to page and scroll position
+    Timer {
+        id: storePagePos
+        interval: 500
+        onTriggered: {
+
+            // we do not do anything if we're still setting it up (will fire some signals)
+            if(startup)
+                return
+
+            // store data
+            // we ignore window size if no change was done by the user
+            var val = "%1::%2::%3::%4".arg(currentDocument).arg(progressTxt.progress).arg(toplevel.manualWindowSizeChange ? toplevel.width : -1).arg(toplevel.manualWindowSizeChange ? toplevel.height : -1)
+            PQCCache.setEntry(image_top.imageSource, val)
+        }
+    }
 
     // the view for the actual book content
     WebEngineView {
@@ -91,22 +155,34 @@ Item {
         width: image_top.width
         height: image_top.height
 
-        // monitor loading progress
-        onLoadProgressChanged: {
+        onLoadingChanged: (loadingInfo) => {
+            if (loadingInfo.status === WebEngineView.LoadSucceededStatus && url !== "") {
 
-            // everything loaded
-            if(view.loadProgress == 100)
                 image.status = Image.Ready
 
-            // this disables user selection of content
-            // we do this to help us force the active focus to the focusitem to catch key presses
-            runJavaScript("var head = document.head;" +
+                // this disables user selection of content
+                // we do this to help us force the active focus to the focusitem to catch key presses
+                runJavaScript("var head = document.head;" +
                               "var node= document.createElement('style');" +
                               "var textnode = document.createTextNode('body {-webkit-user-select: none !important;}');" +
-                              "node.appendChild(textnode);head.appendChild(node);"
-                             ,function(){/*Empty function for callback*/})
+                              "node.appendChild(textnode);head.appendChild(node);")
 
+            } else if(loadingInfo.status === WebEngineView.LoadFailedStatus)
 
+                image.status = Image.Error
+
+        }
+
+        // react to url changes
+        onUrlChanged:
+            checkUrlChange()
+
+        // load scroll position once content is properly set up
+        onContentsSizeChanged: {
+            if(contentsSize.height > 0 && scrollToWhenSetup != -1) {
+                view.runJavaScript("window.scrollBy(0,%1);".arg(scrollToWhenSetup * (view.contentsSize.height-view.height) / 100));
+                scrollToWhenSetup = -1
+            }
         }
 
         // disable context menu
@@ -152,6 +228,8 @@ Item {
     // The progress in the current file
     Rectangle {
 
+        id: progressCont
+
         x: (parent.width-width) - 15
         y: (parent.height-height)
 
@@ -168,7 +246,7 @@ Item {
         // when the view is scrolled we show this information shortly
         property bool textHasChanged: false
         Timer {
-            running: parent.textHasChanged
+            id: changedTimer
             interval: 2000
             onTriggered:
                 parent.textHasChanged = false
@@ -179,10 +257,18 @@ Item {
             id: progressTxt
             x: 5
             y: 5
-            text: Math.min(100, Math.round(100* (view.scrollPosition.y / (view.contentsSize.height-view.height)))) + "%"
+            property int progress: Math.min(100, Math.round(100* (view.scrollPosition.y / (view.contentsSize.height-view.height))))
+            text: progress + "%"
             color: "white"
-            onTextChanged:
-                parent.textHasChanged = true
+        }
+
+        Connections {
+            target: view
+            function onScrollPositionChanged() {
+                progressCont.textHasChanged = true
+                changedTimer.restart()
+                storePagePos.restart()
+            }
         }
 
         // catche mouse events
@@ -330,6 +416,32 @@ Item {
             }
 
         }
+
+    }
+
+    // when the url changed we make sure the counter reflects the right file
+    // that counter can differ it a document was loaded through a link in a document
+    function checkUrlChange() {
+
+        // right url recorded
+        if(view.url === "file://" + book[currentDocument+2])
+            return
+
+        // the url might contain an anchor -> remove for checking
+        var cleanedurl = view.url + ""
+        if(cleanedurl.includes("#"))
+            cleanedurl = cleanedurl.split("#")[0]
+
+        // figure out correct index
+        var ind = currentDocument
+        for(var i = 2; i < book.length; ++i) {
+            if(cleanedurl === "file://" + book[i]) {
+                ind = i-2
+                break
+            }
+        }
+
+        currentDocument = ind
 
     }
 

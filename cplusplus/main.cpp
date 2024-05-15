@@ -34,6 +34,7 @@
 #include <pqc_settings.h>
 #include <pqc_singleinstance.h>
 #include <pqc_configfiles.h>
+#include <pqc_cache.h>
 
 #ifdef Q_OS_WIN
 #include <QQuickWindow>
@@ -181,6 +182,7 @@ int main(int argc, char *argv[]) {
         }, Qt::QueuedConnection);
 
     qmlRegisterSingletonInstance("PQCSettings", 1, 0, "PQCSettings", &PQCSettings::get());
+    qmlRegisterSingletonInstance("PQCCache", 1, 0, "PQCCache", &PQCCache::get());
     qmlRegisterSingletonInstance("PQCScripts", 1, 0, "PQCScripts", &PQCScripts::get());
     qmlRegisterSingletonInstance("PQCImageFormats", 1, 0, "PQCImageFormats", &PQCImageFormats::get());
 

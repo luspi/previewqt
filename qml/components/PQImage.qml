@@ -49,8 +49,20 @@ Item {
     property int status: Image.Null
     onStatusChanged: {
         if(status == Image.Ready) {
-            if(imageloader.item != null)
-                toplevel.updateWindowSize(imageloader.item.paintedWidth+10, imageloader.item.paintedHeight+10)
+            if(imageloader.item != null) {
+
+                var useSpecifiedSizeExactly = false
+                var usew = imageloader.item.paintedWidth+10
+                var useh = imageloader.item.paintedHeight+10
+
+                if(imageloader.item.hasOwnProperty("windowSizeWhenSetup") && imageloader.item.windowSizeWhenSetup.width > 50 && imageloader.item.windowSizeWhenSetup.height > 50) {
+                    useSpecifiedSizeExactly = true
+                    usew = imageloader.item.windowSizeWhenSetup.width
+                    useh = imageloader.item.windowSizeWhenSetup.height
+                }
+
+                toplevel.updateWindowSize(usew, useh, useSpecifiedSizeExactly)
+            }
         }
     }
 
