@@ -1482,6 +1482,9 @@ QVariantList PQCScripts::loadEPUB(QString path) {
     // This will hold the opf file content
     QString txt_metadata = "";
 
+    // The metadata file could be located in a subfolder that we need to take into account
+    QString metadatafolder = "";
+
     // we keep a list of all images found so that in case no cover image is explicitely specified we simply use the first image in that list for this purpose
     QStringList imageFiles;
 
@@ -1541,6 +1544,13 @@ QVariantList PQCScripts::loadEPUB(QString path) {
         // this is the metadata
         if(suffix == "opf") {
 
+            // check if this file is located in a subfolder
+            // if it is, then we need to take that into account for paths listed inside
+            QFileInfo mi(filenameinside);
+            const QString mp = mi.path();
+            if(mp != "." && mp != "")
+                metadatafolder = mp;
+
             file.seek(0);
             QTextStream in(&file);
             txt_metadata = in.readAll();
@@ -1560,7 +1570,6 @@ QVariantList PQCScripts::loadEPUB(QString path) {
         file.close();
 
     }
-
 
     // compose some palatable overview of the book
     QMap<QString,QString> idToFile;
@@ -1590,8 +1599,12 @@ QVariantList PQCScripts::loadEPUB(QString path) {
             // some file
             } else if(name == "item") {
 
-                idToFile.insert(reader.attributes().value("id").toString(),
-                                reader.attributes().value("href").toString());
+                if(metadatafolder == "")
+                    idToFile.insert(reader.attributes().value("id").toString(),
+                                    reader.attributes().value("href").toString());
+                else
+                    idToFile.insert(reader.attributes().value("id").toString(),
+                                    QString("%1/%2").arg(metadatafolder, reader.attributes().value("href").toString()));
 
             // the current file (read in order)
             } else if(name == "itemref") {
