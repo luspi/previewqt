@@ -1562,9 +1562,8 @@ QVariantList PQCScripts::loadEPUB(QString path) {
             QStringList coveroptions = {"cover", "_cover_", "coverimage", "_coverimage_", "coverimg", "_coverimg_"};
 
             if(coveroptions.contains(info.baseName().toLower()))
-                imageFiles.prepend(temppath);
-            else
                 imageFiles.append(temppath);
+
         }
 
         file.close();
