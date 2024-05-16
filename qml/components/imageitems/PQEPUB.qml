@@ -71,7 +71,7 @@ Item {
     property var book: []
 
     // some specific cached properties to be loaded after setup
-    property int scrollToWhenSetup: -1
+    property real scrollToWhenSetup: -1
     property size windowSizeWhenSetup: Qt.size(-1,-1)
 
     Component.onCompleted: {
@@ -95,6 +95,8 @@ Item {
         if(haveCache) {
             overrideCurrentDocument = cached[0]*1
             windowSizeWhenSetup = Qt.size(cached[2], cached[3])
+            if(cached.length > 4)
+                view.zoomFactor = cached[4]
         }
 
         // if we have a cover image, show that one (currentDocument := -1)
@@ -139,7 +141,9 @@ Item {
 
             // store data
             // we ignore window size if no change was done by the user
-            var val = "%1::%2::%3::%4".arg(currentDocument).arg(progressTxt.progress).arg(toplevel.manualWindowSizeChange ? toplevel.width : -1).arg(toplevel.manualWindowSizeChange ? toplevel.height : -1)
+            var val = "%1::%2::%3::%4::%5".arg(currentDocument).arg(progressTxt.progress)
+                                          .arg(toplevel.manualWindowSizeChange ? toplevel.width : -1).arg(toplevel.manualWindowSizeChange ? toplevel.height : -1)
+                                          .arg(view.zoomFactor)
             PQCCache.setEntry(image_top.imageSource, val)
         }
     }
@@ -189,6 +193,10 @@ Item {
         onContextMenuRequested: (request) => {
             request.accepted = true
         }
+
+        Behavior on zoomFactor { NumberAnimation { duration: 50 } }
+        onZoomFactorChanged:
+            storePagePos.restart()
 
     }
 
@@ -257,8 +265,8 @@ Item {
             id: progressTxt
             x: 5
             y: 5
-            property int progress: Math.min(100, Math.round(100* (view.scrollPosition.y / (view.contentsSize.height-view.height))))
-            text: progress + "%"
+            property real progress: Math.min(100, 100* (view.scrollPosition.y / (view.contentsSize.height-view.height)))
+            text: Math.round(progress) + "%"
             color: "white"
         }
 
@@ -276,6 +284,11 @@ Item {
             id: progressInfo
             anchors.fill: parent
             hoverEnabled: true
+            ToolTip {
+                delay: 500
+                text: qsTr("Progress in current chapter")
+                visible: parent.containsMouse
+            }
         }
     }
 
@@ -291,9 +304,9 @@ Item {
         height: 30
 
         radius: 5
-        color: "#88000000"
+        color: "#000000"
 
-        opacity: nextmouse.containsMouse||backmouse.containsMouse||bgmouse.containsMouse ? 0.8 : 0.1
+        opacity: nextmouse.containsMouse||backmouse.containsMouse||plusmouse.containsMouse||minusmouse.containsMouse||currentMouse.containsMouse||bgmouse.containsMouse ? 0.8 : 0.1
         Behavior on opacity { NumberAnimation { duration: 200 } }
 
         MouseArea {
@@ -331,6 +344,11 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                         onClicked:
                             currentDocument = Math.max((book[1] !== "" ? -1 : 0), currentDocument-1)
+                        ToolTip {
+                            delay: 500
+                            text: qsTr("Go to previous chapter")
+                            visible: parent.containsMouse
+                        }
                     }
                 }
             }
@@ -356,6 +374,11 @@ Item {
                         cursorShape: Qt.PointingHandCursor
                         onClicked:
                             currentDocument = Math.min(documentCount-1, currentDocument+1)
+                        ToolTip {
+                            delay: 500
+                            text: qsTr("Go to next section/chapter")
+                            visible: parent.containsMouse
+                        }
                     }
                 }
 
@@ -365,7 +388,88 @@ Item {
             Text {
                 y: (parent.height-height)/2
                 color: "white"
+                font.bold: true
                 text: "%1 / %2".arg(currentDocument+(book[1]==="" ? 1 : 2)).arg(documentCount+(book[1]==="" ? 0 : 1))
+                MouseArea {
+                    id: currentMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    ToolTip {
+                        delay: 500
+                        text: qsTr("Current section/chapter")
+                        visible: parent.containsMouse
+                    }
+                }
+            }
+
+            // zoom into document
+            Rectangle {
+
+                y: (parent.height-height)/2
+                width: height
+                height: navcont.height*0.8
+                color: plusmouse.containsPress ? "#88000000" : (plusmouse.containsMouse ? "#88444444" : "transparent")
+                Behavior on color { ColorAnimation { duration: 200 } }
+                radius: 5
+
+                Image {
+                    x: 3
+                    y: 3
+                    width: parent.width-6
+                    height: parent.height-6
+                    sourceSize: Qt.size(width, height)
+                    smooth: false
+                    source: "image://svg/:/font-plus.svg"
+                    MouseArea {
+                        id: plusmouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked:
+                            view.zoomFactor += 0.1
+                        ToolTip {
+                            delay: 500
+                            text: qsTr("Zoom in")
+                            visible: parent.containsMouse
+                        }
+                    }
+                }
+
+            }
+
+            // zoom out of document
+            Rectangle {
+
+                y: (parent.height-height)/2
+                width: height
+                height: navcont.height*0.8
+                color: minusmouse.containsPress ? "#88000000" : (minusmouse.containsMouse ? "#88444444" : "transparent")
+                Behavior on color { ColorAnimation { duration: 200 } }
+                radius: 5
+
+                Image {
+                    x: 5
+                    y: 5
+                    width: parent.width-10
+                    height: parent.height-10
+                    sourceSize: Qt.size(width, height)
+                    smooth: false
+                    source: "image://svg/:/font-minus.svg"
+                    MouseArea {
+                        id: minusmouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked:
+                            view.zoomFactor -= 0.1
+                        ToolTip {
+                            delay: 500
+                            text: qsTr("Zoom out")
+                            visible: parent.containsMouse
+                        }
+                    }
+                }
+
             }
 
         }
@@ -378,9 +482,6 @@ Item {
 
         function onKeyPress(modifiers, keycode) {
 
-            if(modifiers !== Qt.NoModifier)
-                return
-
             if(keycode === Qt.Key_Left) {
 
                 currentDocument = Math.max((book[1] !== "" ? -1 : 0), currentDocument-1)
@@ -391,11 +492,11 @@ Item {
 
             } else if(keycode === Qt.Key_Home) {
 
-                currentDocument = 0
+                view.runJavaScript("window.scrollBy(0,%1);".arg(-view.scrollPosition.y));
 
             } else if(keycode === Qt.Key_End) {
 
-                currentDocument = documentCount-3
+                view.runJavaScript("window.scrollBy(0,%1);".arg(view.contentsSize.height));
 
             } else if(keycode === Qt.Key_PageDown) {
 
@@ -412,6 +513,18 @@ Item {
             } else if(keycode === Qt.Key_Up) {
 
                 view.runJavaScript("window.scrollBy(0, -20);");
+
+            } else if(keycode === Qt.Key_Plus || keycode === Qt.Key_Equal) {
+
+                view.zoomFactor += 0.1
+
+            } else if(keycode === Qt.Key_Minus) {
+
+                view.zoomFactor -= 0.1
+
+            } else if(modifiers === Qt.ControlModifier && keycode === Qt.Key_0) {
+
+                view.zoomFactor = 1.0
 
             }
 

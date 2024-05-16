@@ -158,7 +158,7 @@ ApplicationWindow {
     // The tray icon
     Loader {
         id: trayicon
-        active: false
+        active: true
         asynchronous: true
         source: "components/PQTrayIcon.qml"
     }

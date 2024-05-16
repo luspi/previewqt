@@ -22,5 +22,9 @@
         <file>logo_full.svg</file>
         <file>rotateleft.svg</file>
         <file>rotateright.svg</file>
+        <file>minus.svg</file>
+        <file>plus.svg</file>
+        <file>font-minus.svg</file>
+        <file>font-plus.svg</file>
     </qresource>
 </RCC>
