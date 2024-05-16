@@ -139,10 +139,17 @@ Item {
             if(startup)
                 return
 
+            var winW = toplevel.width
+            var winH = toplevel.height
+            if(!toplevel.manualWindowSizeChange || toplevel.isFullscreen || toplevel.isMaximized) {
+                winW = -1
+                winH = -1
+            }
+
             // store data
             // we ignore window size if no change was done by the user
             var val = "%1::%2::%3::%4::%5".arg(currentDocument).arg(progressTxt.progress)
-                                          .arg(toplevel.manualWindowSizeChange ? toplevel.width : -1).arg(toplevel.manualWindowSizeChange ? toplevel.height : -1)
+                                          .arg(winW).arg(winH)
                                           .arg(view.zoomFactor)
             PQCCache.setEntry(image_top.imageSource, val)
         }
@@ -183,7 +190,7 @@ Item {
 
         // load scroll position once content is properly set up
         onContentsSizeChanged: {
-            if(contentsSize.height > 0 && scrollToWhenSetup != -1) {
+            if(view.loadProgress == 100 && contentsSize.height > 0 && scrollToWhenSetup != -1) {
                 view.runJavaScript("window.scrollBy(0,%1);".arg(scrollToWhenSetup * (view.contentsSize.height-view.height) / 100));
                 scrollToWhenSetup = -1
             }
