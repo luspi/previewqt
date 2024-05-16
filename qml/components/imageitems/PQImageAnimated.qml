@@ -32,7 +32,10 @@ Item {
     width: imageitem.width
     height: imageitem.height
 
+    property alias sourceSize: imageitem.sourceSize
     property alias asynchronous: imageitem.asynchronous
+    property alias paintedWidth: imageitem.paintedWidth
+    property alias paintedHeight: imageitem.paintedHeight
 
     AnimatedImage {
 
