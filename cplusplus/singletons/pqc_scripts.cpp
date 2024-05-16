@@ -1585,7 +1585,7 @@ QVariantList PQCScripts::loadEPUB(QString path) {
 
         // file was not actually found -> something went wrong
         if(!idToFile.contains(id)) {
-            qWarning() << "ID not found:" << id;
+            qDebug() << "ID not found:" << id;
             continue;
         }
 
@@ -1646,6 +1646,8 @@ void PQCScripts::analyzeEpubMetaData(QString subfolder, QString txt,
                                      QString &title, QString &coverId,
                                      QMap<QString, QString> &outFileList, QStringList &outIdOrder) {
 
+    bool foundtitle = false;
+
     QXmlStreamReader reader(txt);
     while(!reader.atEnd()) {
 
@@ -1666,9 +1668,28 @@ void PQCScripts::analyzeEpubMetaData(QString subfolder, QString txt,
 
                 const QString href = reader.attributes().value("href").toString();
                 const QString suffix = QFileInfo(href).suffix().toLower();
+                const QString basename = QFileInfo(href).baseName().toLower();
 
                 if(suffix != "xhtml" && suffix != "html" && suffix != "xml")
                     continue;
+
+                // we ignore the title page IF we found the cover image
+                // a title page typically also includes only the cover image
+                // but we have more control over it when shown as normal image
+                if(!foundtitle && coverId != "") {
+
+                    const QStringList titleopts = {"cover", "coverpage", "cover_page", "title", "titlepage", "title_page"};
+                    for(const QString &t : titleopts) {
+                        if(basename.endsWith(t)) {
+                            foundtitle = true;
+                            break;
+                        }
+                    }
+
+                    if(foundtitle)
+                        continue;
+
+                }
 
                 if(subfolder == "")
                     outFileList.insert(reader.attributes().value("id").toString(), href);
