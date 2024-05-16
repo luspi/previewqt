@@ -1569,7 +1569,7 @@ QVariantList PQCScripts::loadEPUB(QString path) {
         } else if(suffix == "jpg" || suffix == "jpeg") {
 
             // Any image file with one of these basenames is given preferential treatment if no cover image is explicitely specified
-            QStringList coveroptions = {"cover", "_cover_", "coverimage", "cover_image", "_cover_image_", "_coverimage_", "coverimg", "_coverimg_"};
+            const QStringList coveroptions = {"cover", "_cover_", "coverimage", "cover_image", "_cover_image_", "_coverimage_", "coverimg", "_coverimg_"};
 
             if(coveroptions.contains(info.baseName().toLower()))
                 imageFiles.append(temppath);
@@ -1650,7 +1650,7 @@ void PQCScripts::analyzeEpubMetaData(QString subfolder, QString txt,
                                      QString &title, QString &coverId,
                                      QMap<QString, QString> &outFileList, QStringList &outIdOrder) {
 
-    bool foundtitle = false;
+    QStringList foundtitle;
 
     QXmlStreamReader reader(txt);
     while(!reader.atEnd()) {
@@ -1670,35 +1670,46 @@ void PQCScripts::analyzeEpubMetaData(QString subfolder, QString txt,
             // some file
             } else if(name == "item") {
 
+                const QString id = reader.attributes().value("id").toString();
                 const QString href = reader.attributes().value("href").toString();
                 const QString suffix = QFileInfo(href).suffix().toLower();
                 const QString basename = QFileInfo(href).baseName().toLower();
 
-                if(suffix != "xhtml" && suffix != "html" && suffix != "xml")
+                if(coverId == "" && suffix == "jpeg" || suffix == "jpg") {
+
+                    const QStringList coveroptions = {"cover", "_cover_", "coverimage", "cover_image", "_cover_image_", "_coverimage_", "coverimg", "_coverimg_"};
+
+                    if(coveroptions.contains(basename))
+                        coverId = id;
+
+                    continue;
+
+                } else if(suffix != "xhtml" && suffix != "html" && suffix != "xml")
                     continue;
 
                 // we ignore the title page IF we found the cover image
                 // a title page typically also includes only the cover image
                 // but we have more control over it when shown as normal image
-                if(!foundtitle && coverId != "") {
+                if(foundtitle.length() == 0) {
 
                     const QStringList titleopts = {"cover", "coverpage", "cover_page", "title", "titlepage", "title_page"};
                     for(const QString &t : titleopts) {
                         if(basename.endsWith(t)) {
-                            foundtitle = true;
+                            foundtitle.append(id);
+                            foundtitle.append(href);
                             break;
                         }
                     }
 
-                    if(foundtitle)
+                    if(foundtitle.length() > 0)
                         continue;
 
                 }
 
                 if(subfolder == "")
-                    outFileList.insert(reader.attributes().value("id").toString(), href);
+                    outFileList.insert(id, href);
                 else
-                    outFileList.insert(reader.attributes().value("id").toString(), QString("%1/%2").arg(subfolder, href));
+                    outFileList.insert(id, QString("%1/%2").arg(subfolder, href));
 
             // the current file (read in order)
             } else if(name == "itemref") {
@@ -1724,6 +1735,12 @@ void PQCScripts::analyzeEpubMetaData(QString subfolder, QString txt,
             }
 
         }
+    }
+
+    qWarning() << outFileList << "//" << coverId;
+
+    if(coverId == "") {
+        outFileList.insert(foundtitle[0], foundtitle[1]);
     }
 
 }
