@@ -39,42 +39,62 @@ PQCSettings::PQCSettings() {
     saveTimer->setSingleShot(true);
     connect(saveTimer, &QTimer::timeout, this, &PQCSettings::saveSettings);
 
+#ifndef Q_OS_WIN
+    // not on windows we present options
+    opt_img = {"photoqt", "gwenview", "nomacs", "eog", "feh", "gthumb", "mirage", "geeqie"};
+    opt_doc = {"okular", "evince", "atril", "photoqt"};
+    opt_arc = {"ark", "photoqt"};
+    opt_com = {"okular", "photoqt"};
+    opt_bok = {"ebook-viewer", "calibre", "okular"};
+    opt_vid = {"vlc", "mplayer", "photoqt"};
+#else
+    // on windows custom tools are needed
+    // we need empty entries here to not crash when loading the settings
+    opt_img = {""};
+    opt_doc = {""};
+    opt_arc = {""};
+    opt_com = {""};
+    opt_bok = {""};
+    opt_vid = {""};
+#endif
+
+    // do this AFTER setting the above options
     loadSettings();
 
 #ifndef Q_OS_WIN
     if(firstStart) {
 
-        const QStringList img = {"photoqt", "gwenview", "nomacs", "eog", "feh", "gthumb", "mirage", "geeqie"};
-        const QStringList doc = {"okular", "evince", "atril", "photoqt"};
-        const QStringList arc = {"ark", "photoqt"};
-        const QStringList com = {"okular", "photoqt"};
-        const QStringList vid = {"vlc", "mplayer", "photoqt"};
-
-        for(auto &ele : img) {
+        for(auto &ele : opt_img) {
             if(checkToolExistence(ele)) {
                 setDefaultAppImages(ele);
                 break;
             }
         }
-        for(auto &ele : doc) {
+        for(auto &ele : opt_doc) {
             if(checkToolExistence(ele)) {
                 setDefaultAppDocuments(ele);
                 break;
             }
         }
-        for(auto &ele : arc) {
+        for(auto &ele : opt_arc) {
             if(checkToolExistence(ele)) {
                 setDefaultAppArchives(ele);
                 break;
             }
         }
-        for(auto &ele : com) {
+        for(auto &ele : opt_com) {
             if(checkToolExistence(ele)) {
                 setDefaultAppComicBooks(ele);
                 break;
             }
         }
-        for(auto &ele : vid) {
+        for(auto &ele : opt_bok) {
+            if(checkToolExistence(ele)) {
+                setDefaultAppEBooks(ele);
+                break;
+            }
+        }
+        for(auto &ele : opt_vid) {
             if(checkToolExistence(ele)) {
                 setDefaultAppVideos(ele);
                 break;
@@ -246,6 +266,17 @@ void PQCSettings::setDefaultAppComicBooks(QString val) {
     }
 }
 
+QString PQCSettings::getDefaultAppEBooks() {
+    return m_defaultAppEBooks;
+}
+void PQCSettings::setDefaultAppEBooks(QString val) {
+    if(m_defaultAppEBooks != val) {
+        m_defaultAppEBooks = val;
+        saveTimer->start();
+        emit defaultAppEBooksChanged();
+    }
+}
+
 bool PQCSettings::getCloseAfterDefaultApp() {
     return m_closeAfterDefaultApp;
 }
@@ -289,11 +320,12 @@ void PQCSettings::loadSettings() {
     setDefaultWindowHeight(settings->value("defaultWindowHeight", 400).toInt());
     setDefaultWindowMaximized(settings->value("defaultWindowMaximized", false).toBool());
     setDefaultAppShortcut(settings->value("defaultAppShortcut", "E").toString());
-    setDefaultAppImages(settings->value("defaultAppImages", "").toString());
-    setDefaultAppDocuments(settings->value("defaultAppDocuments", "").toString());
-    setDefaultAppArchives(settings->value("defaultAppArchives", "").toString());
-    setDefaultAppVideos(settings->value("defaultAppVideos", "").toString());
-    setDefaultAppComicBooks(settings->value("defaultAppComicBooks", "").toString());
+    setDefaultAppImages(settings->value("defaultAppImages", opt_img[0]).toString());
+    setDefaultAppDocuments(settings->value("defaultAppDocuments", opt_doc[0]).toString());
+    setDefaultAppArchives(settings->value("defaultAppArchives", opt_arc[0]).toString());
+    setDefaultAppVideos(settings->value("defaultAppVideos", opt_vid[0]).toString());
+    setDefaultAppComicBooks(settings->value("defaultAppComicBooks", opt_com[0]).toString());
+    setDefaultAppEBooks(settings->value("defaultAppEBooks", opt_bok[0]).toString());
     setCloseAfterDefaultApp(settings->value("closeAfterDefaultApp", true).toBool());
     setFiledialogLocation(settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString());
     setCloseWhenLosingFocus(settings->value("closeWhenLosingFocus", false).toBool());
@@ -315,6 +347,7 @@ void PQCSettings::saveSettings() {
     settings->setValue("defaultAppArchives", m_defaultAppArchives);
     settings->setValue("defaultAppVideos", m_defaultAppVideos);
     settings->setValue("defaultAppComicBooks", m_defaultAppComicBooks);
+    settings->setValue("defaultAppEBooks", m_defaultAppEBooks);
     settings->setValue("closeAfterDefaultApp", m_closeAfterDefaultApp);
     settings->setValue("filedialogLocation", m_filedialogLocation);
     settings->setValue("closeWhenLosingFocus", m_closeWhenLosingFocus);

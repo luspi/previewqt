@@ -94,6 +94,10 @@ public:
     QString getDefaultAppComicBooks();
     void setDefaultAppComicBooks(QString val);
 
+    Q_PROPERTY(QString defaultAppEBooks READ getDefaultAppEBooks WRITE setDefaultAppEBooks NOTIFY defaultAppEBooksChanged)
+    QString getDefaultAppEBooks();
+    void setDefaultAppEBooks(QString val);
+
     Q_PROPERTY(bool closeAfterDefaultApp READ getCloseAfterDefaultApp WRITE setCloseAfterDefaultApp NOTIFY closeAfterDefaultAppChanged)
     bool getCloseAfterDefaultApp();
     void setCloseAfterDefaultApp(bool val);
@@ -124,6 +128,7 @@ private:
     QString m_defaultAppArchives;
     QString m_defaultAppVideos;
     QString m_defaultAppComicBooks;
+    QString m_defaultAppEBooks;
     bool m_closeAfterDefaultApp;
     QString m_filedialogLocation;
     bool m_closeWhenLosingFocus;
@@ -136,6 +141,13 @@ private:
     bool checkToolExistence(QString tool);
 
     bool firstStart;
+
+    QStringList opt_img;
+    QStringList opt_doc;
+    QStringList opt_arc;
+    QStringList opt_com;
+    QStringList opt_bok;
+    QStringList opt_vid;
 
 private slots:
     void saveSettings();
@@ -154,6 +166,7 @@ signals:
     void defaultAppArchivesChanged();
     void defaultAppVideosChanged();
     void defaultAppComicBooksChanged();
+    void defaultAppEBooksChanged();
     void closeAfterDefaultAppChanged();
     void filedialogLocationChanged();
     void closeWhenLosingFocusChanged();

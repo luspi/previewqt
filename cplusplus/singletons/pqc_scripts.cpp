@@ -1139,6 +1139,10 @@ bool PQCScripts::openInDefault(QString path) {
 
         exe = PQCSettings::get().getDefaultAppComicBooks();
 
+    } else if(PQCImageFormats::get().getAllFormatsEBook().contains(suffix)) {
+
+        exe = PQCSettings::get().getDefaultAppEBooks();
+
     } else if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppArchives();

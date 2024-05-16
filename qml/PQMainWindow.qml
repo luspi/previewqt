@@ -350,8 +350,6 @@ ApplicationWindow {
 
             msg = PQCScripts.fromPercentEncoding(msg)
 
-            console.warn("** msg =", msg)
-
             // empty message -> show window
             if(msg === "-") {
 
@@ -485,12 +483,13 @@ ApplicationWindow {
 
     }
 
-    function updateWindowSize(w, h, useSpecifiedSizeExactly=false) {
+    // make sure the window is fit to the main image view
+    function updateWindowSize(w, h) {
 
         if(!PQCSettings.maximizeImageSizeAndAdjustWindow || isMaximized || isFullscreen || manualWindowSizeChange)
             return
 
-        var fitsize = (useSpecifiedSizeExactly ? Qt.size(w,h) : PQCScripts.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight))
+        var fitsize = PQCScripts.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight)
 
         toplevelAni.stop()
         toplevelAni.w_from = toplevel.width

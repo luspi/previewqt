@@ -74,7 +74,6 @@ Item {
 
     // some specific cached properties to be loaded after setup
     property real scrollToWhenSetup: -1
-    property size windowSizeWhenSetup: Qt.size(-1,-1)
 
     Component.onCompleted: {
 
@@ -96,9 +95,8 @@ Item {
         var overrideCurrentDocument = -1
         if(haveCache) {
             overrideCurrentDocument = cached[0]*1
-            windowSizeWhenSetup = Qt.size(cached[2], cached[3])
-            if(cached.length > 4)
-                view.zoomFactor = cached[4]
+            if(cached.length > 2)
+                view.zoomFactor = cached[2]
         }
 
         // if we have a cover image, show that one (currentDocument := -1)
@@ -120,7 +118,7 @@ Item {
         // load the selected book page
         if(currentDocument !== -1) {
             loadBook()
-            if(haveCache)
+            if(haveCache && cached.length > 1)
                 scrollToWhenSetup = cached[1]
         }
     }
@@ -134,25 +132,16 @@ Item {
     // with timeout store updates to page and scroll position
     Timer {
         id: storePagePos
-        interval: 500
+        interval: 250
         onTriggered: {
 
             // we do not do anything if we're still setting it up (will fire some signals)
             if(startup)
                 return
 
-            var winW = toplevel.width
-            var winH = toplevel.height
-            if(!toplevel.manualWindowSizeChange || toplevel.isFullscreen || toplevel.isMaximized) {
-                winW = -1
-                winH = -1
-            }
-
             // store data
-            // we ignore window size if no change was done by the user
-            var val = "%1::%2::%3::%4::%5".arg(currentDocument).arg(progressTxt.progress)
-                                          .arg(winW).arg(winH)
-                                          .arg(view.zoomFactor)
+            var val = "%1::%2::%3".arg(currentDocument).arg(view.scrollPosition.y / (view.contentsSize.height-view.height)).arg(view.zoomFactor)
+
             PQCCache.setEntry(image_top.imageSource, val)
         }
     }
@@ -192,16 +181,32 @@ Item {
 
         // load scroll position once content is properly set up
         onContentsSizeChanged: {
-            if(view.loadProgress == 100 && contentsSize.height > 0 && scrollToWhenSetup != -1) {
-                view.runJavaScript("window.scrollBy(0,%1);".arg(scrollToWhenSetup * (view.contentsSize.height-view.height) / 100));
+            if(view.loadProgress == 100 && contentsSize.height > 0 && !loadInitiScrollWithDelay.running) {
+                if(scrollToWhenSetup != -1) {
+                    loadInitiScrollWithDelay.restart()
+                }
+                storePagePos.restart()
+            }
+        }
+
+        // we add a very short delay after the page has been fully loaded to ensure the contentSize is fully populated
+        Timer {
+            id: loadInitiScrollWithDelay
+            interval: 50
+            onTriggered: {
+                view.runJavaScript("window.scrollBy(0,%1);".arg(scrollToWhenSetup * (view.contentsSize.height-view.height) / view.zoomFactor));
                 scrollToWhenSetup = -1
             }
+
         }
 
         // disable context menu
         onContextMenuRequested: (request) => {
             request.accepted = true
         }
+
+        onScrollPositionChanged:
+            storePagePos.restart()
 
         Behavior on zoomFactor { NumberAnimation { duration: 50 } }
         onZoomFactorChanged:
@@ -274,8 +279,7 @@ Item {
             id: progressTxt
             x: 5
             y: 5
-            property real progress: Math.min(100, 100* (view.scrollPosition.y / (view.contentsSize.height-view.height)))
-            text: Math.round(progress) + "%"
+            text: Math.round(Math.min(100, 100* (view.scrollPosition.y / (view.contentsSize.height-view.height)))) + "%"
             color: "white"
         }
 

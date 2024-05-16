@@ -80,15 +80,11 @@ Window {
         "(custom)" : ""
     }
 
-    property var vidoptions: {
-        "PhotoQt" : "photoqt",
-        "VLC" : "vlc",
-        "SMPlayer" : "smplayer",
-        "Dragon Player" : "dragon",
-        "Totem" : "totem",
-        "Parole" : "parole",
-        "(custom)" : ""
-    }
+    property var bokoptions_key: ["E-Book viewer", "Calibre", "Okular", "Evince", "(custom)"]
+    property var bokoptions_val: ["ebook-viewer", "calibre", "okular", "evince", ""]
+
+    property var vidoptions_key: ["PhotoQt", "VLC", "SMPlayer", "Dragon Player", "Totem", "Parole", "(custom)"]
+    property var vidoptions_val: ["photoqt", "vlc", "smplayer", "dragon",        "totem", "parole", ""]
 
     // For this window, this item catches all key presses
     Item {
@@ -149,7 +145,7 @@ Window {
         var docindex = Object.values(docoptions).indexOf(PQCSettings.defaultAppDocuments)
         doccombo.currentIndex = (docindex===-1 ? doccombo.currentIndex=doccombo.model.length-1 : docindex)
 
-        var vidindex = Object.values(vidoptions).indexOf(PQCSettings.defaultAppVideos)
+        var vidindex = Object.values(vidoptions_val).indexOf(PQCSettings.defaultAppVideos)
         vidcombo.currentIndex = (vidindex===-1 ? vidcombo.currentIndex=vidcombo.model.length-1 : vidindex)
 
         var arcindex = Object.values(arcoptions).indexOf(PQCSettings.defaultAppArchives)
@@ -157,6 +153,9 @@ Window {
 
         var comindex = Object.values(comoptions).indexOf(PQCSettings.defaultAppComicBooks)
         comcombo.currentIndex = (comindex===-1 ? comcombo.currentIndex=comcombo.model.length-1 : comindex)
+
+        var bokindex = Object.values(bokoptions_val).indexOf(PQCSettings.defaultAppEBooks)
+        bokcombo.currentIndex = (bokindex===-1 ? bokcombo.currentIndex=bokcombo.model.length-1 : bokindex)
 
         optionsLoaded = true
 
@@ -561,13 +560,13 @@ Window {
                         id: vidcombo
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: Object.keys(vidoptions)
+                        model: vidoptions_key
                         visible: !PQCScripts.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
                             if(currentIndex < vidcombo.model.length-1) {
-                                PQCSettings.defaultAppVideos = vidoptions[model[currentIndex]]
+                                PQCSettings.defaultAppVideos = vidoptions_val[currentIndex]
                             } else {
                                 videdit.text = PQCSettings.defaultAppVideos
                             }
@@ -695,6 +694,54 @@ Window {
                     }
                 }
 
+                Column {
+
+                    Text {
+                        text: qsTr("External application for E-books:")
+                    }
+
+                    ComboBox {
+                        id: bokcombo
+                        x: (defaultappsettings.usableWidth-width)/2
+                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                        model: bokoptions_key
+                        visible: !PQCScripts.amIOnWindows()
+                        onCurrentIndexChanged: {
+                            if(!optionsLoaded) return
+                            catchKeyPress.forceActiveFocus()
+                            if(currentIndex < bokcombo.model.length-1) {
+                                PQCSettings.defaultAppEBooks = bokoptions_val[currentIndex]
+                            } else {
+                                bokedit.text = PQCSettings.defaultAppEBooks
+                            }
+                        }
+                    }
+
+                    Row {
+                        spacing: 5
+                        visible: bokcombo.currentIndex === bokcombo.model.length-1 || PQCScripts.amIOnWindows()
+                        TextField {
+                            id: bokedit
+                            y: (bokbut.height-height)/2
+                            width: defaultappsettings.usableWidth-bokbut.width-5
+                            text: PQCSettings.defaultAppEBooks
+                            onTextChanged: {
+                                if(text !== PQCSettings.defaultAppEBooks)
+                                    PQCSettings.defaultAppEBooks = text
+                            }
+                        }
+                        Button {
+                            id: bokbut
+                            text: "..."
+                            onClicked: {
+                                selectExe.category = "ebooks"
+                                selectExe.prevexe = bokedit.text
+                                selectExe.open()
+                            }
+                        }
+                    }
+                }
+
                 /************************************/
                 Item {
                     width: 1
@@ -761,6 +808,8 @@ Window {
                 imgedit.text = PQCScripts.cleanPath(file)
             else if(category == "comicbooks")
                 comedit.text = PQCScripts.cleanPath(file)
+            else if(category == "ebooks")
+                bokedit.text = PQCScripts.cleanPath(file)
             else
                 console.warn("Unknown category:", category)
 

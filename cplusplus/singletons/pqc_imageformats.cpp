@@ -106,6 +106,7 @@ void PQCImageFormats::readFromDatabase() {
     m_formats_archive.clear();
     m_formats_video.clear();
     m_formats_libmpv.clear();
+    m_formats_ebook.clear();
 
     m_mimetypes_qt.clear();
     m_mimetypes_resvg.clear();
@@ -119,6 +120,7 @@ void PQCImageFormats::readFromDatabase() {
     m_mimetypes_archive.clear();
     m_mimetypes_video.clear();
     m_mimetypes_libmpv.clear();
+    m_mimetypes_ebook.clear();
 
     const QList<QByteArray> qtSupported = QImageReader::supportedImageFormats();
 
@@ -293,10 +295,17 @@ void PQCImageFormats::readFromDatabase() {
 #ifdef PQMLIBARCHIVE
         if(archive) {
             supportedByAnyLibrary = true;
-            all << "LibArchive";
-            m_formats_archive << endings.split(",");
-            if(mimetypes != "")
-                m_mimetypes_archive << mimetypes.split(",");
+            if(cat == "bok") {
+                all << "E-Book";
+                m_formats_ebook << endings.split(",");
+                if(mimetypes != "")
+                    m_mimetypes_ebook << mimetypes.split(",");
+            } else {
+                all << "LibArchive";
+                m_formats_archive << endings.split(",");
+                if(mimetypes != "")
+                    m_mimetypes_archive << mimetypes.split(",");
+            }
         }
 #endif
 #ifdef PQMVIDEOQT

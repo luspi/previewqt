@@ -144,6 +144,14 @@ public:
         return m_mimetypes_libmpv;
     }
 
+    Q_INVOKABLE QStringList getAllFormatsEBook() {
+        return m_formats_ebook;
+    }
+
+    Q_INVOKABLE QStringList getAllMimeTypesEBook() {
+        return m_mimetypes_ebook;
+    }
+
     Q_INVOKABLE QVariantMap getMagick() {
         return magick;
     }
@@ -190,6 +198,8 @@ private:
     QStringList m_mimetypes_video;
     QStringList m_formats_libmpv;
     QStringList m_mimetypes_libmpv;
+    QStringList m_formats_ebook;
+    QStringList m_mimetypes_ebook;
 
     QVariantMap magick;
     QVariantMap magick_mimetype;
