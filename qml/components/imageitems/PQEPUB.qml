@@ -29,6 +29,8 @@ import PQCCache
 
 Item {
 
+    id: epub_top
+
     x: (image_top.width-width)/2
     y: (image_top.height-height)/2
 
@@ -313,8 +315,23 @@ Item {
         radius: 5
         color: "#000000"
 
-        opacity: nextmouse.containsMouse||backmouse.containsMouse||plusmouse.containsMouse||minusmouse.containsMouse||currentMouse.containsMouse||bgmouse.containsMouse ? 0.8 : 0.1
+        opacity: nextmouse.containsMouse||backmouse.containsMouse||plusmouse.containsMouse||minusmouse.containsMouse||currentMouse.containsMouse||bgmouse.containsMouse||docChanged ? 0.8 : 0.1
         Behavior on opacity { NumberAnimation { duration: 200 } }
+
+        property bool docChanged: false
+        Timer {
+            id: resetDocChanged
+            interval: 1000
+            onTriggered:
+                navcont.docChanged = false
+        }
+        Connections {
+            target: epub_top
+            function onCurrentDocumentChanged() {
+                navcont.docChanged = true
+                resetDocChanged.restart()
+            }
+        }
 
         MouseArea {
             id: bgmouse
