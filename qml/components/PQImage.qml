@@ -162,7 +162,7 @@ Item {
             currentType = "doc"
             imageloader.source = "imageitems/PQDocument.qml"
         } else if(PQCScripts.isEpub(imageSource)) {
-            currentType = "doc"
+            currentType = "bok"
             imageloader.source = "imageitems/PQEPUB.qml"
         } else if(PQCScripts.isArchive(imageSource)) {
             currentType = "ani"
