@@ -1595,6 +1595,9 @@ QVariantList PQCScripts::loadEPUB(QString path) {
         // if this is the image cover then read file and store as base64 string
         if(id == coverid) {
 
+            if(!QFileInfo::exists(PQCConfigFiles::CACHE_DIR() + "/epub/" + fn))
+                continue;
+
             QImage img(PQCConfigFiles::CACHE_DIR() + "/epub/" + fn);
             QBuffer buf;
             buf.open(QIODevice::WriteOnly);
@@ -1614,7 +1617,7 @@ QVariantList PQCScripts::loadEPUB(QString path) {
     if(!addedcover) {
 
         // Take the first image file for this purpose (if any)
-        if(imageFiles.length() > 0) {
+        if(imageFiles.length() > 0 && QFileInfo::exists(imageFiles[0])) {
             QImage img(imageFiles[0]);
             QBuffer buf;
             buf.open(QIODevice::WriteOnly);
