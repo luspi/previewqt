@@ -23,6 +23,7 @@
 import QtQuick
 import QtQuick.Controls
 import PQCScripts
+import PQCCache
 
 Item {
 
@@ -32,7 +33,10 @@ Item {
     width: imageitem.width
     height: imageitem.height
 
+    property alias sourceSize: imageitem.sourceSize
     property alias asynchronous: imageitem.asynchronous
+    property alias paintedWidth: imageitem.paintedWidth
+    property alias paintedHeight: imageitem.paintedHeight
 
     Image {
 
@@ -48,8 +52,12 @@ Item {
             if(image_top.imageSource.includes("::PDF::")) {
                 currentPage = image_top.imageSource.split("::PDF::")[0]*1
                 source = "image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)
-            } else
-                source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource))
+            } else {
+                var page = PQCCache.getEntry(image_top.imageSource)
+                if(page === "")
+                    page = currentPage
+                source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(page).arg(image_top.imageSource))
+            }
         }
 
         asynchronous: true
@@ -88,6 +96,8 @@ Item {
             imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource))
         }
         imageitem.asynchronous = true
+
+        PQCCache.setEntry(image_top.imageSource, currentPage)
     }
 
     Rectangle {
