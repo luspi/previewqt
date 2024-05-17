@@ -1327,11 +1327,6 @@ bool PQCScripts::applyEmbeddedColorProfile(QImage &img) {
 
     bool manualSelectionCausedError = false;
 
-    // if no color space is set then there obviously is no embedded one
-    bool colorSpaceManuallySet = false;
-    if(!img.colorSpace().isValid())
-        return true;
-
 #ifdef PQMLCMS2
 
     qDebug() << "Checking for embedded color profiles";
@@ -1341,10 +1336,18 @@ bool PQCScripts::applyEmbeddedColorProfile(QImage &img) {
 
     if(targetProfile) {
 
-        int lcms2format = toLcmsFormat(img.format());
+        int lcms2SourceFormat = toLcmsFormat(img.format());
+
+        QImage::Format targetFormat = img.format();
+        // this format causes problems with lcms2
+        // no error is caused but the resulting image is fully transparent
+        // removing the alpha channel seems to fix this
+        if(img.format() == QImage::Format_ARGB32)
+            targetFormat = QImage::Format_RGB32;
+        int lcms2targetFormat = toLcmsFormat(img.format());
 
         // Create a transformation from source (sRGB) to destination (provided ICC profile) color space
-        cmsHTRANSFORM transform = cmsCreateTransform(cmsCreate_sRGBProfile(), lcms2format, targetProfile, lcms2format, INTENT_PERCEPTUAL, 0);
+        cmsHTRANSFORM transform = cmsCreateTransform(targetProfile, lcms2SourceFormat, cmsCreate_sRGBProfile(), lcms2targetFormat, INTENT_PERCEPTUAL, 0);
         if (!transform) {
             // Handle error, maybe close profile and return original image or null image
             cmsCloseProfile(targetProfile);
