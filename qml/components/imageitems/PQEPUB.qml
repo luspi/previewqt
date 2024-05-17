@@ -565,7 +565,8 @@ Item {
     function checkUrlChange() {
 
         // right url recorded
-        if(view.url === "file://" + book[currentDocument+2])
+        // three slashes are needed for this to work both in Linux and Windows
+        if(view.url === "file:///" + book[currentDocument+2])
             return
 
         // the url might contain an anchor -> remove for checking
@@ -576,7 +577,8 @@ Item {
         // figure out correct index
         var ind = currentDocument
         for(var i = 2; i < book.length; ++i) {
-            if(cleanedurl === "file://" + book[i]) {
+            // three slashes are needed for this to work both in Linux and Windows
+            if(cleanedurl === "file:///" + book[i]) {
                 ind = i-2
                 break
             }
@@ -589,7 +591,8 @@ Item {
     // load the current document file
     function loadBook() {
         if(currentDocument == -1) return
-        view.url = "file://" + book[currentDocument+2]
+        // three slashes are needed for this to work both in Linux and Windows
+        view.url = "file:///" + book[currentDocument+2]
     }
 
 }
