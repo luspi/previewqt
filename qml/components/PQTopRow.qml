@@ -92,7 +92,7 @@ Rectangle {
         // rotate left
         PQIconButton {
             id: rotleftbut
-            enabled: ["sph", "vid", "mpv", "bok"].indexOf(image.currentType)==-1
+            enabled: ["sph", "vid", "mpv", "bok"].indexOf(image.currentType)==-1 && image.imageSource!==""
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Rotate image to the left")
@@ -105,7 +105,7 @@ Rectangle {
         // rotate right
         PQIconButton {
             id: rotrightbut
-            enabled: ["sph", "vid", "mpv", "bok"].indexOf(image.currentType)==-1
+            enabled: ["sph", "vid", "mpv", "bok"].indexOf(image.currentType)==-1 && image.imageSource!==""
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Rotate image to the right")
