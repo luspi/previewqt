@@ -120,4 +120,143 @@ Item {
 
     }
 
+    // these are not handled with the behavior above because key events are handled smoother than mouse events
+    NumberAnimation {
+        id: animatedAzimuth
+        target: thesphere
+        property: "azimuth"
+        duration: 200
+    }
+    NumberAnimation {
+        id: animatedElevation
+        target: thesphere
+        property: "elevation"
+        duration: 200
+    }
+    NumberAnimation {
+        id: animatedFieldOfView
+        target: thesphere
+        property: "fieldOfView"
+        duration: 200
+    }
+
+    // This is a short animation to the right and back
+    // This is used when a photo sphere has been entered to inform the user that there is more to the image than what they can see
+    SequentialAnimation {
+
+        id: leftrightani
+
+        loops: 1
+        running: true
+
+        NumberAnimation {
+            target: thesphere
+            property: "azimuth"
+            from: 180
+            to: 190
+            duration: 500
+            easing.type: Easing.OutCirc
+        }
+
+        NumberAnimation {
+            target: thesphere
+            property: "azimuth"
+            from: 190
+            to: 180
+            duration: 500
+            easing.type: Easing.OutBack
+        }
+
+    }
+
+    Connections {
+
+        target: toplevel
+
+        function onKeyPress(modifiers, keycode) {
+
+            if(keycode === Qt.Key_Left)
+                moveView("left")
+
+            else if(keycode === Qt.Key_Right)
+                moveView("right")
+
+            else if(keycode === Qt.Key_Up)
+                moveView("up")
+
+            else if(keycode === Qt.Key_Down)
+                moveView("down")
+
+            else if(keycode === Qt.Key_Plus)
+                zoom("in")
+
+            else if(keycode === Qt.Key_Minus)
+                zoom("out")
+
+            else if(keycode === Qt.Key_0) {
+
+                moveView("reset")
+                zoom("reset")
+
+            }
+
+        }
+
+    }
+
+    // these are not handled with the behavior above because key events are handled smoother than mouse events
+    function zoom(dir) {
+
+        animatedFieldOfView.stop()
+
+        if(dir === "in") {
+            animatedFieldOfView.from = thesphere.fieldOfView
+            animatedFieldOfView.to = thesphere.fieldOfView-10
+        } else if(dir === "out") {
+            animatedFieldOfView.from = thesphere.fieldOfView
+            animatedFieldOfView.to = thesphere.fieldOfView+10
+        } else if(dir === "reset") {
+            animatedFieldOfView.from = thesphere.fieldOfView
+            animatedFieldOfView.to = 90
+        }
+
+        animatedFieldOfView.restart()
+
+    }
+
+    // these are not handled with the behavior above because key events are handled smoother than mouse events
+    function moveView(dir) {
+
+        if(dir === "up" || dir === "down" || dir === "reset")
+            animatedElevation.stop()
+        if(dir === "left" || dir === "right" || dir === "reset")
+            animatedAzimuth.stop()
+
+        if(dir === "up") {
+            animatedElevation.from = thesphere.elevation
+            animatedElevation.to = thesphere.elevation + thesphere.fieldOfView/5
+        } else if(dir === "down") {
+            animatedElevation.from = thesphere.elevation
+            animatedElevation.to = thesphere.elevation - thesphere.fieldOfView/5
+        } else if(dir === "left") {
+            animatedAzimuth.from = thesphere.azimuth
+            animatedAzimuth.to = thesphere.azimuth - thesphere.fieldOfView/3
+        } else if(dir === "right") {
+            animatedAzimuth.from = thesphere.azimuth
+            animatedAzimuth.to = thesphere.azimuth + thesphere.fieldOfView/3
+        } else if(dir === "reset") {
+            animatedElevation.from = thesphere.elevation
+            animatedElevation.to = 0
+            animatedAzimuth.from = thesphere.azimuth
+            animatedAzimuth.to = 180
+        }
+
+        if(dir === "up" || dir === "down" || dir === "reset")
+            animatedElevation.restart()
+        if(dir === "left" || dir === "right" || dir === "reset")
+            animatedAzimuth.restart()
+
+    }
+
+
 }
