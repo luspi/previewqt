@@ -23,8 +23,14 @@
 #ifndef PQCLOADIMAGE_H
 #define PQCLOADIMAGE_H
 
+#include <QImage>
+#include <QDateTime>
+
+#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
+#include <Magick++/Image.h>
+#endif
+
 class QSize;
-class QImage;
 class QString;
 
 class PQCLoadImage {
@@ -40,6 +46,13 @@ public:
 
 private:
     PQCLoadImage();
+
+    QImage cachedImage;
+#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
+    Magick::Image cachedImageMagick;
+#endif
+    QString cachedImageSource;
+    QDateTime cachedImageLastModified;
 };
 
 #endif // PQCLOADIMAGE_H

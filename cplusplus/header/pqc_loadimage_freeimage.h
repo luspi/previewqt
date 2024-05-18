@@ -32,7 +32,7 @@ class PQCLoadImageFreeImage {
 public:
     PQCLoadImageFreeImage();
 
-    static QString load(QString filename, QSize maxSize, QSize &origSize, QImage &img);
+    static QString load(QString filename, QSize maxSize, QSize &origSize, QImage &img, QImage &fullImage);
 
 };
 

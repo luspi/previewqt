@@ -28,13 +28,13 @@
 #include <QMimeDatabase>
 #include <QtDebug>
 
-#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
-#include <Magick++/Image.h>
-#endif
-
 PQCLoadImageMagick::PQCLoadImageMagick() {}
 
+#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
+QString PQCLoadImageMagick::load(QString filename, QSize maxSize, QSize &origSize, QImage &img, Magick::Image &fullImage) {
+#else
 QString PQCLoadImageMagick::load(QString filename, QSize maxSize, QSize &origSize, QImage &img) {
+#endif
 
     qDebug() << "args: filename =" << filename;
     qDebug() << "args: maxSize =" << maxSize;
@@ -80,6 +80,8 @@ QString PQCLoadImageMagick::load(QString filename, QSize maxSize, QSize &origSiz
 
             // Read image into Magick
             image.read(filename.toStdString());
+
+            fullImage = image;
 
             // done with the loop if we manage to get here.
             break;

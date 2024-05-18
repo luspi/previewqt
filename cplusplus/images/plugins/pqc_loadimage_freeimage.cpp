@@ -33,7 +33,7 @@
 
 PQCLoadImageFreeImage::PQCLoadImageFreeImage() {}
 
-QString PQCLoadImageFreeImage::load(QString filename, QSize maxSize, QSize &origSize, QImage &img) {
+QString PQCLoadImageFreeImage::load(QString filename, QSize maxSize, QSize &origSize, QImage &img, QImage &fullImage) {
 
     qDebug() << "args: filename =" << filename;
     qDebug() << "args: maxSize = " << maxSize;
@@ -82,9 +82,9 @@ QString PQCLoadImageFreeImage::load(QString filename, QSize maxSize, QSize &orig
     }
 
     // Load data into QImage
-    img = QImage::fromData(QByteArray::fromRawData((char*)mem_buffer, size_in_bytes));
+    fullImage = QImage::fromData(QByteArray::fromRawData((char*)mem_buffer, size_in_bytes));
 
-    if(img.isNull()) {
+    if(fullImage.isNull()) {
         QString errormsg = "Loading FreeImage image into QImage resulted in NULL image";
         qWarning() << errormsg;
         return errormsg;
@@ -98,9 +98,10 @@ QString PQCLoadImageFreeImage::load(QString filename, QSize maxSize, QSize &orig
         if(finalSize.width() > maxSize.width() || finalSize.height() > maxSize.height())
             finalSize = finalSize.scaled(maxSize, Qt::KeepAspectRatio);
 
-        img = img.scaled(finalSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        img = fullImage.scaled(finalSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    }
+    } else
+        img = fullImage;
 
     // return full image
     return "";

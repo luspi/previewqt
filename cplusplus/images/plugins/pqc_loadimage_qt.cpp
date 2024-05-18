@@ -32,7 +32,7 @@
 
 PQCLoadImageQt::PQCLoadImageQt() {}
 
-QString PQCLoadImageQt::load(QString filename, QSize maxSize, QSize &origSize, QImage &img) {
+QString PQCLoadImageQt::load(QString filename, QSize maxSize, QSize &origSize, QImage &img, QImage &fullImage) {
 
     qDebug() << "args: filename =" << filename;
     qDebug() << "args: maxSize =" << maxSize;
@@ -105,9 +105,9 @@ QString PQCLoadImageQt::load(QString filename, QSize maxSize, QSize &origSize, Q
         origSize = reader.size();
         // check if we need to read the image in full to get the original size
         if(!origSize.isValid()) {
-            reader.read(&img);
+            reader.read(&fullImage);
             imgAlreadyLoaded = true;
-            origSize = img.size();
+            origSize = fullImage.size();
         }
 
         // check if we need to scale the image
@@ -119,7 +119,7 @@ QString PQCLoadImageQt::load(QString filename, QSize maxSize, QSize &origSize, Q
 
             // scaling
             if(imgAlreadyLoaded)
-                img = img.scaled(dispSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                img = fullImage.scaled(dispSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
             else
                 reader.setScaledSize(dispSize);
 

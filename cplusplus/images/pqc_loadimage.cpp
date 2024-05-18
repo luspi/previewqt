@@ -55,6 +55,74 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
     if(info.isSymLink() && info.exists())
         filename = info.symLinkTarget();
 
+    // have a cached image -> all good!
+    if(filename == cachedImageSource && info.lastModified() == cachedImageLastModified) {
+
+        // a "normal" cached QImage
+        if(!cachedImage.isNull()) {
+
+            origSize = cachedImage.size();
+
+            // Scale image if necessary
+            if(requestedSize.width() != -1) {
+
+                QSize finalSize = origSize;
+
+                if(finalSize.width() > requestedSize.width() || finalSize.height() > requestedSize.height())
+                    finalSize = finalSize.scaled(requestedSize, Qt::KeepAspectRatio);
+
+                img = cachedImage.scaled(finalSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+                return "";
+
+            }
+
+#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
+        // *Magick loads the full image only as its own image structure so that's what we cache
+        } else if(cachedImageMagick.isValid()) {
+
+            Magick::Image magickimage = cachedImageMagick;
+
+            QSize finalSize = QSize(magickimage.columns(), magickimage.rows());
+            origSize = finalSize;
+
+            // Scale image if necessary
+            if(requestedSize.width() != -1) {
+
+                if(finalSize.width() > requestedSize.width() || finalSize.height() > requestedSize.height())
+                    finalSize = finalSize.scaled(requestedSize, Qt::KeepAspectRatio);
+
+                // For small images we can use the faster algorithm, as the quality is good enough for that
+                if(finalSize.width() < 300 && finalSize.height() < 300)
+                    magickimage.thumbnail(Magick::Geometry(finalSize.width(),finalSize.height()));
+                else
+                    magickimage.scale(Magick::Geometry(finalSize.width(),finalSize.height()));
+
+            }
+
+            // Write Magick as PPM to memory
+            Magick::Blob ob;
+            magickimage.magick("PPM");
+            magickimage.write(&ob);
+
+            // And load image from memory into QImage
+            const QByteArray imgData((char*)(ob.data()),ob.length());
+            img = QImage::fromData(imgData);
+
+            return "";
+
+#endif
+
+        }
+    }
+
+    // reset cache files
+    cachedImage = QImage();
+    cachedImageSource = "";
+    cachedImageLastModified = QDateTime();
+#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
+    cachedImageMagick = Magick::Image();
+#endif
+
     QString err = "";
 
     // for easier access below
@@ -81,16 +149,16 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 #endif
 
     if(img.isNull() && PQCImageFormats::get().getAllFormatsQt().contains(suffix))
-        err = PQCLoadImageQt::load(filename, requestedSize, origSize, img);
+        err = PQCLoadImageQt::load(filename, requestedSize, origSize, img, cachedImage);
 
 #ifdef PQMRAW
     if(img.isNull() && PQCImageFormats::get().getAllFormatsLibRaw().contains(suffix))
-        err = PQCLoadImageRAW::load(filename, requestedSize, origSize, img);
+        err = PQCLoadImageRAW::load(filename, requestedSize, origSize, img, cachedImage);
 #endif
 
 #ifdef PQMLIBARCHIVE
     if(img.isNull() && PQCImageFormats::get().getAllFormatsLibArchive().contains(suffix))
-        err = PQCLoadImageArchive::load(filename, requestedSize, origSize, img);
+        err = PQCLoadImageArchive::load(filename, requestedSize, origSize, img, cachedImage);
 #endif
 
     if(img.isNull() && PQCImageFormats::get().getAllFormatsXCFTools().contains(suffix))
@@ -98,7 +166,7 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
     if(img.isNull() && PQCImageFormats::get().getAllFormatsMagick().contains(suffix))
-        err = PQCLoadImageMagick::load(filename, requestedSize, origSize, img);
+        err = PQCLoadImageMagick::load(filename, requestedSize, origSize, img, cachedImageMagick);
 #endif
 
 #ifdef PQMLIBVIPS
@@ -108,7 +176,7 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 
 #ifdef PQMFREEIMAGE
     if(img.isNull() && PQCImageFormats::get().getAllFormatsFreeImage().contains(suffix))
-        err = PQCLoadImageFreeImage::load(filename, requestedSize, origSize, img);
+        err = PQCLoadImageFreeImage::load(filename, requestedSize, origSize, img, cachedImage);
 #endif
 
 #ifdef PQMDEVIL
@@ -147,16 +215,16 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 #endif
 
             if(img.isNull() && PQCImageFormats::get().getAllMimeTypesQt().contains(mimetype))
-                err = PQCLoadImageQt::load(filename, requestedSize, origSize, img);
+                err = PQCLoadImageQt::load(filename, requestedSize, origSize, img, cachedImage);
 
 #ifdef PQMRAW
             if(img.isNull() && PQCImageFormats::get().getAllMimeTypesLibRaw().contains(mimetype))
-                err = PQCLoadImageRAW::load(filename, requestedSize, origSize, img);
+                err = PQCLoadImageRAW::load(filename, requestedSize, origSize, img, cachedImage);
 #endif
 
 #ifdef PQMLIBARCHIVE
             if(img.isNull() && PQCImageFormats::get().getAllMimeTypesLibArchive().contains(mimetype))
-                err = PQCLoadImageArchive::load(filename, requestedSize, origSize, img);
+                err = PQCLoadImageArchive::load(filename, requestedSize, origSize, img, cachedImage);
 #endif
 
             if(img.isNull() && PQCImageFormats::get().getAllMimeTypesXCFTools().contains(mimetype))
@@ -164,7 +232,7 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
             if(img.isNull() && PQCImageFormats::get().getAllMimeTypesMagick().contains(mimetype))
-                err = PQCLoadImageMagick::load(filename, requestedSize, origSize, img);
+                err = PQCLoadImageMagick::load(filename, requestedSize, origSize, img, cachedImageMagick);
 #endif
 
 #ifdef PQMLIBVIPS
@@ -174,7 +242,7 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 
 #ifdef PQMFREEIMAGE
             if(img.isNull() && PQCImageFormats::get().getAllMimeTypesFreeImage().contains(mimetype))
-                err = PQCLoadImageFreeImage::load(filename, requestedSize, origSize, img);
+                err = PQCLoadImageFreeImage::load(filename, requestedSize, origSize, img, cachedImage);
 #endif
 
 #ifdef PQMDEVIL
@@ -197,10 +265,21 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
         qDebug() << "null image, try magick";
 
         // we do not override the old error message
-        PQCLoadImageMagick::load(filename, requestedSize, origSize, img);
+        PQCLoadImageMagick::load(filename, requestedSize, origSize, img, cachedImageMagick);
 
     }
 #endif
+
+    // have a full image cached -> store filename and timestamp
+    if(!cachedImage.isNull()) {
+        cachedImageLastModified = info.lastModified();
+        cachedImageSource = filename;
+#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
+    } else if(cachedImageMagick.isValid()) {
+        cachedImageLastModified = info.lastModified();
+        cachedImageSource = filename;
+#endif
+    }
 
     return err;
 

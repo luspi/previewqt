@@ -23,6 +23,10 @@
 #ifndef PQCLOADIMAGEMAGICK_H
 #define PQCLOADIMAGEMAGICK_H
 
+#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
+#include <Magick++/Image.h>
+#endif
+
 class QString;
 class QSize;
 class QImage;
@@ -32,7 +36,11 @@ class PQCLoadImageMagick {
 public:
     PQCLoadImageMagick();
 
+#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
+    static QString load(QString filename, QSize maxSize, QSize &origSize, QImage &img, Magick::Image &fullImage);
+#else
     static QString load(QString filename, QSize maxSize, QSize &origSize, QImage &img);
+#endif
 
 };
 

@@ -41,7 +41,7 @@
 
 PQCLoadImageArchive::PQCLoadImageArchive() {}
 
-QString PQCLoadImageArchive::load(QString filename, QSize maxSize, QSize &origSize, QImage &img) {
+QString PQCLoadImageArchive::load(QString filename, QSize maxSize, QSize &origSize, QImage &img, QImage &fullImage) {
 
     qDebug() << "args: filename =" << filename;
     qDebug() << "args: maxSize =" << maxSize;
@@ -99,6 +99,8 @@ QString PQCLoadImageArchive::load(QString filename, QSize maxSize, QSize &origSi
                 PQCLoadImage::get().load(tmpDir + compressedFilename, QSize(-1,-1), origSize, img);
                 QDir dir(tmpDir);
                 dir.removeRecursively();
+
+                fullImage = img;
 
                 // Scale image if necessary
                 if(maxSize.width() != -1) {

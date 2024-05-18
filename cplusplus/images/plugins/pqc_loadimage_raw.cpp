@@ -32,7 +32,7 @@
 
 PQCLoadImageRAW::PQCLoadImageRAW() {}
 
-QString PQCLoadImageRAW::load(QString filename, QSize maxSize, QSize &origSize, QImage &img) {
+QString PQCLoadImageRAW::load(QString filename, QSize maxSize, QSize &origSize, QImage &img, QImage &fullImage) {
 
     qDebug() << "args: filename =" << filename;
     qDebug() << "args: maxSize =" << maxSize;
@@ -190,6 +190,9 @@ QString PQCLoadImageRAW::load(QString filename, QSize maxSize, QSize &origSize, 
     origSize = img.size();
 
     if(!thumb && !half) {
+
+        // store full image for caching
+        fullImage = img;
 
         // Scale image if necessary
         if(maxSize.width() != -1) {
