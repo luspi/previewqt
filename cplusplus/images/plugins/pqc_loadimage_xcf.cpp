@@ -58,12 +58,8 @@ QString PQCLoadImageXCF::load(QString filename, QSize maxSize, QSize &origSize, 
 
     // Make sure image fits into size specified by maxSize
     if(maxSize.width() > 5 && maxSize.height() > 5) {
-        QSize dispSize = reader.size();
-
-        if(dispSize.width() > maxSize.width() || dispSize.height() > maxSize.height())
-            dispSize = dispSize.scaled(maxSize, Qt::KeepAspectRatio);
-
-        reader.setScaledSize(dispSize);
+        if(origSize.width() > maxSize.width() || origSize.height() > maxSize.height())
+            reader.setScaledSize(origSize.scaled(maxSize, Qt::KeepAspectRatio));
     }
 
     img = reader.read();

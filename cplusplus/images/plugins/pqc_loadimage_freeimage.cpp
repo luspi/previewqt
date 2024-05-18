@@ -93,12 +93,8 @@ QString PQCLoadImageFreeImage::load(QString filename, QSize maxSize, QSize &orig
     // Scale image if necessary
     if(maxSize.width() != -1) {
 
-        QSize finalSize = origSize;
-
-        if(finalSize.width() > maxSize.width() || finalSize.height() > maxSize.height())
-            finalSize = finalSize.scaled(maxSize, Qt::KeepAspectRatio);
-
-        img = fullImage.scaled(finalSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        if(origSize.width() > maxSize.width() || origSize.height() > maxSize.height())
+            img = fullImage.scaled(origSize.scaled(maxSize, Qt::KeepAspectRatio), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
     } else
         img = fullImage;

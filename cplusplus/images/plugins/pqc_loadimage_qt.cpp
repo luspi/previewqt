@@ -113,15 +113,12 @@ QString PQCLoadImageQt::load(QString filename, QSize maxSize, QSize &origSize, Q
         // check if we need to scale the image
         if(maxSize.isValid() && origSize.isValid() && !maxSize.isNull() && !origSize.isNull()) {
 
-            QSize dispSize = origSize;
-            if(dispSize.width() > maxSize.width() || dispSize.height() > maxSize.height())
-                dispSize = dispSize.scaled(maxSize, Qt::KeepAspectRatio);
-
-            // scaling
-            if(imgAlreadyLoaded)
-                img = fullImage.scaled(dispSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-            else
-                reader.setScaledSize(dispSize);
+            if(origSize.width() > maxSize.width() || origSize.height() > maxSize.height()) {
+                if(imgAlreadyLoaded)
+                    img = fullImage.scaled(origSize.scaled(maxSize, Qt::KeepAspectRatio), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+                else
+                    reader.setScaledSize(origSize.scaled(maxSize, Qt::KeepAspectRatio));
+            }
 
         }
 

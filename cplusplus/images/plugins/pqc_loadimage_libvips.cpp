@@ -57,8 +57,8 @@ QString PQCLoadImageLibVips::load(QString filename, QSize maxSize, QSize &origSi
     origSize = QSize(vips_image_get_width(in), vips_image_get_height(in));
 
     // convert VipsImage to QImage
-    img = QImage((uchar*)vips_image_get_data(in), vips_image_get_width(in), vips_image_get_height(in), VIPS_IMAGE_SIZEOF_LINE(in), QImage::Format_RGB888);
-    if(img.isNull()) {
+    fullImage = QImage((uchar*)vips_image_get_data(in), vips_image_get_width(in), vips_image_get_height(in), VIPS_IMAGE_SIZEOF_LINE(in), QImage::Format_RGB888);
+    if(fullImage.isNull()) {
         errormsg = "converting VipsImage to QImage failed";
         qDebug() << errormsg;
         return errormsg;
@@ -69,14 +69,11 @@ QString PQCLoadImageLibVips::load(QString filename, QSize maxSize, QSize &origSi
     // Scale image if necessary
     if(maxSize.width() != -1) {
 
-        QSize finalSize = origSize;
+        if(origSize.width() > maxSize.width() || origSize.height() > maxSize.height())
+            img = fullImage.scaled(origSize.scaled(maxSize, Qt::KeepAspectRatio), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-        if(finalSize.width() > maxSize.width() || finalSize.height() > maxSize.height())
-            finalSize = finalSize.scaled(maxSize, Qt::KeepAspectRatio);
-
-        img = img.scaled(finalSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-
-    }
+    } else
+        img = fullImage;
 
     return "";
 
