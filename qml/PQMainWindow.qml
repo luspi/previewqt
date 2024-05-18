@@ -38,7 +38,7 @@ ApplicationWindow {
     // default stylings
     width: 800
     height: 600
-    minimumWidth: 200
+    minimumWidth: 300
     minimumHeight: 200
 
     property bool manualWindowSizeChange: false
@@ -493,9 +493,9 @@ ApplicationWindow {
 
         toplevelAni.stop()
         toplevelAni.w_from = toplevel.width
-        toplevelAni.w_to = Math.max(fitsize.width, 50)
+        toplevelAni.w_to = Math.max(fitsize.width, minimumWidth)
         toplevelAni.h_from = toplevel.height
-        toplevelAni.h_to = Math.max(fitsize.height + (PQCSettings.topBarAutoHide ? 1 : toprow.height), 50)
+        toplevelAni.h_to = Math.max(fitsize.height + (PQCSettings.topBarAutoHide ? 1 : toprow.height), minimumHeight)
         toplevelAni.start()
 
     }
