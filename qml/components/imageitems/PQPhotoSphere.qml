@@ -61,8 +61,10 @@ Item {
 
             property real storeFieldOfView
 
-            onPinchStarted:
+            onPinchStarted: {
+                leftrightani.stop()
                 storeFieldOfView = thesphere.fieldOfView
+            }
 
             onPinchUpdated: (pinch) => {
                 // compute the rate of change initiated by this pinch
@@ -82,6 +84,7 @@ Item {
                 property var clickedElevation
 
                 onPressed: (mouse) => {
+                    leftrightani.stop()
                     behavior_fov.duration = 0
                     behavior_az.duration = 0
                     behavior_ele.duration = 0
@@ -207,6 +210,8 @@ Item {
     // these are not handled with the behavior above because key events are handled smoother than mouse events
     function zoom(dir) {
 
+        leftrightani.stop()
+
         animatedFieldOfView.stop()
 
         if(dir === "in") {
@@ -226,6 +231,8 @@ Item {
 
     // these are not handled with the behavior above because key events are handled smoother than mouse events
     function moveView(dir) {
+
+        leftrightani.stop()
 
         if(dir === "up" || dir === "down" || dir === "reset")
             animatedElevation.stop()
