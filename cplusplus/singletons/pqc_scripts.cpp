@@ -520,6 +520,15 @@ QString PQCScripts::getDir(QString fullpath) {
 
 }
 
+QString PQCScripts::getSuffix(QString path) {
+
+    if(path == "")
+        return "";
+
+    return QFileInfo(path).completeSuffix();
+
+}
+
 bool PQCScripts::isPhotoSphere(QString path) {
 
     qDebug() << "args: path =" << path;

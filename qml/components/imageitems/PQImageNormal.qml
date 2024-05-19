@@ -98,52 +98,60 @@ Item {
                 var src = PQCScripts.extractMotionPhoto(image_top.imageSource)
                 mediaplayer.source = "file:/" + src
 
-                var orientation = PQCScripts.getExifOrientation(image_top.imageSource)
-                switch(orientation) {
+                // HEIF/HEIC images are a little trickier with their orientation handling
+                // We need to ignore this value as the Exif orientation might not be correct
+                // See also: https://github.com/Exiv2/exiv2/issues/2958
+                var suf = PQCScripts.getSuffix(image_top.imageSource).toLowerCase()
+                if(suf !== "heic" && suf !== "heif") {
 
-                case 1:
-                    // no rotation, no mirror
-                    mediaplayer_wrapper.forceRotation = 0
-                    mediaplayer_wrapper.forceMirror = false
-                    break;
-                case 2:
-                    // no rotation, horizontal mirror
-                    mediaplayer_wrapper.forceRotation = 0
-                    mediaplayer_wrapper.forceMirror = true
-                    break;
-                case 3:
-                    // 180 degree rotation, no mirror
-                    mediaplayer_wrapper.forceRotation = 180
-                    mediaplayer_wrapper.forceMirror = false
-                    break;
-                case 4:
-                    // 180 degree rotation, horizontal mirror
-                    mediaplayer_wrapper.forceRotation = 180
-                    mediaplayer_wrapper.forceMirror = true
-                    break;
-                case 5:
-                    // 90 degree rotation, horizontal mirror
-                    mediaplayer_wrapper.forceRotation = 90
-                    mediaplayer_wrapper.forceMirror = true
-                    break;
-                case 6:
-                    // 90 degree rotation, no mirror
-                    mediaplayer_wrapper.forceRotation = 90
-                    mediaplayer_wrapper.forceMirror = false
-                    break;
-                case 7:
-                    // 270 degree rotation, horizontal mirror
-                    mediaplayer_wrapper.forceRotation = 270
-                    mediaplayer_wrapper.forceMirror = true
-                    break;
-                case 8:
-                    // 270 degree rotation, no mirror
-                    mediaplayer_wrapper.forceRotation = 270
-                    mediaplayer_wrapper.forceMirror = false
-                    break;
-                default:
-                    console.warn("Unexpected orientation value received:", orientation)
-                    break;
+                    var orientation = PQCScripts.getExifOrientation(image_top.imageSource)
+                    switch(orientation) {
+
+                    case 1:
+                        // no rotation, no mirror
+                        mediaplayer_wrapper.forceRotation = 0
+                        mediaplayer_wrapper.forceMirror = false
+                        break;
+                    case 2:
+                        // no rotation, horizontal mirror
+                        mediaplayer_wrapper.forceRotation = 0
+                        mediaplayer_wrapper.forceMirror = true
+                        break;
+                    case 3:
+                        // 180 degree rotation, no mirror
+                        mediaplayer_wrapper.forceRotation = 180
+                        mediaplayer_wrapper.forceMirror = false
+                        break;
+                    case 4:
+                        // 180 degree rotation, horizontal mirror
+                        mediaplayer_wrapper.forceRotation = 180
+                        mediaplayer_wrapper.forceMirror = true
+                        break;
+                    case 5:
+                        // 90 degree rotation, horizontal mirror
+                        mediaplayer_wrapper.forceRotation = 90
+                        mediaplayer_wrapper.forceMirror = true
+                        break;
+                    case 6:
+                        // 90 degree rotation, no mirror
+                        mediaplayer_wrapper.forceRotation = 90
+                        mediaplayer_wrapper.forceMirror = false
+                        break;
+                    case 7:
+                        // 270 degree rotation, horizontal mirror
+                        mediaplayer_wrapper.forceRotation = 270
+                        mediaplayer_wrapper.forceMirror = true
+                        break;
+                    case 8:
+                        // 270 degree rotation, no mirror
+                        mediaplayer_wrapper.forceRotation = 270
+                        mediaplayer_wrapper.forceMirror = false
+                        break;
+                    default:
+                        console.warn("Unexpected orientation value received:", orientation)
+                        break;
+
+                    }
 
                 }
 

@@ -26,6 +26,12 @@
 #include <QDir>
 #include <clocale>
 
+#ifdef PQMEXIV2
+    #ifdef PQMEXIV2_ENABLE_BMFF
+        #define EXV_ENABLE_BMFF
+    #endif
+#endif
+
 #include <pqc_messagehandler.h>
 #include <pqc_scripts.h>
 #include <pqc_imageformats.h>
@@ -74,6 +80,10 @@
 
 #ifdef PQMEPUB
 #include <QtWebEngineQuick/QtWebEngineQuick>
+#endif
+
+#ifdef PQMEXIV2
+#include <exiv2/exiv2.hpp>
 #endif
 
 int main(int argc, char *argv[]) {
@@ -152,6 +162,12 @@ int main(int argc, char *argv[]) {
     // Qt sets the locale in the QGuiApplication constructor, but libmpv
     // requires the LC_NUMERIC category to be set to "C", so change it back.
     std::setlocale(LC_NUMERIC, "C");
+#endif
+
+#ifdef PQMEXIV2
+    #ifdef PQMEXIV2_ENABLE_BMFF
+        Exiv2::enableBMFF(true);
+    #endif
 #endif
 
 // only one of them will be defined at a time

@@ -49,6 +49,7 @@ public:
     Q_INVOKABLE QString getBasename(QString fullpath);
     Q_INVOKABLE QString getFilename(QString path);
     Q_INVOKABLE QString getDir(QString fullpath);
+    Q_INVOKABLE QString getSuffix(QString path);
     Q_INVOKABLE bool isQtAtLeast6_5();
     Q_INVOKABLE bool isMpvVideo(QString path);
     Q_INVOKABLE bool isQtVideo(QString path);
