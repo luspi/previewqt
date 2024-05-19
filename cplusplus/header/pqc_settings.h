@@ -149,10 +149,10 @@ private:
     QStringList opt_bok;
     QStringList opt_vid;
 
-private slots:
+private Q_SLOTS:
     void saveSettings();
 
-signals:
+Q_SIGNALS:
     void versionChanged();
     void topBarAutoHideChanged();
     void launchHiddenToSystemTrayChanged();

@@ -110,7 +110,7 @@ private:
     QString m_onlyWriteToTempFile;
     QString m_startupMessage;
 
-signals:
+Q_SIGNALS:
     void commandLineArgumentReceived(QString msg);
 
 };

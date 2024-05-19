@@ -262,7 +262,7 @@ void PQCSingleInstance::handleMessage(QString msg) {
 
     qDebug() << "args: msg =" << msg;
 
-    emit PQCScripts::get().commandLineArgumentReceived(msg);
+    Q_EMIT PQCScripts::get().commandLineArgumentReceived(msg);
 
 }
 

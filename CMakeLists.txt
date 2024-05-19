@@ -196,9 +196,16 @@ if(LCMS2)
     find_package(LCMS2)
 endif()
 
+if(FLATPAKBUILD)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(GLIB REQUIRED glib-2.0 gobject-2.0 gio-2.0)
+endif()
+
 ###############################
 #### ADDITIONAL QT OPTIONS ####
 ###############################
+
+add_definitions(-DQT_NO_KEYWORDS)
 
 # we always want to capture debug/log context information
 add_definitions(-DQT_MESSAGELOGCONTEXT)

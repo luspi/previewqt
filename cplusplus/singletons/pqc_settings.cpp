@@ -130,7 +130,7 @@ void PQCSettings::setVersion(QString val) {
     if(m_version != val) {
         m_version = val;
         saveTimer->start();
-        emit versionChanged();
+        Q_EMIT versionChanged();
     }
 }
 
@@ -141,7 +141,7 @@ void PQCSettings::setTopBarAutoHide(bool val) {
     if(m_topBarAutoHide != val) {
         m_topBarAutoHide = val;
         saveTimer->start();
-        emit topBarAutoHideChanged();
+        Q_EMIT topBarAutoHideChanged();
     }
 }
 
@@ -152,7 +152,7 @@ void PQCSettings::setLaunchHiddenToSystemTray(bool val) {
     if(m_launchHiddenToSystemTray != val) {
         m_launchHiddenToSystemTray = val;
         saveTimer->start();
-        emit launchHiddenToSystemTrayChanged();
+        Q_EMIT launchHiddenToSystemTrayChanged();
     }
 }
 
@@ -163,7 +163,7 @@ void PQCSettings::setMaximizeImageSizeAndAdjustWindow(bool val) {
     if(m_maximizeImageSizeAndAdjustWindow != val) {
         m_maximizeImageSizeAndAdjustWindow = val;
         saveTimer->start();
-        emit maximizeImageSizeAndAdjustWindowChanged();
+        Q_EMIT maximizeImageSizeAndAdjustWindowChanged();
     }
 }
 
@@ -174,7 +174,7 @@ void PQCSettings::setDefaultWindowWidth(int val) {
     if(m_defaultWindowWidth != val) {
         m_defaultWindowWidth = val;
         saveTimer->start();
-        emit defaultWindowWidthChanged();
+        Q_EMIT defaultWindowWidthChanged();
     }
 }
 
@@ -185,7 +185,7 @@ void PQCSettings::setDefaultWindowHeight(int val) {
     if(m_defaultWindowHeight != val) {
         m_defaultWindowHeight = val;
         saveTimer->start();
-        emit defaultWindowHeightChanged();
+        Q_EMIT defaultWindowHeightChanged();
     }
 }
 
@@ -196,7 +196,7 @@ void PQCSettings::setDefaultWindowMaximized(bool val) {
     if(m_defaultWindowMaximized != val) {
         m_defaultWindowMaximized = val;
         saveTimer->start();
-        emit defaultWindowMaximizedChanged();
+        Q_EMIT defaultWindowMaximizedChanged();
     }
 }
 
@@ -207,7 +207,7 @@ void PQCSettings::setDefaultAppShortcut(QString val) {
     if(m_defaultAppShortcut != val) {
         m_defaultAppShortcut = val;
         saveTimer->start();
-        emit defaultAppShortcutChanged();
+        Q_EMIT defaultAppShortcutChanged();
     }
 }
 
@@ -218,7 +218,7 @@ void PQCSettings::setDefaultAppImages(QString val) {
     if(m_defaultAppImages != val) {
         m_defaultAppImages = val;
         saveTimer->start();
-        emit defaultAppImagesChanged();
+        Q_EMIT defaultAppImagesChanged();
     }
 }
 
@@ -229,7 +229,7 @@ void PQCSettings::setDefaultAppDocuments(QString val) {
     if(m_defaultAppDocuments != val) {
         m_defaultAppDocuments = val;
         saveTimer->start();
-        emit defaultAppDocumentsChanged();
+        Q_EMIT defaultAppDocumentsChanged();
     }
 }
 
@@ -240,7 +240,7 @@ void PQCSettings::setDefaultAppArchives(QString val) {
     if(m_defaultAppArchives != val) {
         m_defaultAppArchives = val;
         saveTimer->start();
-        emit defaultAppArchivesChanged();
+        Q_EMIT defaultAppArchivesChanged();
     }
 }
 
@@ -251,7 +251,7 @@ void PQCSettings::setDefaultAppVideos(QString val) {
     if(m_defaultAppVideos != val) {
         m_defaultAppVideos = val;
         saveTimer->start();
-        emit defaultAppVideosChanged();
+        Q_EMIT defaultAppVideosChanged();
     }
 }
 
@@ -262,7 +262,7 @@ void PQCSettings::setDefaultAppComicBooks(QString val) {
     if(m_defaultAppComicBooks != val) {
         m_defaultAppComicBooks = val;
         saveTimer->start();
-        emit defaultAppComicBooksChanged();
+        Q_EMIT defaultAppComicBooksChanged();
     }
 }
 
@@ -273,7 +273,7 @@ void PQCSettings::setDefaultAppEBooks(QString val) {
     if(m_defaultAppEBooks != val) {
         m_defaultAppEBooks = val;
         saveTimer->start();
-        emit defaultAppEBooksChanged();
+        Q_EMIT defaultAppEBooksChanged();
     }
 }
 
@@ -284,7 +284,7 @@ void PQCSettings::setCloseAfterDefaultApp(bool val) {
     if(m_closeAfterDefaultApp != val) {
         m_closeAfterDefaultApp = val;
         saveTimer->start();
-        emit closeAfterDefaultAppChanged();
+        Q_EMIT closeAfterDefaultAppChanged();
     }
 }
 
@@ -295,7 +295,7 @@ void PQCSettings::setFiledialogLocation(QString val) {
     if(m_filedialogLocation != val) {
         m_filedialogLocation = val;
         saveTimer->start();
-        emit filedialogLocationChanged();
+        Q_EMIT filedialogLocationChanged();
     }
 }
 
@@ -306,7 +306,7 @@ void PQCSettings::setCloseWhenLosingFocus(bool val) {
     if(m_closeWhenLosingFocus != val) {
         m_closeWhenLosingFocus = val;
         saveTimer->start();
-        emit closeWhenLosingFocusChanged();
+        Q_EMIT closeWhenLosingFocusChanged();
     }
 }
 
