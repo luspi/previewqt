@@ -836,6 +836,8 @@ bool PQCScripts::isArchive(QString path) {
 
     qDebug() << "args: path =" << path;
 
+#ifdef PQMLIBARCHIVE
+
     QString suf = QFileInfo(path).suffix().toLower();
     if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suf))
         return true;
@@ -845,6 +847,8 @@ bool PQCScripts::isArchive(QString path) {
     if(PQCImageFormats::get().getAllMimeTypesLibArchive().contains(mimetype))
         return true;
 
+#endif
+
     return false;
 
 }
@@ -853,9 +857,15 @@ bool PQCScripts::isComicBook(QString path) {
 
     qDebug() << "args: path =" << path;
 
+#ifdef PQMLIBARCHIVE
+
     const QString suffix = QFileInfo(path).suffix().toLower();
 
     return (suffix=="cbt" || suffix=="cbr" || suffix=="cbz" || suffix=="cb7");
+
+#endif
+
+    return false;
 
 }
 
