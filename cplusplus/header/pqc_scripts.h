@@ -68,6 +68,7 @@ public:
     Q_INVOKABLE bool isFileSupported(QString path);
     QString toAbsolutePath(QString path);
     Q_INVOKABLE QSize fitSizeInsideSize(int w, int h, int maxw, int maxh);
+    Q_INVOKABLE bool isMotionPhotoSupportEnabled();
 
     Q_INVOKABLE bool isPhotoSphere(QString path);
     Q_INVOKABLE int isMotionPhoto(QString path);

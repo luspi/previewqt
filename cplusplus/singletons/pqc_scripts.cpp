@@ -1776,3 +1776,10 @@ QString PQCScripts::getTextFromFile(QString path) {
     return txt;
 
 }
+
+bool PQCScripts::isMotionPhotoSupportEnabled() {
+#ifdef PQMMOTIONPHOTO
+    return true;
+#endif
+    return false;
+}

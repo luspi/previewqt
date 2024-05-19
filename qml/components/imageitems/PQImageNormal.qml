@@ -84,6 +84,9 @@ Item {
 
             extrasCheckedFor = image_top.imageSource
 
+            if(!PQCScripts.isMotionPhotoSupportEnabled())
+                return
+
             var motion = PQCScripts.isMotionPhoto(image_top.imageSource)
 
             if(motion === 1) {
