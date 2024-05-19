@@ -1355,7 +1355,7 @@ bool PQCScripts::applyEmbeddedColorProfile(QImage &img) {
             return false;
         } else {
 
-            QImage ret(img.size(), img.format());
+            QImage ret(img.size(), targetFormat);
             ret.fill(Qt::transparent);
             // Perform color space conversion
             cmsDoTransform(transform, img.constBits(), ret.bits(), img.width() * img.height());
