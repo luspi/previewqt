@@ -1290,6 +1290,10 @@ QString PQCScripts::getConfigInfo(bool formatHTML) {
     txt += QString(" - %1Photosphere%2%3").arg(bold1, bold2, nl);
 #endif
 
+#ifdef PQMEPUB
+    txt += QString(" - %1E-books (epub)%2%3").arg(bold1, bold2, nl);
+#endif
+
 #ifdef PQMVIDEOQT
     txt += QString(" - %1Video%2 through Qt%3").arg(bold1, bold2, nl);
 #endif
