@@ -115,7 +115,7 @@ endif()
 #### FIND REQUIRED PACKAGES ####
 ################################
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Svg Sql)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Svg Sql LinguistTools)
 if(QTPDF)
     find_package(Qt6 6.2 REQUIRED COMPONENTS Pdf)
 endif()
@@ -249,6 +249,16 @@ endif()
 
 include("CMake/ComposeDesktopFile.cmake")
 composeDesktopFile()
+
+######################
+#### TRANSLATIONS ####
+######################
+
+# the compiled translations are automatically embedded as resource in executable
+file(GLOB files "lang/*.ts")
+qt_add_translations(previewqt
+    TS_FILES ${files}
+    RESOURCE_PREFIX "/lang")
 
 ########################
 #### CUSTOM OPTIONS ####
