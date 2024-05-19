@@ -82,7 +82,7 @@ Rectangle {
 
     ToolTip {
         delay: 500
-        text: parent.enabled ? control.tooltip : "Action not supported for this file type"
+        text: parent.enabled ? control.tooltip : qsTr("Action not supported for this file type")
         visible: text!=="" && control.hovered
     }
 
