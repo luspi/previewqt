@@ -41,50 +41,23 @@ Window {
 
     property bool optionsLoaded: false
 
-    property var imgoptions: {
-        "PhotoQt" : "photoqt",
-        "GwenView" : "gwenview",
-        "Showfoto" : "showfoto",
-        "Eye of Mate" : "eom",
-        "Eye of Gnome" : "eog",
-        "GThumb" : "gthumb",
-        "Geeqie" : "geeqie",
-        "Nomacs" : "nomacs",
-        "LXImage-Qt" : "lximage-qt",
-        "Ristretto" : "ristretto",
-        "(custom)" : ""
-    }
+    property var imgoptions_key: ["PhotoQt", "Eye of Gnome", "Eye of Mate", "Geeqie", "GThumb", "GwenView", "LXImage-Qt", "Nomacs", "Ristretto", "Showfoto", "(custom)"]
+    property var imgoptions_val: ["photoqt", "eog",          "eom",         "geeqie", "gthumb", "gwenview", "lximage-qt", "nomacs", "ristretto", "showfoto", ""]
 
-    property var docoptions: {
-        "PhotoQt" : "photoqt",
-        "Okular" : "okular",
-        "Evince" : "evince",
-        "Atril" : "atril",
-        "(custom)" : ""
-    }
+    property var docoptions_key: ["PhotoQt", "Atril", "Evince", "Okular", "(custom)"]
+    property var docoptions_val: ["photoqt", "atril", "evince", "okular", ""]
 
-    property var arcoptions: {
-        "PhotoQt" : "photoqt",
-        "Ark" : "ark",
-        "File Roller" : "file-roller",
-        "Engrampa" : "engrampa",
-        "(custom)" : ""
-    }
+    property var arcoptions_key: ["PhotoQt", "Ark", "Engrampa", "File Roller", "(custom)"]
+    property var arcoptions_val: ["photoqt", "ark", "engrampa", "file-roller", ""]
 
-    property var comoptions: {
-        "PhotoQt" : "photoqt",
-        "Okular" : "okular",
-        "Evince" : "evince",
-        "Calibre" : "calibre",
-        "MComix" : "mcomix",
-        "(custom)" : ""
-    }
+    property var comoptions_key: ["PhotoQt", "Calibre", "Evince", "MComix", "Okular", "(custom)"]
+    property var comoptions_val: ["photoqt", "calibre", "evince", "mcomix", "okular", ""]
 
-    property var bokoptions_key: ["E-Book viewer", "Calibre", "Okular", "Evince", "(custom)"]
-    property var bokoptions_val: ["ebook-viewer", "calibre", "okular", "evince", ""]
+    property var bokoptions_key: ["E-Book viewer", "Calibre", "Evince", "Okular", "(custom)"]
+    property var bokoptions_val: ["ebook-viewer",  "calibre", "evince", "okular", ""]
 
-    property var vidoptions_key: ["PhotoQt", "VLC", "SMPlayer", "Dragon Player", "Totem", "Parole", "(custom)"]
-    property var vidoptions_val: ["photoqt", "vlc", "smplayer", "dragon",        "totem", "parole", ""]
+    property var vidoptions_key: ["PhotoQt", "Dragon Player", "Parole", "SMPlayer", "Totem", "VLC", "(custom)"]
+    property var vidoptions_val: ["photoqt", "dragon",        "parole", "smplayer", "totem", "vlc", ""]
 
     // For this window, this item catches all key presses
     Item {
@@ -139,19 +112,19 @@ Window {
         visible = true
         tabbar.currentIndex = 0
 
-        var imgindex = Object.values(imgoptions).indexOf(PQCSettings.defaultAppImages)
+        var imgindex = Object.values(imgoptions_val).indexOf(PQCSettings.defaultAppImages)
         imgcombo.currentIndex = (imgindex===-1 ? imgcombo.currentIndex=imgcombo.model.length-1 : imgindex)
 
-        var docindex = Object.values(docoptions).indexOf(PQCSettings.defaultAppDocuments)
+        var docindex = Object.values(docoptions_val).indexOf(PQCSettings.defaultAppDocuments)
         doccombo.currentIndex = (docindex===-1 ? doccombo.currentIndex=doccombo.model.length-1 : docindex)
 
         var vidindex = Object.values(vidoptions_val).indexOf(PQCSettings.defaultAppVideos)
         vidcombo.currentIndex = (vidindex===-1 ? vidcombo.currentIndex=vidcombo.model.length-1 : vidindex)
 
-        var arcindex = Object.values(arcoptions).indexOf(PQCSettings.defaultAppArchives)
+        var arcindex = Object.values(arcoptions_val).indexOf(PQCSettings.defaultAppArchives)
         arccombo.currentIndex = (arcindex===-1 ? arccombo.currentIndex=arccombo.model.length-1 : arcindex)
 
-        var comindex = Object.values(comoptions).indexOf(PQCSettings.defaultAppComicBooks)
+        var comindex = Object.values(comoptions_val).indexOf(PQCSettings.defaultAppComicBooks)
         comcombo.currentIndex = (comindex===-1 ? comcombo.currentIndex=comcombo.model.length-1 : comindex)
 
         var bokindex = Object.values(bokoptions_val).indexOf(PQCSettings.defaultAppEBooks)
@@ -464,13 +437,13 @@ Window {
                         id: imgcombo
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: Object.keys(imgoptions)
+                        model: imgoptions_key
                         visible: !PQCScripts.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
                             if(currentIndex < imgcombo.model.length-1) {
-                                PQCSettings.defaultAppImages = imgoptions[model[currentIndex]]
+                                PQCSettings.defaultAppImages = imgoptions_val[currentIndex]
                             } else {
                                 imgedit.text = PQCSettings.defaultAppImages
                             }
@@ -512,13 +485,13 @@ Window {
                         id: doccombo
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: Object.keys(docoptions)
+                        model: docoptions_key
                         visible: !PQCScripts.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
                             if(currentIndex < doccombo.model.length-1) {
-                                PQCSettings.defaultAppDocuments = docoptions[model[currentIndex]]
+                                PQCSettings.defaultAppDocuments = docoptions_val[currentIndex]
                             } else {
                                 docedit.text = PQCSettings.defaultAppDocuments
                             }
@@ -608,13 +581,13 @@ Window {
                         id: arccombo
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: Object.keys(arcoptions)
+                        model: arcoptions_key
                         visible: !PQCScripts.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
                             if(currentIndex < arccombo.model.length-1) {
-                                PQCSettings.defaultAppArchives = arcoptions[model[currentIndex]]
+                                PQCSettings.defaultAppArchives = arcoptions_val[currentIndex]
                             } else {
                                 arcedit.text = PQCSettings.defaultAppArchives
                             }
@@ -656,13 +629,13 @@ Window {
                         id: comcombo
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: Object.keys(comoptions)
+                        model: comoptions_key
                         visible: !PQCScripts.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
                             if(currentIndex < comcombo.model.length-1) {
-                                PQCSettings.defaultAppComicBooks = comoptions[model[currentIndex]]
+                                PQCSettings.defaultAppComicBooks = comoptions_val[currentIndex]
                             } else {
                                 comedit.text = PQCSettings.defaultAppComicBooks
                             }
