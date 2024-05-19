@@ -23,6 +23,7 @@
 import QtQuick
 import PQCPhotoSphere
 import PQCScripts
+import PQCSettings
 
 Item {
 
@@ -34,6 +35,11 @@ Item {
 
     // dummy item
     property bool asynchronous
+
+    // these ensure that we resize the window to its initial default size
+    property size sourceSize: Qt.size(paintedWidth, paintedHeight)
+    property int paintedWidth: PQCSettings.defaultWindowWidth - 10
+    property int paintedHeight: PQCSettings.defaultWindowHeight - (PQCSettings.topBarAutoHide ? 1 : toprow.height) - 10
 
     PQCPhotoSphere {
 
@@ -143,6 +149,25 @@ Item {
         duration: 200
     }
 
+    // we set the status after a short timeout
+    // if we set it immediately, then the loader item might get reported as being null still
+    Timer {
+        interval: 50
+        running: true
+        onTriggered: {
+            image.status = Image.Ready
+            startPanAfterWindowResize.restart()
+        }
+    }
+
+    // we perform a pan after a short delay to allow for enough time to adjust the size of the window
+    Timer {
+        id: startPanAfterWindowResize
+        interval: 200
+        onTriggered:
+            leftrightani.restart()
+    }
+
     // This is a short animation to the right and back
     // This is used when a photo sphere has been entered to inform the user that there is more to the image than what they can see
     SequentialAnimation {
@@ -150,7 +175,6 @@ Item {
         id: leftrightani
 
         loops: 1
-        running: true
 
         NumberAnimation {
             target: thesphere

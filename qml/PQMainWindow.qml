@@ -378,8 +378,6 @@ ApplicationWindow {
                     return
                 }
 
-                console.warn("**", path, "/", fileInside)
-
                 if(fileInside != "") {
                     if(PQCScripts.isPDFDocument(path))
                         image.loadImage("%1::PDF::%2".arg(fileInside).arg(path))
