@@ -56,6 +56,7 @@ Item {
                 var page = PQCCache.getEntry(image_top.imageSource)
                 if(page === "")
                     page = currentPage
+                currentPage = page
                 source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(page).arg(image_top.imageSource))
             }
         }
