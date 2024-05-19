@@ -45,6 +45,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     QString file = "";
     bool processonly = false;
     int fileNumInside = 0;
+    bool setDebug = false;
 
     for(int i = 1; i < argc; ++i) {
 
@@ -59,6 +60,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
             std::cout << "Options:" << std::endl;
             std::cout << std::setw(15) << std::right << "  -h, --help" << "   " << "Displays help on commandline options." << std::endl;
             std::cout << std::setw(15) << std::right << "  -v, --version" << "   " << "Displays version information." << std::endl;
+            std::cout << std::setw(15) << std::right << "  --debug" << "   " << "Show debug messages." << std::endl;
             std::cout << std::setw(15) << std::right << "  --process-only" << "   " << "Process file, provide path to processed file, and print some information." << std::endl;
             std::cout << std::setw(15) << std::right << "  --file-num <num>" << "   " << "Which file/page to load inside of a document/archive." << std::endl;
             std::cout << std::endl;
@@ -85,6 +87,10 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         } else if(arg == "--file-num" && i < argc-1) {
 
             fileNumInside = atoi(argv[++i]);
+
+        } else if(arg == "--debug") {
+
+            setDebug = true;
 
         } else {
 
@@ -206,6 +212,8 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     if(message == "")
         message = "-";
 
+    if(setDebug)
+        PQCScripts::get().setDebug(true);
 
     socket = nullptr;
     server = nullptr;

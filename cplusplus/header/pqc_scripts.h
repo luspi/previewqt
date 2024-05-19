@@ -102,6 +102,9 @@ public:
     void analyzeEpubMetaData(QString subfolder, QString txt, QString &title, QString &coverId, QMap<QString, QString> &outFileList, QStringList &outIdOrder);
     Q_INVOKABLE QString getTextFromFile(QString path);
 
+    bool isDebug();
+    void setDebug(bool val);
+
 private:
     PQCScripts();
 
@@ -110,6 +113,8 @@ private:
 
     QString m_onlyWriteToTempFile;
     QString m_startupMessage;
+
+    bool m_debug;
 
 Q_SIGNALS:
     void commandLineArgumentReceived(QString msg);

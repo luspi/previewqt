@@ -22,6 +22,7 @@
 
 // This file is included in main.cpp
 // and this function is installed as message handler
+#include <pqc_scripts.h>
 
 void pqcMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
 
@@ -32,8 +33,12 @@ void pqcMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
     QByteArray filename = fileinfo.fileName().toLatin1();
     switch (type) {
     case QtDebugMsg:
-#ifndef NDEBUG
+#ifdef NDEBUG
+    if(PQCScripts::get().isDebug()) {
+#endif
         fprintf(stderr, "%s [D] %s::%s::%u: %s\n", date.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1().constData(), filename.constData(), function, context.line, msg.toLocal8Bit().constData());
+#ifdef NDEBUG
+    }
 #endif
         break;
     case QtInfoMsg:

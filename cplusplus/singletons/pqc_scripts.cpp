@@ -88,6 +88,7 @@
 PQCScripts::PQCScripts() {
     m_onlyWriteToTempFile = "";
     m_startupMessage = "";
+    m_debug = false;
 }
 PQCScripts::~PQCScripts() {}
 
@@ -1792,4 +1793,12 @@ bool PQCScripts::isMotionPhotoSupportEnabled() {
     return true;
 #endif
     return false;
+}
+
+bool PQCScripts::isDebug() {
+    return m_debug;
+}
+
+void PQCScripts::setDebug(bool val) {
+    m_debug = val;
 }
