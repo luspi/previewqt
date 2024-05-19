@@ -171,7 +171,7 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 
 #ifdef PQMLIBVIPS
     if((err != "" || img.isNull()) && PQCImageFormats::get().getAllFormatsLibVips().contains(suffix))
-        err = PQCLoadImageLibVips::load(filename, requestedSize, origSize, img);
+        err = PQCLoadImageLibVips::load(filename, requestedSize, origSize, img, cachedImage);
 #endif
 
 #ifdef PQMFREEIMAGE
@@ -237,7 +237,7 @@ QString PQCLoadImage::load(QString filename, QSize requestedSize, QSize &origSiz
 
 #ifdef PQMLIBVIPS
             if(img.isNull() && PQCImageFormats::get().getAllMimeTypesLibVips().contains(mimetype))
-                err = PQCLoadImageLibVips::load(filename, requestedSize, origSize, img);
+                err = PQCLoadImageLibVips::load(filename, requestedSize, origSize, img, cachedImage);
 #endif
 
 #ifdef PQMFREEIMAGE

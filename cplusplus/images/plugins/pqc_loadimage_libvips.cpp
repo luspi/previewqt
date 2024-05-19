@@ -31,7 +31,7 @@
 
 PQCLoadImageLibVips::PQCLoadImageLibVips() {}
 
-QString PQCLoadImageLibVips::load(QString filename, QSize maxSize, QSize &origSize, QImage &img) {
+QString PQCLoadImageLibVips::load(QString filename, QSize maxSize, QSize &origSize, QImage &img, QImage &fullImage) {
 
     qDebug() << "args: filename = " << filename;
     qDebug() << "args: maxSize = " << maxSize;

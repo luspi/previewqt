@@ -33,7 +33,7 @@ class PQCLoadImageLibVips {
 public:
     PQCLoadImageLibVips();
 
-    static QString load(QString filename, QSize, QSize &origSize, QImage &img);
+    static QString load(QString filename, QSize, QSize &origSize, QImage &img, QImage &fullImage);
 
 };
 
