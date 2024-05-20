@@ -38,6 +38,13 @@ appimage:
     - qtchooser -install qt6 $(which qmake6)
     - export QT_SELECT=qt6
     - rm -rf lang/
+    - eval `ssh-agent -s`
+    - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' | ssh-add - > /dev/null # add ssh key
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - echo "${SSH_PUBLIC_KEY}" >> ~/.ssh/id_rsa.pub
+    - echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - git config --global user.email "${CI_EMAIL}"
+    - git config --global user.name "${CI_USERNAME}"
     - git clone -b l10n_main git@gitlab.com:lspies/previewqt-lang
     - mv previewqt-lang/localized lang
     - cd build/
