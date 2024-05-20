@@ -68,166 +68,193 @@ Item {
                 source = "image://svg/:/errorimage.svg"
             else if(status == Image.Ready) {
                 asynchronous = false
-                if(extrasCheckedFor !== image_top.imageSource)
-                    checkForExtras.restart()
+                // if(extrasCheckedFor !== image_top.imageSource)
+                    // checkForExtras.restart()
             }
         }
 
     }
 
-    property string extrasCheckedFor: ""
+    // The code below handles motion photos
 
     Timer {
-        id: checkForExtras
-        interval: 50
+
+        interval: 200
+        running: true
+
         onTriggered: {
 
-            extrasCheckedFor = image_top.imageSource
+            if(PQCScripts.isMotionPhotoSupportEnabled()) {
 
-            if(!PQCScripts.isMotionPhotoSupportEnabled())
-                return
+                var what = PQCScripts.isMotionPhoto(image_top.imageSource)
 
-            var motion = PQCScripts.isMotionPhoto(image_top.imageSource)
+                if(what > 0) {
 
-            if(motion === 1) {
+                    var src = ""
 
-                mediaplayer_wrapper.forceRotation = 0
-                mediaplayer_wrapper.forceMirror = false
-                mediaplayer.source = "file:/" + PQCScripts.getDir(image_top.imageSource) + "/" + PQCScripts.getBasename(image_top.imageSource) + ".mov"
-                mediaplayer.play()
+                    if(what === 1)
+                        src = PQCScripts.getDir(image_top.imageSource) + "/" + PQCScripts.getBasename(image_top.imageSource) + ".mov"
+                    else if(what === 2 || what === 3)
+                        src = PQCScripts.extractMotionPhoto(image_top.imageSource)
 
-            } else if(motion > 1) {
+                    if(src != "") {
 
-                var src = PQCScripts.extractMotionPhoto(image_top.imageSource)
-                mediaplayer.source = "file:/" + src
+                        // HEIF/HEIC images are a little trickier with their orientation handling
+                        // We need to ignore this value as the Exif orientation might not be correct
+                        // See also: https://github.com/Exiv2/exiv2/issues/2958
+                        var suf = PQCScripts.getSuffix(image_top.imageSource).toLowerCase()
+                        if(suf !== "heic" && suf !== "heif") {
 
-                // HEIF/HEIC images are a little trickier with their orientation handling
-                // We need to ignore this value as the Exif orientation might not be correct
-                // See also: https://github.com/Exiv2/exiv2/issues/2958
-                var suf = PQCScripts.getSuffix(image_top.imageSource).toLowerCase()
-                if(suf !== "heic" && suf !== "heif") {
+                            var orientation = PQCScripts.getExifOrientation(image_top.imageSource)
+                            switch(orientation) {
 
-                    var orientation = PQCScripts.getExifOrientation(image_top.imageSource)
-                    switch(orientation) {
+                            case 1:
+                                // no rotation, no mirror
+                                videoloader.forceRotation = 0
+                                videoloader.forceMirror = false
+                                break;
+                            case 2:
+                                // no rotation, horizontal mirror
+                                videoloader.forceRotation = 0
+                                videoloader.forceMirror = true
+                                break;
+                            case 3:
+                                // 180 degree rotation, no mirror
+                                videoloader.forceRotation = 180
+                                videoloader.forceMirror = false
+                                break;
+                            case 4:
+                                // 180 degree rotation, horizontal mirror
+                                videoloader.forceRotation = 180
+                                videoloader.forceMirror = true
+                                break;
+                            case 5:
+                                // 90 degree rotation, horizontal mirror
+                                videoloader.forceRotation = 90
+                                videoloader.forceMirror = true
+                                break;
+                            case 6:
+                                // 90 degree rotation, no mirror
+                                videoloader.forceRotation = 90
+                                videoloader.forceMirror = false
+                                break;
+                            case 7:
+                                // 270 degree rotation, horizontal mirror
+                                videoloader.forceRotation = 270
+                                videoloader.forceMirror = true
+                                break;
+                            case 8:
+                                // 270 degree rotation, no mirror
+                                videoloader.forceRotation = 270
+                                videoloader.forceMirror = false
+                                break;
+                            default:
+                                console.warn("Unexpected orientation value received:", orientation)
+                                break;
 
-                    case 1:
-                        // no rotation, no mirror
-                        mediaplayer_wrapper.forceRotation = 0
-                        mediaplayer_wrapper.forceMirror = false
-                        break;
-                    case 2:
-                        // no rotation, horizontal mirror
-                        mediaplayer_wrapper.forceRotation = 0
-                        mediaplayer_wrapper.forceMirror = true
-                        break;
-                    case 3:
-                        // 180 degree rotation, no mirror
-                        mediaplayer_wrapper.forceRotation = 180
-                        mediaplayer_wrapper.forceMirror = false
-                        break;
-                    case 4:
-                        // 180 degree rotation, horizontal mirror
-                        mediaplayer_wrapper.forceRotation = 180
-                        mediaplayer_wrapper.forceMirror = true
-                        break;
-                    case 5:
-                        // 90 degree rotation, horizontal mirror
-                        mediaplayer_wrapper.forceRotation = 90
-                        mediaplayer_wrapper.forceMirror = true
-                        break;
-                    case 6:
-                        // 90 degree rotation, no mirror
-                        mediaplayer_wrapper.forceRotation = 90
-                        mediaplayer_wrapper.forceMirror = false
-                        break;
-                    case 7:
-                        // 270 degree rotation, horizontal mirror
-                        mediaplayer_wrapper.forceRotation = 270
-                        mediaplayer_wrapper.forceMirror = true
-                        break;
-                    case 8:
-                        // 270 degree rotation, no mirror
-                        mediaplayer_wrapper.forceRotation = 270
-                        mediaplayer_wrapper.forceMirror = false
-                        break;
-                    default:
-                        console.warn("Unexpected orientation value received:", orientation)
-                        break;
+                            }
 
+                        }
+
+                        videoloader.active = false
+                        // earlier versions of Qt6 seem to struggle if only one slash is used
+                        if(PQCScripts.isQtAtLeast6_5())
+                            videoloader.mediaSrc = "file:/" + src
+                        else
+                            videoloader.mediaSrc = "file://" + src
+                        videoloader.active = true
+                        return
                     }
 
                 }
 
-                mediaplayer.play()
-
             } else
-                mediaplayer.source = ""
+                videoloader.mediaSrc = ""
 
         }
+
     }
 
-    Item {
+    // we hide the video element behind a loader so that we don't even have to set it up if no video is found
 
-        id: mediaplayer_wrapper
+    Loader {
+        id: videoloader
 
-        property bool forceMirror: false
+        active: false
+        property string mediaSrc: ""
+
         property int forceRotation: 0
+        property bool forceMirror: false
 
-        width: imageitem.width
-        height: imageitem.height
-        rotation: imageitem.rotation
-
-        transform:
-            Rotation {
-                origin.x: width / 2
-                axis { x: 0; y: 1; z: 0 }
-                angle: mediaplayer_wrapper.forceMirror ? 180 : 0
-            }
-
-        Video {
-            id: mediaplayer
-            rotation: mediaplayer_wrapper.forceRotation
-            anchors.fill: parent
-            anchors.margins: rotation%180==0 ? 0 : (imageitem.paintedHeight-imageitem.paintedWidth)/2
-            source: ""
-        }
-
+        asynchronous: true
+        sourceComponent: motionphoto
     }
 
-    Rectangle {
+    Component {
 
-        parent: image_top
-        x: parent.width-width-10
-        y: parent.height-height-10
+        id: motionphoto
 
-        width: 30
-        height: 30
-        color: "#88000000"
-        radius: 5
+        Item {
 
-        visible: mediaplayer.hasVideo
+            width: imageitem.width
+            height: imageitem.height
+            transform:
+                Rotation {
+                    origin.x: width / 2
+                    axis { x: 0; y: 1; z: 0 }
+                    angle: videoloader.forceMirror ? 180 : 0
+                }
 
-        opacity: playpausemouse.containsMouse ? 1 : 0.2
-        Behavior on opacity { NumberAnimation { duration: 200 } }
-
-        Image {
-            anchors.fill: parent
-            anchors.margins: 5
-            sourceSize: Qt.size(width, height)
-            source: mediaplayer.playbackState == MediaPlayer.PlayingState ? "image://svg/:/pause.svg" : "image://svg/:/play.svg"
-        }
-
-        MouseArea {
-            id: playpausemouse
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: {
-                if(mediaplayer.playbackState == MediaPlayer.PlayingState)
-                    mediaplayer.pause()
-                else
-                    mediaplayer.play()
+            Video {
+                id: mediaplayer
+                rotation: videoloader.forceRotation
+                anchors.fill: parent
+                anchors.margins: rotation%180==0 ? 0 : -(imageitem.height-imageitem.width)/2
+                source: videoloader.mediaSrc
+                Component.onCompleted: {
+                    play()
+                }
             }
+
+            Rectangle {
+
+                parent: image_top
+
+                x: parent.width-width-10
+                y: parent.height-height-10
+
+                width: 30
+                height: 30
+                color: "#88000000"
+                radius: 5
+
+                visible: mediaplayer.hasVideo
+
+                opacity: playpausemouse.containsMouse ? 1 : 0.2
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+
+                Image {
+                    anchors.fill: parent
+                    anchors.margins: 5
+                    sourceSize: Qt.size(width, height)
+                    source: mediaplayer.playbackState == MediaPlayer.PlayingState ? "image://svg/:/pause.svg" : "image://svg/:/play.svg"
+                }
+
+                MouseArea {
+                    id: playpausemouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        if(mediaplayer.playbackState == MediaPlayer.PlayingState)
+                            mediaplayer.pause()
+                        else
+                            mediaplayer.play()
+                    }
+                }
+
+            }
+
         }
 
     }
