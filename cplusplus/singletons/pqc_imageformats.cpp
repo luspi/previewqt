@@ -132,7 +132,7 @@ void PQCImageFormats::readFromDatabase() {
         const QString mimetypes = query.record().value("mimetypes").toString();
         const QString desc = query.record().value("description").toString();
         const QString cat = query.record().value("category").toString();
-        const int enabled = query.record().value("enabled").toInt();
+        const int enabled = 1; //query.record().value("enabled").toInt(); // In PreviewQt, all formats are always enabled
         const int qt = query.record().value("qt").toInt();
 #ifdef PQMLIBVIPS
         const int libvips = query.record().value("libvips").toInt();
