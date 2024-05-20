@@ -1,0 +1,94 @@
+localization:
+
+  image: ubuntu:jammy
+
+  only:
+    - schedules
+
+  script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update && apt-get install -y qt6-base-dev qt6-l10n-tools openssh-client git wget
+    - qtchooser -install qt6 $(which qmake6)
+    - export QT_SELECT=qt6
+    - eval `ssh-agent -s`
+    - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' | ssh-add - > /dev/null # add ssh key
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - echo "${SSH_PUBLIC_KEY}" >> ~/.ssh/id_rsa.pub
+    - echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - git config --global user.email "${CI_EMAIL}"
+    - git config --global user.name "${CI_USERNAME}"
+    - git clone git@gitlab.com:luspi/previewqt-lang.git && cd previewqt-lang
+    - lupdate -no-obsolete ../qml/ ../cplusplus/ -ts previewqt-qt6.ts
+    - git add previewqt-qt6.ts
+    - git diff-index --quiet HEAD || git commit -m "updating translation source files from CI"
+    - git push
+
+appimage:
+
+  image: ubuntu:jammy
+
+  only:
+    - schedules
+
+  script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update -qq && apt-get -y install git software-properties-common build-essential libgl1-mesa-dev cmake wget extra-cmake-modules apt-transport-https curl
+    - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qt6-multimedia-dev qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-declarative-dev qt6-webengine-dev qt6-webengine-dev-tools qml6-module-qtquick-dialogs qml6-module-qtqml-workerscript qml6-module-qt-labs-platform qml6-module-qtquick-templates qml6-module-qtquick-layouts qml6-module-qt-labs-folderlistmodel qml6-module-qtquick-window qml6-module-qtwebengine libqt6webenginecore6-bin
+    - apt-get -y install libarchive-dev libraw-dev libfreeimage-dev libfreeimageplus-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libmagick++-6.q16-dev libmagick++-6.q16-8 libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev
+    - qtchooser -install qt6 $(which qmake6)
+    - export QT_SELECT=qt6
+    - rm -rf lang/
+    - git clone -b l10n_master https://gitlab.com/luspi/previewqt-lang
+    - mv previewqt-lang/localized lang
+    - cd build/
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DEXIV2=ON -DGRAPHICSMAGICK=OFF -DIMAGEMAGICK=ON -DVIDEO_MPV=ON -DLIBVIPS=ON -DPOPPLER=OFF -DEXIV2_ENABLE_BMFF=ON -DRESVG=OFF -DMOTIONPHOTO=OFF -DLCMS2=ON
+    - make DESTDIR=../appdir -j$(nproc) install
+    - cd ..
+    - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+    - wget -c https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+    - chmod a+x *.AppImage
+    - ./linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract
+    - ./linuxdeploy-x86_64.AppImage --appimage-extract
+    - rm ./linuxdeploy-plugin-qt-x86_64.AppImage
+    - QML_SOURCES_PATHS=./qml ./squashfs-root/AppRun --appdir ./appdir/ --plugin=qt --output appimage
+    - mv ./PreviewQt*.AppImage PreviewQt-nightly.AppImage
+    - curl --data-binary @PreviewQt-nightly.AppImage ${UPLOAD_URL}
+
+  artifacts:
+    paths:
+      - PreviewQt-nightly.AppImage
+
+
+releaseappimage:
+
+  image: ubuntu:jammy
+
+  only:
+    - tags
+
+  script:
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get update -qq && apt-get -y install git software-properties-common build-essential libgl1-mesa-dev cmake wget extra-cmake-modules apt-transport-https curl
+    - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qt6-multimedia-dev qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-declarative-dev qt6-webengine-dev qt6-webengine-dev-tools qml6-module-qtquick-dialogs qml6-module-qtqml-workerscript qml6-module-qt-labs-platform qml6-module-qtquick-templates qml6-module-qtquick-layouts qml6-module-qt-labs-folderlistmodel qml6-module-qtquick-window qml6-module-qtwebengine libqt6webenginecore6-bin
+    - apt-get -y install libarchive-dev libraw-dev libfreeimage-dev libfreeimageplus-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libmagick++-6.q16-dev libmagick++-6.q16-8 libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev
+    - qtchooser -install qt6 $(which qmake6)
+    - export QT_SELECT=qt6
+    - mkdir -p build && cd build/
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DEXIV2=ON -DGRAPHICSMAGICK=OFF -DIMAGEMAGICK=ON -DVIDEO_MPV=ON -DLIBVIPS=ON -DPOPPLER=OFF -DEXIV2_ENABLE_BMFF=ON -DRESVG=OFF -DMOTIONPHOTO=OFF -DLCMS2=ON
+    - make DESTDIR=../appdir -j$(nproc) install
+    - cd ..
+    - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+    - wget -c https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+    - chmod a+x *.AppImage
+    - ./linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract
+    - ./linuxdeploy-x86_64.AppImage --appimage-extract
+    - rm ./linuxdeploy-plugin-qt-x86_64.AppImage
+    - QML_SOURCES_PATHS=./qml ./squashfs-root/AppRun --appdir ./appdir/ --plugin=qt --output appimage
+    - mv ./PreviewQt*.AppImage PreviewQt-latesttag.AppImage
+    - curl --data-binary @PreviewQt-latesttag.AppImage ${UPLOAD_URL}
+
+  artifacts:
+    paths:
+      - PreviewQt-latesttag.AppImage
+
+
