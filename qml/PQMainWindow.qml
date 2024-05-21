@@ -199,6 +199,10 @@ ApplicationWindow {
         property int w_to
         property int h_from
         property int h_to
+        property int x_from
+        property int x_to
+        property int y_from
+        property int y_to
 
         SmoothedAnimation {
             id: toplevelAniWidth
@@ -216,6 +220,24 @@ ApplicationWindow {
             property: "height"
             from: toplevelAni.h_from
             to: toplevelAni.h_to
+        }
+
+        SmoothedAnimation {
+            id: toplevelAniX
+            target: toplevel
+            duration: 200
+            property: "x"
+            from: toplevelAni.x_from
+            to: toplevelAni.x_to
+        }
+
+        SmoothedAnimation {
+            id: toplevelAniY
+            target: toplevel
+            duration: 200
+            property: "y"
+            from: toplevelAni.y_from
+            to: toplevelAni.y_to
         }
 
     }
@@ -494,6 +516,10 @@ ApplicationWindow {
         toplevelAni.w_to = Math.max(fitsize.width, minimumWidth)
         toplevelAni.h_from = toplevel.height
         toplevelAni.h_to = Math.max(fitsize.height + (PQCSettings.topBarAutoHide ? 1 : toprow.height), minimumHeight)
+        toplevelAni.x_from = toplevel.x
+        toplevelAni.x_to = toplevel.x + (toplevel.width - toplevelAni.w_to)/2
+        toplevelAni.y_from = toplevel.y
+        toplevelAni.y_to = toplevel.y + (toplevel.height - toplevelAni.h_to)/2
         toplevelAni.start()
 
     }
