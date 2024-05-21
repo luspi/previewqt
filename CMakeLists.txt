@@ -70,13 +70,13 @@ set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadimage_resvg.cpp" "${d}/pqc_load
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadimage_xcf.cpp")
 set(d "cplusplus/other")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_photosphere.cpp" "${d}/pqc_photosphereitem.cpp" "${d}/pqc_photosphererenderer.cpp")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_singleinstance.cpp")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_singleinstance.cpp" "${d}/pqc_specialactions.cpp")
 
 
 set(d "cplusplus/header")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_imageformats.h" "${d}/pqc_scripts.h" "${d}/pqc_messagehandler.h")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_photosphere.h" "${d}/pqc_photosphereitem.h" "${d}/pqc_photosphererenderer.h")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_settings.h" "${d}/pqc_singleinstance.h" "${d}/pqc_cache.h")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_settings.h" "${d}/pqc_singleinstance.h" "${d}/pqc_cache.h" "${d}/pqc_specialactions.h")
 
 set(d "qml")
 set(previewqt_QML "${d}/PQMainWindow.qml")
@@ -115,7 +115,7 @@ endif()
 #### FIND REQUIRED PACKAGES ####
 ################################
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Svg Sql LinguistTools)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Svg Sql LinguistTools DBus)
 if(QTPDF)
     find_package(Qt6 6.2 REQUIRED COMPONENTS Pdf)
 endif()
@@ -235,7 +235,7 @@ set_target_properties(previewqt PROPERTIES
 target_include_directories(previewqt PRIVATE "cplusplus/header")
 
 # link executable
-target_link_libraries(previewqt PRIVATE Qt6::Quick Qt6::Widgets Qt6::Svg Qt6::Sql)
+target_link_libraries(previewqt PRIVATE Qt6::Quick Qt6::Widgets Qt6::Svg Qt6::Sql Qt6::DBus)
 if(QTPDF)
     target_link_libraries(previewqt PRIVATE Qt6::Pdf)
 endif()

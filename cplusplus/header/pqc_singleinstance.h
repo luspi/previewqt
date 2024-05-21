@@ -49,6 +49,8 @@ private:
     // This one is used in main process, handling the message sent by sub-instances
     void handleMessage(QString msg);
 
+    void showHelpMessage();
+
 };
 
 #endif // PQSINGLEINSTANCE_H

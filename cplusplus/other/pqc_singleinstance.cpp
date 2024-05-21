@@ -33,17 +33,21 @@
 #include <QStandardPaths>
 #include <QMimeDatabase>
 #include <QImageReader>
+#include <QtDBus/QtDBus>
+#include <QClipboard>
 
 #include <pqc_singleinstance.h>
 #include <pqc_scripts.h>
 #include <pqc_loadimage.h>
 #include <pqc_imageformats.h>
+#include <pqc_specialactions.h>
 
 PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(argc, argv) {
 
     // some possible parameter handling
     QString file = "";
     bool processonly = false;
+    bool loadselected = false;
     int fileNumInside = 0;
     bool setDebug = false;
 
@@ -53,20 +57,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
         if(arg == "-h" || arg == "--help") {
 
-            std::cout << std::endl;
-            std::cout << "Usage: previewqt [options] [filename]" << std::endl;
-            std::cout << "Preview files." << std::endl;
-            std::cout << std::endl;
-            std::cout << "Options:" << std::endl;
-            std::cout << std::setw(15) << std::right << "  -h, --help" << "   " << "Displays help on commandline options." << std::endl;
-            std::cout << std::setw(15) << std::right << "  -v, --version" << "   " << "Displays version information." << std::endl;
-            std::cout << std::setw(15) << std::right << "  --debug" << "   " << "Show debug messages." << std::endl;
-            std::cout << std::setw(15) << std::right << "  --process-only" << "   " << "Process file, provide path to processed file, and print some information." << std::endl;
-            std::cout << std::setw(15) << std::right << "  --file-num <num>" << "   " << "Which file/page to load inside of a document/archive." << std::endl;
-            std::cout << std::endl;
-            std::cout << "Arguments:" << std::endl;
-            std::cout << std::setw(15) << std::right << "  [filename]" << "   " << "Image file to open." << std::endl;
-            std::cout << std::endl;
+            showHelpMessage();
 
             std::exit(0);
             return;
@@ -84,6 +75,10 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
             processonly = true;
 
+        } else if(arg == "--load-selected-file") {
+
+            loadselected = true;
+
         } else if(arg == "--file-num" && i < argc-1) {
 
             fileNumInside = atoi(argv[++i]);
@@ -91,6 +86,13 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         } else if(arg == "--debug") {
 
             setDebug = true;
+
+        } else if(arg.startsWith("-")) {
+
+            std::cerr << std::endl << " Unknown flag:" << arg.toStdString() << std::endl << std::endl;
+            showHelpMessage();
+            std::exit(0);
+            return;
 
         } else {
 
@@ -100,98 +102,28 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
     }
 
-    QString filename = PQCScripts::get().toAbsolutePath(PQCScripts::cleanPath(file));
-
-    // only process file, exit and stop executing after
+    // only process and provide generic way to access rendered file
     if(processonly && QFileInfo::exists(PQCScripts::get().cleanPath(file))) {
 
-        QString tmpfile = QString("%1/tmpfile.jpg").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
-        if(QFileInfo::exists(tmpfile))
-            QFile::remove(tmpfile);
-
-        if(!QFileInfo::exists(filename)) {
-            std::cerr << "ERROR" << std::endl;
-            std::exit(0);
-            return;
-        }
-
-        // we print out some mime info
-        QMimeDatabase db;
-
-        // the suffix for convenience
-        QString suffix = QFileInfo(filename).suffix().toLower();
-
-        // is this a video?
-        if(PQCImageFormats::get().getAllFormatsVideo().indexOf(suffix) > -1) {
-
-            QString mime = db.mimeTypeForFile(filename).name();
-            std::cout << "display mime: " << mime.toStdString() << std::endl
-                      << "source mime: " << mime.toStdString() << std::endl
-                      << "tmp path: " << filename.toStdString() << std::endl
-                      << "file name: " << PQCScripts::get().getFilename(filename).toStdString() << std::endl
-                      << "video: yes" << std::endl;
-
-            std::exit(0);
-            return;
-
-        }
-
-        // is this format supported by Qt?
-        if(PQCImageFormats::get().getAllFormatsQt().indexOf(suffix) > -1) {
-
-            QString mime = db.mimeTypeForFile(filename).name();
-            std::cout << "display mime: " << mime.toStdString() << std::endl
-                      << "source mime: " << mime.toStdString() << std::endl
-                      << "tmp path: " << filename.toStdString() << std::endl
-                      << "file name: " << PQCScripts::get().getFilename(filename).toStdString() << std::endl;
-
-            QImageReader reader(filename);
-            if(reader.supportsAnimation())
-                std::cout << "animated: yes" << std::endl;
-
-            std::exit(0);
-            return;
-
-        }
-
-        bool isPDF = PQCScripts::get().isPDFDocument(filename);
-        bool isARC = PQCScripts::get().isArchive(filename);
-
-        QStringList archiveContent;
-        if(isARC)
-            archiveContent = PQCScripts::get().getArchiveContent(filename);
-\
-        QString filenameToLoad = filename;
-        if(isPDF)
-            filenameToLoad = QString("%1::PDF::%2").arg(fileNumInside).arg(filename);
-        else if(isARC && fileNumInside < archiveContent.length())
-            filenameToLoad = QString("%1::ARC::%2").arg(archiveContent[fileNumInside], filename);
-
-        // process file
-        QSize tmp;
-        QImage img;
-        PQCLoadImage::get().load(filenameToLoad, QSize(-1,-1), tmp, img);
-        img.save(tmpfile);
-
-        // display information
-        std::cout << "display mime: image/jpeg" << std::endl
-                  << "source mime: " << db.mimeTypeForFile(filename).name().toStdString() << std::endl
-                  << "tmp path: " << QString("%1/tmpfile.jpg").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).toStdString() << std::endl
-                  << "file name: " << PQCScripts::get().getFilename(filename).toStdString() << std::endl;
-
-        if(isPDF) {
-            std::cout << "file number: " << fileNumInside << std::endl;
-            std::cout << "file count: " << PQCScripts::get().getDocumentPageCount(filename) << std::endl;
-        } else if(isARC) {
-            std::cout << "file number: " << fileNumInside << std::endl;
-            std::cout << "file name (inside): " << archiveContent[fileNumInside].toStdString() << std::endl;
-            std::cout << "file count: " << archiveContent.length() << std::endl;
-        }
-
+        PQCSpecialActions::processOnly(file, fileNumInside);
         std::exit(0);
         return;
 
+    } else if(loadselected) {
+
+        QString selectedFile = PQCSpecialActions::getSelectedFile();
+
+        if(selectedFile == "") {
+            std::exit(0);
+            return;
+        }
+
+        file = selectedFile;
+
     }
+
+
+    QString filename = PQCScripts::get().toAbsolutePath(PQCScripts::cleanPath(file));
 
     QByteArray message = "";
     if(fileNumInside > 0) {
@@ -255,6 +187,26 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         PQCScripts::get().setStartupMessage(message);
 
     }
+
+}
+
+void PQCSingleInstance::showHelpMessage() {
+
+    std::cout << std::endl;
+    std::cout << "Usage: previewqt [options] [filename]" << std::endl;
+    std::cout << "Preview files." << std::endl;
+    std::cout << std::endl;
+    std::cout << "Options:" << std::endl;
+    std::cout << std::setw(15) << std::right << "  -h, --help" << "   " << "Displays help on commandline options." << std::endl;
+    std::cout << std::setw(15) << std::right << "  -v, --version" << "   " << "Displays version information." << std::endl;
+    std::cout << std::setw(15) << std::right << "  --debug" << "   " << "Show debug messages." << std::endl;
+    std::cout << std::setw(15) << std::right << "  --process-only" << "   " << "Process file, provide path to processed file, and print some information." << std::endl;
+    std::cout << std::setw(15) << std::right << "  --load-selected-file" << "   " << "Load any file selected in the currently active file manager." << std::endl;
+    std::cout << std::setw(15) << std::right << "  --file-num <num>" << "   " << "Which file/page to load inside of a document/archive." << std::endl;
+    std::cout << std::endl;
+    std::cout << "Arguments:" << std::endl;
+    std::cout << std::setw(15) << std::right << "  [filename]" << "   " << "Image file to open." << std::endl;
+    std::cout << std::endl;
 
 }
 
