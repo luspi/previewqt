@@ -181,6 +181,10 @@ QString PQCSpecialActions::getSelectedFile_dolphin() {
     // 4. Get copied path from clipboard
 
     QString ret = clipboardGet();
+    if(!QFileInfo(ret).isFile()) {
+        clipboardSet(backupClipboard);
+        return "";
+    }
 
     /******************************************************************/
     // 5. Reset previous clipboard content
