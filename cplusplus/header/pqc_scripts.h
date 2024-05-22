@@ -26,6 +26,7 @@
 #include <QObject>
 #include <QMap>
 #include <QImage>
+#include <QTranslator>
 
 class QProcess;
 
@@ -105,6 +106,8 @@ public:
     bool isDebug();
     void setDebug(bool val);
 
+    Q_INVOKABLE void updateTranslation();
+
 private:
     PQCScripts();
 
@@ -115,6 +118,9 @@ private:
     QString m_startupMessage;
 
     bool m_debug;
+
+    QTranslator *trans;
+    QString currentTranslation;
 
 Q_SIGNALS:
     void commandLineArgumentReceived(QString msg);

@@ -46,6 +46,10 @@ public:
     QString getVersion();
     void setVersion(QString val);
 
+    Q_PROPERTY(QString language READ getLanguage WRITE setLanguage NOTIFY languageChanged)
+    QString getLanguage();
+    void setLanguage(QString val);
+
     Q_PROPERTY(bool topBarAutoHide READ getTopBarAutoHide WRITE setTopBarAutoHide NOTIFY topBarAutoHideChanged)
     bool getTopBarAutoHide();
     void setTopBarAutoHide(bool val);
@@ -116,6 +120,7 @@ private:
     PQCSettings();
 
     QString m_version;
+    QString m_language;
     bool m_topBarAutoHide;
     bool m_launchHiddenToSystemTray;
     bool m_maximizeImageSizeAndAdjustWindow;
@@ -154,6 +159,7 @@ private Q_SLOTS:
 
 Q_SIGNALS:
     void versionChanged();
+    void languageChanged();
     void topBarAutoHideChanged();
     void launchHiddenToSystemTrayChanged();
     void maximizeImageSizeAndAdjustWindowChanged();

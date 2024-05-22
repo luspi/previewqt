@@ -134,6 +134,17 @@ void PQCSettings::setVersion(QString val) {
     }
 }
 
+QString PQCSettings::getLanguage() {
+    return m_language;
+}
+void PQCSettings::setLanguage(QString val) {
+    if(m_language != val) {
+        m_language = val;
+        saveTimer->start();
+        Q_EMIT languageChanged();
+    }
+}
+
 bool PQCSettings::getTopBarAutoHide() {
     return m_topBarAutoHide;
 }
@@ -312,7 +323,8 @@ void PQCSettings::setCloseWhenLosingFocus(bool val) {
 
 void PQCSettings::loadSettings() {
 
-    setVersion(settings->value("version", false).toString());
+    setVersion(settings->value("version", "").toString());
+    setLanguage(settings->value("language", "en").toString());
     setTopBarAutoHide(settings->value("topBarAutoHide", false).toBool());
     setLaunchHiddenToSystemTray(settings->value("launchHiddenToSystemTray", false).toBool());
     setMaximizeImageSizeAndAdjustWindow(settings->value("maximizeImageSizeAndAdjustWindow", true).toBool());
@@ -335,6 +347,7 @@ void PQCSettings::loadSettings() {
 void PQCSettings::saveSettings() {
 
     settings->setValue("version", m_version);
+    settings->setValue("language", m_language);
     settings->setValue("topBarAutoHide", m_topBarAutoHide);
     settings->setValue("launchHiddenToSystemTray", m_launchHiddenToSystemTray);
     settings->setValue("maximizeImageSizeAndAdjustWindow", m_maximizeImageSizeAndAdjustWindow);

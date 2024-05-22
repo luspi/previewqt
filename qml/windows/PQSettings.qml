@@ -207,6 +207,37 @@ Window {
 
                 /************************************/
 
+                Row {
+
+                    spacing: 10
+
+                    Text {
+                        y: (langcombo.height-height)/2
+                        text: qsTr("Language:")
+                    }
+
+                    ComboBox {
+                        id: langcombo
+                        property var codes: ["en", "de_DE"]
+                        model: ["English",
+                                "Deutsch"]
+                        currentIndex: codes.indexOf(PQCSettings.language)
+                        onCurrentIndexChanged: {
+                            catchKeyPress.forceActiveFocus()
+                            PQCSettings.language = codes[currentIndex]
+                            PQCScripts.updateTranslation()
+                        }
+                    }
+                }
+
+                /************************************/
+                Rectangle {
+                    width: generalsettings.usableWidth
+                    height: 1
+                    color: "black"
+                }
+                /************************************/
+
                 CheckBox {
                     //: the top bar is the bar with the buttons
                     text: qsTr("Keep top bar always visible")

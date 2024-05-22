@@ -245,6 +245,8 @@ ApplicationWindow {
     // some things are done once window is set up
     Component.onCompleted: {
 
+        PQCScripts.updateTranslation()
+
         // set the default window size
         toplevel.width = PQCSettings.defaultWindowWidth
         toplevel.height = PQCSettings.defaultWindowHeight

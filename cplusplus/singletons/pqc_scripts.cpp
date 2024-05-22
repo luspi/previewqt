@@ -41,6 +41,8 @@
 #include <chrono>
 #include <QXmlStreamReader>
 #include <QBuffer>
+#include <QQmlEngine>
+#include <QQmlContext>
 
 #ifdef PQMQTPDF
 #include <QtPdf/QPdfDocument>
@@ -89,8 +91,12 @@ PQCScripts::PQCScripts() {
     m_onlyWriteToTempFile = "";
     m_startupMessage = "";
     m_debug = false;
+    trans = new QTranslator;
+    currentTranslation = "en";
 }
-PQCScripts::~PQCScripts() {}
+PQCScripts::~PQCScripts() {
+    delete trans;
+}
 
 QString PQCScripts::cleanPath(QString path) {
 
@@ -1801,4 +1807,62 @@ bool PQCScripts::isDebug() {
 
 void PQCScripts::setDebug(bool val) {
     m_debug = val;
+}
+
+void PQCScripts::updateTranslation() {
+
+    qDebug() << "";
+
+    QString code = PQCSettings::get().getLanguage();
+    if(code == currentTranslation)
+        return;
+
+    if(!trans->isEmpty())
+        qApp->removeTranslator(trans);
+
+    const QStringList allcodes = code.split("/");
+
+    for(const QString &c : allcodes) {
+
+        if(QFile(":/lang/photoqt_" + c + ".qm").exists()) {
+
+            if(trans->load(":/lang/photoqt_" + c))
+                qApp->installTranslator(trans);
+            else
+                qWarning() << "Unable to install translator for language code" << c;
+
+        } else if(c.contains("_")) {
+
+            const QString cc = c.split("_").at(0);
+
+            if(QFile(":/lang/photoqt_" + cc + ".qm").exists()) {
+
+                if(trans->load(":/lang/photoqt_" + cc))
+                    qApp->installTranslator(trans);
+                else
+                    qWarning() << "Unable to install translator for language code" << cc;
+
+            }
+
+        } else {
+
+            const QString cc = QString("%1_%2").arg(c, c.toUpper());
+
+            if(QFile(":/lang/photoqt_" + cc + ".qm").exists()) {
+
+                if(trans->load(":/lang/photoqt_" + cc))
+                    qApp->installTranslator(trans);
+                else
+                    qWarning() << "Unable to install translator for language code" << c;
+
+            }
+        }
+
+    }
+
+    // store current localization
+    currentTranslation = code;
+
+    QQmlEngine::contextForObject(this)->engine()->retranslate();
+
 }
