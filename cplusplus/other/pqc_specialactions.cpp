@@ -151,6 +151,7 @@ QString PQCSpecialActions::getSelectedFile_dolphin() {
     // 2. Backup current clipboard interface
 
     QString backupClipboard = clipboardGet();
+    clipboardSet(" ");
 
     /******************************************************************/
     // 3. Prompt dolphin to copy selected location to clipboard

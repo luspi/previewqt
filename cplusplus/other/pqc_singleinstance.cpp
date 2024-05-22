@@ -75,10 +75,11 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
             processonly = true;
 
+#ifdef Q_OS_UNIX
         } else if(arg == "--load-selected-file") {
 
             loadselected = true;
-
+#endif
         } else if(arg == "--file-num" && i < argc-1) {
 
             fileNumInside = atoi(argv[++i]);
@@ -113,10 +114,13 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
         QString selectedFile = PQCSpecialActions::getSelectedFile();
 
-        if(selectedFile == "") {
+        if(selectedFile.trimmed() == "") {
+            std::cout << std::endl << " >> No active Dolphin window with a selected file has been found... Stopping here!" << std::endl << std::endl;
             std::exit(0);
             return;
         }
+
+        std::cout << std::endl << " >> Loading file:" << selectedFile.toStdString() << std::endl << std::endl;
 
         file = selectedFile;
 
@@ -201,7 +205,9 @@ void PQCSingleInstance::showHelpMessage() {
     std::cout << std::setw(15) << std::right << "  -v, --version" << "   " << "Displays version information." << std::endl;
     std::cout << std::setw(15) << std::right << "  --debug" << "   " << "Show debug messages." << std::endl;
     std::cout << std::setw(15) << std::right << "  --process-only" << "   " << "Process file, provide path to processed file, and print some information." << std::endl;
+#ifdef Q_OS_UNIX
     std::cout << std::setw(15) << std::right << "  --load-selected-file" << "   " << "Load any file selected in the currently active file manager." << std::endl;
+#endif
     std::cout << std::setw(15) << std::right << "  --file-num <num>" << "   " << "Which file/page to load inside of a document/archive." << std::endl;
     std::cout << std::endl;
     std::cout << "Arguments:" << std::endl;
