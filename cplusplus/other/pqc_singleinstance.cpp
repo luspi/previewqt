@@ -71,6 +71,22 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
             std::exit(0);
             return;
 
+        } else if(arg == "--show-info") {
+
+#ifdef PQMVIDEOMPV
+            // Qt sets the locale in the QGuiApplication constructor, but libmpv
+            // requires the LC_NUMERIC category to be set to "C", so change it back.
+            std::setlocale(LC_NUMERIC, "C");
+#endif
+
+            std::cout << std::endl
+                      << " ** PreviewQt configuration:"
+                      << std::endl << std::endl
+                      << PQCScripts::get().getConfigInfo(false).toStdString()
+                      << std::endl;
+            std::exit(0);
+            return;
+
         } else if(arg == "--process-only") {
 
             processonly = true;
@@ -203,6 +219,7 @@ void PQCSingleInstance::showHelpMessage() {
     std::cout << "Options:" << std::endl;
     std::cout << std::setw(15) << std::right << "  -h, --help" << "   " << "Displays help on commandline options." << std::endl;
     std::cout << std::setw(15) << std::right << "  -v, --version" << "   " << "Displays version information." << std::endl;
+    std::cout << std::setw(15) << std::right << "  --show-info" << "   " << "Show configuration overview." << std::endl;
     std::cout << std::setw(15) << std::right << "  --debug" << "   " << "Show debug messages." << std::endl;
     std::cout << std::setw(15) << std::right << "  --process-only" << "   " << "Process file, provide path to processed file, and print some information." << std::endl;
 #ifdef Q_OS_UNIX
