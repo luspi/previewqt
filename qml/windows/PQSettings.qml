@@ -308,24 +308,24 @@ Window {
                 }
 
                 RadioButton {
-                    id: radio_defminmax
-                    width: generalsettings.usableWidth
-                    text: qsTr("Maximize image inside of this maximum size and adjust window")
-                    checked: PQCSettings.maximizeImageSizeAndAdjustWindow
-                    onCheckedChanged: {
-                        catchKeyPress.forceActiveFocus()
-                        if(PQCSettings.maximizeImageSizeAndAdjustWindow !== checked)
-                            PQCSettings.maximizeImageSizeAndAdjustWindow = checked
-                    }
-                }
-
-                RadioButton {
                     id: radio_defsize
                     width: generalsettings.usableWidth
                     text: qsTr("Only set window size at launch")
                     checked: !PQCSettings.maximizeImageSizeAndAdjustWindow
                     onCheckedChanged:
                         catchKeyPress.forceActiveFocus()
+                }
+
+                RadioButton {
+                    id: radio_defminmax
+                    width: generalsettings.usableWidth
+                    text: qsTr("Resize window to content")
+                    checked: PQCSettings.maximizeImageSizeAndAdjustWindow
+                    onCheckedChanged: {
+                        catchKeyPress.forceActiveFocus()
+                        if(PQCSettings.maximizeImageSizeAndAdjustWindow !== checked)
+                            PQCSettings.maximizeImageSizeAndAdjustWindow = checked
+                    }
                 }
 
                 /************************************/
@@ -384,7 +384,7 @@ Window {
 
                 Text {
                     y: (shortcutbut.height-height)/2
-                    text: qsTr("Shortcut to launch in external application:")
+                    text: qsTr("Shortcut to load in external application:")
                 }
 
                 Button {

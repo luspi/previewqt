@@ -76,29 +76,28 @@ Window {
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                //: Please keep the html tags for bold text in place as they help with parsing this block of text
-                text: qsTr("<b>In the main application window</b>, combining the Control modifier with either of O, P, or I launches the action to open a file, the settings, or the About information, respectively. F1 opens this help message, Escape hides the application, and Ctrl+Q quits it altogether. Double clicking on a loaded image toggles the fullscreen mode. Then there exists a customizable shortcut for opening a loaded file in an external application.")
+                text: qsTr("In the main application window, combining the Control modifier with either of O, P, or I launches the action to open a file, the settings, or the About information, respectively. F1 opens this help message, Escape hides the application, and Ctrl+Q quits it altogether. Double clicking on a loaded image toggles the fullscreen mode. Then there exists a customizable shortcut for opening a loaded file in an external application.")
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 //: Please keep the html tags for bold text in place as they help with parsing this block of text
-                text: qsTr("<b>In the settings window</b>, Escape, Enter, and Return all close the window, and Ctrl+Tab switches between the two tabs.")
+                text: qsTr("In the settings window, Escape, Enter, and Return all close the window, and Ctrl+Tab switches between the two tabs.")
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 //: Please keep the html tags for bold text in place as they help with parsing this block of text
-                text: qsTr("<b>In both the Help and About window</b>, either one of Escape, Enter, and Return close the window.")
+                text: qsTr("In both the Help and About window, either one of Escape, Enter, and Return close the window.")
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 //: Please keep the html tags for bold text in place as they help with parsing this block of text
-                text: qsTr("When <b>archives and documents</b> are loaded, the arrow keys allow switching between pages/files, and Home/End go to the beginning/end of the loaded document. Similarly, when <b>video files</b> are loaded, the space bar toggles the play status, the arrow keys jump left/right in the video file, and Home/End go to the start and end of the video.")
+                text: qsTr("When special formats like archives and documents are loaded, the arrow keys allow switching between pages/files, and Home/End go to the beginning/end of the loaded document. Similarly, when video files are loaded, the space bar toggles the play status, the arrow keys jump left/right in the video file, and Home/End go to the start and end of the video.")
             }
 
             Column {
@@ -109,7 +108,7 @@ Window {
                     width: parent.width
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     //: Please keep the html tags for bold text in place as they help with parsing this block of text
-                    text: qsTr("<b>Need more help?</b> Then check out the website for PreviewQt:")
+                    text: qsTr("Need more help? Then check out the website for PreviewQt:")
                 }
 
                 Text {

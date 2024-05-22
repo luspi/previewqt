@@ -97,7 +97,7 @@ Window {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 font.bold: true
-                text: qsTr("Questions? Feedback? Let me know:") + " Lukas@previewqt.org"
+                text: qsTr("Questions? Feedback? Send me an email:") + " Lukas@previewqt.org"
             }
 
             Text {

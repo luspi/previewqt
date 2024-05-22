@@ -374,7 +374,7 @@ Item {
                             currentDocument = Math.max((book[1] !== "" ? -1 : 0), currentDocument-1)
                         ToolTip {
                             delay: 500
-                            text: qsTr("Go to previous chapter")
+                            text: qsTr("Go to previous section/chapter")
                             visible: parent.containsMouse
                         }
                     }
