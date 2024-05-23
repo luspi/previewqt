@@ -1,6 +1,26 @@
  Changelog PreviewQt - Copyright (C) 2024, Lukas Spies (Lukas@previewqt.org), License: GPLv2 (or later)
 ----------------------------------------------------------------------------------------------------------
 
+ Release 3.0 - 2024-05-22
+----------------------------
+- add: load file currently selected in Dolphin file manager
+- add: support for EPUB e-books
+- add: localization support
+- add: better SVG support
+- add: optionally adjust window size to size of loaded item
+- add: proper color profile handling
+- add: remember last page in documents
+- add: add key navigation to photo spheres
+- add: short panning animation when photo spheres are loaded
+- improve: use cache when possible for reloading images
+- improve: reloading image when window size changes
+- improve: speed for loading scaled images
+- improve: after opening window don't react to immediate focus changes
+- fix: loading of photospheres
+- fix: ordering and mapping of default applications in dropdown menus
+- change: move remote control application to own repository
+
+
  Release 2.0 - 2024-04-05
 ----------------------------
 - add: support for rotating images

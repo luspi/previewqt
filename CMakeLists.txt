@@ -9,7 +9,7 @@ project(previewqt LANGUAGES CXX)
 ####  GLOBAL VERSION STRING FOR ALL FILES (INCLUDING CPP/QML) ####
 ##################################################################
 
-SET(PROJECT_VERSION "2.0")
+SET(PROJECT_VERSION "3.0")
 add_definitions(-DPQMVERSION="${PROJECT_VERSION}")
 
 ########################################
@@ -32,7 +32,7 @@ option(RAW "Use libraw library" ON)
 option(GRAPHICSMAGICK "Use GraphicsMagick library" OFF)
 option(IMAGEMAGICK "Use ImageMagick library" ON)
 option(DEVIL "Use DevIL library" ON)
-option(FREEIMAGE "Use FreeImage library" ON)
+option(FREEIMAGE "Use FreeImage library" OFF)
 option(POPPLER "Use Poppler library" ON)
 option(QTPDF "Use QtPDF module instead of Poppler" OFF)
 option(LIBARCHIVE "Enable features that require libarchive" ON)

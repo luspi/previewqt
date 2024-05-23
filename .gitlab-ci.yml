@@ -33,8 +33,8 @@ appimage:
   script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update -qq && apt-get -y install git software-properties-common build-essential libgl1-mesa-dev cmake wget extra-cmake-modules apt-transport-https curl
-    - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qt6-multimedia-dev qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-declarative-dev qt6-webengine-dev qt6-webengine-dev-tools qml6-module-qtquick-dialogs qml6-module-qtqml-workerscript qml6-module-qt-labs-platform qml6-module-qtquick-templates qml6-module-qtquick-layouts qml6-module-qt-labs-folderlistmodel qml6-module-qtquick-window qml6-module-qtwebengine libqt6webenginecore6-bin
-    - apt-get -y install libarchive-dev libraw-dev libfreeimage-dev libfreeimageplus-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libmagick++-6.q16-dev libmagick++-6.q16-8 libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev
+    - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qt6-multimedia-dev qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-declarative-dev qt6-webengine-dev qt6-webengine-dev-tools qml6-module-qtquick-dialogs qml6-module-qtqml-workerscript qml6-module-qt-labs-platform qml6-module-qtquick-templates qml6-module-qtquick-layouts qml6-module-qt-labs-folderlistmodel qml6-module-qtquick-window qml6-module-qtwebengine libqt6webenginecore6-bin qml-module-qt-labs-folderlistmodel
+    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libmagick++-6.q16-dev libmagick++-6.q16-8 libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev
     - qtchooser -install qt6 $(which qmake6)
     - export QT_SELECT=qt6
     - rm -rf lang/
@@ -76,8 +76,8 @@ releaseappimage:
   script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update -qq && apt-get -y install git software-properties-common build-essential libgl1-mesa-dev cmake wget extra-cmake-modules apt-transport-https curl
-    - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qt6-multimedia-dev qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-declarative-dev qt6-webengine-dev qt6-webengine-dev-tools qml6-module-qtquick-dialogs qml6-module-qtqml-workerscript qml6-module-qt-labs-platform qml6-module-qtquick-templates qml6-module-qtquick-layouts qml6-module-qt-labs-folderlistmodel qml6-module-qtquick-window qml6-module-qtwebengine libqt6webenginecore6-bin
-    - apt-get -y install libarchive-dev libraw-dev libfreeimage-dev libfreeimageplus-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libmagick++-6.q16-dev libmagick++-6.q16-8 libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev
+    - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qt6-multimedia-dev qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-declarative-dev qt6-webengine-dev qt6-webengine-dev-tools qml6-module-qtquick-dialogs qml6-module-qtqml-workerscript qml6-module-qt-labs-platform qml6-module-qtquick-templates qml6-module-qtquick-layouts qml6-module-qt-labs-folderlistmodel qml6-module-qtquick-window qml6-module-qtwebengine libqt6webenginecore6-bin qml-module-qt-labs-folderlistmodel
+    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libmagick++-6.q16-dev libmagick++-6.q16-8 libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev
     - qtchooser -install qt6 $(which qmake6)
     - export QT_SELECT=qt6
     - mkdir -p build && cd build/

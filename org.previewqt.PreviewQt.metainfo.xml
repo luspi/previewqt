@@ -16,9 +16,9 @@
             <li>PDF documents including page navigation</li>
             <li>Archives (zip, tar.gz, rar, 7-zip) with the ability to explore its content</li>
             <li>Comic Books (cbz, cbt, cbr, cb7) including page navigation</li>
+            <li>E-Books (epub) including navigation and font scaling</li>
         </ul>
-        <p>It is also possible to set up an external application for the categories of files. With a shortcut or button it is possible to pass a previewed file on to the provided external application for further processing.</p>
-        <p>You can pass files to PreviewQt by means of a remote application (small square) wth any file dropped on it passed on to PreviewQt. If you are running KDE Plasma 6, there is also a plasmoid that integrates nicely with your desktop.</p>
+        <p>If you are using Dolphin file manager, PreviewQt can be invoked by shortcut to load whichever file is currently highlighted to allow for previewing any file easily without having to se PreviewQt as default application. You can pass files to PreviewQt by means of a remote application (small square) wth any file dropped on it passed on to PreviewQt. If you are running KDE Plasma 6, there is also a plasmoid that integrates nicely with your desktop.</p>
         <p>If you like the overall concept of PreviewQt but would like to have more features, check out the fully featured image viewer PhotoQt.</p>
     </description>
     <screenshots>
@@ -104,6 +104,14 @@
         <content_attribute id="money-gambling">none</content_attribute>
     </content_rating>
     <releases>
+        <release version="3.0" date="2024-05-22">
+            <description>
+                PreviewQt 3.0 brings a whole range of new and exciting features, including e-book support, adjusting window size to content, and the ability to request PreviewQt (through shortcut) to load any selected file in the Dolphin file manager.
+            </description>
+            <url>
+                https://previewqt.org/news/previewqt-3.0
+            </url>
+        </release>
         <release version="2.0" date="2024-04-05">
             <description>
                 PreviewQt 2.0 brings some major improvements to its performance and functionality (including rotating images), including two new and convenient ways to interact with PreviewQt.

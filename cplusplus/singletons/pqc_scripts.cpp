@@ -1770,8 +1770,6 @@ void PQCScripts::analyzeEpubMetaData(QString subfolder, QString txt,
         }
     }
 
-    qWarning() << outFileList << "//" << coverId;
-
     if(coverId == "") {
         outFileList.insert(foundtitle[0], foundtitle[1]);
     }
