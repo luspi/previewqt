@@ -29,9 +29,11 @@ import QtQuick.Window
 import PQCSettings
 import PQCScripts
 
-Window {
+ApplicationWindow {
 
     id: settings_top
+
+    SystemPalette { id: colorPalette; colorGroup: SystemPalette.Active }
 
     title: qsTr("Settings")
     visible: false
@@ -198,11 +200,13 @@ Window {
                     font.bold: true
                     //: Same as tab name but used as title
                     text: qsTr("Settings")
+                    color: colorPalette.text
                 }
 
                 Text {
                     x: (generalsettings.usableWidth-width)/2
                     text: qsTr("Note: Settings will be saved automatically.")
+                    color: colorPalette.text
                 }
 
                 /************************************/
@@ -214,6 +218,7 @@ Window {
                     Text {
                         y: (langcombo.height-height)/2
                         text: qsTr("Language:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -295,6 +300,7 @@ Window {
                     width: generalsettings.usableWidth
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     text: qsTr("Default window size:")
+                    color: colorPalette.text
                 }
 
                 Flow {
@@ -323,6 +329,7 @@ Window {
                         height: defwin_w.height
                         verticalAlignment: Text.AlignVCenter
                         text: "x"
+                        color: colorPalette.text
                     }
 
                     SpinBox {
@@ -404,11 +411,13 @@ Window {
                     font.pointSize: 18
                     font.bold: true
                     text: qsTr("Settings")
+                    color: colorPalette.text
                 }
 
                 Text {
                     x: (defaultappsettings.usableWidth-width)/2
                     text: qsTr("Note: Settings will be saved automatically.")
+                    color: colorPalette.text
                 }
 
                 /************************************/
@@ -416,6 +425,7 @@ Window {
                 Text {
                     y: (shortcutbut.height-height)/2
                     text: qsTr("Shortcut to load in external application:")
+                    color: colorPalette.text
                 }
 
                 Button {
@@ -462,6 +472,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for images:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -510,6 +521,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for documents:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -558,6 +570,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for videos:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -606,6 +619,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for archives:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -654,6 +668,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for comic books:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -702,6 +717,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for E-books:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {

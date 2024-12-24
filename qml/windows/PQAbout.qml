@@ -25,9 +25,11 @@ import QtQuick
 import QtQuick.Controls
 import PQCScripts
 
-Window {
+ApplicationWindow {
 
     id: about_top
+
+    SystemPalette { id: colorPalette; colorGroup: SystemPalette.Active }
 
     //: window title
     title: qsTr("About")
@@ -99,6 +101,11 @@ Window {
 
             }
 
+            Item {
+                width: 1
+                height: 5
+            }
+
             Row {
 
                 x: (parent.width-width)/2
@@ -111,22 +118,27 @@ Window {
                     Text {
                         font.bold: true
                         text: qsTr("Version:")
+                        color: colorPalette.text
                     }
                     Text {
                         font.bold: true
                         text: qsTr("License:")
+                        color: colorPalette.text
                     }
                     Text {
                         font.bold: true
                         text: qsTr("Website:")
+                        color: colorPalette.text
                     }
                     Text {
                         font.bold: true
                         text: qsTr("Developer:")
+                        color: colorPalette.text
                     }
                     Text {
                         font.bold: true
                         text: qsTr("Contact:")
+                        color: colorPalette.text
                     }
 
                 }
@@ -137,6 +149,7 @@ Window {
 
                     Text {
                         text: "PreviewQt v" + PQCScripts.getVersion()
+                        color: colorPalette.text
                     }
 
                     Text {
@@ -147,6 +160,7 @@ Window {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: Qt.openUrlExternally("https://opensource.org/license/gpl-2-0")
                         }
+                        color: colorPalette.text
                     }
                     Text {
                         text: "https://previewqt.org/"
@@ -156,6 +170,7 @@ Window {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: Qt.openUrlExternally("https://previewqt.org/")
                         }
+                        color: colorPalette.text
                     }
                     Text {
                         text: "Lukas Spies"
@@ -165,6 +180,7 @@ Window {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: Qt.openUrlExternally("https://luspi.de")
                         }
+                        color: colorPalette.text
                     }
                     Text {
                         text: "Lukas@previewqt.org"
@@ -174,6 +190,7 @@ Window {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: Qt.openUrlExternally("mailto:Lukas@previewqt.org")
                         }
+                        color: colorPalette.text
                     }
 
                 }
@@ -190,6 +207,8 @@ Window {
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
                 text: qsTr("PreviewQt is a lightweight application allowing for quickly previewing a wide range of files, from images and videos to documents and archives. A list of supported file formats can be found on its website, though the number of actually supported formats might be even higher. If you like PreviewQt and would like to have a fully featured image viewer along the same lines check out PhotoQt: https://photoqt.org")
+
+                color: colorPalette.text
 
             }
 
@@ -241,6 +260,7 @@ Window {
                     font.pointSize: 18
                     font.bold: true
                     text: qsTr("Configuration")
+                    color: colorPalette.text
                 }
 
                 Button {
@@ -256,6 +276,7 @@ Window {
                     id: configtxt
                     x: (parent.width-width)/2
                     text: ""
+                    color: colorPalette.text
                 }
 
                 Item {
