@@ -26,7 +26,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import PQCScripts
-import PQCImageFormats
+import PQCFileFormats
 import PQCSettings
 
 import "./components"
@@ -299,7 +299,7 @@ ApplicationWindow {
     FileDialog {
         id: fileDialog
         currentFolder: (PQCScripts.amIOnWindows() ? "file:/" : "file://") + PQCSettings.filedialogLocation
-        nameFilters: ["Images (*.%1)".arg(PQCImageFormats.getAllFormats().join(" *.")), "All files (*)"]
+        nameFilters: ["Spuported Files (*.%1)".arg(PQCFileFormats.getAllFormats().join(" *.")), "All files (*)"]
         onAccepted: image.loadImage(selectedFile)
     }
 

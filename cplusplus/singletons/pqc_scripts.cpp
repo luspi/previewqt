@@ -21,7 +21,7 @@
  **************************************************************************/
 
 #include <pqc_scripts.h>
-#include <pqc_imageformats.h>
+#include <pqc_fileformats.h>
 #include <pqc_configfiles.h>
 #include <pqc_settings.h>
 
@@ -195,12 +195,12 @@ QStringList PQCScripts::listArchiveContent(QString path, bool insideFilenameOnly
 
             if(insideFilenameOnly) {
                 for(const QString &f : std::as_const(allfiles)) {
-                    if(PQCImageFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
+                    if(PQCFileFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
                         ret.append(f);
                 }
             } else {
                 for(const QString &f : std::as_const(allfiles)) {
-                    if(PQCImageFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
+                    if(PQCFileFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
                         ret.append(QString("%1::ARC::%2").arg(f, path));
                 }
             }
@@ -243,7 +243,7 @@ QStringList PQCScripts::listArchiveContent(QString path, bool insideFilenameOnly
             QString filenameinside = QString::fromWCharArray(archive_entry_pathname_w(entry));
 
             // If supported file format, append to temporary list
-            if((PQCImageFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix().toLower())))
+            if((PQCFileFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix().toLower())))
                 allfiles.append(filenameinside);
 
         }
@@ -617,7 +617,7 @@ bool PQCScripts::isMpvVideo(QString path) {
 #ifdef PQMVIDEOMPV
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCImageFormats::get().getAllFormatsLibmpv().contains(suf)) {
+    if(PQCFileFormats::get().getAllFormatsLibmpv().contains(suf)) {
 
         supported = true;
 
@@ -625,7 +625,7 @@ bool PQCScripts::isMpvVideo(QString path) {
 
         QMimeDatabase db;
         QString mimetype = db.mimeTypeForFile(path).name();
-        if(PQCImageFormats::get().getAllMimeTypesLibmpv().contains(mimetype))
+        if(PQCFileFormats::get().getAllMimeTypesLibmpv().contains(mimetype))
             supported = true;
 
     }
@@ -645,7 +645,7 @@ bool PQCScripts::isQtVideo(QString path) {
 #ifdef PQMVIDEOQT
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCImageFormats::get().getAllFormatsVideo().contains(suf)) {
+    if(PQCFileFormats::get().getAllFormatsVideo().contains(suf)) {
 
         supported = true;
 
@@ -653,7 +653,7 @@ bool PQCScripts::isQtVideo(QString path) {
 
         QMimeDatabase db;
         QString mimetype = db.mimeTypeForFile(path).name();
-        if(PQCImageFormats::get().getAllMimeTypesVideo().contains(mimetype))
+        if(PQCFileFormats::get().getAllMimeTypesVideo().contains(mimetype))
             supported = true;
 
     }
@@ -674,12 +674,12 @@ bool PQCScripts::isPDFDocument(QString path) {
     qDebug() << "args: path =" << path;
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCImageFormats::get().getAllFormatsPoppler().contains(suf))
+    if(PQCFileFormats::get().getAllFormatsPoppler().contains(suf))
         return true;
 
     QMimeDatabase db;
     QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCImageFormats::get().getAllMimeTypesPoppler().contains(mimetype))
+    if(PQCFileFormats::get().getAllMimeTypesPoppler().contains(mimetype))
         return true;
 
     return false;
@@ -763,7 +763,7 @@ QStringList PQCScripts::getArchiveContent(QString path) {
             allfiles.sort();
 
             for(const QString &f : std::as_const(allfiles)) {
-                if(PQCImageFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
+                if(PQCFileFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
                     ret.append(f);
             }
 
@@ -805,7 +805,7 @@ QStringList PQCScripts::getArchiveContent(QString path) {
             QString filenameinside = QString::fromWCharArray(archive_entry_pathname_w(entry));
 
             // If supported file format, append to temporary list
-            if((PQCImageFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix())))
+            if((PQCFileFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix())))
                 allfiles.append(filenameinside);
 
         }
@@ -846,12 +846,12 @@ bool PQCScripts::isArchive(QString path) {
 #ifdef PQMLIBARCHIVE
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suf))
+    if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suf))
         return true;
 
     QMimeDatabase db;
     QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCImageFormats::get().getAllMimeTypesLibArchive().contains(mimetype))
+    if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype))
         return true;
 
 #endif
@@ -1156,31 +1156,31 @@ bool PQCScripts::openInDefault(QString path) {
 
     QString exe = "photoqt";
 
-    if(PQCImageFormats::get().getAllFormatsPoppler().contains(suffix)) {
+    if(PQCFileFormats::get().getAllFormatsPoppler().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppDocuments();
 
-    } else if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suffix) &&
+    } else if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suffix) &&
                (suffix == "cbr" || suffix == "cbt" || suffix == "cbz" || suffix == "cb7")) {
 
         exe = PQCSettings::get().getDefaultAppComicBooks();
 
-    } else if(PQCImageFormats::get().getAllFormatsEBook().contains(suffix)) {
+    } else if(PQCFileFormats::get().getAllFormatsEBook().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppEBooks();
 
-    } else if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suffix)) {
+    } else if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppArchives();
 
-    } else if(PQCImageFormats::get().getAllFormatsLibmpv().contains(suffix) || PQCImageFormats::get().getAllFormatsVideo().contains(suffix)) {
+    } else if(PQCFileFormats::get().getAllFormatsLibmpv().contains(suffix) || PQCFileFormats::get().getAllFormatsVideo().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppVideos();
 
-    } else if(PQCImageFormats::get().getAllFormatsQt().contains(suffix) || PQCImageFormats::get().getAllFormatsFreeImage().contains(suffix) ||
-        PQCImageFormats::get().getAllFormatsDevIL().contains(suffix) || PQCImageFormats::get().getAllFormatsLibRaw().contains(suffix) ||
-        PQCImageFormats::get().getAllFormatsLibVips().contains(suffix) || PQCImageFormats::get().getAllFormatsMagick().contains(suffix) ||
-        PQCImageFormats::get().getAllFormatsResvg().contains(suffix) || PQCImageFormats::get().getAllFormatsXCFTools().contains(suffix)) {
+    } else if(PQCFileFormats::get().getAllFormatsQt().contains(suffix) || PQCFileFormats::get().getAllFormatsFreeImage().contains(suffix) ||
+        PQCFileFormats::get().getAllFormatsDevIL().contains(suffix) || PQCFileFormats::get().getAllFormatsLibRaw().contains(suffix) ||
+        PQCFileFormats::get().getAllFormatsLibVips().contains(suffix) || PQCFileFormats::get().getAllFormatsMagick().contains(suffix) ||
+        PQCFileFormats::get().getAllFormatsResvg().contains(suffix) || PQCFileFormats::get().getAllFormatsXCFTools().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppImages();
 
@@ -1236,7 +1236,7 @@ bool PQCScripts::isFileSupported(QString path) {
         return false;
 
     const QString suffix = QFileInfo(path).suffix().toLower();
-    return PQCImageFormats::get().getAllFormats().contains(suffix);
+    return PQCFileFormats::get().getAllFormats().contains(suffix);
 
 }
 

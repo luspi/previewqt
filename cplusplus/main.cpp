@@ -34,7 +34,7 @@
 
 #include <pqc_messagehandler.h>
 #include <pqc_scripts.h>
-#include <pqc_imageformats.h>
+#include <pqc_fileformats.h>
 #include <pqc_providerfull.h>
 #include <pqc_providersvg.h>
 #include <pqc_settings.h>
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
     if(PQCScripts::get().isUpgrade()) {
 
         // Validate image formats database
-        PQCImageFormats::get().validate();
+        PQCFileFormats::get().validate();
 
         // Update stored version number
         PQCSettings::get().setVersion(PQMVERSION);
@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterSingletonInstance("PQCSettings", 1, 0, "PQCSettings", &PQCSettings::get());
     qmlRegisterSingletonInstance("PQCCache", 1, 0, "PQCCache", &PQCCache::get());
     qmlRegisterSingletonInstance("PQCScripts", 1, 0, "PQCScripts", &PQCScripts::get());
-    qmlRegisterSingletonInstance("PQCImageFormats", 1, 0, "PQCImageFormats", &PQCImageFormats::get());
+    qmlRegisterSingletonInstance("PQCFileFormats", 1, 0, "PQCFileFormats", &PQCFileFormats::get());
 
     engine.addImageProvider("full", new PQCProviderFull);
     engine.addImageProvider("svg", new PQCProviderSVG);
