@@ -43,9 +43,9 @@ PQCFileFormats::PQCFileFormats() {
         db = QSqlDatabase::addDatabase("QSQLITE3", "imageformats");
     else if(QSqlDatabase::isDriverAvailable("QSQLITE"))
         db = QSqlDatabase::addDatabase("QSQLITE", "imageformats");
-    db.setDatabaseName(PQCConfigFiles::IMAGEFORMATS_DB());
+    db.setDatabaseName(PQCConfigFiles::FILEFORMATS_DB());
 
-    QFileInfo infodb(PQCConfigFiles::IMAGEFORMATS_DB());
+    QFileInfo infodb(PQCConfigFiles::FILEFORMATS_DB());
 
     if(!infodb.exists() || !db.open()) {
 
@@ -358,11 +358,11 @@ void PQCFileFormats::validate() {
     qDebug() << "";
 
     // the db does not exist -> create it and finish
-    if(!QFile::exists(PQCConfigFiles::IMAGEFORMATS_DB())) {
-        if(!QFile::copy(":/imageformats.db", PQCConfigFiles::IMAGEFORMATS_DB()))
+    if(!QFile::exists(PQCConfigFiles::FILEFORMATS_DB())) {
+        if(!QFile::copy(":/imageformats.db", PQCConfigFiles::FILEFORMATS_DB()))
             qWarning() << "Unable to (re-)create default imageformats database";
         else {
-            QFile file(PQCConfigFiles::IMAGEFORMATS_DB());
+            QFile file(PQCConfigFiles::FILEFORMATS_DB());
             file.setPermissions(file.permissions()|QFileDevice::WriteOwner);
         }
         return;
@@ -376,7 +376,7 @@ void PQCFileFormats::validate() {
         dbinstalled = QSqlDatabase::addDatabase("QSQLITE3", "validateimageformats");
     else if(QSqlDatabase::isDriverAvailable("QSQLITE"))
         dbinstalled = QSqlDatabase::addDatabase("QSQLITE", "validateimageformats");
-    dbinstalled.setDatabaseName(PQCConfigFiles::IMAGEFORMATS_DB());
+    dbinstalled.setDatabaseName(PQCConfigFiles::FILEFORMATS_DB());
 
     if(!dbinstalled.open())
         qWarning() << "Error opening database:" << dbinstalled.lastError().text();

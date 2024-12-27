@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>imageformats.db</file>
+        <file>fileformats.db</file>
     </qresource>
 </RCC>

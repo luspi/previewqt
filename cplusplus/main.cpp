@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
     // custom message handler for qDebug/qLog/qInfo/etc.
     qInstallMessageHandler(pqcMessageHandler);
 
-    // make sure config directory exists and contains imageformats file
+    // make sure config directory exists
     if(!QFileInfo::exists(PQCConfigFiles::CONFIG_DIR())) {
         QDir dir(PQCConfigFiles::CONFIG_DIR());
         if(!dir.mkpath(PQCConfigFiles::CONFIG_DIR())) {
@@ -134,12 +134,24 @@ int main(int argc, char *argv[]) {
             qCritical() << "Error creating cache directory!";
             qCritical() << "Continuing, but not everything might work.";
         }
-        if(!QFileInfo::exists(PQCConfigFiles::IMAGEFORMATS_DB())) {
-            if(!QFile::copy(":/imageformats.db", PQCConfigFiles::IMAGEFORMATS_DB())) {
-                qCritical() << "Unable to create default imageformats database!";
+    }
+
+    // make sure the fileformats database exists
+    // if only the old database exist, attempt to copy it over (this change happened for v4.0)
+    if(!QFileInfo::exists(PQCConfigFiles::FILEFORMATS_DB())) {
+        bool copyNewDB = true;
+        if(QFileInfo::exists(PQCConfigFiles::IMAGEFORMATS_DB())) {
+            if(!QFile::copy(PQCConfigFiles::IMAGEFORMATS_DB(), PQCConfigFiles::FILEFORMATS_DB()))
+                qWarning() << "Unable to copy imageformats.db to fileformats.db. Attempting to create new database file";
+            else
+                copyNewDB = false;
+        }
+        if(copyNewDB) {
+            if(!QFile::copy(":/fileformats.db", PQCConfigFiles::FILEFORMATS_DB())) {
+                qCritical() << "Unable to create default fileformats database!";
                 std::exit(1);
             } else {
-                QFile file(PQCConfigFiles::IMAGEFORMATS_DB());
+                QFile file(PQCConfigFiles::FILEFORMATS_DB());
                 file.setPermissions(file.permissions()|QFileDevice::WriteOwner);
             }
         }
