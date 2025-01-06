@@ -295,14 +295,6 @@ ApplicationWindow {
 
     }
 
-    // dialog for opening an image file
-    FileDialog {
-        id: fileDialog
-        currentFolder: (PQCScripts.amIOnWindows() ? "file:/" : "file://") + PQCSettings.filedialogLocation
-        nameFilters: ["Spuported Files (*.%1)".arg(PQCFileFormats.getAllFormats().join(" *.")), "All files (*)"]
-        onAccepted: image.loadImage(selectedFile)
-    }
-
     // When a key combo has been pressed
     onKeyPress: (modifiers, keycode) => {
 
@@ -335,7 +327,7 @@ ApplicationWindow {
 
         } else if(txt === "Ctrl+O") {
 
-            fileDialog.open()
+            openNewFile()
 
         } else if(txt === "Ctrl+P") {
 
@@ -503,6 +495,12 @@ ApplicationWindow {
             focusitem.forceActiveFocus()
         }
 
+    }
+
+    function openNewFile() {
+        var path = PQCScripts.openNewFile()
+        if(path != "")
+            image.loadImage(path)
     }
 
     // make sure the window is fit to the main image view

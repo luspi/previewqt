@@ -22,19 +22,22 @@
 
 import QtQuick
 import QtQuick.Controls
-import QtMultimedia
-import PQCScripts
-import PQCSettings
+import PQCScripts   // qmllint disable import
+import PQCSettings  // qmllint disable import
 
 Item {
 
-    x: (image_top.width-width)/2
-    y: (image_top.height-height)/2
+    id: arc_top
+
+    x: (image_top.width-width)/2 // qmllint disable unqualified
+    y: (image_top.height-height)/2 // qmllint disable unqualified
 
     width: imageitem.width
     height: imageitem.height
 
-    property bool thisIsAComicBook: PQCScripts.isComicBook(image_top.imageSource)
+    property string source: image_top.imageSource // qmllint disable unqualified
+
+    property bool thisIsAComicBook: PQCScripts.isComicBook(source) // qmllint disable unqualified
     property var fileList: []
     property int currentFile: 0
     property int fileCount: fileList.length
@@ -50,14 +53,14 @@ Item {
 
         source: ""
         Component.onCompleted: {
-            if(image_top.imageSource === "") {
+            if(arc_top.source === "") {
                 source = ""
                 return
             }
-            if(image_top.imageSource.includes("::ARC::") || fileCount == 0)
-                source = "image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)
+            if(arc_top.source.includes("::ARC::") || arc_top.fileCount == 0)
+                source = "image://full/" + PQCScripts.toPercentEncoding(arc_top.source) // qmllint disable unqualified
             else
-                source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(image_top.imageSource))
+                source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(arc_top.fileList[arc_top.currentFile]).arg(arc_top.source))
         }
 
         asynchronous: true
@@ -67,19 +70,19 @@ Item {
         smooth: false
         mipmap: false
 
-        rotation: image_top.setRotation
+        rotation: image_top.setRotation // qmllint disable unqualified
 
-        property int defw: Math.max(50, PQCSettings.defaultWindowWidth)
-        property int defh: Math.max(50, PQCSettings.defaultWindowHeight)
+        property int defw: Math.max(50, PQCSettings.defaultWindowWidth) // qmllint disable unqualified
+        property int defh: Math.max(50, PQCSettings.defaultWindowHeight) // qmllint disable unqualified
 
-        width: rotation%180===0 ? image_top.width : image_top.height
-        height: rotation%180===0 ? image_top.height : image_top.width
-        sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !toplevel.isMaximized && !toplevel.isFullscreen && !toplevel.manualWindowSizeChange) ?
+        width: rotation%180===0 ? image_top.width : image_top.height // qmllint disable unqualified
+        height: rotation%180===0 ? image_top.height : image_top.width // qmllint disable unqualified
+        sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !toplevel.isMaximized && !toplevel.isFullscreen && !toplevel.manualWindowSizeChange) ? // qmllint disable unqualified
                         (rotation%180===0 ? Qt.size(defw, defh) : Qt.size(defh, defw)) :
                         (rotation%180===0 ? Qt.size(image_top.windowWidth, image_top.windowHeight) : Qt.size(image_top.windowHeight, image_top.windowWidth))
 
         onStatusChanged: {
-            image.status = status
+            image.status = status // qmllint disable unqualified
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
             else if(status == Image.Ready)
@@ -92,9 +95,9 @@ Item {
         interval: 100
         running: true
         onTriggered: {
-            fileList = PQCScripts.getArchiveContent(image_top.imageSource)
-            if(image_top.imageSource.includes("::ARC::"))
-                currentFile = fileList.indexOf(image_top.imageSource.split("::ARC::")[0])
+            arc_top.fileList = PQCScripts.getArchiveContent(arc_top.source) // qmllint disable unqualified
+            if(arc_top.source.includes("::ARC::"))
+                arc_top.currentFile = arc_top.fileList.indexOf(arc_top.source.split("::ARC::")[0])
         }
     }
 
@@ -103,10 +106,10 @@ Item {
     }
 
     Connections {
-        target: image_top
+        target: image_top // qmllint disable unqualified
         function onImageSourceChanged(imageSource) {
-            currentFile = 0
-            fileList = PQCScripts.getArchiveContent(image_top.imageSource)
+            arc_top.currentFile = 0
+            arc_top.fileList = PQCScripts.getArchiveContent(arc_top.source) // qmllint disable unqualified
             updateSource()
         }
     }
@@ -114,17 +117,17 @@ Item {
     function updateSource() {
         imageitem.asynchronous = false
         if(currentFile == -1 || currentFile >= fileList.length) return
-        if(image_top.imageSource.includes("::ARC::")) {
-            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(image_top.imageSource.split("::ARC::")[1]))
+        if(arc_top.source.includes("::ARC::")) {
+            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(arc_top.source.split("::ARC::")[1]))
         } else {
-            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(image_top.imageSource))
+            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(arc_top.source))
         }
         imageitem.asynchronous = true
     }
 
     Rectangle {
 
-        parent: image_top
+        parent: image_top // qmllint disable unqualified
 
         id: archivelisting
 
@@ -136,7 +139,7 @@ Item {
         color: "#88000000"
 
         // only show when needed
-        opacity: !thisIsAComicBook && fileCount>1 ? (hovered ? 1 : 0.3) : 0
+        opacity: !arc_top.thisIsAComicBook && arc_top.fileCount>1 ? (hovered ? 1 : 0.3) : 0
         Behavior on opacity { NumberAnimation { duration: 200 } }
         visible: opacity>0
         enabled: visible
@@ -158,12 +161,12 @@ Item {
             y: 5
             width: 200
             height: parent.height-10
-            model: fileList
-            currentIndex: currentFile
+            model: arc_top.fileList
+            currentIndex: arc_top.currentFile
             onCurrentIndexChanged: {
-                focusitem.forceActiveFocus()
-                if(currentIndex !== currentFile)
-                    currentFile = currentIndex
+                focusitem.forceActiveFocus() // qmllint disable unqualified
+                if(currentIndex !== arc_top.currentFile)
+                    arc_top.currentFile = currentIndex
             }
         }
 
@@ -171,7 +174,7 @@ Item {
 
     Rectangle {
 
-        parent: image_top
+        parent: image_top // qmllint disable unqualified
 
         id: controlitem
 
@@ -183,7 +186,7 @@ Item {
         color: "#88000000"
 
         // only show when needed
-        opacity: thisIsAComicBook && fileCount>1 ? (hovered ? 1 : 0.3) : 0
+        opacity: arc_top.thisIsAComicBook && arc_top.fileCount>1 ? (hovered ? 1 : 0.3) : 0
         Behavior on opacity { NumberAnimation { duration: 200 } }
         visible: opacity>0
         enabled: visible
@@ -231,7 +234,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: currentFile = 0
+                        onClicked: arc_top.currentFile = 0
                     }
                 }
 
@@ -253,7 +256,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: currentFile = (currentFile+fileCount-1)%fileCount
+                        onClicked: arc_top.currentFile = (arc_top.currentFile+arc_top.fileCount-1)%arc_top.fileCount
                     }
                 }
 
@@ -275,7 +278,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: currentFile = (currentFile+1)%fileCount
+                        onClicked: arc_top.currentFile = (arc_top.currentFile+1)%arc_top.fileCount
                     }
                 }
 
@@ -298,7 +301,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: currentFile = fileCount-1
+                        onClicked: arc_top.currentFile = arc_top.fileCount-1
                     }
                 }
 
@@ -356,7 +359,7 @@ Item {
                         id: pagenumbertxt
 
                         y: (parent.height-height)/2
-                        text: "%1/%2".arg(currentFile+1).arg(fileCount)
+                        text: "%1/%2".arg(arc_top.currentFile+1).arg(arc_top.fileCount)
                         color: "white"
 
                         MouseArea {
@@ -376,21 +379,21 @@ Item {
                     height: controlitem.height-10
 
                     from: 1
-                    to: fileCount
+                    to: arc_top.fileCount
 
                     onVisibleChanged: {
                         if(visible) {
                             pagenumberspin.forceActiveFocus()
-                            value = currentFile+1
+                            value = arc_top.currentFile+1
                         } else
-                            focusitem.forceActiveFocus()
+                            focusitem.forceActiveFocus() // qmllint disable unqualified
                     }
 
                     Keys.onPressed: (event) => {
                         if(event.key === Qt.Key_Escape)
                             pagenumberrow.visible = true
                         else if(event.key === Qt.Key_Enter || event.key === Qt.Key_Return) {
-                            currentFile = pagenumberspin.value-1
+                            arc_top.currentFile = pagenumberspin.value-1
                             pagenumberrow.visible = true
                         }
 
@@ -405,7 +408,7 @@ Item {
 
     Connections {
 
-        target: toplevel
+        target: toplevel // qmllint disable unqualified
 
         function onKeyPress(modifiers, keycode) {
 
@@ -414,19 +417,19 @@ Item {
 
             if(keycode === Qt.Key_Left) {
 
-                currentFile = (currentFile+fileCount-1)%fileCount
+                arc_top.currentFile = (arc_top.currentFile+arc_top.fileCount-1)%arc_top.fileCount
 
             } else if(keycode === Qt.Key_Right || keycode === Qt.Key_Space) {
 
-                currentFile = (currentFile+1)%fileCount
+                arc_top.currentFile = (arc_top.currentFile+1)%arc_top.fileCount
 
             } else if(keycode === Qt.Key_Home) {
 
-                currentFile = 0
+                arc_top.currentFile = 0
 
             } else if(keycode === Qt.Key_End) {
 
-                currentFile = fileCount-1
+                arc_top.currentFile = arc_top.fileCount-1
 
             }
 

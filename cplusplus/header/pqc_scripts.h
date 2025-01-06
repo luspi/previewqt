@@ -62,6 +62,7 @@ public:
     Q_INVOKABLE bool isArchive(QString path);
     Q_INVOKABLE bool isComicBook(QString path);
     Q_INVOKABLE bool isEpub(QString path);
+    Q_INVOKABLE bool isTextDocument(QString path);
     Q_INVOKABLE QString toPercentEncoding(QString str);
     Q_INVOKABLE QString fromPercentEncoding(QByteArray str);
     Q_INVOKABLE QString keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key keycode);
@@ -78,6 +79,7 @@ public:
 
     Q_INVOKABLE QStringList listArchiveContent(QString path, bool insideFilenameOnly = false);
 
+    Q_INVOKABLE QString openNewFile();
     Q_INVOKABLE bool openInDefault(QString path);
 
     Q_INVOKABLE bool amIOnWindows();
@@ -93,6 +95,8 @@ public:
 
     Q_INVOKABLE QString getStartupMessage(){ return m_startupMessage; }
     void setStartupMessage(QString val) { m_startupMessage = val; }
+
+    Q_INVOKABLE QString getTextFileContents(QString path);
 
     int toLcmsFormat(QImage::Format fmt);
     bool applyEmbeddedColorProfile(QImage &img);

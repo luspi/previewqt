@@ -48,6 +48,10 @@ public:
         return m_formats;
     }
 
+    Q_INVOKABLE QStringList getAllMimeTypes() {
+        return m_mimetypes;
+    }
+
     Q_INVOKABLE QStringList getAllFormatsQt() {
         return m_formats_qt;
     }

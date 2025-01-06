@@ -55,7 +55,7 @@ Rectangle {
             source: "image://svg/:/open.svg"
             tooltip: qsTr("Open a file")
             onClicked: {
-                fileDialog.open()
+                toplevel.openNewFile()
             }
         }
 

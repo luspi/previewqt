@@ -9,8 +9,8 @@ project(previewqt LANGUAGES CXX)
 ####  GLOBAL VERSION STRING FOR ALL FILES (INCLUDING CPP/QML) ####
 ##################################################################
 
-SET(PROJECT_VERSION "3.0")
-add_definitions(-DPQMVERSION="${PROJECT_VERSION}")
+SET(APPVERSION "dev")
+add_definitions(-DPQMVERSION="${APPVERSION}")
 
 ########################################
 ####  SOME SETTINGS/FLAGS FOR CMAKE ####
@@ -49,6 +49,8 @@ option(EPUB "Enable support for EPUB files" ON)
 option(PHOTOSPHERE "Enable support for photo spheres and 360 degree panoramic views" ON)
 option(LCMS2 "Enable advanced color management with LCMS2" ON)
 
+option(KF6SYNTAXHIGHLIGHT "Use KSyntaxHighlighting for text formatting" ON)
+
 option(FLATPAKBUILD "Enable this if this is a build for Flatpak" OFF)
 
 #############################
@@ -82,7 +84,7 @@ set(d "qml/components")
 set(previewqt_QML ${previewqt_QML} "${d}/PQTopRow.qml" "${d}/PQImage.qml" "${d}/PQIconButton.qml" "${d}/PQTrayIcon.qml")
 set(d "qml/components/imageitems")
 set(previewqt_QML ${previewqt_QML} "${d}/PQImageNormal.qml" "${d}/PQImageAnimated.qml")
-set(previewqt_QML ${previewqt_QML} "${d}/PQDocument.qml" "${d}/PQArchive.qml" "${d}/PQSVG.qml")
+set(previewqt_QML ${previewqt_QML} "${d}/PQDocument.qml" "${d}/PQArchive.qml" "${d}/PQSVG.qml" "${d}/PQTxt.qml")
 set(d "qml/windows")
 set(previewqt_QML ${previewqt_QML} "${d}/PQSettings.qml" "${d}/PQAbout.qml" "${d}/PQHelp.qml" "${d}/PQWelcome.qml")
 
@@ -109,17 +111,25 @@ if(VIDEO_MPV)
     set(previewqt_QML ${previewqt_QML} "${d}/PQVideoMpv.qml")
 endif()
 
+if(QTPDF)
+    if(POPPLER)
+        set(POPPLER OFF)
+        message("** For displaying PDF documents you have to choose either Poppler OR QtPDF.")
+        message("** Poppler has been automatically disabled in favour of QtPDF.")
+    endif()
+endif()
+
 ################################
 #### FIND REQUIRED PACKAGES ####
 ################################
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets Svg Sql LinguistTools DBus)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Widgets Svg Sql LinguistTools DBus)
 if(QTPDF)
-    find_package(Qt6 6.2 REQUIRED COMPONENTS Pdf)
+    find_package(Qt6 6.4 REQUIRED COMPONENTS Pdf)
 endif()
 if(EPUB)
     if(LIBARCHIVE)
-        find_package(Qt6 6.2 REQUIRED COMPONENTS WebEngineQuick)
+        find_package(Qt6 6.4 REQUIRED COMPONENTS WebEngineQuick)
     else()
         message("** EPUB support requires support for LibArchive")
         message("** Disabling EPUB support")
@@ -223,8 +233,8 @@ qt_add_qml_module(previewqt URI src VERSION 1.0 QML_FILES ${previewqt_QML} RESOU
 
 # set some properties for executable
 set_target_properties(previewqt PROPERTIES
-    MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-    MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+    MACOSX_BUNDLE_BUNDLE_VERSION "${APPVERSION}"
+    MACOSX_BUNDLE_SHORT_VERSION_STRING "${APPVERSION}"
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
@@ -487,6 +497,25 @@ if(LCMS2)
     endif()
 else()
     message("** LCMS2 DISABLED")
+endif()
+
+if(KF6SYNTAXHIGHLIGHT)
+    message("** Using KSyntaxHighlight")
+    add_definitions(-DPQMKSYNTAXHIGHLIGHT)
+    foreach(QMLFILE "qml/components/imageitems/PQTxt.qml")
+        file(READ ${QMLFILE} FILE_CONTENTS)
+        string(REPLACE "/*1off_PQMKF6" "/*1on_PQMKF6*/" FILE_CONTENTS "${FILE_CONTENTS}")
+        string(REPLACE "2off_PQMKF6*/" "/*2on_PQMKF6*/" FILE_CONTENTS "${FILE_CONTENTS}")
+        file(WRITE ${QMLFILE} "${FILE_CONTENTS}")
+    endforeach()
+else()
+    message("** KSyntaxHighlight DISABLED")
+    foreach(QMLFILE "qml/components/imageitems/PQTxt.qml")
+        file(READ ${QMLFILE} FILE_CONTENTS)
+        string(REPLACE "/*1on_PQMKF6*/" "/*1off_PQMKF6" FILE_CONTENTS "${FILE_CONTENTS}")
+        string(REPLACE "/*2on_PQMKF6*/" "2off_PQMKF6*/" FILE_CONTENTS "${FILE_CONTENTS}")
+        file(WRITE ${QMLFILE} "${FILE_CONTENTS}")
+    endforeach()
 endif()
 
 

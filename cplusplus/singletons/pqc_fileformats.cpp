@@ -183,7 +183,7 @@ void PQCFileFormats::readFromDatabase() {
         if(qt) {
             // we check the formats against the list of supported image formats
             // this list can vary depending on which plugins are installed
-            if(qtSupported.contains(qt_formatname.toUtf8())) {
+            if(qtSupported.contains(qt_formatname.toUtf8()) || cat == "ind") {
                 supportedByAnyLibrary = true;
                 all << "Qt";
                 m_formats_qt << endings.split(",");
