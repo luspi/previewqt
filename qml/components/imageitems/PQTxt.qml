@@ -32,9 +32,7 @@ Item {
 
     id: txt_top
 
-    /*1on_PQMKF6*/
     SystemPalette { id: colorPalette; colorGroup: SystemPalette.Active }
-    /*2on_PQMKF6*/
 
     x: 0
     y: (image_top.height-height)/2
@@ -55,7 +53,7 @@ Item {
         property int defh: Math.max(50, PQCSettings.defaultWindowHeight)
 
         width: defw
-        height: Math.min(defh, imageitem.height)
+        height: defh
 
         contentHeight: imageitem.height+10
 
@@ -75,6 +73,7 @@ Item {
             y: 5
 
             width: flickme.width
+            height: Math.max(flickme.height-10, contentHeight)
 
             color: "white"
             font.family: "Monospace"
@@ -118,17 +117,17 @@ Item {
             }
 
             Keys.onPressed: (event) => {
-                if(event.key == Qt.Key_Down)
+                if(event.key === Qt.Key_Down)
                     flickme.flick(0, -500)
-                else if(event.key == Qt.Key_Up)
+                else if(event.key === Qt.Key_Up)
                     flickme.flick(0, 500)
-                else if(event.key == Qt.Key_PageDown)
+                else if(event.key === Qt.Key_PageDown)
                     flickme.flick(0, -1500)
-                else if(event.key == Qt.Key_PageUp)
+                else if(event.key === Qt.Key_PageUp)
                     flickme.flick(0, 1500)
-                else if(event.key == Qt.Key_End)
+                else if(event.key === Qt.Key_End)
                     flickme.contentY = flickme.contentHeight-flickme.height
-                else if(event.key == Qt.Key_Home)
+                else if(event.key === Qt.Key_Home)
                     flickme.contentY = 0
                 else
                     toplevel.keyPress(event.modifiers, event.key)
@@ -138,24 +137,26 @@ Item {
 
     }
 
-    Rectangle {
+    /*1on_PQMKF6*/
+    Item {
         x: (parent.width-width)
         y: (parent.height-height)
         width: 200
         height: 35
-        color: "red"
 
         ComboBox {
             id: control
-            width: 200
+            x: 50
+            width: 150
             model : Repository.definitions
             displayText: currentValue.translatedName
             textRole: "translatedName"
             property var sortme
             popup: Popup {
                 id: thepopup
+                x: -50
                 y: control.height
-                width: control.width
+                width: 200
                 implicitHeight: Math.min(contentItem.implicitHeight, 300)
                 padding: 0
                 contentItem:
@@ -211,11 +212,10 @@ Item {
 
             onCurrentIndexChanged: {
                 myHighlighter.definition = Repository.definitions[currentIndex]
+                focusitem.forceActiveFocus()
             }
 
             Component.onCompleted: {
-                for(var c in Repository.definitions)
-                    console.warn(JSON.stringify(Repository.definitions[c]))
                 var m = []
                 var mtxt = []
                 for(var r in Repository.definitions) {
@@ -231,15 +231,13 @@ Item {
             }
         }
 
-        // ComboBox {
-        //     model: Repository.definitions
-        //     displayText: currentValue.translatedName + " (" + currentValue.translatedSection + ")"
-        //     textRole: "translatedName"
-        //     onCurrentIndexChanged: {
-        //         myHighlighter.definition = Repository.definitions[currentIndex]
-        //     }
-        // }
-
     }
+
+    Component.onCompleted: {
+        // set current file type
+        myHighlighter.definition = Repository.definitionForFileName(image_top.imageSource)
+        control.currentIndex = Repository.definitions.indexOf(myHighlighter.definition)
+    }
+    /*2on_PQMKF6*/
 
 }
