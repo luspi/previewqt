@@ -500,22 +500,52 @@ else()
 endif()
 
 if(KF6SYNTAXHIGHLIGHT)
+
     message("** Using KSyntaxHighlight")
     add_definitions(-DPQMKSYNTAXHIGHLIGHT)
+
     foreach(QMLFILE "qml/components/imageitems/PQTxt.qml")
+
         file(READ ${QMLFILE} FILE_CONTENTS)
-        string(REPLACE "/*1off_PQMKF6" "/*1on_PQMKF6*/" FILE_CONTENTS "${FILE_CONTENTS}")
-        string(REPLACE "2off_PQMKF6*/" "/*2on_PQMKF6*/" FILE_CONTENTS "${FILE_CONTENTS}")
-        file(WRITE ${QMLFILE} "${FILE_CONTENTS}")
+
+        set(anything_changed FALSE)
+
+        if(FILE_CONTENTS MATCHES "/\\*1off_Qt64")
+            set(anything_changed TRUE)
+            string(REPLACE "/*1off_PQMKF6" "/*1on_PQMKF6*/" FILE_CONTENTS "${FILE_CONTENTS}")
+        endif()
+        if(FILE_CONTENTS MATCHES "2off_PQMKF6\\*/")
+            set(anything_changed TRUE)
+            string(REPLACE "2off_PQMKF6*/" "/*2on_PQMKF6*/" FILE_CONTENTS "${FILE_CONTENTS}")
+        endif()
+
+        if(anything_changed)
+            file(WRITE ${QMLFILE} "${FILE_CONTENTS}")
+        endif()
+
     endforeach()
+
 else()
+
     message("** KSyntaxHighlight DISABLED")
+
     foreach(QMLFILE "qml/components/imageitems/PQTxt.qml")
+
         file(READ ${QMLFILE} FILE_CONTENTS)
-        string(REPLACE "/*1on_PQMKF6*/" "/*1off_PQMKF6" FILE_CONTENTS "${FILE_CONTENTS}")
-        string(REPLACE "/*2on_PQMKF6*/" "2off_PQMKF6*/" FILE_CONTENTS "${FILE_CONTENTS}")
-        file(WRITE ${QMLFILE} "${FILE_CONTENTS}")
+
+        if(FILE_CONTENTS MATCHES "/\\*1on_PQMKF6\\*/")
+            string(REPLACE "/*1on_PQMKF6*/" "/*1off_PQMKF6" FILE_CONTENTS "${FILE_CONTENTS}")
+        endif()
+        if(FILE_CONTENTS MATCHES "/\\*2on_PQMKF6\\*/")
+            string(REPLACE "/*2on_PQMKF6*/" "2off_PQMKF6*/" FILE_CONTENTS "${FILE_CONTENTS}")
+        endif()
+
+        if(anything_changed)
+            file(WRITE ${QMLFILE} "${FILE_CONTENTS}")
+        endif()
+
     endforeach()
+
 endif()
 
 
