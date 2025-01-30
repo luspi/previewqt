@@ -114,6 +114,14 @@ public:
     bool getCloseWhenLosingFocus();
     void setCloseWhenLosingFocus(bool val);
 
+    Q_PROPERTY(bool textWordWrap READ getTextWordWrap WRITE setTextWordWrap NOTIFY textWordWrapChanged)
+    bool getTextWordWrap();
+    void setTextWordWrap(bool val);
+
+    Q_PROPERTY(int textFontPointSize READ getTextFontPointSize WRITE setTextFontPointSize NOTIFY textFontPointSizeChanged)
+    int getTextFontPointSize();
+    void setTextFontPointSize(int val);
+
     Q_INVOKABLE bool getFirstStart() { return firstStart; }
 
 private:
@@ -137,6 +145,8 @@ private:
     bool m_closeAfterDefaultApp;
     QString m_filedialogLocation;
     bool m_closeWhenLosingFocus;
+    bool m_textWordWrap;
+    int m_textFontPointSize;
 
     QSettings *settings;
     QTimer *saveTimer;
@@ -176,6 +186,8 @@ Q_SIGNALS:
     void closeAfterDefaultAppChanged();
     void filedialogLocationChanged();
     void closeWhenLosingFocusChanged();
+    void textWordWrapChanged();
+    void textFontPointSizeChanged();
 
 };
 

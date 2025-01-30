@@ -162,4 +162,13 @@ Rectangle {
 
     }
 
+    MouseArea {
+        anchors.fill: parent
+        enabled: toplevel.menuOpen
+        hoverEnabled: true
+        onClicked: {
+            toplevel.closeAllMenus()
+        }
+    }
+
 }

@@ -87,8 +87,13 @@ ApplicationWindow {
         if(visible) {
             ignoreActiveChanges = true
             noLongerIgnoreActiveChanges.restart()
+        } else {
+            closeAllMenus()
         }
     }
+
+    property bool menuOpen: false
+    signal closeAllMenus()
 
     // this ignores changes to active for hiding when focus is lost
     // this is necessary when 'focus follows mouse' is used and the window is, e.g., opened from the tray
@@ -102,6 +107,7 @@ ApplicationWindow {
     }
 
     onActiveChanged: {
+        if(!active) closeAllMenus()
         if(!PQCSettings.closeWhenLosingFocus) return
         if(!active && !ignoreActiveChanges) {
             if((settings.status == Loader.Ready && settings.item.visible) ||
@@ -117,6 +123,7 @@ ApplicationWindow {
     Item {
 
         id: focusitem
+        anchors.fill: parent
 
         Component.onCompleted:
             forceActiveFocus()
@@ -316,6 +323,11 @@ ApplicationWindow {
         // Escape either leaves fullscreen or closes the window
         if(txt === "Esc") {
 
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
+
             if(isFullscreen)
                 toplevel.showNormal()
             else
@@ -327,24 +339,49 @@ ApplicationWindow {
 
         } else if(txt === "Ctrl+O") {
 
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
+
             openNewFile()
 
         } else if(txt === "Ctrl+P") {
+
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
 
             settings.active = true
             settings.item.show()
 
         } else if(txt === "Ctrl+I") {
 
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
+
             about.active = true
             about.item.show()
 
         } else if(txt === "F1") {
 
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
+
             help.active = true
             help.item.show()
 
         } else if(txt === PQCSettings.defaultAppShortcut) {
+
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
 
             if(image.imageSource === "") return
 
@@ -363,6 +400,8 @@ ApplicationWindow {
         target: PQCScripts
 
         function onCommandLineArgumentReceived(msg) {
+
+            closeAllMenus()
 
             msg = PQCScripts.fromPercentEncoding(msg)
 

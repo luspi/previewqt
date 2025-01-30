@@ -56,8 +56,13 @@ Item {
         height: defh
 
         contentHeight: imageitem.height+10
+        contentWidth: imageitem.width
 
-        ScrollBar.vertical: ScrollBar { id: scrollbar }
+        ScrollBar.horizontal: ScrollBar { }
+        ScrollBar.vertical: ScrollBar { }
+
+        onContentXChanged: settingsrect.hide()
+        onContentYChanged: settingsrect.hide()
 
         /*1on_PQMKF6*/
         SyntaxHighlighter {
@@ -72,15 +77,14 @@ Item {
             id: imageitem
             y: 5
 
-            width: flickme.width
+            width: PQCSettings.textWordWrap ? flickme.width : undefined
             height: Math.max(flickme.height-10, contentHeight)
 
             color: "white"
             font.family: "Monospace"
+            font.pointSize: PQCSettings.textFontPointSize
 
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-
-            font.pointSize: 12
 
             readOnly: true
             background: Rectangle {
@@ -137,16 +141,200 @@ Item {
 
     }
 
-    /*1on_PQMKF6*/
-    Item {
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        enabled: settingsrect.visible
+        onClicked:
+            settingsrect.hide()
+        onWheel: {}
+    }
+
+    Row {
+
+        id: settingsrow
+
         x: (parent.width-width)
         y: (parent.height-height)
-        width: 200
-        height: 35
+
+        spacing: 5
+
+        Rectangle  {
+            id: settingsbut
+            width: 35
+            height: 35
+            color: settingsmouse.containsPress ? "#21262b" : (settingsmouse.containsMouse ? "#61666b" : "#31363b")
+            Behavior on color { ColorAnimation { duration: 200 } }
+            radius: 4
+
+            Image {
+                anchors.fill: parent
+                anchors.margins: 6
+                sourceSize: Qt.size(width, height)
+                source: "image://svg/:/settings.svg"
+            }
+
+            MouseArea {
+                id: settingsmouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    settingsrect.show()
+                }
+            }
+
+            Rectangle {
+                id: settingsrect
+                clip: true
+                x: settingsrow.width-width
+                y: settingsbut.y-height
+                width: 200
+                height: 0
+                Behavior on height { NumberAnimation { duration: 200 } }
+                opacity: 0
+                visible: opacity>0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                color: colorPalette.base
+                border.color: colorPalette.accent
+                border.width: 1
+
+                Column {
+
+                    Row {
+                        height: 40
+                        Rectangle {
+                            color: setzoomplus.containsMouse ? colorPalette.highlight : colorPalette.base
+                            Behavior on color { ColorAnimation { duration: 200 } }
+                            opacity: 0.6
+                            width: 60
+                            height: 40
+                            border.color: colorPalette.dark
+                            border.width: 1
+                            Text {
+                                color: colorPalette.text
+                                font.pointSize: 14
+                                font.bold: true
+                                anchors.centerIn: parent
+                                text: "+"
+                            }
+                            MouseArea {
+                                id: setzoomplus
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: PQCSettings.textFontPointSize += 1
+                            }
+                        }
+                        Rectangle {
+                            color: setzoomminus.containsMouse ? colorPalette.highlight : colorPalette.base
+                            Behavior on color { ColorAnimation { duration: 200 } }
+                            opacity: 0.6
+                            width: 60
+                            height: 40
+                            border.color: colorPalette.dark
+                            border.width: 1
+                            Text {
+                                color: colorPalette.text
+                                font.pointSize: 14
+                                font.bold: true
+                                anchors.centerIn: parent
+                                text: "-"
+                            }
+                            MouseArea {
+                                id: setzoomminus
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: PQCSettings.textFontPointSize -= 1
+                            }
+                        }
+                        Rectangle {
+                            color: setzoomzero.containsMouse ? colorPalette.highlight : colorPalette.base
+                            Behavior on color { ColorAnimation { duration: 200 } }
+                            opacity: 0.6
+                            width: 80
+                            height: 40
+                            border.color: colorPalette.dark
+                            border.width: 1
+                            Text {
+                                color: colorPalette.text
+                                font.pointSize: 14
+                                font.bold: true
+                                anchors.centerIn: parent
+                                text: "0"
+                            }
+                            MouseArea {
+                                id: setzoomzero
+                                anchors.fill: parent
+                                hoverEnabled: true
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: PQCSettings.textFontPointSize = 12
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        width: parent.width
+                        height: 1
+                        color: colorPalette.accent
+                    }
+
+                    Rectangle {
+                        color: setwrapmouse.containsMouse ? colorPalette.highlight : colorPalette.base
+                        Behavior on color { ColorAnimation { duration: 200 } }
+                        opacity: 0.6
+                        height: 39
+                        width: 200
+                        CheckBox {
+                            x: 5
+                            width: 190
+                            y: (parent.height-height)/2
+                            font.bold: true
+                            checked: PQCSettings.textWordWrap
+                            text: "Wrap lines"
+                        }
+                        MouseArea {
+                            id: setwrapmouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                PQCSettings.textWordWrap = !PQCSettings.textWordWrap
+                                settingsrect.hide()
+                            }
+                        }
+                    }
+
+                }
+
+                function show() {
+                    toplevel.menuOpen = true
+                    height = 80
+                    opacity = 1
+                }
+                function hide() {
+                    if(!visible) return
+                    toplevel.menuOpen = false
+                    height = 0
+                    opacity = 0
+                }
+
+                Connections {
+                    target: toplevel
+                    function onCloseAllMenus() {
+                        settingsrect.hide()
+                    }
+                }
+            }
+
+        }
+
+        /*1on_PQMKF6*/
 
         ComboBox {
             id: control
-            x: 50
+            y: (parent.height-height)/2
             width: 150
             model : Repository.definitions
             displayText: currentValue.translatedName
@@ -231,13 +419,17 @@ Item {
             }
         }
 
+        Component.onCompleted: {
+            // set current file type
+            myHighlighter.definition = Repository.definitionForFileName(image_top.imageSource)
+            control.currentIndex = Repository.definitions.indexOf(myHighlighter.definition)
+        }
+        /*2on_PQMKF6*/
+
     }
 
-    Component.onCompleted: {
-        // set current file type
-        myHighlighter.definition = Repository.definitionForFileName(image_top.imageSource)
-        control.currentIndex = Repository.definitions.indexOf(myHighlighter.definition)
+    Component.onDestruction: {
+        toplevel.menuOpen = false
     }
-    /*2on_PQMKF6*/
 
 }

@@ -321,6 +321,28 @@ void PQCSettings::setCloseWhenLosingFocus(bool val) {
     }
 }
 
+bool PQCSettings::getTextWordWrap() {
+    return m_textWordWrap;
+}
+void PQCSettings::setTextWordWrap(bool val) {
+    if(m_textWordWrap != val) {
+        m_textWordWrap = val;
+        saveTimer->start();
+        Q_EMIT textWordWrapChanged();
+    }
+}
+
+int PQCSettings::getTextFontPointSize() {
+    return m_textFontPointSize;
+}
+void PQCSettings::setTextFontPointSize(int val) {
+    if(m_textFontPointSize != val) {
+        m_textFontPointSize = val;
+        saveTimer->start();
+        Q_EMIT textFontPointSizeChanged();
+    }
+}
+
 void PQCSettings::loadSettings() {
 
     setVersion(settings->value("version", "").toString());
@@ -341,6 +363,8 @@ void PQCSettings::loadSettings() {
     setCloseAfterDefaultApp(settings->value("closeAfterDefaultApp", true).toBool());
     setFiledialogLocation(settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString());
     setCloseWhenLosingFocus(settings->value("closeWhenLosingFocus", false).toBool());
+    setTextWordWrap(settings->value("textWordWrap", true).toBool());
+    setTextFontPointSize(settings->value("textFontPointSize", 12).toInt());
 
 }
 
@@ -364,5 +388,7 @@ void PQCSettings::saveSettings() {
     settings->setValue("closeAfterDefaultApp", m_closeAfterDefaultApp);
     settings->setValue("filedialogLocation", m_filedialogLocation);
     settings->setValue("closeWhenLosingFocus", m_closeWhenLosingFocus);
+    settings->setValue("textWordWrap", m_textWordWrap);
+    settings->setValue("textFontPointSize", m_textFontPointSize);
 
 }
