@@ -280,12 +280,15 @@ Item {
                         color: colorPalette.accent
                     }
 
-                    Rectangle {
-                        color: setwrapmouse.containsMouse ? colorPalette.highlight : colorPalette.base
-                        Behavior on color { ColorAnimation { duration: 200 } }
-                        opacity: 0.6
+                    Item {
                         height: 39
                         width: 200
+                        Rectangle {
+                            color: setwrapmouse.containsMouse ? colorPalette.highlight : colorPalette.base
+                            Behavior on color { ColorAnimation { duration: 200 } }
+                            anchors.fill: parent
+                            opacity: 0.6
+                        }
                         CheckBox {
                             x: 5
                             width: 190
