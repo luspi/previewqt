@@ -52,6 +52,7 @@ option(LCMS2 "Enable advanced color management with LCMS2" ON)
 option(KF6SYNTAXHIGHLIGHT "Use KSyntaxHighlighting for text formatting" ON)
 
 option(FLATPAKBUILD "Enable this if this is a build for Flatpak" OFF)
+option(APPIMAGEBUILD "Enable this if this is an AppImage build" OFF)
 
 #############################
 ####  SET list of files  ####
@@ -546,6 +547,10 @@ else()
 
     endforeach()
 
+endif()
+
+if(APPIMAGEBUILD)
+    add_definitions(-DPQMAPPIMAGEBUILD)
 endif()
 
 

@@ -50,7 +50,7 @@ appimage:
     - git clone -b l10n_main git@gitlab.com:lspies/previewqt-lang
     - mv previewqt-lang/localized lang
     - mkdir -p build && cd build/
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DEXIV2=ON -DGRAPHICSMAGICK=ON -DIMAGEMAGICK=OFF -DVIDEO_MPV=ON -DLIBVIPS=ON -DPOPPLER=OFF -DEXIV2_ENABLE_BMFF=ON -DRESVG=OFF -DMOTIONPHOTO=OFF -DLCMS2=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DEXIV2=ON -DGRAPHICSMAGICK=ON -DIMAGEMAGICK=OFF -DVIDEO_MPV=ON -DLIBVIPS=ON -DPOPPLER=OFF -DEXIV2_ENABLE_BMFF=ON -DRESVG=OFF -DMOTIONPHOTO=OFF -DLCMS2=ON -DAPPIMAGEBUILD=ON
     - make DESTDIR=../appdir -j$(nproc) install
     - cd ..
     - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
@@ -74,16 +74,18 @@ releaseappimage:
 
   only:
     - tags
-
+    
   script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update -qq && apt-get -y install git software-properties-common build-essential libgl1-mesa-dev cmake wget extra-cmake-modules apt-transport-https curl
-    - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qt6-multimedia-dev qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-declarative-dev qt6-webengine-dev qt6-webengine-dev-tools qml6-module-qtquick-dialogs qml6-module-qtqml-workerscript qml6-module-qt-labs-platform qml6-module-qtquick-templates qml6-module-qtquick-layouts qml6-module-qt-labs-folderlistmodel qml6-module-qtquick-window qml6-module-qtwebengine libqt6webenginecore6-bin qml-module-qt-labs-folderlistmodel libqt6labsfolderlistmodel6
-    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libmagick++-6.q16-dev libmagick++-6.q16-8 libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev
-    - qtchooser -install qt6 $(which qmake6)
+    - echo "deb http://archive.neon.kde.org/user jammy main" | tee /etc/apt/sources.list.d/neon.list # add Neon PPA
+    - wget -qO - http://archive.neon.kde.org/public.key | apt-key add -
+    - apt-get update -qq && apt-get -y upgrade
+    - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev libqt6chartsqml6 qml6-module-qt-labs-platform qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-window qt6-multimedia-dev qml6-module-qtqml-workerscript qml6-module-qtquick-templates qml6-module-qtquick-dialogs qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-pdf-dev qml6-module-org-kde-syntaxhighlighting
+    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev libgraphicsmagick++1-dev
     - export QT_SELECT=qt6
     - mkdir -p build && cd build/
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DEXIV2=ON -DGRAPHICSMAGICK=OFF -DIMAGEMAGICK=ON -DVIDEO_MPV=ON -DLIBVIPS=ON -DPOPPLER=OFF -DEXIV2_ENABLE_BMFF=ON -DRESVG=OFF -DMOTIONPHOTO=OFF -DLCMS2=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DEXIV2=ON -DGRAPHICSMAGICK=ON -DIMAGEMAGICK=OFF -DVIDEO_MPV=ON -DLIBVIPS=ON -DPOPPLER=OFF -DEXIV2_ENABLE_BMFF=ON -DRESVG=OFF -DMOTIONPHOTO=OFF -DLCMS2=ON -DAPPIMAGEBUILD=ON
     - make DESTDIR=../appdir -j$(nproc) install
     - cd ..
     - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
@@ -92,9 +94,9 @@ releaseappimage:
     - ./linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract
     - ./linuxdeploy-x86_64.AppImage --appimage-extract
     - rm ./linuxdeploy-plugin-qt-x86_64.AppImage
+    - cp /usr/bin/qmake6 /usr/bin/qmake # This file is needed for the next run to succeed
     - QML_SOURCES_PATHS=./qml ./squashfs-root/AppRun --appdir ./appdir/ --plugin=qt --output appimage
     - mv ./PreviewQt*.AppImage PreviewQt-latesttag.AppImage
-    - curl --data-binary @PreviewQt-latesttag.AppImage ${UPLOAD_URL}
 
   artifacts:
     paths:

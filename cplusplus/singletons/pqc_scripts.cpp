@@ -1152,14 +1152,19 @@ QString PQCScripts::openNewFile() {
     });
 
     QFileDialog dlg;
+    dlg.setFileMode(QFileDialog::ExistingFile);
+#ifndef PQMAPPIMAGEBUILD
     dlg.setNameFilters(filters);
     dlg.setMimeTypeFilters(PQCFileFormats::get().getAllMimeTypes());
+#endif
     dlg.setDirectory(PQCSettings::get().getFiledialogLocation());
 
-    dlg.exec();
+    int e = dlg.exec();
 
-    if(dlg.selectedFiles().length() > 0)
-        return dlg.selectedFiles()[0];
+    if(e == QDialog::Accepted && dlg.selectedFiles().length() > 0) {
+        QStringList l = dlg.selectedFiles();
+        return l.first();
+    }
 
     return "";
 
