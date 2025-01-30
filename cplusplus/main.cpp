@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
     // Set app information
     QApplication::setApplicationName("PreviewQt");
     QApplication::setOrganizationName("");
-    QApplication::setOrganizationDomain("photoqt.org");
+    QApplication::setOrganizationDomain("previewqt.org");
     QApplication::setApplicationVersion(PQMVERSION);
     QApplication::setQuitOnLastWindowClosed(true);
 
@@ -159,17 +159,6 @@ int main(int argc, char *argv[]) {
 
     PQCSingleInstance app(argc, argv);
 
-    // Check for upgrade to PreviewQt
-    if(PQCScripts::get().isUpgrade()) {
-
-        // Validate image formats database
-        PQCFileFormats::get().validate();
-
-        // Update stored version number
-        PQCSettings::get().setVersion(PQMVERSION);
-
-    }
-
 #ifdef PQMVIDEOMPV
     // Qt sets the locale in the QGuiApplication constructor, but libmpv
     // requires the LC_NUMERIC category to be set to "C", so change it back.
@@ -177,8 +166,13 @@ int main(int argc, char *argv[]) {
 #endif
 
 #ifdef PQMEXIV2
-    #ifdef PQMEXIV2_ENABLE_BMFF
-        Exiv2::enableBMFF(true);
+    #if EXIV2_TEST_VERSION(0, 28, 0)
+        // In this case Exiv2::enableBMFF() defaults to true
+        // and the call to it is deprecated
+    #else
+        #ifdef PQMEXIV2_ENABLE_BMFF
+            Exiv2::enableBMFF(true);
+        #endif
     #endif
 #endif
 
@@ -201,8 +195,19 @@ int main(int argc, char *argv[]) {
     VIPS_INIT(argv[0]);
 #endif
 
+    // Check for upgrade to PreviewQt
+    if(PQCScripts::get().isUpgrade()) {
+
+        // Validate image formats database
+        PQCFileFormats::get().validate();
+
+        // Update stored version number
+        PQCSettings::get().setVersion(PQMVERSION);
+
+    }
+
     QQmlApplicationEngine engine;
-    const QUrl url(u"qrc:/src/qml/PQMainWindow.qml"_qs);
+    const QUrl url("qrc:/src/qml/PQMainWindow.qml");
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
         &app, [url](QObject *obj, const QUrl &objUrl) {
             if (!obj && url == objUrl)
