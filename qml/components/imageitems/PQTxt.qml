@@ -424,7 +424,7 @@ Item {
 
         Component.onCompleted: {
             // set current file type
-            myHighlighter.definition = Repository.definitionForFileName(image_top.imageSource)
+            myHighlighter.definition = Repository.definitionForName(PQCScripts.getSuffix(image_top.imageSource))
             control.currentIndex = Repository.definitions.indexOf(myHighlighter.definition)
         }
         /*2on_PQMKF6*/
