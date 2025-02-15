@@ -1376,68 +1376,110 @@ bool PQCScripts::applyEmbeddedColorProfile(QImage &img) {
 
     qDebug() << "args: img";
 
-    bool manualSelectionCausedError = false;
-
 #ifdef PQMLCMS2
 
-    qDebug() << "Checking for embedded color profiles";
+    int lcms2SourceFormat = toLcmsFormat(img.format());
+
+    QImage::Format targetFormat = img.format();
+    // this format causes problems with lcms2
+    // no error is caused but the resulting image is fully transparent
+    // removing the alpha channel seems to fix this
+    if(img.format() == QImage::Format_ARGB32)
+        targetFormat = QImage::Format_RGB32;
+
+    int lcms2targetFormat = toLcmsFormat(img.format());
+
+    // Outputting an RGBA64 image with LCMS2 results in a blank rectangle.
+    // Reading it seems to work just fine, however.
+    // Thus we make sure to output the image in a working format here.
+    if(img.format() == QImage::Format_RGBA64) {
+        targetFormat = QImage::Format_RGB32;
+        lcms2targetFormat = toLcmsFormat(QImage::Format_RGB32);
+    }
+
+    if(lcms2SourceFormat == 0 || lcms2targetFormat == 0) {
+        qWarning() << "Unknown image format. Attempting to convert image to format known to LCMS2.";
+        img.convertTo(QImage::Format_ARGB32);
+        targetFormat = QImage::Format_RGB32;
+        lcms2SourceFormat = toLcmsFormat(img.format());
+        lcms2targetFormat = lcms2SourceFormat;
+        if(img.isNull()) {
+            qWarning() << "Error converting image to ARGB32. Not applying color profile.";
+            return false;
+        }
+        if(lcms2targetFormat == 0) {
+            qWarning() << "Unable to 'fix' image format. Not applying color profile.";
+            return false;
+        }
+    }
 
     cmsHPROFILE targetProfile = cmsOpenProfileFromMem(img.colorSpace().iccProfile().constData(),
                                                       img.colorSpace().iccProfile().size());
 
-    if(targetProfile) {
+    // Create a transformation from source (sRGB) to destination (provided ICC profile) color space
+    cmsHTRANSFORM transform = cmsCreateTransform(targetProfile, lcms2SourceFormat, cmsCreate_sRGBProfile(), lcms2targetFormat, INTENT_PERCEPTUAL, 0);
+    if (!transform) {
+        // Handle error, maybe close profile and return original image or null image
+        cmsCloseProfile(targetProfile);
+        qWarning() << "Error creating transform for external color profile";
+        return false;
+    } else {
 
-        int lcms2SourceFormat = toLcmsFormat(img.format());
+        // since the target format might not support alpha channels we use black instead of transparent to fill the initial image.
+        // we don't have to fill the image for cmsDoTransform but it allows for additional checking whether cmsDoTransform succeeded.
+        QImage ret(img.size(), targetFormat);
+        ret.fill(Qt::black);
 
-        QImage::Format targetFormat = img.format();
-        // this format causes problems with lcms2
-        // no error is caused but the resulting image is fully transparent
-        // removing the alpha channel seems to fix this
-        if(img.format() == QImage::Format_ARGB32)
-            targetFormat = QImage::Format_RGB32;
-        int lcms2targetFormat = toLcmsFormat(img.format());
+        // Perform color space conversion
+        cmsDoTransform(transform, img.constBits(), ret.bits(), img.width() * img.height());
 
-        // Create a transformation from source (sRGB) to destination (provided ICC profile) color space
-        cmsHTRANSFORM transform = cmsCreateTransform(targetProfile, lcms2SourceFormat, cmsCreate_sRGBProfile(), lcms2targetFormat, INTENT_PERCEPTUAL, 0);
-        if (!transform) {
-            // Handle error, maybe close profile and return original image or null image
-            cmsCloseProfile(targetProfile);
-            qWarning() << "Error creating transform for external color profile";
+        // transform failed returning null image
+        if(ret.isNull()) {
+            qWarning() << "Failed to apply external color profile, null image returned";
             return false;
-        } else {
-
-            QImage ret(img.size(), targetFormat);
-            ret.fill(Qt::transparent);
-            // Perform color space conversion
-            cmsDoTransform(transform, img.constBits(), ret.bits(), img.width() * img.height());
-
-            const int bufSize = 100;
-            char buf[bufSize];
-
-#if LCMS_VERSION >= 2160
-            cmsGetProfileInfoUTF8(targetProfile, cmsInfoDescription,
-                                  "en", "US",
-                                  buf, bufSize);
-#else
-            cmsGetProfileInfoASCII(targetProfile, cmsInfoDescription,
-                                   "en", "US",
-                                   buf, bufSize);
-#endif
-
-            // Release resources
-            cmsDeleteTransform(transform);
-            cmsCloseProfile(targetProfile);
-
-            qDebug() << "Applying external color profile:" << buf;
-
-            img = ret;
-
-            return true;
-
         }
 
-    } else
-        return false;
+        // check if image is all black -> transform failed
+        bool allblack = true;
+        for(int x = 0; x < img.width(); ++x) {
+            for(int y = 0; y < img.height(); ++y) {
+                if(ret.pixelColor(x,y).black() < 255) {
+                    allblack = false;
+                    break;
+                }
+            }
+            if(!allblack) break;
+        }
+
+        if(allblack) {
+            qWarning() << "Failed to apply external color profile, image completely black";
+            return false;
+        }
+
+        const int bufSize = 100;
+        char buf[bufSize];
+
+#if LCMS_VERSION >= 2160
+        cmsGetProfileInfoUTF8(targetProfile, cmsInfoDescription,
+                              "en", "US",
+                              buf, bufSize);
+#else
+        cmsGetProfileInfoASCII(targetProfile, cmsInfoDescription,
+                               "en", "US",
+                               buf, bufSize);
+#endif
+
+        // Release resources
+        cmsDeleteTransform(transform);
+        cmsCloseProfile(targetProfile);
+
+        qDebug() << "Applying external color profile:" << buf;
+
+        img = ret;
+
+        return true;
+
+    }
 
 #endif
 
