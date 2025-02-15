@@ -52,7 +52,7 @@ ApplicationWindow {
     }
 
     // it is hidden by default until we set the stylings from the settings below
-    visible: false
+    visibility: Window.Hidden
     property string overrideTitle: ""
     title: (overrideTitle!= "" ? (overrideTitle+" | ") : (image.imageSource == "" ? "" : (PQCScripts.getFilename(image.imageSource) + " | "))) + "PreviewQt"
 
