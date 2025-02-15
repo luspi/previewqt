@@ -175,18 +175,24 @@ void PQCFileFormats::readFromDatabase() {
         bool supportedByAnyLibrary = false;
         bool magickToBeAdded = false;
 
-        QList<QVariant> all;
-        all << endings;
-        all << enabled;
-        all << desc;
-        all << cat;
+        QStringList endingsParts = endings.split(",");
+
+        QMimeDatabase db;
+        if(mimetypes != "") {
+            const QStringList allmt = mimetypes.split(",");
+            for(const QString &m : allmt) {
+                QMimeType mt = db.mimeTypeForName(m);
+                if(!mt.globPatterns().isEmpty())
+                    endingsParts << mt.globPatterns();
+            }
+        }
+
         if(qt) {
             // we check the formats against the list of supported image formats
             // this list can vary depending on which plugins are installed
             if(qtSupported.contains(qt_formatname.toUtf8()) || cat == "ind") {
                 supportedByAnyLibrary = true;
-                all << "Qt";
-                m_formats_qt << endings.split(",");
+                m_formats_qt << endingsParts;
                 if(mimetypes != "")
                     m_mimetypes_qt << mimetypes.split(",");
             }
@@ -195,8 +201,7 @@ void PQCFileFormats::readFromDatabase() {
 #ifdef PQMRESVG
         if(resvg) {
             supportedByAnyLibrary = true;
-            all << "resvg";
-            m_formats_resvg << endings.split(",");
+            m_formats_resvg << endingsParts;
             if(mimetypes != "")
                 m_mimetypes_resvg << mimetypes.split(",");
         }
@@ -205,8 +210,7 @@ void PQCFileFormats::readFromDatabase() {
 #ifdef PQMLIBVIPS
         if(libvips) {
             supportedByAnyLibrary = true;
-            all << "libvips";
-            m_formats_libvips << endings.split(",");
+            m_formats_libvips << endingsParts;
             if(mimetypes != "")
                 m_mimetypes_libvips << mimetypes.split(",");
         }
@@ -238,12 +242,7 @@ void PQCFileFormats::readFromDatabase() {
             if(alright) {
                 supportedByAnyLibrary = true;
                 magickToBeAdded = true;
-#ifdef PQMIMAGEMAGICK
-                all << "ImageMagick";
-#elif defined(PQMGRAPHICSMAGICK)
-                all << "GraphicsMagick";
-#endif
-                m_formats_magick << endings.split(",");
+                m_formats_magick << endingsParts;
                 if(mimetypes != "")
                     m_mimetypes_magick << mimetypes.split(",");
             }
@@ -252,8 +251,7 @@ void PQCFileFormats::readFromDatabase() {
 #ifdef PQMRAW
         if(libraw) {
             supportedByAnyLibrary = true;
-            all << "libraw";
-            m_formats_libraw << endings.split(",");
+            m_formats_libraw << endingsParts;
             if(mimetypes != "")
                 m_mimetypes_libraw << mimetypes.split(",");
         }
@@ -261,24 +259,21 @@ void PQCFileFormats::readFromDatabase() {
 #if defined(PQMPOPPLER) || defined(PQMQTPDF)
         if(poppler) {
             supportedByAnyLibrary = true;
-            all << "Poppler";
-            m_formats_poppler << endings.split(",");
+            m_formats_poppler << endingsParts;
             if(mimetypes != "")
                 m_mimetypes_poppler << mimetypes.split(",");
         }
 #endif
         if(xcftools) {
             supportedByAnyLibrary = true;
-            all << "XCFTools";
-            m_formats_xcftools << endings.split(",");
+            m_formats_xcftools << endingsParts;
             if(mimetypes != "")
                 m_mimetypes_xcftools << mimetypes.split(",");
         }
 #ifdef PQMDEVIL
         if(devil) {
             supportedByAnyLibrary = true;
-            all << "DevIL";
-            m_formats_devil << endings.split(",");
+            m_formats_devil << endingsParts;
             if(mimetypes != "")
                 m_mimetypes_devil << mimetypes.split(",");
         }
@@ -286,8 +281,7 @@ void PQCFileFormats::readFromDatabase() {
 #ifdef PQMFREEIMAGE
         if(freeimage) {
             supportedByAnyLibrary = true;
-            all << "FreeImage";
-            m_formats_freeimage << endings.split(",");
+            m_formats_freeimage << endingsParts;
             if(mimetypes != "")
                 m_mimetypes_freeimage << mimetypes.split(",");
         }
@@ -296,12 +290,10 @@ void PQCFileFormats::readFromDatabase() {
         if(archive) {
             supportedByAnyLibrary = true;
             if(cat == "bok") {
-                all << "E-Book";
-                m_formats_ebook << endings.split(",");
+                m_formats_ebook << endingsParts;
                 if(mimetypes != "")
                     m_mimetypes_ebook << mimetypes.split(",");
             } else {
-                all << "LibArchive";
                 m_formats_archive << endings.split(",");
                 if(mimetypes != "")
                     m_mimetypes_archive << mimetypes.split(",");
@@ -311,8 +303,7 @@ void PQCFileFormats::readFromDatabase() {
 #ifdef PQMVIDEOQT
         if(video) {
             supportedByAnyLibrary = true;
-            all << "Video";
-            m_formats_video << endings.split(",");
+            m_formats_video << endingsParts;
             if(mimetypes != "")
                 m_mimetypes_video << mimetypes.split(",");
         }
@@ -320,8 +311,7 @@ void PQCFileFormats::readFromDatabase() {
 #ifdef PQMVIDEOMPV
         if(libmpv) {
             supportedByAnyLibrary = true;
-            all << "libmpv";
-            m_formats_libmpv << endings.split(",");
+            m_formats_libmpv << endingsParts;
             if(mimetypes != "")
                 m_mimetypes_libmpv << mimetypes.split(",");
         }
@@ -329,12 +319,8 @@ void PQCFileFormats::readFromDatabase() {
 
         if(supportedByAnyLibrary) {
 
-            m_formats << endings.split(",");
-            if(mimetypes != "")
-                m_mimetypes << mimetypes.split(",");
-
             if(magickToBeAdded && validImGmMagick.length() > 0) {
-                for(QString &e : endings.split(",")) {
+                for(QString &e : endingsParts) {
                     if(magick.contains(e))
                         magick[e] = QStringList() << magick[e].toStringList() << validImGmMagick;
                     else
@@ -350,6 +336,36 @@ void PQCFileFormats::readFromDatabase() {
 
         }
     }
+
+    m_formats.clear();
+    m_formats << m_formats_qt;
+    m_formats << m_formats_resvg;
+    m_formats << m_formats_libvips;
+    m_formats << m_formats_magick;
+    m_formats << m_formats_libraw;
+    m_formats << m_formats_poppler;
+    m_formats << m_formats_xcftools;
+    m_formats << m_formats_devil;
+    m_formats << m_formats_freeimage;
+    m_formats << m_formats_archive;
+    m_formats << m_formats_video;
+    m_formats << m_formats_libmpv;
+    m_formats << m_formats_ebook;
+
+    m_mimetypes.clear();
+    m_mimetypes << m_mimetypes_qt;
+    m_mimetypes << m_mimetypes_resvg;
+    m_mimetypes << m_mimetypes_libvips;
+    m_mimetypes << m_mimetypes_magick;
+    m_mimetypes << m_mimetypes_libraw;
+    m_mimetypes << m_mimetypes_poppler;
+    m_mimetypes << m_mimetypes_xcftools;
+    m_mimetypes << m_mimetypes_devil;
+    m_mimetypes << m_mimetypes_freeimage;
+    m_mimetypes << m_mimetypes_archive;
+    m_mimetypes << m_mimetypes_video;
+    m_mimetypes << m_mimetypes_libmpv;
+    m_mimetypes << m_mimetypes_ebook;
 
 }
 

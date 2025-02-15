@@ -1146,17 +1146,10 @@ QString PQCScripts::keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key key
 
 QString PQCScripts::openNewFile() {
 
-    const QStringList filters({
-        QString("All supported files (*.%1)").arg(PQCFileFormats::get().getAllFormats().join(".*")),
-        "Any files (*)"
-    });
+    // TODO: Add custom sorting model that takes both endings and mimetypes into account
 
     QFileDialog dlg;
     dlg.setFileMode(QFileDialog::ExistingFile);
-#ifndef PQMAPPIMAGEBUILD
-    dlg.setNameFilters(filters);
-    dlg.setMimeTypeFilters(PQCFileFormats::get().getAllMimeTypes());
-#endif
     dlg.setDirectory(PQCSettings::get().getFiledialogLocation());
 
     int e = dlg.exec();
