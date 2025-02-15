@@ -42,44 +42,49 @@ QString PQCLoadFileLibVips::load(QString filename, QSize maxSize, QSize &origSiz
 
     // we use the C API as the equivalent C++ API calls led to crash on subsequent call
 
-    // The vips image object
-    VipsImage *in;
-
     // attempt to the load the image
-    if(!(in = vips_image_new_from_file(filename.toStdString().c_str(), NULL))) {
-        g_object_unref(in);
+    VipsImage *vimg = vips_image_new_from_file(filename.toStdString().c_str(), "memory", true, NULL);
+    if(vimg == NULL) {
         errormsg = "vips_image_new_from_file: failed to load image from file";
         qDebug() << errormsg;
         return errormsg;
     }
 
     // store original size
-    origSize = QSize(vips_image_get_width(in), vips_image_get_height(in));
+    origSize = QSize(vimg->Xsize, vimg->Ysize);
 
-    // convert VipsImage to QImage
-    fullImage = QImage((uchar*)vips_image_get_data(in), vips_image_get_width(in), vips_image_get_height(in), VIPS_IMAGE_SIZEOF_LINE(in), QImage::Format_RGB888);
-    if(fullImage.isNull()) {
+    void *buf = nullptr;
+    size_t len = 0;
+    vips_image_write_to_buffer(vimg, ".png", &buf, &len, NULL);
+
+    // Convert VipsImage to raw data
+    img.loadFromData(reinterpret_cast<const uchar *>(buf), len);
+    if(img.isNull()) {
         errormsg = "converting VipsImage to QImage failed";
         qDebug() << errormsg;
         return errormsg;
     }
 
-    g_object_unref(in);
+    g_object_unref(vimg);
+    g_free(buf);
 
     // Scale image if necessary
     if(maxSize.width() != -1) {
 
-        if(origSize.width() > maxSize.width() || origSize.height() > maxSize.height())
-            img = fullImage.scaled(origSize.scaled(maxSize, Qt::KeepAspectRatio), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        QSize finalSize = origSize;
 
-    } else
-        img = fullImage;
+        if(finalSize.width() > maxSize.width() || finalSize.height() > maxSize.height())
+            finalSize = finalSize.scaled(maxSize, Qt::KeepAspectRatio);
+
+        img = img.scaled(finalSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+    }
 
     return "";
 
 #endif
     origSize = QSize(-1,-1);
-    errormsg = "Failed to load image, libvips not supported by this build of PreviewQt!";
+    errormsg = "Failed to load image, libvips not supported by this build of PhotoQt!";
     qDebug() << errormsg;
     return errormsg;
 

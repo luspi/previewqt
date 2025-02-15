@@ -21,6 +21,7 @@
  **************************************************************************/
 
 #include <pqc_loadfile_qt.h>
+#include <pqc_configfiles.h>
 #include <QSize>
 #include <QImage>
 #include <QFileInfo>
@@ -110,6 +111,24 @@ QString PQCLoadFileQt::load(QString filename, QSize maxSize, QSize &origSize, QI
             origSize = fullImage.size();
         }
 
+        // If QImageReader cannot read the image does not mean all hope is lost
+        if(!reader.canRead()) {
+
+            errormsg = "unable to read image with reader, trying direct QImage";
+            qDebug() << errormsg;
+
+            // It is possible that QImage can load an image directly even if QImageReader cannot
+            fullImage.load(filename);
+            imgAlreadyLoaded = true;
+            origSize = fullImage.size();
+
+            if(fullImage.isNull()) {
+                errormsg = "image reader and QImage unable to read image";
+                qWarning() << errormsg;
+                return errormsg;
+            }
+        }
+
         // check if we need to scale the image
         if(maxSize.isValid() && origSize.isValid() && !maxSize.isNull() && !origSize.isNull()) {
 
@@ -120,13 +139,6 @@ QString PQCLoadFileQt::load(QString filename, QSize maxSize, QSize &origSize, QI
                     reader.setScaledSize(origSize.scaled(maxSize, Qt::KeepAspectRatio));
             }
 
-        }
-
-        // Eventually load the image
-        if(!reader.canRead()) {
-            errormsg = "image reader unable to read image";
-            qWarning() << errormsg;
-            return errormsg;
         }
 
         if(!imgAlreadyLoaded) {

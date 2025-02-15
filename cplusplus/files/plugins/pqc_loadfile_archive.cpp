@@ -76,6 +76,7 @@ QString PQCLoadFileArchive::load(QString filename, QSize maxSize, QSize &origSiz
     QFileInfo info(archivefile);
     const QString suffix = info.suffix().toLower();
 
+#ifndef Q_OS_WIN
     if(suffix == "cbr" || suffix == "rar") {
 
         QProcess which;
@@ -123,6 +124,7 @@ QString PQCLoadFileArchive::load(QString filename, QSize maxSize, QSize &origSiz
             qWarning() << "unrar was not found in system path";
 
     }
+#endif
 
     // Create new archive handler
     struct archive *a = archive_read_new();
@@ -132,7 +134,11 @@ QString PQCLoadFileArchive::load(QString filename, QSize maxSize, QSize &origSiz
     archive_read_support_format_all(a);
 
     // Read file
+#ifdef Q_OS_WIN
+    int r = archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(archivefile.utf16()), 10240);
+#else
     int r = archive_read_open_filename(a, archivefile.toLocal8Bit().data(), 10240);
+#endif
 
     // If something went wrong, output error message and stop here
     if(r != ARCHIVE_OK) {
@@ -206,9 +212,12 @@ QString PQCLoadFileArchive::load(QString filename, QSize maxSize, QSize &origSiz
     }
 
     // Close archive
+    r = archive_read_close(a);
+    if(r != ARCHIVE_OK)
+        qWarning() << "ERROR: archive_read_close() returned code of" << r;
     r = archive_read_free(a);
     if(r != ARCHIVE_OK)
-        qWarning() << "PQLoadImage::Archive::load(): ERROR: archive_read_free() returned code of" << r;
+        qWarning() << "ERROR: archive_read_free() returned code of" << r;
 
     // Scale image if necessary
     if(maxSize.width() != -1) {
