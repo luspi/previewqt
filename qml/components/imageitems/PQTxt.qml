@@ -91,7 +91,11 @@ Item {
                 color: colorPalette.base
             }
 
+
+            // With syntax highlighting the text content is set after the syntax highlighting is set at the end
+            /*1off_PQMKF6NOT
             text: PQCScripts.getTextFileContents(image_top.imageSource)
+            2off_PQMKF6NOT*/
 
             Component.onCompleted: {
                 image.status = Image.Ready
@@ -426,6 +430,10 @@ Item {
             // set current file type
             myHighlighter.definition = Repository.definitionForName(PQCScripts.getSuffix(image_top.imageSource))
             control.currentIndex = Repository.definitions.indexOf(myHighlighter.definition)
+
+            // This HAS to be set after setting the styling!
+            // Otherwise for slightly larger files the interface is blocked for quite a while.
+            imageitem.text = PQCScripts.getTextFileContents(image_top.imageSource)
         }
         /*2on_PQMKF6*/
 
