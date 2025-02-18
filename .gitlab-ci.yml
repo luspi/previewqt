@@ -37,7 +37,13 @@ appimage:
     - wget -qO - http://archive.neon.kde.org/public.key | apt-key add -
     - apt-get update -qq && apt-get -y upgrade
     - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev libqt6chartsqml6 qml6-module-qt-labs-platform qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-window qt6-multimedia-dev qml6-module-qtqml-workerscript qml6-module-qtquick-templates qml6-module-qtquick-dialogs qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-pdf-dev qml6-module-org-kde-syntaxhighlighting
-    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev libgraphicsmagick++1-dev
+    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev
+    - git clone https://github.com/ImageMagick/ImageMagick  # Install up-to-date ImageMagick
+    - cd ImageMagick
+    - git checkout $(git describe --tags --abbrev=0)
+    - ./configure --prefix=/usr --with-bzlib --with-fontconfig --with-freetype=yes --with-gslib --with-gvc --with-jpeg --with-png --with-tiff --with-xml --with-gs-font-dir --enable-hdri --disable-docs
+    - make -j$(nproc) install
+    - cd ..
     - export QT_SELECT=qt6
     - rm -rf lang/
     - eval `ssh-agent -s`
@@ -50,7 +56,7 @@ appimage:
     - git clone -b l10n_main git@gitlab.com:lspies/previewqt-lang
     - mv previewqt-lang/localized lang
     - mkdir -p build && cd build/
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DEXIV2=ON -DGRAPHICSMAGICK=ON -DIMAGEMAGICK=OFF -DVIDEO_MPV=ON -DLIBVIPS=ON -DPOPPLER=OFF -DEXIV2_ENABLE_BMFF=ON -DRESVG=OFF -DMOTIONPHOTO=OFF -DLCMS2=ON -DAPPIMAGEBUILD=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DEXIV2=ON -DGRAPHICSMAGICK=OFF -DIMAGEMAGICK=ON -DVIDEO_MPV=ON -DLIBVIPS=ON -DPOPPLER=OFF -DEXIV2_ENABLE_BMFF=ON -DRESVG=OFF -DMOTIONPHOTO=OFF -DLCMS2=ON -DAPPIMAGEBUILD=ON
     - make DESTDIR=../appdir -j$(nproc) install
     - cd ..
     - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
