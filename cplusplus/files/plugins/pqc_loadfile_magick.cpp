@@ -33,7 +33,7 @@ PQCLoadFileMagick::PQCLoadFileMagick() {}
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
 QString PQCLoadFileMagick::load(QString filename, QSize maxSize, QSize &origSize, QImage &img, Magick::Image &fullImage) {
 #else
-QString PQCLoadImageMagick::load(QString filename, QSize maxSize, QSize &origSize, QImage &img) {
+QString PQCLoadFileMagick::load(QString filename, QSize maxSize, QSize &origSize, QImage &img) {
 #endif
 
     qDebug() << "args: filename =" << filename;
