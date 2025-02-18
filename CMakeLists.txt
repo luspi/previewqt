@@ -50,6 +50,7 @@ option(PHOTOSPHERE "Enable support for photo spheres and 360 degree panoramic vi
 option(LCMS2 "Enable advanced color management with LCMS2" ON)
 
 option(FLATPAKBUILD "Enable this if this is a build for Flatpak" OFF)
+option(PORTABLETWEAKS "Apply tweaks for a build of a portable version" OFF)
 
 #############################
 ####  SET list of files  ####
@@ -489,6 +490,11 @@ if(LCMS2)
     endif()
 else()
     message("** LCMS2 DISABLED")
+endif()
+
+if(PORTABLETWEAKS)
+    message("** Enabling Portable tweaks")
+    target_compile_definitions(previewqt PRIVATE PQMPORTABLETWEAKS)
 endif()
 
 

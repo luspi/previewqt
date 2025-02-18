@@ -30,10 +30,10 @@
 PQCSettings::PQCSettings() {
 
     firstStart = false;
-    if(!QFileInfo::exists(PQCConfigFiles::CONFIG_DIR() + "/settings"))
+    if(!QFileInfo::exists(PQCConfigFiles::get().CONFIG_DIR() + "/settings"))
         firstStart = true;
 
-    settings = new QSettings(PQCConfigFiles::CONFIG_DIR() + "/settings", QSettings::IniFormat);
+    settings = new QSettings(PQCConfigFiles::get().CONFIG_DIR() + "/settings", QSettings::IniFormat);
     saveTimer = new QTimer;
     saveTimer->setInterval(100);
     saveTimer->setSingleShot(true);

@@ -21,6 +21,7 @@
  **************************************************************************/
 
 #include <pqc_loadimage_xcf.h>
+#include <pqc_configfiles.h>
 #include <QProcess>
 #include <QDir>
 #include <QImageReader>
@@ -49,10 +50,10 @@ QString PQCLoadImageXCF::load(QString filename, QSize maxSize, QSize &origSize, 
 
     // Convert xcf to png using xcf2png (part of xcftools)
     QProcess p;
-    p.execute("xcf2png", QStringList() << filename << "-o" << QString(QDir::tempPath() + "/previewqt_xcf.png"));
+    p.execute("xcf2png", QStringList() << filename << "-o" << QString(PQCConfigFiles::get().CACHE_DIR() + "/previewqt_xcf.png"));
 
     // And load it
-    QImageReader reader(QDir::tempPath() + "/previewqt_xcf.png");
+    QImageReader reader(PQCConfigFiles::get().CACHE_DIR() + "/previewqt_xcf.png");
 
     origSize = reader.size();
 

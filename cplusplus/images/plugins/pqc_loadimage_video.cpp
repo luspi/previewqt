@@ -21,6 +21,7 @@
  **************************************************************************/
 
 #include <pqc_loadimage_video.h>
+#include <pqc_configfiles.h>
 #include <QImage>
 #include <QImageReader>
 #include <QProcess>
@@ -40,7 +41,7 @@ QString PQCLoadImageVideo::load(QString filename, QSize maxSize, QSize &origSize
 #ifdef Q_OS_LINUX
 
     // the temp image thumbnail path (incl random int)
-    QString tmp_path = QString("%1/previewqt_videothumb_%2.jpg").arg(QDir::tempPath()).arg(rand());
+    QString tmp_path = QString("%1/previewqt_videothumb_%2.jpg").arg(PQCConfigFiles::get().CACHE_DIR()).arg(rand());
 
     // create thumbnail using ffmpegthumbnailer
     QProcess proc;

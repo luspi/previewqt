@@ -28,7 +28,7 @@
 #include <QCryptographicHash>
 
 PQCCache::PQCCache() {
-    cache = new QSettings(PQCConfigFiles::CACHE_DIR() + "/poscache", QSettings::IniFormat);
+    cache = new QSettings(PQCConfigFiles::get().CACHE_DIR() + "/poscache", QSettings::IniFormat);
 }
 
 PQCCache::~PQCCache() {

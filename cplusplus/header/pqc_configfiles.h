@@ -30,17 +30,59 @@ class PQCConfigFiles {
 
 public:
 
-    static const QString CONFIG_DIR() {
-        return QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    static PQCConfigFiles& get() {
+        static PQCConfigFiles instance;
+        return instance;
+    }
+    ~PQCConfigFiles() {}
+
+    PQCConfigFiles(PQCConfigFiles const&)     = delete;
+    void operator=(PQCConfigFiles const&) = delete;
+
+    const QString CONFIG_DIR() {
+        return m_CONFIG_DIR;
     }
 
-    static const QString CACHE_DIR() {
-        return QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    const QString CACHE_DIR() {
+        return m_CACHE_DIR;
     }
 
-    static const QString IMAGEFORMATS_DB() {
-        return QString("%1/imageformats.db").arg(CONFIG_DIR());
+    const QString IMAGEFORMATS_DB() {
+        return m_IMAGEFORMATS_DB;
     }
+
+private:
+    PQCConfigFiles() {
+
+#ifdef PQMPORTABLETWEAKS
+        previewqt_exe_basedir = qgetenv("PREVIEWQT_EXE_BASEDIR");
+#endif
+
+#ifdef PQMPORTABLETWEAKS
+#ifdef Q_OS_WIN
+        m_CONFIG_DIR = QString("%1/previewqt-data/config/").arg(previewqt_exe_basedir);
+        m_CACHE_DIR = QString("%1/previewqt-data/cache/").arg(previewqt_exe_basedir);
+#else
+        m_CONFIG_DIR = QString("%1/.previewqt-data/config/").arg(previewqt_exe_basedir);
+        m_CACHE_DIR = QString("%1/.previewqt-data/cache/").arg(previewqt_exe_basedir);
+#endif
+#else
+        m_CONFIG_DIR = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+        m_CACHE_DIR = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+#endif
+
+        m_IMAGEFORMATS_DB = QString("%1/imageformats.db").arg(m_CONFIG_DIR);
+
+    }
+
+    QString m_CONFIG_DIR;
+    QString m_CACHE_DIR;
+    QString m_IMAGEFORMATS_DB;
+
+
+#ifdef PQMPORTABLETWEAKS
+    QString previewqt_exe_basedir;
+#endif
 
 };
 
