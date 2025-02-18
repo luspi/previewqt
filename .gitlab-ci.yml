@@ -1,6 +1,6 @@
 localization:
 
-  image: ubuntu:jammy
+  image: ubuntu:noble
 
   only:
     - schedules
@@ -8,8 +8,6 @@ localization:
   script:
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get update && apt-get install -y qt6-base-dev qt6-l10n-tools openssh-client git wget
-    - qtchooser -install qt6 $(which qmake6)
-    - export QT_SELECT=qt6
     - eval `ssh-agent -s`
     - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' | ssh-add - > /dev/null # add ssh key
     - mkdir -p ~/.ssh && chmod 700 ~/.ssh
@@ -18,7 +16,7 @@ localization:
     - git config --global user.email "${CI_EMAIL}"
     - git config --global user.name "${CI_USERNAME}"
     - git clone git@gitlab.com:lspies/previewqt-lang.git && cd previewqt-lang
-    - lupdate -no-obsolete ../qml/ ../cplusplus/ -ts previewqt-qt6.ts
+    - /usr/lib/qt6/bin/lupdate -no-obsolete ../qml/ ../cplusplus/ -ts previewqt-qt6.ts
     - git add previewqt-qt6.ts
     - git diff-index --quiet HEAD || git commit -m "updating translation source files from CI"
     - git push
