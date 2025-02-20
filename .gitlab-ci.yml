@@ -16,8 +16,8 @@ localization:
     - git config --global user.email "${CI_EMAIL}"
     - git config --global user.name "${CI_USERNAME}"
     - git clone git@gitlab.com:lspies/previewqt-lang.git && cd previewqt-lang
-    - /usr/lib/qt6/bin/lupdate -no-obsolete ../qml/ ../cplusplus/ -ts previewqt-qt6.ts
-    - git add previewqt-qt6.ts
+    - /usr/lib/qt6/bin/lupdate -no-obsolete ../qml/ ../cplusplus/ -ts previewqt.ts
+    - git add previewqt.ts
     - git diff-index --quiet HEAD || git commit -m "updating translation source files from CI"
     - git push
 
