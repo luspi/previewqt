@@ -83,12 +83,12 @@ ApplicationWindow {
         PQCScripts.deleteTemporaryFiles()
     }
 
-    onVisibleChanged: {
-        if(visible) {
+    onVisibilityChanged: (visibility) => {
+        if(toplevel.visibility == Window.Hidden) {
+            closeAllMenus()
+        } else {
             ignoreActiveChanges = true
             noLongerIgnoreActiveChanges.restart()
-        } else {
-            closeAllMenus()
         }
     }
 
