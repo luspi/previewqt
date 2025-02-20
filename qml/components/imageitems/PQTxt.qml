@@ -61,8 +61,12 @@ Item {
         ScrollBar.horizontal: ScrollBar { }
         ScrollBar.vertical: ScrollBar { }
 
-        onContentXChanged: settingsrect.hide()
-        onContentYChanged: settingsrect.hide()
+        onContentXChanged: {
+            settingsrect.hide()
+        }
+        onContentYChanged: {
+            settingsrect.hide()
+        }
 
         /*1on_PQMKF6*/
         SyntaxHighlighter {
@@ -72,7 +76,7 @@ Item {
         }
         /*2on_PQMKF6*/
 
-        TextArea {
+        TextEdit {
 
             id: imageitem
             y: 5
@@ -87,10 +91,12 @@ Item {
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
             readOnly: true
-            background: Rectangle {
-                color: colorPalette.base
-            }
 
+            Rectangle {
+                anchors.fill: parent
+                color: colorPalette.base
+                z: -1
+            }
 
             // With syntax highlighting the text content is set after the syntax highlighting is set at the end
             /*1on_PQMNOTKF6
@@ -148,11 +154,210 @@ Item {
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
-        enabled: settingsrect.visible
-        onClicked:
+        enabled: settingsrect.visible||searchrect.visible
+        onClicked: {
             settingsrect.hide()
+            searchrect.hide()
+        }
         onWheel: {}
     }
+
+    Rectangle {
+
+        id: searchbut
+
+        x: 5
+        y: parent.height-height-5
+        width: 35
+        height: 35
+        color: searchmouse.containsPress ? "#21262b" : (searchmouse.containsMouse ? "#61666b" : "#31363b")
+        Behavior on color { ColorAnimation { duration: 200 } }
+        radius: 4
+
+        opacity: 1-searchrect.opacity
+
+        Image {
+            anchors.fill: parent
+            anchors.margins: 6
+            sourceSize: Qt.size(width, height)
+            source: "image://svg/:/magnifyingglass.svg"
+        }
+
+        MouseArea {
+            id: searchmouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                searchrect.show()
+            }
+        }
+
+    }
+
+    Rectangle {
+
+        id: searchrect
+
+        color: "red"
+
+        x: 5
+        y: parent.height-height-5
+        height: 35
+        width: visible ? 150 : 0
+        Behavior on width { NumberAnimation { duration: 200 } }
+
+        opacity: 0
+        visible: opacity>0
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+
+        TextInput {
+            id: searchinput
+            y: (parent.height-height)/2
+            width: parent.width
+            font.pointSize: 12
+            enabled: searchrect.visible
+
+            Keys.onPressed: (event) => {
+
+                event.accepted = false
+
+                if(event.modifiers === Qt.ControlModifier || event.modifiers === Qt.AltModifier) {
+
+                    toplevel.processKeyEvent(event.modifiers, event.key)
+                                    event.accepted = true
+
+                } else if(event.key === Qt.Key_Escape) {
+
+                    searchrect.hide()
+                                    event.accepted = true
+
+                } else if(event.modifiers & Qt.ShiftModifier) {
+                    findTimer.reverse = true
+                }
+            }
+
+            Keys.onReleased: (event) => {
+                if(!(event.modifiers & Qt.ShiftModifier)) {
+                    findTimer.reverse = false
+                }
+            }
+
+            onTextEdited: {
+                findTimer.restart()
+            }
+
+            onAccepted: {
+                findTimer.stop()
+                findTimer.triggered()
+            }
+
+        }
+
+        NumberAnimation {
+            id: animContY
+            target: flickme
+            property: "contentY"
+            easing.type: Easing.OutCubic
+            duration: 200
+        }
+        NumberAnimation {
+            id: animContX
+            target: flickme
+            property: "contentX"
+            easing.type: Easing.OutCubic
+            duration: 200
+        }
+
+        Timer {
+            id: findTimer
+            interval: 1000
+            property bool reverse: false
+            onTriggered: {
+
+                if(searchinput.text.length === 0) {
+                    imageitem.deselect()
+                    return
+                }
+
+                var textContent = imageitem.text
+
+                var index = imageitem.cursorPosition
+                if(reverse)
+                    index = textContent.lastIndexOf(searchinput.text, index-searchinput.text.length-1)
+                else
+                    index = textContent.indexOf(searchinput.text, index)
+                if(index !== -1) {
+
+                    imageitem.select(index, index+searchinput.text.length)
+                    var rect = imageitem.positionToRectangle(index);
+
+                    animContX.stop()
+                    animContY.stop()
+
+                    animContX.from = flickme.contentX
+                    animContX.to = Math.max(0, Math.min(imageitem.width-flickme.width, rect.x-flickme.width*0.8))
+
+                    animContY.from = flickme.contentY
+                    animContY.to = Math.max(0, Math.min(imageitem.height-flickme.height, rect.y-flickme.height*0.8))
+
+                    animContX.restart()
+                    animContY.restart()
+
+                } else {
+                    index = 0
+
+                    if(reverse)
+                        index = textContent.lastIndexOf(searchinput.text)
+                    else
+                        index = textContent.indexOf(searchinput.text, index)
+
+
+                    if(index !== -1) {
+
+                        imageitem.select(index, index+searchinput.text.length)
+                        var rect2 = imageitem.positionToRectangle(index);
+
+                        animContX.stop()
+                        animContY.stop()
+
+                        animContX.from = flickme.contentX
+                        animContX.to = Math.max(0, Math.min(imageitem.width-flickme.width, rect2.x-flickme.width*0.8))
+
+                        animContY.from = flickme.contentY
+                        animContY.to = Math.max(0, Math.min(imageitem.height-flickme.height, rect2.y-flickme.height*0.8))
+
+                        animContX.restart()
+                        animContY.restart()
+
+                    }
+                }
+
+            }
+        }
+
+        function show() {
+            toplevel.menuOpen = true
+            searchrect.opacity = 1
+            searchinput.forceActiveFocus()
+        }
+
+        function hide() {
+            findTimer.stop()
+            toplevel.menuOpen = false
+            searchrect.opacity = 0
+            focusitem.forceActiveFocus()
+        }
+
+        Connections {
+            target: toplevel
+            function onCloseAllMenus() {
+                searchrect.hide()
+            }
+        }
+
+    }
+
 
     Row {
 

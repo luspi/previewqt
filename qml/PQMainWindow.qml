@@ -304,6 +304,10 @@ ApplicationWindow {
 
     // When a key combo has been pressed
     onKeyPress: (modifiers, keycode) => {
+        processKeyEvent(modifiers, keycode)
+    }
+
+    function processKeyEvent(modifiers, keycode) {
 
         // convert to text
         var txt = PQCScripts.keycodeToString(modifiers, keycode)

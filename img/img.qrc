@@ -26,5 +26,6 @@
         <file>plus.svg</file>
         <file>font-minus.svg</file>
         <file>font-plus.svg</file>
+        <file>magnifyingglass.svg</file>
     </qresource>
 </RCC>
