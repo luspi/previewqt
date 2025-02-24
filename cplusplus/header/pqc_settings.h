@@ -102,6 +102,10 @@ public:
     QString getDefaultAppEBooks();
     void setDefaultAppEBooks(QString val);
 
+    Q_PROPERTY(QString defaultAppText READ getDefaultAppText WRITE setDefaultAppText NOTIFY defaultAppTextChanged)
+    QString getDefaultAppText();
+    void setDefaultAppText(QString val);
+
     Q_PROPERTY(bool closeAfterDefaultApp READ getCloseAfterDefaultApp WRITE setCloseAfterDefaultApp NOTIFY closeAfterDefaultAppChanged)
     bool getCloseAfterDefaultApp();
     void setCloseAfterDefaultApp(bool val);
@@ -146,6 +150,7 @@ private:
     QString m_defaultAppVideos;
     QString m_defaultAppComicBooks;
     QString m_defaultAppEBooks;
+    QString m_defaultAppText;
     bool m_closeAfterDefaultApp;
     QString m_filedialogLocation;
     bool m_closeWhenLosingFocus;
@@ -168,6 +173,7 @@ private:
     QStringList opt_com;
     QStringList opt_bok;
     QStringList opt_vid;
+    QStringList opt_txt;
 
 private Q_SLOTS:
     void saveSettings();
@@ -188,6 +194,7 @@ Q_SIGNALS:
     void defaultAppVideosChanged();
     void defaultAppComicBooksChanged();
     void defaultAppEBooksChanged();
+    void defaultAppTextChanged();
     void closeAfterDefaultAppChanged();
     void filedialogLocationChanged();
     void closeWhenLosingFocusChanged();

@@ -61,6 +61,9 @@ ApplicationWindow {
     property var vidoptions_key: ["PhotoQt", "Dragon Player", "Parole", "SMPlayer", "Totem", "VLC", "(custom)"]
     property var vidoptions_val: ["photoqt", "dragon",        "parole", "smplayer", "totem", "vlc", ""]
 
+    property var txtoptions_key: ["Kate", "KWrite", "Gedit", "Sublime", "(custom)"]
+    property var txtoptions_val: ["kate", "kwrite", "gedit", "sublime", ""]
+
     // For this window, this item catches all key presses
     Item {
         id: catchKeyPress
@@ -135,6 +138,9 @@ ApplicationWindow {
 
         var bokindex = Object.values(bokoptions_val).indexOf(PQCSettings.defaultAppEBooks)
         bokcombo.currentIndex = (bokindex===-1 ? bokcombo.currentIndex=bokcombo.model.length-1 : bokindex)
+
+        var txtindex = Object.values(txtoptions_val).indexOf(PQCSettings.defaultAppText)
+        txtcombo.currentIndex = (txtindex===-1 ? txtcombo.currentIndex=txtcombo.model.length-1 : txtindex)
 
         optionsLoaded = true
 
@@ -778,6 +784,55 @@ ApplicationWindow {
                     }
                 }
 
+                Column {
+
+                    Text {
+                        text: qsTr("External application for text documents:")
+                        color: colorPalette.text
+                    }
+
+                    ComboBox {
+                        id: txtcombo
+                        x: (defaultappsettings.usableWidth-width)/2
+                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                        model: txtoptions_key
+                        visible: !PQCScripts.amIOnWindows()
+                        onCurrentIndexChanged: {
+                            if(!optionsLoaded) return
+                            catchKeyPress.forceActiveFocus()
+                            if(currentIndex < txtcombo.model.length-1) {
+                                PQCSettings.defaultAppText = txtoptions_val[currentIndex]
+                            } else {
+                                txtedit.text = PQCSettings.defaultAppText
+                            }
+                        }
+                    }
+
+                    Row {
+                        spacing: 5
+                        visible: txtcombo.currentIndex === txtcombo.model.length-1 || PQCScripts.amIOnWindows()
+                        TextField {
+                            id: txtedit
+                            y: (txtbut.height-height)/2
+                            width: defaultappsettings.usableWidth-txtbut.width-5
+                            text: PQCSettings.defaultAppText
+                            onTextChanged: {
+                                if(text !== PQCSettings.defaultAppText)
+                                    PQCSettings.defaultAppText = text
+                            }
+                        }
+                        Button {
+                            id: txtbut
+                            text: "..."
+                            onClicked: {
+                                selectExe.category = "text"
+                                selectExe.prevexe = txtedit.text
+                                selectExe.open()
+                            }
+                        }
+                    }
+                }
+
                 /************************************/
                 Item {
                     width: 1
@@ -846,6 +901,8 @@ ApplicationWindow {
                 comedit.text = PQCScripts.cleanPath(file)
             else if(category == "ebooks")
                 bokedit.text = PQCScripts.cleanPath(file)
+            else if(category == "text")
+                txtedit.text = PQCScripts.cleanPath(file)
             else
                 console.warn("Unknown category:", category)
 

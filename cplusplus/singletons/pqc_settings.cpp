@@ -47,6 +47,7 @@ PQCSettings::PQCSettings() {
     opt_com = {"okular", "photoqt"};
     opt_bok = {"ebook-viewer", "calibre", "okular"};
     opt_vid = {"vlc", "mplayer", "photoqt"};
+    opt_txt = {"kate", "kwrite", "gedit", "sublime"};
 #else
     // on windows custom tools are needed
     // we need empty entries here to not crash when loading the settings
@@ -56,6 +57,7 @@ PQCSettings::PQCSettings() {
     opt_com = {""};
     opt_bok = {""};
     opt_vid = {""};
+    opt_txt = {""};
 #endif
 
     // do this AFTER setting the above options
@@ -97,6 +99,12 @@ PQCSettings::PQCSettings() {
         for(auto &ele : opt_vid) {
             if(checkToolExistence(ele)) {
                 setDefaultAppVideos(ele);
+                break;
+            }
+        }
+        for(auto &ele : opt_txt) {
+            if(checkToolExistence(ele)) {
+                setDefaultAppText(ele);
                 break;
             }
         }
@@ -288,6 +296,17 @@ void PQCSettings::setDefaultAppEBooks(QString val) {
     }
 }
 
+QString PQCSettings::getDefaultAppText() {
+    return m_defaultAppText;
+}
+void PQCSettings::setDefaultAppText(QString val) {
+    if(m_defaultAppText != val) {
+        m_defaultAppText = val;
+        saveTimer->start();
+        Q_EMIT defaultAppTextChanged();
+    }
+}
+
 bool PQCSettings::getCloseAfterDefaultApp() {
     return m_closeAfterDefaultApp;
 }
@@ -371,6 +390,7 @@ void PQCSettings::loadSettings() {
     setDefaultAppVideos(settings->value("defaultAppVideos", opt_vid[0]).toString());
     setDefaultAppComicBooks(settings->value("defaultAppComicBooks", opt_com[0]).toString());
     setDefaultAppEBooks(settings->value("defaultAppEBooks", opt_bok[0]).toString());
+    setDefaultAppText(settings->value("defaultAppText", opt_txt[0]).toString());
     setCloseAfterDefaultApp(settings->value("closeAfterDefaultApp", true).toBool());
     setFiledialogLocation(settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString());
     setCloseWhenLosingFocus(settings->value("closeWhenLosingFocus", false).toBool());
@@ -397,6 +417,7 @@ void PQCSettings::saveSettings() {
     settings->setValue("defaultAppVideos", m_defaultAppVideos);
     settings->setValue("defaultAppComicBooks", m_defaultAppComicBooks);
     settings->setValue("defaultAppEBooks", m_defaultAppEBooks);
+    settings->setValue("defaultAppText", m_defaultAppText);
     settings->setValue("closeAfterDefaultApp", m_closeAfterDefaultApp);
     settings->setValue("filedialogLocation", m_filedialogLocation);
     settings->setValue("closeWhenLosingFocus", m_closeWhenLosingFocus);
