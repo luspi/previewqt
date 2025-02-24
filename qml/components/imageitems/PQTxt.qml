@@ -114,7 +114,7 @@ Rectangle {
             readOnly: true
 
             // With syntax highlighting the text content is set after the syntax highlighting is set at the end
-            /*1on_PQMNOTKF6
+            /*1off_PQMNOTKF6
             text: PQCScripts.getTextFileContents(image_top.imageSource)
             2off_PQMNOTKF6*/
 
