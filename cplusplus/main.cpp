@@ -105,6 +105,28 @@ int main(int argc, char *argv[]) {
     QQuickWindow::setGraphicsApi(QSGRendererInterface::OpenGL);
 #endif
 
+#ifdef PQMPORTABLETWEAKS
+    if(argc > 1) {
+        qputenv("PREVIEWQT_EXE_BASEDIR", argv[1]);
+        // create directory and set hidden attribute
+#ifdef Q_OS_WIN
+        QString folder = QString("%1/previewqt-data").arg(argv[1]);
+        QDir dir;
+        dir.mkdir(folder);
+        SetFileAttributesA(dir.toNativeSeparators(folder).toLocal8Bit(), FILE_ATTRIBUTE_HIDDEN);
+#else
+        QString folder = QString("%1/.previewqt-data").arg(argv[1]);
+        QDir dir;
+        dir.mkdir(folder);
+#endif
+    } else {
+#ifndef Q_OS_WIN
+        QFileInfo f(argv[0]);
+#endif
+        qputenv("PREVIEWQT_EXE_BASEDIR", f.absolutePath().toLocal8Bit());
+    }
+#endif
+
 #ifdef PQMEPUB
     QtWebEngineQuick::initialize();
 #endif
@@ -123,14 +145,14 @@ int main(int argc, char *argv[]) {
     qInstallMessageHandler(pqcMessageHandler);
 
     // make sure config directory exists
-    if(!QFileInfo::exists(PQCConfigFiles::CONFIG_DIR())) {
-        QDir dir(PQCConfigFiles::CONFIG_DIR());
-        if(!dir.mkpath(PQCConfigFiles::CONFIG_DIR())) {
+    if(!QFileInfo::exists(PQCConfigFiles::get().CONFIG_DIR())) {
+        QDir dir(PQCConfigFiles::get().CONFIG_DIR());
+        if(!dir.mkpath(PQCConfigFiles::get().CONFIG_DIR())) {
             qCritical() << "Error creating config directory!";
             qCritical() << "Unable to continue.";
             std::exit(1);
         }
-        if(!dir.mkpath(PQCConfigFiles::CACHE_DIR())) {
+        if(!dir.mkpath(PQCConfigFiles::get().CACHE_DIR())) {
             qCritical() << "Error creating cache directory!";
             qCritical() << "Continuing, but not everything might work.";
         }
@@ -138,24 +160,33 @@ int main(int argc, char *argv[]) {
 
     // make sure the fileformats database exists
     // if only the old database exist, attempt to copy it over (this change happened for v4.0)
-    if(!QFileInfo::exists(PQCConfigFiles::FILEFORMATS_DB())) {
+    if(!QFileInfo::exists(PQCConfigFiles::get().FILEFORMATS_DB())) {
         bool copyNewDB = true;
-        if(QFileInfo::exists(PQCConfigFiles::IMAGEFORMATS_DB())) {
-            if(!QFile::copy(PQCConfigFiles::IMAGEFORMATS_DB(), PQCConfigFiles::FILEFORMATS_DB()))
+        if(QFileInfo::exists(PQCConfigFiles::get().IMAGEFORMATS_DB())) {
+            if(!QFile::copy(PQCConfigFiles::get().IMAGEFORMATS_DB(), PQCConfigFiles::get().FILEFORMATS_DB()))
                 qWarning() << "Unable to copy imageformats.db to fileformats.db. Attempting to create new database file";
             else
                 copyNewDB = false;
         }
         if(copyNewDB) {
-            if(!QFile::copy(":/fileformats.db", PQCConfigFiles::FILEFORMATS_DB())) {
+            if(!QFile::copy(":/fileformats.db", PQCConfigFiles::get().FILEFORMATS_DB())) {
                 qCritical() << "Unable to create default fileformats database!";
                 std::exit(1);
             } else {
-                QFile file(PQCConfigFiles::FILEFORMATS_DB());
+                QFile file(PQCConfigFiles::get().FILEFORMATS_DB());
                 file.setPermissions(file.permissions()|QFileDevice::WriteOwner);
             }
         }
     }
+
+#ifdef PQMPORTABLETWEAKS
+    if(argc > 1) {
+        for(int i = 2; i < argc; ++i) {
+            argv[i-1] = argv[i];
+        }
+        argc -= 1;
+    }
+#endif
 
     PQCSingleInstance app(argc, argv);
 

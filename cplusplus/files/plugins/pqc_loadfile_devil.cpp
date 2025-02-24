@@ -21,6 +21,7 @@
  **************************************************************************/
 
 #include <pqc_loadfile_devil.h>
+#include <pqc_configfiles.h>
 #include <QSize>
 #include <QtDebug>
 #include <QDir>
@@ -111,7 +112,7 @@ QString PQCLoadFileDevil::load(QString filename, QSize maxSize, QSize &origSize,
 */
 
     // This is the temporary file we will load the image into
-    QString tempimage = QDir::tempPath() + "/previewqtdevil.ppm";
+    QString tempimage = PQCConfigFiles::get().CACHE_DIR() + "/previewqtdevil.ppm";
 
     // Make sure DevIL can overwrite any previously created file
     ilEnable(IL_FILE_OVERWRITE);

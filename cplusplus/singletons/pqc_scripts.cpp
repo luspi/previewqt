@@ -392,7 +392,7 @@ QString PQCScripts::extractMotionPhoto(QString path) {
     if(!info.exists())
         return "";
 
-    const QString videofilename = QString("%1/motionphotos/%2.mp4").arg(PQCConfigFiles::CACHE_DIR(), info.baseName());
+    const QString videofilename = QString("%1/motionphotos/%2.mp4").arg(PQCConfigFiles::get().CACHE_DIR(), info.baseName());
     if(QFileInfo::exists(videofilename)) {
         return videofilename;
     }
@@ -1241,10 +1241,10 @@ void PQCScripts::deleteTemporaryFiles() {
 
     qDebug() << "";
 
-    QDir dir(PQCConfigFiles::CACHE_DIR() + "/archive");
+    QDir dir(PQCConfigFiles::get().CACHE_DIR() + "/archive");
     dir.removeRecursively();
 
-    QDir dir2(PQCConfigFiles::CACHE_DIR() + "/motionphotos");
+    QDir dir2(PQCConfigFiles::get().CACHE_DIR() + "/motionphotos");
     dir2.removeRecursively();
 
 }
@@ -1558,7 +1558,7 @@ QVariantList PQCScripts::loadEPUB(QString path) {
 #ifdef PQMEPUB
 
     // clean up all old files
-    QDir olddir(PQCConfigFiles::CACHE_DIR() + "/epub/");
+    QDir olddir(PQCConfigFiles::get().CACHE_DIR() + "/epub/");
     olddir.removeRecursively();
 
     const QFileInfo info(path);
@@ -1622,7 +1622,7 @@ QVariantList PQCScripts::loadEPUB(QString path) {
         }
 
         // we extract it to a temp location from where we can load it then
-        const QString temppath = PQCConfigFiles::CACHE_DIR() + "/epub/" + filenameinside;
+        const QString temppath = PQCConfigFiles::get().CACHE_DIR() + "/epub/" + filenameinside;
 
         // file handles
         QFile file(temppath);
@@ -1695,10 +1695,10 @@ QVariantList PQCScripts::loadEPUB(QString path) {
         // if this is the image cover then read file and store as base64 string
         if(id == coverid) {
 
-            if(!QFileInfo::exists(PQCConfigFiles::CACHE_DIR() + "/epub/" + fn))
+            if(!QFileInfo::exists(PQCConfigFiles::get().CACHE_DIR() + "/epub/" + fn))
                 continue;
 
-            QImage img(PQCConfigFiles::CACHE_DIR() + "/epub/" + fn);
+            QImage img(PQCConfigFiles::get().CACHE_DIR() + "/epub/" + fn);
             QBuffer buf;
             buf.open(QIODevice::WriteOnly);
             img.save(&buf, "JPEG");
@@ -1710,7 +1710,7 @@ QVariantList PQCScripts::loadEPUB(QString path) {
         // normal book file
         } else
 
-            ret.append(QDir::cleanPath(PQCConfigFiles::CACHE_DIR() + "/epub/" + fn));
+            ret.append(QDir::cleanPath(PQCConfigFiles::get().CACHE_DIR() + "/epub/" + fn));
     }
 
     // If no cover was explicitely specified

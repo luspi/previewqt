@@ -88,7 +88,7 @@ QString PQCLoadFileArchive::load(QString filename, QSize maxSize, QSize &origSiz
 
             qDebug() << "loading archive with unrar";
 
-            const QString tmpDir = PQCConfigFiles::CACHE_DIR()+"/unrar/";
+            const QString tmpDir = PQCConfigFiles::get().CACHE_DIR()+"/unrar/";
 
             QDir dir;
             if(dir.mkpath(tmpDir)) {
@@ -176,7 +176,7 @@ QString PQCLoadFileArchive::load(QString filename, QSize maxSize, QSize &origSiz
             // and finish off by turning it into an image
 
             // we extract it to a temp location from where we can load it then
-            const QString temppath = PQCConfigFiles::CACHE_DIR() + "/archive/" + filenameinside;
+            const QString temppath = PQCConfigFiles::get().CACHE_DIR() + "/archive/" + filenameinside;
 
             // file handles
             QFile file(temppath);

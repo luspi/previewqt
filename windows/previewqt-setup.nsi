@@ -30,7 +30,7 @@
 ; - previewqt-setup.nsi (this file)
 ;
 ; This will then create a new file in the application directory
-; called previewqt-setup.exe.
+; called previewqt-%version%.exe.
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -55,9 +55,11 @@ Unicode True
 ;include the Uninstall log header
 !include AdvUninstLog.nsh
 
+!define PREVIEWQT_VERSION "3.0"
+
 ; name of project and installer filename
 Name "PreviewQt"
-OutFile "previewqt-setup.exe"
+OutFile "previewqt-${PREVIEWQT_VERSION}.exe"
 
 ; this is a 64-bit program, thus install into 64-bit directory
 InstallDir "$PROGRAMFILES64\PreviewQt"
@@ -80,7 +82,7 @@ RequestExecutionLevel admin
 
 !define MUI_WELCOMEPAGE_TITLE "Welcome to the installer of PreviewQt"
 
-!define MUI_WELCOMEPAGE_TEXT "This installer will guide you through the installation of the PreviewQt. It is recommended that you close all other applications before starting the installer. $\r$\n$\r$\nIf you have any questions or concerns, please contact the developer through his website:$\r$\n$\r$\nhttps://photoqt.org/previewqt$\r$\n$\r$\n$\r$\n Click Next to continue."
+!define MUI_WELCOMEPAGE_TEXT "This installer will guide you through the installation of the PreviewQt. It is recommended that you close all other applications before starting the installer. $\r$\n$\r$\nIf you have any questions or concerns, please contact the developer through his website:$\r$\n$\r$\nhttps://previewqt.org$\r$\n$\r$\n$\r$\n Click Next to continue."
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -89,8 +91,8 @@ RequestExecutionLevel admin
 !define MUI_FINISHPAGE_RUN "$INSTDIR/previewqt.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Open PreviewQt"
 
-!define MUI_FINISHPAGE_LINK "PreviewQt website: https://photoqt.org/previewqt"
-!define MUI_FINISHPAGE_LINK_LOCATION "https://photoqt.org/previewqt"
+!define MUI_FINISHPAGE_LINK "PreviewQt website: https://previewqt.org"
+!define MUI_FINISHPAGE_LINK_LOCATION "https://previewqt.org"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; The order of pages
@@ -116,20 +118,31 @@ Page custom FinalStepsInit FinalStepsLeave
 
 Section "PreviewQt" SecDummy
 
-    ;After set the output path open the uninstall log macros block and add files/dirs with File /r
-    ;This should be repeated every time the parent output path is changed either within the same
-    ;section, or if there are more sections including optional components.
+    ;The output path for where to install files to.
     SetOutPath "$INSTDIR"
+
+    ;We start by removing existing files.
+    !insertmacro UNINSTALL.NEW_PREUNINSTALL "$INSTDIR"
+
+    ;Open the uninstall log file.
     !insertmacro UNINSTALL.LOG_OPEN_INSTALL
 
-    File /r /x *nsh /x *nsi /x *qmlc /x previewqt-setup.exe ".\"
+    ;Recursively add all the files.
+    File /r /x *nsh /x *nsi /x *qmlc /x previewqt-*.exe ".\"
 
+    ;Close the uninstall log.
     !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
 
     WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "InstallDir" "$INSTDIR"
     WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayName" "PreviewQt"
     ;Same as create shortcut you need to use ${UNINST_EXE} instead of anything else.
-    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "UninstallString" "${UNINST_EXE}"
+    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "UninstallString" "${UNINST_EXE} /S"
+    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "QuietUninstallString" "${UNINST_EXE} /S"
+    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "DisplayVersion" "${PREVIEWQT_VERSION}"
+    WriteRegStr ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}" "Publisher" "Lukas Spies"
+
+    IfSilent 0 +2
+    Call FinalStepsLeave
 
 SectionEnd
 
@@ -235,6 +248,10 @@ Function FinalStepsLeave
     ${NSD_GetState} $CheckboxPsdXcf $CheckboxPsdXcf_State
     ${NSD_GetState} $CheckboxDesktop $CheckboxDesktop_State
     ${NSD_GetState} $CheckboxStartMenu $CheckboxStartMenu_State
+
+    IfSilent 0 +3
+    StrCpy $RadioButtonAll_State ${BST_CHECKED}
+    StrCpy $CheckboxStartMenu_State ${BST_CHECKED}
 
     ; The supported file formats can change between installs
     ; Thus we need to unregister all previous formats and re-register them below
@@ -1052,6 +1069,10 @@ Section "Uninstall"
     !insertmacro UNINSTALL.LOG_END_UNINSTALL
 
     DeleteRegKey ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}"
+
+    ; Remove environment variables
+    EnVar::Delete "PHOTOQT_MAGICK_CODER_MODULE_PATH"
+    EnVar::Delete "PHOTOQT_MAGICK_FILTER_MODULE_PATH"
 
     System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)'
 

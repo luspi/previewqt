@@ -43,9 +43,9 @@ PQCFileFormats::PQCFileFormats() {
         db = QSqlDatabase::addDatabase("QSQLITE3", "imageformats");
     else if(QSqlDatabase::isDriverAvailable("QSQLITE"))
         db = QSqlDatabase::addDatabase("QSQLITE", "imageformats");
-    db.setDatabaseName(PQCConfigFiles::FILEFORMATS_DB());
+    db.setDatabaseName(PQCConfigFiles::get().FILEFORMATS_DB());
 
-    QFileInfo infodb(PQCConfigFiles::FILEFORMATS_DB());
+    QFileInfo infodb(PQCConfigFiles::get().FILEFORMATS_DB());
 
     if(!infodb.exists() || !db.open()) {
 
@@ -374,11 +374,11 @@ void PQCFileFormats::validate() {
     qDebug() << "";
 
     // the db does not exist -> create it and finish
-    if(!QFile::exists(PQCConfigFiles::FILEFORMATS_DB())) {
-        if(!QFile::copy(":/imageformats.db", PQCConfigFiles::FILEFORMATS_DB()))
+    if(!QFile::exists(PQCConfigFiles::get().FILEFORMATS_DB())) {
+        if(!QFile::copy(":/imageformats.db", PQCConfigFiles::get().FILEFORMATS_DB()))
             qWarning() << "Unable to (re-)create default imageformats database";
         else {
-            QFile file(PQCConfigFiles::FILEFORMATS_DB());
+            QFile file(PQCConfigFiles::get().FILEFORMATS_DB());
             file.setPermissions(file.permissions()|QFileDevice::WriteOwner);
         }
         return;
@@ -392,7 +392,7 @@ void PQCFileFormats::validate() {
         dbinstalled = QSqlDatabase::addDatabase("QSQLITE3", "validateimageformats");
     else if(QSqlDatabase::isDriverAvailable("QSQLITE"))
         dbinstalled = QSqlDatabase::addDatabase("QSQLITE", "validateimageformats");
-    dbinstalled.setDatabaseName(PQCConfigFiles::FILEFORMATS_DB());
+    dbinstalled.setDatabaseName(PQCConfigFiles::get().FILEFORMATS_DB());
 
     if(!dbinstalled.open())
         qWarning() << "Error opening database:" << dbinstalled.lastError().text();
@@ -410,15 +410,15 @@ void PQCFileFormats::validate() {
     }
 
     // open database
-    QString tmpfile = PQCConfigFiles::CACHE_DIR()+"/previewqt_tmp.db";
+    QString tmpfile = PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db";
     if(QFileInfo::exists(tmpfile) && !QFile::remove(tmpfile))
         qWarning() << "Error removing old tmp file";
-    if(!QFile::copy(":/imageformats.db", PQCConfigFiles::CACHE_DIR()+"/previewqt_tmp.db"))
+    if(!QFile::copy(":/imageformats.db", PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db"))
         qWarning() << "Error copying default db to tmp file";
     QFile::setPermissions(tmpfile,
                           QFileDevice::WriteOwner|QFileDevice::ReadOwner |
                               QFileDevice::ReadGroup);
-    dbdefault.setDatabaseName(PQCConfigFiles::CACHE_DIR()+"/previewqt_tmp.db");
+    dbdefault.setDatabaseName(PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db");
     if(!dbdefault.open())
         qWarning() << "Error opening default database:" << dbdefault.lastError().text();
 
@@ -430,7 +430,7 @@ void PQCFileFormats::validate() {
         qWarning() << "Error getting default columns:" << query.lastError().text();
         query.clear();
         dbdefault.close();
-        QFile::remove(PQCConfigFiles::CACHE_DIR()+"/previewqt_tmp.db");
+        QFile::remove(PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db");
         return;
     }
 
@@ -446,7 +446,7 @@ void PQCFileFormats::validate() {
             qWarning() << "Error checking column existence:" << query2.lastError().text();
             query2.clear();
             dbdefault.close();
-            QFile::remove(PQCConfigFiles::CACHE_DIR()+"/previewqt_tmp.db");
+            QFile::remove(PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db");
             return;
         }
         query2.next();
@@ -460,7 +460,7 @@ void PQCFileFormats::validate() {
                 qCritical() << "Error adding new column:" << query3.lastError().text();
                 query3.clear();
                 dbdefault.close();
-                QFile::remove(PQCConfigFiles::CACHE_DIR()+"/previewqt_tmp.db");
+                QFile::remove(PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db");
                 return;
             }
             query3.clear();
@@ -477,7 +477,7 @@ void PQCFileFormats::validate() {
         qWarning() << "Error getting default data:" << query.lastError().text();
         query.clear();
         dbdefault.close();
-        QFile::remove(PQCConfigFiles::CACHE_DIR()+"/previewqt_tmp.db");
+        QFile::remove(PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db");
         return;
     }
 
@@ -626,7 +626,7 @@ void PQCFileFormats::validate() {
         qWarning() << "Error getting default data (endings):" << queryInst.lastError().text();
         queryInst.clear();
         dbdefault.close();
-        QFile::remove(PQCConfigFiles::CACHE_DIR()+"/previewqt_tmp.db");
+        QFile::remove(PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db");
         return;
     }
 
@@ -666,7 +666,7 @@ void PQCFileFormats::validate() {
 
     dbdefault.close();
 
-    QFile file(PQCConfigFiles::CACHE_DIR()+"/previewqt_tmp.db");
+    QFile file(PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db");
     if(!file.remove())
         qWarning() << "ERROR: Unable to remove ref db:" << file.errorString();
 

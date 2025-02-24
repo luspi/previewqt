@@ -48,11 +48,12 @@ option(WITH_PHOTOSPHERE           "Configure with support for photo spheres and 
 option(WITH_EPUB                  "Configure with support for EPUB files" ON) #######
 option(WITH_KF6SYNTAXHIGHLIGHT    "Configure with support for KSyntaxHighlighting for syntax highlighting" ON) #######
 
+option(WITH_PORTABLETWEAKS        "Apply tweaks for a build of a portable version" OFF)
 option(WITH_ADAPTSOURCE           "Adapt and change the source files for the current Qt version (if necessary)" OFF)
 option(WITH_FLATPAKBUILD          "Enable this option if this is a build for Flatpak" OFF)
 
 ##################################################################################################################
-# The options above were renamed for 4.8.1
+# The options above were renamed for 4.0
 # For the time being we still check for the old names and pass any value on to the new options
 if(DEFINED IMAGEMAGICK)
     message("** The IMAGEMAGICK option is deprecated, use WITH_IMAGEMAGICK instead: ${IMAGEMAGICK}")
@@ -680,6 +681,11 @@ if(WITH_FLATPAKBUILD)
     target_link_libraries(previewqt PRIVATE ${GLIB_LIBRARIES})
     target_link_libraries(previewqt PRIVATE "gobject-2.0")
     target_link_libraries(previewqt PRIVATE "gio-2.0")
+endif()
+
+if(PORTABLETWEAKS)
+    message("** Enabling Portable tweaks")
+    target_compile_definitions(previewqt PRIVATE PQMPORTABLETWEAKS)
 endif()
 
 #######################
