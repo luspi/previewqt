@@ -55,11 +55,14 @@ Item {
         width: defw
         height: defh
 
-        contentHeight: imageitem.height+10
-        contentWidth: imageitem.width
+        clip: true
+        contentItem.clip: true
 
-        ScrollBar.horizontal: ScrollBar { id: hBar }
-        ScrollBar.vertical: ScrollBar { id: vBar }
+        contentHeight: imageitem.height + (hBar.visible ? hBar.height : 0)
+        contentWidth: imageitem.width + (vBar.visible ? vBar.width : 0)
+
+        ScrollBar.horizontal: ScrollBar { id: hBar; opacity: (hBar.active ? 0.8 : 0.2); Behavior on opacity { NumberAnimation { duration: 200 } } }
+        ScrollBar.vertical: ScrollBar { id: vBar; opacity: (vBar.active ? 0.8 : 0.2); Behavior on opacity { NumberAnimation { duration: 200 } } }
 
         onContentXChanged: {
             settingsrect.hide()
@@ -81,8 +84,8 @@ Item {
             id: imageitem
             y: 5
 
-            width: PQCSettings.textWordWrap ? flickme.width : undefined
-            height: Math.max(flickme.height-10, contentHeight)
+            width: PQCSettings.textWordWrap ? flickme.width-(vBar.visible ? vBar.width : 0) : undefined
+            height: Math.max(flickme.height-(hBar.visible ? hBar.height : 0), contentHeight)
 
             color: "white"
             font.family: "Monospace"
