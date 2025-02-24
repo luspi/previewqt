@@ -25,6 +25,10 @@
 #include <pqc_configfiles.h>
 #include <pqc_settings.h>
 
+#ifdef WIN32
+#include <WinSock2.h>
+#endif
+
 #include <QDir>
 #include <QFileInfo>
 #include <QFileDialog>

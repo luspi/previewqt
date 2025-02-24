@@ -32,6 +32,11 @@
     #endif
 #endif
 
+// This needs to come early (in particular before the FreImage header)
+#ifdef Q_OS_WIN
+    #include <Windows.h>
+#endif
+
 #include <pqc_messagehandler.h>
 #include <pqc_scripts.h>
 #include <pqc_fileformats.h>
