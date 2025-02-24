@@ -382,10 +382,8 @@ ApplicationWindow {
 
         } else if(txt === PQCSettings.defaultAppShortcut) {
 
-            if(menuOpen) {
+            if(menuOpen)
                 closeAllMenus()
-                return
-            }
 
             if(image.imageSource === "") return
 

@@ -208,7 +208,7 @@ Video {
 
                 video.seek(video.position+5000)
 
-            } else if(keycode === Qt.Key_M) {
+            } else if(modifiers === Qt.ControlModifier && keycode === Qt.Key_M) {
 
                 if(volumeIndex != 3)
                     volumeIndex = 3

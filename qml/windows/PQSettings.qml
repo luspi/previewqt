@@ -70,7 +70,7 @@ ApplicationWindow {
             if(tabbar.currentIndex === 1 && shortcutbut.checked) {
 
                 var txt = PQCScripts.keycodeToString(event.modifiers, event.key)
-                var reserved = ["Esc", "Space", "Left", "Right", "M", "Home", "End", "Ctrl+Q", "Ctrl+O", "Ctrl+P", "Ctrl+I", "F1", "Ctrl+Tab"]
+                var reserved = ["Esc", "Space", "Left", "Right", "Home", "End"]
 
                 if(txt === "Esc") {
                     shortcutbut.text = shortcutbut.backupshortcut
@@ -78,16 +78,20 @@ ApplicationWindow {
                     return
                 }
 
+                shortcutbut.text = txt
+
+                if(event.modifiers === Qt.ControlModifier) {
+                    reservederror2.visible = true
+                    return
+                }
+
                 if(reserved.indexOf(txt) > -1) {
                     reservederror.visible = true
-                    shortcutbut.text = shortcutbut.backupshortcut
-                    shortcutbut.checked = false
                     return
                 }
 
                 reservederror.visible = false
-
-                shortcutbut.text = txt
+                reservederror2.visible = false
 
                 if(!txt.endsWith("+")) {
                     PQCSettings.defaultAppShortcut = txt
@@ -446,6 +450,18 @@ ApplicationWindow {
                     font.bold: true
                     color: "red"
                     text: qsTr("This is a reserved shortcut for PreviewQt.")
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                }
+
+                Text {
+                    id: reservederror2
+                    width: defaultappsettings.usableWidth
+                    visible: false
+                    font.pointSize: 8
+                    font.bold: true
+                    color: "red"
+                    //: The alone here refers to the fact that if the Ctrl modifier key is used without any other modifier keys (Shift, ...), then this is reserved.
+                    text: qsTr("Shortcuts with the Ctrl modifier alone are reserved for PreviewQt.")
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
 

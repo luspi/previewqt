@@ -154,12 +154,10 @@ Item {
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
-        enabled: settingsrect.visible||searchrect.visible
+        enabled: settingsrect.visible
         onClicked: {
             settingsrect.hide()
-            searchrect.hide()
         }
-        onWheel: {}
     }
 
     Rectangle {
@@ -199,7 +197,13 @@ Item {
 
         id: searchrect
 
-        color: "red"
+        color: notFound ? "#ff4444" : colorPalette.window
+        Behavior on color { ColorAnimation { duration: 200 } }
+        border.width: 1
+        border.color: colorPalette.accent
+        radius: 2
+
+        property bool notFound: false
 
         x: 5
         y: parent.height-height-5
@@ -213,24 +217,38 @@ Item {
 
         TextInput {
             id: searchinput
+            x: 5
             y: (parent.height-height)/2
-            width: parent.width
+            width: parent.width-10
             font.pointSize: 12
+            color: searchrect.notFound ? "#440000" : colorPalette.text
+            Behavior on color { ColorAnimation { duration: 200 } }
             enabled: searchrect.visible
+            onEnabledChanged: {
+                if(!enabled)
+                    focusitem.forceActiveFocus()
+                else
+                    selectAll()
+            }
 
             Keys.onPressed: (event) => {
 
                 event.accepted = false
 
-                if(event.modifiers === Qt.ControlModifier || event.modifiers === Qt.AltModifier) {
+                if(event.modifiers === Qt.ControlModifier) {
 
-                    toplevel.processKeyEvent(event.modifiers, event.key)
-                                    event.accepted = true
+                    if(event.key === Qt.Key_F)
+                        selectAll()
+                    else
+                        toplevel.processKeyEvent(event.modifiers, event.key)
 
                 } else if(event.key === Qt.Key_Escape) {
 
-                    searchrect.hide()
-                                    event.accepted = true
+                    if(settingsrect.visible)
+                        settingsrect.hide()
+                    else
+                        searchrect.hide()
+                    event.accepted = true
 
                 } else if(event.modifiers & Qt.ShiftModifier) {
                     findTimer.reverse = true
@@ -244,6 +262,8 @@ Item {
             }
 
             onTextEdited: {
+                if(text.length === 0 && searchrect.opacity === 1)
+                    searchrect.notFound = false
                 findTimer.restart()
             }
 
@@ -276,6 +296,7 @@ Item {
             onTriggered: {
 
                 if(searchinput.text.length === 0) {
+                    searchrect.notFound = false
                     imageitem.deselect()
                     return
                 }
@@ -288,6 +309,8 @@ Item {
                 else
                     index = textContent.indexOf(searchinput.text, index)
                 if(index !== -1) {
+
+                    searchrect.notFound = false
 
                     imageitem.select(index, index+searchinput.text.length)
                     var rect = imageitem.positionToRectangle(index);
@@ -315,6 +338,8 @@ Item {
 
                     if(index !== -1) {
 
+                        searchrect.notFound = false
+
                         imageitem.select(index, index+searchinput.text.length)
                         var rect2 = imageitem.positionToRectangle(index);
 
@@ -330,6 +355,11 @@ Item {
                         animContX.restart()
                         animContY.restart()
 
+                    } else {
+
+                        searchrect.notFound = true
+                        imageitem.deselect()
+
                     }
                 }
 
@@ -338,8 +368,10 @@ Item {
 
         function show() {
             toplevel.menuOpen = true
+            searchinput.text = (imageitem.selectedText.length > 0 ? imageitem.selectedText : "")
             searchrect.opacity = 1
             searchinput.forceActiveFocus()
+            searchinput.selectAll()
         }
 
         function hide() {
@@ -646,6 +678,21 @@ Item {
 
     Component.onDestruction: {
         toplevel.menuOpen = false
+    }
+
+    Connections {
+
+        target: toplevel
+
+        function onKeyPress(modifiers, keycode) {
+
+            if(modifiers === Qt.ControlModifier && keycode === Qt.Key_F) {
+
+                searchrect.show()
+            }
+
+        }
+
     }
 
 }
