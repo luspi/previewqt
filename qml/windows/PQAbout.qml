@@ -224,6 +224,7 @@ ApplicationWindow {
         id: configcontainer
         anchors.fill: parent
         anchors.bottomMargin: 45
+        color: colorPalette.base
         clip: true
         opacity: 0
         visible: opacity>0
