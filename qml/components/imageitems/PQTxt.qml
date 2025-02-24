@@ -172,7 +172,9 @@ Item {
         Behavior on color { ColorAnimation { duration: 200 } }
         radius: 4
 
-        opacity: 1-searchrect.opacity
+        opacity: (searchmouse.containsMouse ? 1 : 0.5) * (1-searchrect.opacity)
+        visible: opacity>0
+        Behavior on opacity { NumberAnimation { duration: 200 } }
 
         Image {
             anchors.fill: parent
@@ -262,7 +264,7 @@ Item {
             }
 
             onTextEdited: {
-                if(text.length === 0 && searchrect.opacity === 1)
+                if(text.length === 0)
                     searchrect.notFound = false
                 findTimer.restart()
             }
@@ -395,219 +397,216 @@ Item {
 
     }
 
-
-    Row {
-
-        id: settingsrow
-
+    Rectangle {
+        id: settingsbut
         x: (parent.width-width)
         y: (parent.height-height)
 
-        spacing: 5
+        width: 35
+        height: 35
+        color: settingsmouse.containsPress ? "#21262b" : (settingsmouse.containsMouse ? "#61666b" : "#31363b")
+        Behavior on color { ColorAnimation { duration: 200 } }
+        radius: 4
 
-        Rectangle  {
-            id: settingsbut
-            width: 35
-            height: 35
-            color: settingsmouse.containsPress ? "#21262b" : (settingsmouse.containsMouse ? "#61666b" : "#31363b")
-            Behavior on color { ColorAnimation { duration: 200 } }
-            radius: 4
+        opacity: settingsmouse.containsMouse||settingsrect.visible ? 1 : 0.5
+        Behavior on opacity { NumberAnimation { duration: 200 } }
 
-            Image {
-                anchors.fill: parent
-                anchors.margins: 6
-                sourceSize: Qt.size(width, height)
-                source: "image://svg/:/settings.svg"
-            }
+        Image {
+            anchors.fill: parent
+            anchors.margins: 6
+            sourceSize: Qt.size(width, height)
+            source: "image://svg/:/settings.svg"
+        }
 
-            MouseArea {
-                id: settingsmouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
+        MouseArea {
+            id: settingsmouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                if(settingsrect.visible)
+                    settingsrect.hide()
+                else
                     settingsrect.show()
+            }
+        }
+
+    }
+
+    Rectangle {
+        id: settingsrect
+        x: txt_top.width-width
+        y: txt_top.height - settingsbut.height - height
+        width: 200
+        height: 0
+        Behavior on height { NumberAnimation { duration: 200 } }
+        opacity: 0
+        visible: opacity>0
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+        clip: true
+        color: colorPalette.base
+        border.color: colorPalette.accent
+        border.width: 1
+
+        Column {
+
+            id: setentrycol
+
+            Row {
+                height: 40
+                Rectangle {
+                    color: setzoomplus.containsMouse ? colorPalette.highlight : colorPalette.base
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    opacity: 0.6
+                    width: 60
+                    height: 40
+                    border.color: colorPalette.dark
+                    border.width: 1
+                    Text {
+                        color: colorPalette.text
+                        font.pointSize: 14
+                        font.bold: true
+                        anchors.centerIn: parent
+                        text: "+"
+                    }
+                    MouseArea {
+                        id: setzoomplus
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: PQCSettings.textFontPointSize += 1
+                    }
+                }
+                Rectangle {
+                    color: setzoomminus.containsMouse ? colorPalette.highlight : colorPalette.base
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    opacity: 0.6
+                    width: 60
+                    height: 40
+                    border.color: colorPalette.dark
+                    border.width: 1
+                    Text {
+                        color: colorPalette.text
+                        font.pointSize: 14
+                        font.bold: true
+                        anchors.centerIn: parent
+                        text: "-"
+                    }
+                    MouseArea {
+                        id: setzoomminus
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: PQCSettings.textFontPointSize -= 1
+                    }
+                }
+                Rectangle {
+                    color: setzoomzero.containsMouse ? colorPalette.highlight : colorPalette.base
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    opacity: 0.6
+                    width: 80
+                    height: 40
+                    border.color: colorPalette.dark
+                    border.width: 1
+                    Text {
+                        color: colorPalette.text
+                        font.pointSize: 14
+                        font.bold: true
+                        anchors.centerIn: parent
+                        text: "0"
+                    }
+                    MouseArea {
+                        id: setzoomzero
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: PQCSettings.textFontPointSize = 12
+                    }
                 }
             }
 
             Rectangle {
-                id: settingsrect
-                clip: true
-                x: settingsrow.width-width
-                y: settingsbut.y-height
+                width: parent.width
+                height: 1
+                color: colorPalette.accent
+            }
+
+            Item {
+                height: 39
                 width: 200
-                height: 0
-                Behavior on height { NumberAnimation { duration: 200 } }
-                opacity: 0
-                visible: opacity>0
-                Behavior on opacity { NumberAnimation { duration: 200 } }
-                color: colorPalette.base
-                border.color: colorPalette.accent
-                border.width: 1
-
-                Column {
-
-                    id: setentrycol
-
-                    Row {
-                        height: 40
-                        Rectangle {
-                            color: setzoomplus.containsMouse ? colorPalette.highlight : colorPalette.base
-                            Behavior on color { ColorAnimation { duration: 200 } }
-                            opacity: 0.6
-                            width: 60
-                            height: 40
-                            border.color: colorPalette.dark
-                            border.width: 1
-                            Text {
-                                color: colorPalette.text
-                                font.pointSize: 14
-                                font.bold: true
-                                anchors.centerIn: parent
-                                text: "+"
-                            }
-                            MouseArea {
-                                id: setzoomplus
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: PQCSettings.textFontPointSize += 1
-                            }
-                        }
-                        Rectangle {
-                            color: setzoomminus.containsMouse ? colorPalette.highlight : colorPalette.base
-                            Behavior on color { ColorAnimation { duration: 200 } }
-                            opacity: 0.6
-                            width: 60
-                            height: 40
-                            border.color: colorPalette.dark
-                            border.width: 1
-                            Text {
-                                color: colorPalette.text
-                                font.pointSize: 14
-                                font.bold: true
-                                anchors.centerIn: parent
-                                text: "-"
-                            }
-                            MouseArea {
-                                id: setzoomminus
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: PQCSettings.textFontPointSize -= 1
-                            }
-                        }
-                        Rectangle {
-                            color: setzoomzero.containsMouse ? colorPalette.highlight : colorPalette.base
-                            Behavior on color { ColorAnimation { duration: 200 } }
-                            opacity: 0.6
-                            width: 80
-                            height: 40
-                            border.color: colorPalette.dark
-                            border.width: 1
-                            Text {
-                                color: colorPalette.text
-                                font.pointSize: 14
-                                font.bold: true
-                                anchors.centerIn: parent
-                                text: "0"
-                            }
-                            MouseArea {
-                                id: setzoomzero
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                cursorShape: Qt.PointingHandCursor
-                                onClicked: PQCSettings.textFontPointSize = 12
-                            }
-                        }
-                    }
-
-                    Rectangle {
-                        width: parent.width
-                        height: 1
-                        color: colorPalette.accent
-                    }
-
-                    Item {
-                        height: 39
-                        width: 200
-                        Rectangle {
-                            color: setcasemouse.containsMouse ? colorPalette.highlight : colorPalette.base
-                            Behavior on color { ColorAnimation { duration: 200 } }
-                            anchors.fill: parent
-                            opacity: 0.6
-                        }
-                        CheckBox {
-                            x: 5
-                            width: 190
-                            y: (parent.height-height)/2
-                            font.bold: true
-                            checked: PQCSettings.textSearchCaseSensitive
-                            text: qsTr("Case-sensitive search")
-                        }
-                        MouseArea {
-                            id: setcasemouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                PQCSettings.textSearchCaseSensitive = !PQCSettings.textSearchCaseSensitive
-                            }
-                        }
-                    }
-
-                    Item {
-                        height: 39
-                        width: 200
-                        Rectangle {
-                            color: setwrapmouse.containsMouse ? colorPalette.highlight : colorPalette.base
-                            Behavior on color { ColorAnimation { duration: 200 } }
-                            anchors.fill: parent
-                            opacity: 0.6
-                        }
-                        CheckBox {
-                            x: 5
-                            width: 190
-                            y: (parent.height-height)/2
-                            font.bold: true
-                            checked: PQCSettings.textWordWrap
-                            text: qsTr("Wrap lines")
-                        }
-                        MouseArea {
-                            id: setwrapmouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: {
-                                PQCSettings.textWordWrap = !PQCSettings.textWordWrap
-                            }
-                        }
-                    }
-
+                Rectangle {
+                    color: setcasemouse.containsMouse ? colorPalette.highlight : colorPalette.base
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    anchors.fill: parent
+                    opacity: 0.6
                 }
-
-                function show() {
-                    toplevel.menuOpen = true
-                    height = setentrycol.height
-                    opacity = 1
+                CheckBox {
+                    x: 5
+                    width: 190
+                    y: (parent.height-height)/2
+                    font.bold: true
+                    checked: PQCSettings.textSearchCaseSensitive
+                    text: qsTr("Case-sensitive search")
                 }
-                function hide() {
-                    if(!visible) return
-                    toplevel.menuOpen = false
-                    height = 0
-                    opacity = 0
+                MouseArea {
+                    id: setcasemouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        PQCSettings.textSearchCaseSensitive = !PQCSettings.textSearchCaseSensitive
+                    }
                 }
+            }
 
-                Connections {
-                    target: toplevel
-                    function onCloseAllMenus() {
-                        settingsrect.hide()
+            Item {
+                height: 39
+                width: 200
+                Rectangle {
+                    color: setwrapmouse.containsMouse ? colorPalette.highlight : colorPalette.base
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    anchors.fill: parent
+                    opacity: 0.6
+                }
+                CheckBox {
+                    x: 5
+                    width: 190
+                    y: (parent.height-height)/2
+                    font.bold: true
+                    checked: PQCSettings.textWordWrap
+                    text: qsTr("Wrap lines")
+                }
+                MouseArea {
+                    id: setwrapmouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        PQCSettings.textWordWrap = !PQCSettings.textWordWrap
                     }
                 }
             }
 
         }
 
+        function show() {
+            toplevel.menuOpen = true
+            height = setentrycol.height
+            opacity = 1
+        }
+        function hide() {
+            if(!visible) return
+            toplevel.menuOpen = false
+            height = 0
+            opacity = 0
+        }
+
+        Connections {
+            target: toplevel
+            function onCloseAllMenus() {
+                settingsrect.hide()
+            }
+        }
     }
 
     /*1on_PQMKF6*/
