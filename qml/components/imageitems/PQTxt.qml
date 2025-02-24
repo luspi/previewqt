@@ -28,7 +28,9 @@ import PQCSettings
 import org.kde.syntaxhighlighting 1.0
 /*2on_PQMKF6*/
 
-Item {
+Rectangle {
+
+    color: colorPalette.base
 
     id: txt_top
 
@@ -44,6 +46,22 @@ Item {
     property bool asynchronous: false
     property alias paintedWidth: flickme.width
     property alias paintedHeight: flickme.height
+
+    Rectangle {
+        x: parent.width-width
+        width: vBar.width
+        height: parent.height
+        color: colorPalette.shadow
+        opacity: 0.1*vBar.opacity
+    }
+
+    Rectangle {
+        y: parent.height-height
+        width: parent.width
+        height: hBar.height
+        color: colorPalette.shadow
+        opacity: 0.1*hBar.opacity
+    }
 
     Flickable {
 
@@ -61,8 +79,8 @@ Item {
         contentHeight: imageitem.height + (hBar.visible ? hBar.height : 0)
         contentWidth: imageitem.width + (vBar.visible ? vBar.width : 0)
 
-        ScrollBar.horizontal: ScrollBar { id: hBar; opacity: (hBar.active ? 0.8 : 0.2); Behavior on opacity { NumberAnimation { duration: 200 } } }
-        ScrollBar.vertical: ScrollBar { id: vBar; opacity: (vBar.active ? 0.8 : 0.2); Behavior on opacity { NumberAnimation { duration: 200 } } }
+        ScrollBar.horizontal: ScrollBar { id: hBar; opacity: (hBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
+        ScrollBar.vertical: ScrollBar { id: vBar; opacity: (vBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
 
         onContentXChanged: {
             settingsrect.hide()
@@ -94,12 +112,6 @@ Item {
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
             readOnly: true
-
-            Rectangle {
-                anchors.fill: parent
-                color: colorPalette.base
-                z: -1
-            }
 
             // With syntax highlighting the text content is set after the syntax highlighting is set at the end
             /*1on_PQMNOTKF6
