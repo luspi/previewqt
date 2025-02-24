@@ -58,8 +58,8 @@ Item {
         contentHeight: imageitem.height+10
         contentWidth: imageitem.width
 
-        ScrollBar.horizontal: ScrollBar { }
-        ScrollBar.vertical: ScrollBar { }
+        ScrollBar.horizontal: ScrollBar { id: hBar }
+        ScrollBar.vertical: ScrollBar { id: vBar }
 
         onContentXChanged: {
             settingsrect.hide()
@@ -131,11 +131,31 @@ Item {
             }
 
             Keys.onPressed: (event) => {
-                if(event.key === Qt.Key_Down)
-                    flickme.flick(0, -500)
-                else if(event.key === Qt.Key_Up)
-                    flickme.flick(0, 500)
-                else if(event.key === Qt.Key_PageDown)
+                if(event.key === Qt.Key_Down) {
+                    if(flickme.contentHeight <= flickme.height) return
+                    if(event.modifiers === Qt.ControlModifier)
+                        vBar.position = Math.min(1-(flickme.height/flickme.contentHeight), vBar.position + (1/(imageitem.lineCount-1)))
+                    else
+                        flickme.flick(0, -500)
+                } else if(event.key === Qt.Key_Up) {
+                    if(flickme.contentHeight <= flickme.height) return
+                    if(event.modifiers === Qt.ControlModifier)
+                        vBar.position = Math.max(0, vBar.position - (1/(imageitem.lineCount-1)))
+                    else
+                        flickme.flick(0, 500)
+                } else if(event.key === Qt.Key_Right) {
+                    if(flickme.contentWidth <= flickme.width) return
+                    if(event.modifiers === Qt.ControlModifier)
+                        hBar.position = Math.min(1-(flickme.width/flickme.contentWidth), hBar.position + (10/flickme.contentWidth))
+                    else
+                        flickme.flick(-500, 0)
+                } else if(event.key === Qt.Key_Left) {
+                    if(flickme.contentWidth <= flickme.width) return
+                    if(event.modifiers === Qt.ControlModifier)
+                        hBar.position = Math.max(0, hBar.position - (10/flickme.contentWidth))
+                    else
+                        flickme.flick(500, 0)
+                } else if(event.key === Qt.Key_PageDown)
                     flickme.flick(0, -1500)
                 else if(event.key === Qt.Key_PageUp)
                     flickme.flick(0, 1500)
@@ -633,6 +653,7 @@ Item {
             if(modifiers === Qt.ControlModifier && keycode === Qt.Key_F) {
 
                 searchrect.show()
+
             }
 
         }

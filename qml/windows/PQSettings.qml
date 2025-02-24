@@ -70,7 +70,7 @@ ApplicationWindow {
             if(tabbar.currentIndex === 1 && shortcutbut.checked) {
 
                 var txt = PQCScripts.keycodeToString(event.modifiers, event.key)
-                var reserved = ["Esc", "Space", "Left", "Right", "Home", "End"]
+                var reserved = ["Esc", "Space", "Left", "Right", "Up", "Down", "Home", "End"]
 
                 if(txt === "Esc") {
                     shortcutbut.text = shortcutbut.backupshortcut
