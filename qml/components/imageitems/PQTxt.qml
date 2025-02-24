@@ -608,107 +608,18 @@ Item {
 
         }
 
-        /*1on_PQMKF6*/
-
-        ComboBox {
-            id: control
-            y: (parent.height-height)/2
-            width: 150
-            model : Repository.definitions
-            displayText: currentValue.translatedName
-            textRole: "translatedName"
-            property var sortme
-            popup: Popup {
-                id: thepopup
-                x: -50
-                y: control.height
-                width: 200
-                implicitHeight: Math.min(contentItem.implicitHeight, 300)
-                padding: 0
-                contentItem:
-                    ListView {
-                        clip: true
-                        implicitHeight: contentHeight
-                        implicitWidth: 200
-                        model: control.sortme
-                        delegate: Rectangle {
-                            color: delegmouse.containsMouse ? "white" : "black"
-                            implicitWidth: 200-thebar.width
-                            implicitHeight: 30
-                            Text {
-                                x: 20
-                                anchors.verticalCenter: parent.verticalCenter
-                                width: parent.width-20
-                                elide: Text.ElideMiddle
-                                text: control.sortme[index].name
-                                color: delegmouse.containsMouse ? "black" : "white"
-                            }
-                            MouseArea {
-                                id: delegmouse
-                                anchors.fill: parent
-                                hoverEnabled: true
-                                ToolTip.visible: delegmouse.containsMouse
-                                ToolTip.text: control.sortme[index].name
-                                ToolTip.delay: 500
-                                onClicked: {
-                                    control.currentIndex = index
-                                    thepopup.close()
-                                }
-                            }
-                        }
-
-                        currentIndex: control.highlightedIndex
-                        section.property: "section"
-                        section.criteria: ViewSection.FullString
-                        section.delegate: Rectangle {
-                            x: 10
-                            height: 25
-                            color: "#333333"
-                            Text {
-                                text: section
-                                anchors.verticalCenter: parent.verticalCenter
-                                color: "white"
-                                font.bold: true
-                            }
-                        }
-
-                        ScrollBar.vertical: ScrollBar { id: thebar }
-                }
-            }
-
-            onCurrentIndexChanged: {
-                myHighlighter.definition = Repository.definitions[currentIndex]
-                focusitem.forceActiveFocus()
-            }
-
-            Component.onCompleted: {
-                var m = []
-                var mtxt = []
-                for(var r in Repository.definitions) {
-                    var val = Repository.definitions[r]
-                    mtxt.push(val.translatedName)
-                    var c = {
-                        "name" : val.translatedName,
-                        "section" : val.section
-                    }
-                    m.push(c)
-                }
-                control.sortme = m
-            }
-        }
-
-        Component.onCompleted: {
-            // set current file type
-            myHighlighter.definition = Repository.definitionForName(PQCScripts.getSuffix(image_top.imageSource))
-            control.currentIndex = Repository.definitions.indexOf(myHighlighter.definition)
-
-            // This HAS to be set after setting the styling!
-            // Otherwise for slightly larger files the interface is blocked for quite a while.
-            imageitem.text = PQCScripts.getTextFileContents(image_top.imageSource)
-        }
-        /*2on_PQMKF6*/
-
     }
+
+    /*1on_PQMKF6*/
+    Component.onCompleted: {
+        // set current file type
+        myHighlighter.definition = Repository.definitionForName(PQCScripts.getSuffix(image_top.imageSource))
+
+        // This HAS to be set after setting the styling!
+        // Otherwise for slightly larger files the interface is blocked for quite a while.
+        imageitem.text = PQCScripts.getTextFileContents(image_top.imageSource)
+    }
+    /*2on_PQMKF6*/
 
     Component.onDestruction: {
         toplevel.menuOpen = false
