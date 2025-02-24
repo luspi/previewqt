@@ -302,17 +302,23 @@ Item {
                 }
 
                 var textContent = imageitem.text
+                var searchText = searchinput.text
+
+                if(!PQCSettings.textSearchCaseSensitive) {
+                    textContent = textContent.toLowerCase()
+                    searchText = searchText.toLowerCase()
+                }
 
                 var index = imageitem.cursorPosition
                 if(reverse)
-                    index = textContent.lastIndexOf(searchinput.text, index-searchinput.text.length-1)
+                    index = textContent.lastIndexOf(searchText, index-searchText.length-1)
                 else
-                    index = textContent.indexOf(searchinput.text, index)
+                    index = textContent.indexOf(searchText, index)
                 if(index !== -1) {
 
                     searchrect.notFound = false
 
-                    imageitem.select(index, index+searchinput.text.length)
+                    imageitem.select(index, index+searchText.length)
                     var rect = imageitem.positionToRectangle(index);
 
                     animContX.stop()
@@ -331,16 +337,15 @@ Item {
                     index = 0
 
                     if(reverse)
-                        index = textContent.lastIndexOf(searchinput.text)
+                        index = textContent.lastIndexOf(searchText)
                     else
-                        index = textContent.indexOf(searchinput.text, index)
-
+                        index = textContent.indexOf(searchText, index)
 
                     if(index !== -1) {
 
                         searchrect.notFound = false
 
-                        imageitem.select(index, index+searchinput.text.length)
+                        imageitem.select(index, index+searchText.length)
                         var rect2 = imageitem.positionToRectangle(index);
 
                         animContX.stop()
@@ -442,6 +447,8 @@ Item {
 
                 Column {
 
+                    id: setentrycol
+
                     Row {
                         height: 40
                         Rectangle {
@@ -525,6 +532,34 @@ Item {
                         height: 39
                         width: 200
                         Rectangle {
+                            color: setcasemouse.containsMouse ? colorPalette.highlight : colorPalette.base
+                            Behavior on color { ColorAnimation { duration: 200 } }
+                            anchors.fill: parent
+                            opacity: 0.6
+                        }
+                        CheckBox {
+                            x: 5
+                            width: 190
+                            y: (parent.height-height)/2
+                            font.bold: true
+                            checked: PQCSettings.textSearchCaseSensitive
+                            text: qsTr("Case-sensitive search")
+                        }
+                        MouseArea {
+                            id: setcasemouse
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                PQCSettings.textSearchCaseSensitive = !PQCSettings.textSearchCaseSensitive
+                            }
+                        }
+                    }
+
+                    Item {
+                        height: 39
+                        width: 200
+                        Rectangle {
                             color: setwrapmouse.containsMouse ? colorPalette.highlight : colorPalette.base
                             Behavior on color { ColorAnimation { duration: 200 } }
                             anchors.fill: parent
@@ -536,7 +571,7 @@ Item {
                             y: (parent.height-height)/2
                             font.bold: true
                             checked: PQCSettings.textWordWrap
-                            text: "Wrap lines"
+                            text: qsTr("Wrap lines")
                         }
                         MouseArea {
                             id: setwrapmouse
@@ -545,7 +580,6 @@ Item {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
                                 PQCSettings.textWordWrap = !PQCSettings.textWordWrap
-                                settingsrect.hide()
                             }
                         }
                     }
@@ -554,7 +588,7 @@ Item {
 
                 function show() {
                     toplevel.menuOpen = true
-                    height = 80
+                    height = setentrycol.height
                     opacity = 1
                 }
                 function hide() {

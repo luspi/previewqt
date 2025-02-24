@@ -122,6 +122,10 @@ public:
     int getTextFontPointSize();
     void setTextFontPointSize(int val);
 
+    Q_PROPERTY(bool textSearchCaseSensitive READ getTextSearchCaseSensitive WRITE setTextSearchCaseSensitive NOTIFY textSearchCaseSensitiveChanged)
+    bool getTextSearchCaseSensitive();
+    void setTextSearchCaseSensitive(bool val);
+
     Q_INVOKABLE bool getFirstStart() { return firstStart; }
 
 private:
@@ -147,6 +151,7 @@ private:
     bool m_closeWhenLosingFocus;
     bool m_textWordWrap;
     int m_textFontPointSize;
+    bool m_textSearchCaseSensitive;
 
     QSettings *settings;
     QTimer *saveTimer;
@@ -188,6 +193,7 @@ Q_SIGNALS:
     void closeWhenLosingFocusChanged();
     void textWordWrapChanged();
     void textFontPointSizeChanged();
+    void textSearchCaseSensitiveChanged();
 
 };
 

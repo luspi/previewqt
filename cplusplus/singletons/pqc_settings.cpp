@@ -343,6 +343,17 @@ void PQCSettings::setTextFontPointSize(int val) {
     }
 }
 
+bool PQCSettings::getTextSearchCaseSensitive() {
+    return m_textSearchCaseSensitive;
+}
+void PQCSettings::setTextSearchCaseSensitive(bool val) {
+    if(m_textSearchCaseSensitive != val) {
+        m_textSearchCaseSensitive = val;
+        saveTimer->start();
+        Q_EMIT textSearchCaseSensitiveChanged();
+    }
+}
+
 void PQCSettings::loadSettings() {
 
     setVersion(settings->value("version", "").toString());
@@ -365,6 +376,7 @@ void PQCSettings::loadSettings() {
     setCloseWhenLosingFocus(settings->value("closeWhenLosingFocus", false).toBool());
     setTextWordWrap(settings->value("textWordWrap", true).toBool());
     setTextFontPointSize(settings->value("textFontPointSize", 12).toInt());
+    setTextSearchCaseSensitive(settings->value("textSearchCaseSensitive", false).toBool());
 
 }
 
