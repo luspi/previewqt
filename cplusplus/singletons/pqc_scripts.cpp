@@ -21,7 +21,7 @@
  **************************************************************************/
 
 #include <pqc_scripts.h>
-#include <pqc_imageformats.h>
+#include <pqc_fileformats.h>
 #include <pqc_configfiles.h>
 #include <pqc_settings.h>
 
@@ -199,12 +199,12 @@ QStringList PQCScripts::listArchiveContent(QString path, bool insideFilenameOnly
 
             if(insideFilenameOnly) {
                 for(const QString &f : std::as_const(allfiles)) {
-                    if(PQCImageFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
+                    if(PQCFileFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
                         ret.append(f);
                 }
             } else {
                 for(const QString &f : std::as_const(allfiles)) {
-                    if(PQCImageFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
+                    if(PQCFileFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
                         ret.append(QString("%1::ARC::%2").arg(f, path));
                 }
             }
@@ -247,7 +247,7 @@ QStringList PQCScripts::listArchiveContent(QString path, bool insideFilenameOnly
             QString filenameinside = QString::fromWCharArray(archive_entry_pathname_w(entry));
 
             // If supported file format, append to temporary list
-            if((PQCImageFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix().toLower())))
+            if((PQCFileFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix().toLower())))
                 allfiles.append(filenameinside);
 
         }
@@ -621,7 +621,7 @@ bool PQCScripts::isMpvVideo(QString path) {
 #ifdef PQMVIDEOMPV
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCImageFormats::get().getAllFormatsLibmpv().contains(suf)) {
+    if(PQCFileFormats::get().getAllFormatsLibmpv().contains(suf)) {
 
         supported = true;
 
@@ -629,7 +629,7 @@ bool PQCScripts::isMpvVideo(QString path) {
 
         QMimeDatabase db;
         QString mimetype = db.mimeTypeForFile(path).name();
-        if(PQCImageFormats::get().getAllMimeTypesLibmpv().contains(mimetype))
+        if(PQCFileFormats::get().getAllMimeTypesLibmpv().contains(mimetype))
             supported = true;
 
     }
@@ -649,7 +649,7 @@ bool PQCScripts::isQtVideo(QString path) {
 #ifdef PQMVIDEOQT
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCImageFormats::get().getAllFormatsVideo().contains(suf)) {
+    if(PQCFileFormats::get().getAllFormatsVideo().contains(suf)) {
 
         supported = true;
 
@@ -657,7 +657,7 @@ bool PQCScripts::isQtVideo(QString path) {
 
         QMimeDatabase db;
         QString mimetype = db.mimeTypeForFile(path).name();
-        if(PQCImageFormats::get().getAllMimeTypesVideo().contains(mimetype))
+        if(PQCFileFormats::get().getAllMimeTypesVideo().contains(mimetype))
             supported = true;
 
     }
@@ -678,12 +678,12 @@ bool PQCScripts::isPDFDocument(QString path) {
     qDebug() << "args: path =" << path;
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCImageFormats::get().getAllFormatsPoppler().contains(suf))
+    if(PQCFileFormats::get().getAllFormatsPoppler().contains(suf))
         return true;
 
     QMimeDatabase db;
     QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCImageFormats::get().getAllMimeTypesPoppler().contains(mimetype))
+    if(PQCFileFormats::get().getAllMimeTypesPoppler().contains(mimetype))
         return true;
 
     return false;
@@ -767,7 +767,7 @@ QStringList PQCScripts::getArchiveContent(QString path) {
             allfiles.sort();
 
             for(const QString &f : std::as_const(allfiles)) {
-                if(PQCImageFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
+                if(PQCFileFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
                     ret.append(f);
             }
 
@@ -809,7 +809,7 @@ QStringList PQCScripts::getArchiveContent(QString path) {
             QString filenameinside = QString::fromWCharArray(archive_entry_pathname_w(entry));
 
             // If supported file format, append to temporary list
-            if((PQCImageFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix())))
+            if((PQCFileFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix())))
                 allfiles.append(filenameinside);
 
         }
@@ -850,12 +850,12 @@ bool PQCScripts::isArchive(QString path) {
 #ifdef PQMLIBARCHIVE
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suf))
+    if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suf))
         return true;
 
     QMimeDatabase db;
     QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCImageFormats::get().getAllMimeTypesLibArchive().contains(mimetype))
+    if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype))
         return true;
 
 #endif
@@ -1148,6 +1148,27 @@ QString PQCScripts::keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key key
 
 }
 
+QString PQCScripts::openNewFile() {
+
+    // TODO: Add custom sorting model that takes both endings and mimetypes into account
+
+    QFileDialog dlg;
+    dlg.setFileMode(QFileDialog::ExistingFile);
+    dlg.setDirectory(PQCSettings::get().getFiledialogLocation());
+
+    int e = dlg.exec();
+
+    if(e == QDialog::Accepted && dlg.selectedFiles().length() > 0) {
+        QStringList l = dlg.selectedFiles();
+        return l.first();
+    }
+
+    return "";
+
+    return "";
+
+}
+
 bool PQCScripts::openInDefault(QString path) {
 
     qDebug() << "args: path =" << path;
@@ -1160,31 +1181,31 @@ bool PQCScripts::openInDefault(QString path) {
 
     QString exe = "photoqt";
 
-    if(PQCImageFormats::get().getAllFormatsPoppler().contains(suffix)) {
+    if(PQCFileFormats::get().getAllFormatsPoppler().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppDocuments();
 
-    } else if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suffix) &&
+    } else if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suffix) &&
                (suffix == "cbr" || suffix == "cbt" || suffix == "cbz" || suffix == "cb7")) {
 
         exe = PQCSettings::get().getDefaultAppComicBooks();
 
-    } else if(PQCImageFormats::get().getAllFormatsEBook().contains(suffix)) {
+    } else if(PQCFileFormats::get().getAllFormatsEBook().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppEBooks();
 
-    } else if(PQCImageFormats::get().getAllFormatsLibArchive().contains(suffix)) {
+    } else if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppArchives();
 
-    } else if(PQCImageFormats::get().getAllFormatsLibmpv().contains(suffix) || PQCImageFormats::get().getAllFormatsVideo().contains(suffix)) {
+    } else if(PQCFileFormats::get().getAllFormatsLibmpv().contains(suffix) || PQCFileFormats::get().getAllFormatsVideo().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppVideos();
 
-    } else if(PQCImageFormats::get().getAllFormatsQt().contains(suffix) || PQCImageFormats::get().getAllFormatsFreeImage().contains(suffix) ||
-        PQCImageFormats::get().getAllFormatsDevIL().contains(suffix) || PQCImageFormats::get().getAllFormatsLibRaw().contains(suffix) ||
-        PQCImageFormats::get().getAllFormatsLibVips().contains(suffix) || PQCImageFormats::get().getAllFormatsMagick().contains(suffix) ||
-        PQCImageFormats::get().getAllFormatsResvg().contains(suffix) || PQCImageFormats::get().getAllFormatsXCFTools().contains(suffix)) {
+    } else if(PQCFileFormats::get().getAllFormatsQt().contains(suffix) || PQCFileFormats::get().getAllFormatsFreeImage().contains(suffix) ||
+        PQCFileFormats::get().getAllFormatsDevIL().contains(suffix) || PQCFileFormats::get().getAllFormatsLibRaw().contains(suffix) ||
+        PQCFileFormats::get().getAllFormatsLibVips().contains(suffix) || PQCFileFormats::get().getAllFormatsMagick().contains(suffix) ||
+        PQCFileFormats::get().getAllFormatsResvg().contains(suffix) || PQCFileFormats::get().getAllFormatsXCFTools().contains(suffix)) {
 
         exe = PQCSettings::get().getDefaultAppImages();
 
@@ -1240,7 +1261,7 @@ bool PQCScripts::isFileSupported(QString path) {
         return false;
 
     const QString suffix = QFileInfo(path).suffix().toLower();
-    return PQCImageFormats::get().getAllFormats().contains(suffix);
+    return PQCFileFormats::get().getAllFormats().contains(suffix);
 
 }
 
@@ -1359,68 +1380,110 @@ bool PQCScripts::applyEmbeddedColorProfile(QImage &img) {
 
     qDebug() << "args: img";
 
-    bool manualSelectionCausedError = false;
-
 #ifdef PQMLCMS2
 
-    qDebug() << "Checking for embedded color profiles";
+    int lcms2SourceFormat = toLcmsFormat(img.format());
+
+    QImage::Format targetFormat = img.format();
+    // this format causes problems with lcms2
+    // no error is caused but the resulting image is fully transparent
+    // removing the alpha channel seems to fix this
+    if(img.format() == QImage::Format_ARGB32)
+        targetFormat = QImage::Format_RGB32;
+
+    int lcms2targetFormat = toLcmsFormat(img.format());
+
+    // Outputting an RGBA64 image with LCMS2 results in a blank rectangle.
+    // Reading it seems to work just fine, however.
+    // Thus we make sure to output the image in a working format here.
+    if(img.format() == QImage::Format_RGBA64) {
+        targetFormat = QImage::Format_RGB32;
+        lcms2targetFormat = toLcmsFormat(QImage::Format_RGB32);
+    }
+
+    if(lcms2SourceFormat == 0 || lcms2targetFormat == 0) {
+        qWarning() << "Unknown image format. Attempting to convert image to format known to LCMS2.";
+        img.convertTo(QImage::Format_ARGB32);
+        targetFormat = QImage::Format_RGB32;
+        lcms2SourceFormat = toLcmsFormat(img.format());
+        lcms2targetFormat = lcms2SourceFormat;
+        if(img.isNull()) {
+            qWarning() << "Error converting image to ARGB32. Not applying color profile.";
+            return false;
+        }
+        if(lcms2targetFormat == 0) {
+            qWarning() << "Unable to 'fix' image format. Not applying color profile.";
+            return false;
+        }
+    }
 
     cmsHPROFILE targetProfile = cmsOpenProfileFromMem(img.colorSpace().iccProfile().constData(),
                                                       img.colorSpace().iccProfile().size());
 
-    if(targetProfile) {
+    // Create a transformation from source (sRGB) to destination (provided ICC profile) color space
+    cmsHTRANSFORM transform = cmsCreateTransform(targetProfile, lcms2SourceFormat, cmsCreate_sRGBProfile(), lcms2targetFormat, INTENT_PERCEPTUAL, 0);
+    if (!transform) {
+        // Handle error, maybe close profile and return original image or null image
+        cmsCloseProfile(targetProfile);
+        qWarning() << "Error creating transform for external color profile";
+        return false;
+    } else {
 
-        int lcms2SourceFormat = toLcmsFormat(img.format());
+        // since the target format might not support alpha channels we use black instead of transparent to fill the initial image.
+        // we don't have to fill the image for cmsDoTransform but it allows for additional checking whether cmsDoTransform succeeded.
+        QImage ret(img.size(), targetFormat);
+        ret.fill(Qt::black);
 
-        QImage::Format targetFormat = img.format();
-        // this format causes problems with lcms2
-        // no error is caused but the resulting image is fully transparent
-        // removing the alpha channel seems to fix this
-        if(img.format() == QImage::Format_ARGB32)
-            targetFormat = QImage::Format_RGB32;
-        int lcms2targetFormat = toLcmsFormat(img.format());
+        // Perform color space conversion
+        cmsDoTransform(transform, img.constBits(), ret.bits(), img.width() * img.height());
 
-        // Create a transformation from source (sRGB) to destination (provided ICC profile) color space
-        cmsHTRANSFORM transform = cmsCreateTransform(targetProfile, lcms2SourceFormat, cmsCreate_sRGBProfile(), lcms2targetFormat, INTENT_PERCEPTUAL, 0);
-        if (!transform) {
-            // Handle error, maybe close profile and return original image or null image
-            cmsCloseProfile(targetProfile);
-            qWarning() << "Error creating transform for external color profile";
+        // transform failed returning null image
+        if(ret.isNull()) {
+            qWarning() << "Failed to apply external color profile, null image returned";
             return false;
-        } else {
-
-            QImage ret(img.size(), targetFormat);
-            ret.fill(Qt::transparent);
-            // Perform color space conversion
-            cmsDoTransform(transform, img.constBits(), ret.bits(), img.width() * img.height());
-
-            const int bufSize = 100;
-            char buf[bufSize];
-
-#if LCMS_VERSION >= 2160
-            cmsGetProfileInfoUTF8(targetProfile, cmsInfoDescription,
-                                  "en", "US",
-                                  buf, bufSize);
-#else
-            cmsGetProfileInfoASCII(targetProfile, cmsInfoDescription,
-                                   "en", "US",
-                                   buf, bufSize);
-#endif
-
-            // Release resources
-            cmsDeleteTransform(transform);
-            cmsCloseProfile(targetProfile);
-
-            qDebug() << "Applying external color profile:" << buf;
-
-            img = ret;
-
-            return true;
-
         }
 
-    } else
-        return false;
+        // check if image is all black -> transform failed
+        bool allblack = true;
+        for(int x = 0; x < img.width(); ++x) {
+            for(int y = 0; y < img.height(); ++y) {
+                if(ret.pixelColor(x,y).black() < 255) {
+                    allblack = false;
+                    break;
+                }
+            }
+            if(!allblack) break;
+        }
+
+        if(allblack) {
+            qWarning() << "Failed to apply external color profile, image completely black";
+            return false;
+        }
+
+        const int bufSize = 100;
+        char buf[bufSize];
+
+#if LCMS_VERSION >= 2160
+        cmsGetProfileInfoUTF8(targetProfile, cmsInfoDescription,
+                              "en", "US",
+                              buf, bufSize);
+#else
+        cmsGetProfileInfoASCII(targetProfile, cmsInfoDescription,
+                               "en", "US",
+                               buf, bufSize);
+#endif
+
+        // Release resources
+        cmsDeleteTransform(transform);
+        cmsCloseProfile(targetProfile);
+
+        qDebug() << "Applying external color profile:" << buf;
+
+        img = ret;
+
+        return true;
+
+    }
 
 #endif
 
@@ -1866,5 +1929,38 @@ void PQCScripts::updateTranslation() {
     currentTranslation = code;
 
     QQmlEngine::contextForObject(this)->engine()->retranslate();
+
+}
+
+bool PQCScripts::isTextDocument(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    QMimeDatabase db;
+    QString mimetype = db.mimeTypeForFile(path).name();
+    if(mimetype.startsWith("text/"))
+        return true;
+
+    return false;
+
+}
+
+QString PQCScripts::getTextFileContents(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    QFile f(path);
+    if(!f.exists()) {
+        qWarning() << "File does not exist:" << path;
+        return "";
+    }
+
+    if(!f.open(QIODevice::ReadOnly)) {
+        qWarning() << "Unable to open file for reading:" << path;
+        return "";
+    }
+
+    QTextStream in(&f);
+    return in.readAll();
 
 }

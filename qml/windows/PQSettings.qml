@@ -29,9 +29,11 @@ import QtQuick.Window
 import PQCSettings
 import PQCScripts
 
-Window {
+ApplicationWindow {
 
     id: settings_top
+
+    SystemPalette { id: colorPalette; colorGroup: SystemPalette.Active }
 
     title: qsTr("Settings")
     visible: false
@@ -68,7 +70,7 @@ Window {
             if(tabbar.currentIndex === 1 && shortcutbut.checked) {
 
                 var txt = PQCScripts.keycodeToString(event.modifiers, event.key)
-                var reserved = ["Esc", "Space", "Left", "Right", "M", "Home", "End", "Ctrl+Q", "Ctrl+O", "Ctrl+P", "Ctrl+I", "F1", "Ctrl+Tab"]
+                var reserved = ["Esc", "Space", "Left", "Right", "Up", "Down", "Home", "End"]
 
                 if(txt === "Esc") {
                     shortcutbut.text = shortcutbut.backupshortcut
@@ -76,16 +78,20 @@ Window {
                     return
                 }
 
+                shortcutbut.text = txt
+
+                if(event.modifiers === Qt.ControlModifier) {
+                    reservederror2.visible = true
+                    return
+                }
+
                 if(reserved.indexOf(txt) > -1) {
                     reservederror.visible = true
-                    shortcutbut.text = shortcutbut.backupshortcut
-                    shortcutbut.checked = false
                     return
                 }
 
                 reservederror.visible = false
-
-                shortcutbut.text = txt
+                reservederror2.visible = false
 
                 if(!txt.endsWith("+")) {
                     PQCSettings.defaultAppShortcut = txt
@@ -198,11 +204,13 @@ Window {
                     font.bold: true
                     //: Same as tab name but used as title
                     text: qsTr("Settings")
+                    color: colorPalette.text
                 }
 
                 Text {
                     x: (generalsettings.usableWidth-width)/2
                     text: qsTr("Note: Settings will be saved automatically.")
+                    color: colorPalette.text
                 }
 
                 /************************************/
@@ -214,6 +222,7 @@ Window {
                     Text {
                         y: (langcombo.height-height)/2
                         text: qsTr("Language:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -295,6 +304,7 @@ Window {
                     width: generalsettings.usableWidth
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     text: qsTr("Default window size:")
+                    color: colorPalette.text
                 }
 
                 Flow {
@@ -323,6 +333,7 @@ Window {
                         height: defwin_w.height
                         verticalAlignment: Text.AlignVCenter
                         text: "x"
+                        color: colorPalette.text
                     }
 
                     SpinBox {
@@ -404,11 +415,13 @@ Window {
                     font.pointSize: 18
                     font.bold: true
                     text: qsTr("Settings")
+                    color: colorPalette.text
                 }
 
                 Text {
                     x: (defaultappsettings.usableWidth-width)/2
                     text: qsTr("Note: Settings will be saved automatically.")
+                    color: colorPalette.text
                 }
 
                 /************************************/
@@ -416,6 +429,7 @@ Window {
                 Text {
                     y: (shortcutbut.height-height)/2
                     text: qsTr("Shortcut to load in external application:")
+                    color: colorPalette.text
                 }
 
                 Button {
@@ -436,6 +450,18 @@ Window {
                     font.bold: true
                     color: "red"
                     text: qsTr("This is a reserved shortcut for PreviewQt.")
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                }
+
+                Text {
+                    id: reservederror2
+                    width: defaultappsettings.usableWidth
+                    visible: false
+                    font.pointSize: 8
+                    font.bold: true
+                    color: "red"
+                    //: The alone here refers to the fact that if the Ctrl modifier key is used without any other modifier keys (Shift, ...), then this is reserved.
+                    text: qsTr("Shortcuts with the Ctrl modifier alone are reserved for PreviewQt.")
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
 
@@ -462,6 +488,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for images:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -510,6 +537,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for documents:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -558,6 +586,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for videos:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -606,6 +635,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for archives:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -654,6 +684,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for comic books:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {
@@ -702,6 +733,7 @@ Window {
 
                     Text {
                         text: qsTr("External application for E-books:")
+                        color: colorPalette.text
                     }
 
                     ComboBox {

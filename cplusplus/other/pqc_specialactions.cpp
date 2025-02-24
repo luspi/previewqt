@@ -1,7 +1,7 @@
 #include <pqc_specialactions.h>
 #include <pqc_scripts.h>
-#include <pqc_imageformats.h>
-#include <pqc_loadimage.h>
+#include <pqc_fileformats.h>
+#include <pqc_loadfile.h>
 
 #include <QMimeDatabase>
 #include <QStandardPaths>
@@ -35,7 +35,7 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
     QString suffix = QFileInfo(filename).suffix().toLower();
 
     // is this a video?
-    if(PQCImageFormats::get().getAllFormatsVideo().indexOf(suffix) > -1) {
+    if(PQCFileFormats::get().getAllFormatsVideo().indexOf(suffix) > -1) {
 
         QString mime = db.mimeTypeForFile(filename).name();
         std::cout << "display mime: " << mime.toStdString() << std::endl
@@ -49,7 +49,7 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
     }
 
     // is this format supported by Qt?
-    if(PQCImageFormats::get().getAllFormatsQt().indexOf(suffix) > -1) {
+    if(PQCFileFormats::get().getAllFormatsQt().indexOf(suffix) > -1) {
 
         QString mime = db.mimeTypeForFile(filename).name();
         std::cout << "display mime: " << mime.toStdString() << std::endl
@@ -81,7 +81,7 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
     // process file
     QSize tmp;
     QImage img;
-    PQCLoadImage::get().load(filenameToLoad, QSize(-1,-1), tmp, img);
+    PQCLoadFile::get().load(filenameToLoad, QSize(-1,-1), tmp, img);
     img.save(tmpfile);
 
     // display information

@@ -38,8 +38,8 @@
 
 #include <pqc_singleinstance.h>
 #include <pqc_scripts.h>
-#include <pqc_loadimage.h>
-#include <pqc_imageformats.h>
+#include <pqc_loadfile.h>
+#include <pqc_fileformats.h>
 #include <pqc_specialactions.h>
 
 PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(argc, argv) {

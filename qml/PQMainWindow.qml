@@ -26,7 +26,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 import PQCScripts
-import PQCImageFormats
+import PQCFileFormats
 import PQCSettings
 
 import "./components"
@@ -52,7 +52,7 @@ ApplicationWindow {
     }
 
     // it is hidden by default until we set the stylings from the settings below
-    visible: false
+    visibility: Window.Hidden
     property string overrideTitle: ""
     title: (overrideTitle!= "" ? (overrideTitle+" | ") : (image.imageSource == "" ? "" : (PQCScripts.getFilename(image.imageSource) + " | "))) + "PreviewQt"
 
@@ -83,12 +83,17 @@ ApplicationWindow {
         PQCScripts.deleteTemporaryFiles()
     }
 
-    onVisibleChanged: {
-        if(visible) {
+    onVisibilityChanged: (visibility) => {
+        if(toplevel.visibility == Window.Hidden) {
+            closeAllMenus()
+        } else {
             ignoreActiveChanges = true
             noLongerIgnoreActiveChanges.restart()
         }
     }
+
+    property bool menuOpen: false
+    signal closeAllMenus()
 
     // this ignores changes to active for hiding when focus is lost
     // this is necessary when 'focus follows mouse' is used and the window is, e.g., opened from the tray
@@ -102,6 +107,7 @@ ApplicationWindow {
     }
 
     onActiveChanged: {
+        if(!active) closeAllMenus()
         if(!PQCSettings.closeWhenLosingFocus) return
         if(!active && !ignoreActiveChanges) {
             if((settings.status == Loader.Ready && settings.item.visible) ||
@@ -117,6 +123,7 @@ ApplicationWindow {
     Item {
 
         id: focusitem
+        anchors.fill: parent
 
         Component.onCompleted:
             forceActiveFocus()
@@ -295,16 +302,12 @@ ApplicationWindow {
 
     }
 
-    // dialog for opening an image file
-    FileDialog {
-        id: fileDialog
-        currentFolder: (PQCScripts.amIOnWindows() ? "file:/" : "file://") + PQCSettings.filedialogLocation
-        nameFilters: "Images (*.%1)".arg(PQCImageFormats.getAllFormats().join(" *."))
-        onAccepted: image.loadImage(selectedFile)
-    }
-
     // When a key combo has been pressed
     onKeyPress: (modifiers, keycode) => {
+        processKeyEvent(modifiers, keycode)
+    }
+
+    function processKeyEvent(modifiers, keycode) {
 
         // convert to text
         var txt = PQCScripts.keycodeToString(modifiers, keycode)
@@ -324,6 +327,11 @@ ApplicationWindow {
         // Escape either leaves fullscreen or closes the window
         if(txt === "Esc") {
 
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
+
             if(isFullscreen)
                 toplevel.showNormal()
             else
@@ -335,24 +343,47 @@ ApplicationWindow {
 
         } else if(txt === "Ctrl+O") {
 
-            fileDialog.open()
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
+
+            openNewFile()
 
         } else if(txt === "Ctrl+P") {
+
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
 
             settings.active = true
             settings.item.show()
 
         } else if(txt === "Ctrl+I") {
 
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
+
             about.active = true
             about.item.show()
 
         } else if(txt === "F1") {
 
+            if(menuOpen) {
+                closeAllMenus()
+                return
+            }
+
             help.active = true
             help.item.show()
 
         } else if(txt === PQCSettings.defaultAppShortcut) {
+
+            if(menuOpen)
+                closeAllMenus()
 
             if(image.imageSource === "") return
 
@@ -371,6 +402,8 @@ ApplicationWindow {
         target: PQCScripts
 
         function onCommandLineArgumentReceived(msg) {
+
+            closeAllMenus()
 
             msg = PQCScripts.fromPercentEncoding(msg)
 
@@ -503,6 +536,12 @@ ApplicationWindow {
             focusitem.forceActiveFocus()
         }
 
+    }
+
+    function openNewFile() {
+        var path = PQCScripts.openNewFile()
+        if(path != "")
+            image.loadImage(path)
     }
 
     // make sure the window is fit to the main image view

@@ -55,7 +55,7 @@ Rectangle {
             source: "image://svg/:/open.svg"
             tooltip: qsTr("Open a file")
             onClicked: {
-                fileDialog.open()
+                toplevel.openNewFile()
             }
         }
 
@@ -160,6 +160,15 @@ Rectangle {
             }
         }
 
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        enabled: toplevel.menuOpen
+        hoverEnabled: true
+        onClicked: {
+            toplevel.closeAllMenus()
+        }
     }
 
 }

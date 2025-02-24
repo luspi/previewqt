@@ -91,7 +91,7 @@ Item {
         cursorShape: image.imageSource === "" ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: (mouse) => {
             if(image.imageSource === "")
-                fileDialog.open()
+                toplevel.openNewFile()
         }
         onPositionChanged: (mouse) => {
             if(mouse.y < 30)
@@ -171,6 +171,9 @@ Item {
         } else if(PQCScripts.isSVG(imageSource)) {
             currentType = "svg"
             imageloader.source = "imageitems/PQSVG.qml"
+        } else if(PQCScripts.isTextDocument(imageSource)) {
+            currentType = "txt"
+            imageloader.source = "imageitems/PQTxt.qml"
         } else {
             currentType = "img"
             imageloader.source = "imageitems/PQImageNormal.qml"

@@ -39,7 +39,7 @@
 
 #include <pqc_messagehandler.h>
 #include <pqc_scripts.h>
-#include <pqc_imageformats.h>
+#include <pqc_fileformats.h>
 #include <pqc_providerfull.h>
 #include <pqc_providersvg.h>
 #include <pqc_settings.h>
@@ -142,14 +142,14 @@ int main(int argc, char *argv[]) {
     // Set app information
     QApplication::setApplicationName("PreviewQt");
     QApplication::setOrganizationName("");
-    QApplication::setOrganizationDomain("photoqt.org");
+    QApplication::setOrganizationDomain("previewqt.org");
     QApplication::setApplicationVersion(PQMVERSION);
     QApplication::setQuitOnLastWindowClosed(true);
 
     // custom message handler for qDebug/qLog/qInfo/etc.
     qInstallMessageHandler(pqcMessageHandler);
 
-    // make sure config directory exists and contains imageformats file
+    // make sure config directory exists
     if(!QFileInfo::exists(PQCConfigFiles::get().CONFIG_DIR())) {
         QDir dir(PQCConfigFiles::get().CONFIG_DIR());
         if(!dir.mkpath(PQCConfigFiles::get().CONFIG_DIR())) {
@@ -161,12 +161,24 @@ int main(int argc, char *argv[]) {
             qCritical() << "Error creating cache directory!";
             qCritical() << "Continuing, but not everything might work.";
         }
-        if(!QFileInfo::exists(PQCConfigFiles::get().IMAGEFORMATS_DB())) {
-            if(!QFile::copy(":/imageformats.db", PQCConfigFiles::get().IMAGEFORMATS_DB())) {
-                qCritical() << "Unable to create default imageformats database!";
+    }
+
+    // make sure the fileformats database exists
+    // if only the old database exist, attempt to copy it over (this change happened for v4.0)
+    if(!QFileInfo::exists(PQCConfigFiles::get().FILEFORMATS_DB())) {
+        bool copyNewDB = true;
+        if(QFileInfo::exists(PQCConfigFiles::get().IMAGEFORMATS_DB())) {
+            if(!QFile::copy(PQCConfigFiles::get().IMAGEFORMATS_DB(), PQCConfigFiles::get().FILEFORMATS_DB()))
+                qWarning() << "Unable to copy imageformats.db to fileformats.db. Attempting to create new database file";
+            else
+                copyNewDB = false;
+        }
+        if(copyNewDB) {
+            if(!QFile::copy(":/fileformats.db", PQCConfigFiles::get().FILEFORMATS_DB())) {
+                qCritical() << "Unable to create default fileformats database!";
                 std::exit(1);
             } else {
-                QFile file(PQCConfigFiles::get().IMAGEFORMATS_DB());
+                QFile file(PQCConfigFiles::get().FILEFORMATS_DB());
                 file.setPermissions(file.permissions()|QFileDevice::WriteOwner);
             }
         }
@@ -183,17 +195,6 @@ int main(int argc, char *argv[]) {
 
     PQCSingleInstance app(argc, argv);
 
-    // Check for upgrade to PreviewQt
-    if(PQCScripts::get().isUpgrade()) {
-
-        // Validate image formats database
-        PQCImageFormats::get().validate();
-
-        // Update stored version number
-        PQCSettings::get().setVersion(PQMVERSION);
-
-    }
-
 #ifdef PQMVIDEOMPV
     // Qt sets the locale in the QGuiApplication constructor, but libmpv
     // requires the LC_NUMERIC category to be set to "C", so change it back.
@@ -201,8 +202,13 @@ int main(int argc, char *argv[]) {
 #endif
 
 #ifdef PQMEXIV2
-    #ifdef PQMEXIV2_ENABLE_BMFF
-        Exiv2::enableBMFF(true);
+    #if EXIV2_TEST_VERSION(0, 28, 0)
+        // In this case Exiv2::enableBMFF() defaults to true
+        // and the call to it is deprecated
+    #else
+        #ifdef PQMEXIV2_ENABLE_BMFF
+            Exiv2::enableBMFF(true);
+        #endif
     #endif
 #endif
 
@@ -225,8 +231,19 @@ int main(int argc, char *argv[]) {
     VIPS_INIT(argv[0]);
 #endif
 
+    // Check for upgrade to PreviewQt
+    if(PQCScripts::get().isUpgrade()) {
+
+        // Validate image formats database
+        PQCFileFormats::get().validate();
+
+        // Update stored version number
+        PQCSettings::get().setVersion(PQMVERSION);
+
+    }
+
     QQmlApplicationEngine engine;
-    const QUrl url(u"qrc:/src/qml/PQMainWindow.qml"_qs);
+    const QUrl url("qrc:/src/qml/PQMainWindow.qml");
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
         &app, [url](QObject *obj, const QUrl &objUrl) {
             if (!obj && url == objUrl)
@@ -236,7 +253,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterSingletonInstance("PQCSettings", 1, 0, "PQCSettings", &PQCSettings::get());
     qmlRegisterSingletonInstance("PQCCache", 1, 0, "PQCCache", &PQCCache::get());
     qmlRegisterSingletonInstance("PQCScripts", 1, 0, "PQCScripts", &PQCScripts::get());
-    qmlRegisterSingletonInstance("PQCImageFormats", 1, 0, "PQCImageFormats", &PQCImageFormats::get());
+    qmlRegisterSingletonInstance("PQCFileFormats", 1, 0, "PQCFileFormats", &PQCFileFormats::get());
 
     engine.addImageProvider("full", new PQCProviderFull);
     engine.addImageProvider("svg", new PQCProviderSVG);

@@ -24,9 +24,11 @@ import QtQuick
 import QtQuick.Controls
 import PQCSettings
 
-Window {
+ApplicationWindow {
 
     id: help_top
+
+    SystemPalette { id: colorPalette; colorGroup: SystemPalette.Active }
 
     //: window title
     title: qsTr("Help")
@@ -71,12 +73,14 @@ Window {
                 text: qsTr("Help")
                 font.pointSize: 20
                 font.bold: true
+                color: colorPalette.text
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: qsTr("In the main application window, combining the Control modifier with either of O, P, or I launches the action to open a file, the settings, or the About information, respectively. F1 opens this help message, Escape hides the application, and Ctrl+Q quits it altogether. Double clicking on a loaded image toggles the fullscreen mode. Then there exists a customizable shortcut for opening a loaded file in an external application.")
+                color: colorPalette.text
             }
 
             Text {
@@ -84,6 +88,7 @@ Window {
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 //: Please keep the html tags for bold text in place as they help with parsing this block of text
                 text: qsTr("In the settings window, Escape, Enter, and Return all close the window, and Ctrl+Tab switches between the two tabs.")
+                color: colorPalette.text
             }
 
             Text {
@@ -91,6 +96,7 @@ Window {
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 //: Please keep the html tags for bold text in place as they help with parsing this block of text
                 text: qsTr("In both the Help and About window, either one of Escape, Enter, and Return close the window.")
+                color: colorPalette.text
             }
 
             Text {
@@ -98,6 +104,7 @@ Window {
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 //: Please keep the html tags for bold text in place as they help with parsing this block of text
                 text: qsTr("When special formats like archives and documents are loaded, the arrow keys allow switching between pages/files, and Home/End go to the beginning/end of the loaded document. Similarly, when video files are loaded, the space bar toggles the play status, the arrow keys jump left/right in the video file, and Home/End go to the start and end of the video.")
+                color: colorPalette.text
             }
 
             Column {
@@ -109,6 +116,7 @@ Window {
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     //: Please keep the html tags for bold text in place as they help with parsing this block of text
                     text: qsTr("Need more help? Then check out the website for PreviewQt:")
+                    color: colorPalette.text
                 }
 
                 Text {
@@ -116,6 +124,7 @@ Window {
                     horizontalAlignment: Text.AlignHCenter
                     font.bold: true
                     text: "https://previewqt.org/"
+                    color: colorPalette.text
                     MouseArea {
                         anchors.fill: parent
                         hoverEnabled: true
