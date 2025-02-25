@@ -140,19 +140,6 @@ Rectangle {
                 id: contextmenu
 
                 MenuItem {
-                    text: qsTr("Copy all content")
-                    onTriggered: {
-                        PQCScripts.copyTextToClipboard(imageitem.text)
-                    }
-                }
-                MenuItem {
-                    text: qsTr("Select all")
-                    onTriggered: {
-                        imageitem.selectAll()
-                    }
-                }
-                MenuSeparator {}
-                MenuItem {
                     enabled: imageitem.selectedText.length>0
                     text: qsTr("Copy selection")
                     onTriggered: {
@@ -164,6 +151,21 @@ Rectangle {
                     text: qsTr("Search for selected text")
                     onTriggered: {
                         searchrect.show()
+                    }
+                }
+
+                MenuSeparator {}
+
+                MenuItem {
+                    text: qsTr("Select all")
+                    onTriggered: {
+                        imageitem.selectAll()
+                    }
+                }
+                MenuItem {
+                    text: qsTr("Copy all content")
+                    onTriggered: {
+                        PQCScripts.copyTextToClipboard(imageitem.text)
                     }
                 }
 
