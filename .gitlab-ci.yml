@@ -54,7 +54,7 @@ appimage:
     - git clone -b l10n_main git@gitlab.com:lspies/previewqt-lang
     - mv previewqt-lang/localized lang
     - mkdir -p build && cd build/
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DEXIV2=ON -DGRAPHICSMAGICK=OFF -DIMAGEMAGICK=ON -DVIDEO_MPV=ON -DLIBVIPS=ON -DPOPPLER=OFF -DEXIV2_ENABLE_BMFF=ON -DRESVG=OFF -DMOTIONPHOTO=OFF -DLCMS2=ON -DAPPIMAGEBUILD=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_VIDEO_MPV=ON -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=OFF -DWITH_LCMS2=ON -DWITH_FREEIMAGE=OFF
     - make DESTDIR=../appdir -j$(nproc) install
     - cd ..
     - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
@@ -89,7 +89,7 @@ releaseappimage:
     - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-6 libmpv-dev libgraphicsmagick++1-dev
     - export QT_SELECT=qt6
     - mkdir -p build && cd build/
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DEXIV2=ON -DGRAPHICSMAGICK=ON -DIMAGEMAGICK=OFF -DVIDEO_MPV=ON -DLIBVIPS=ON -DPOPPLER=OFF -DEXIV2_ENABLE_BMFF=ON -DRESVG=OFF -DMOTIONPHOTO=OFF -DLCMS2=ON -DAPPIMAGEBUILD=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_VIDEO_MPV=ON -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=OFF -DWITH_LCMS2=ON -DWITH_FREEIMAGE=OFF
     - make DESTDIR=../appdir -j$(nproc) install
     - cd ..
     - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
