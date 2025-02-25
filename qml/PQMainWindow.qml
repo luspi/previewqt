@@ -21,7 +21,6 @@
  **************************************************************************/
 
 import QtCore
-import Qt.labs.platform
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
@@ -118,6 +117,84 @@ ApplicationWindow {
         }
     }
 
+    function showMainContextMenu() {
+        maincontextmenu.popup()
+    }
+
+    Menu {
+        id: maincontextmenu
+        MenuItem {
+            icon.source: "image://svg/:/open.svg"
+            text: qsTr("Open file")
+            onTriggered: toplevel.openNewFile()
+        }
+        MenuItem {
+            icon.source: "image://svg/:/settings.svg"
+            text: qsTr("Settings")
+            onTriggered: {
+                settings.active = true
+                settings.item.show()
+            }
+        }
+        MenuItem {
+            icon.source: "image://svg/:/about.svg"
+            text: qsTr("About")
+            onTriggered: {
+                about.active = true
+                about.item.show()
+            }
+        }
+        MenuItem {
+            icon.source: "image://svg/:/help.svg"
+            text: qsTr("Help")
+            onTriggered: {
+                help.active = true
+                help.item.show()
+            }
+        }
+        MenuSeparator {}
+        MenuItem {
+            icon.source: "image://svg/:/external.svg"
+            enabled: image.imageSource!==""
+            text: qsTr("Open externally")
+            onTriggered: {
+                if(image.imageSource === "") return
+                if(PQCScripts.openInDefault(image.imageSource)) {
+                    if(PQCSettings.closeAfterDefaultApp)
+                        toplevel.close()
+                } else
+                    extNotSet.open()
+            }
+        }
+        MenuItem {
+            icon.source: "image://svg/:/rotateleft.svg"
+            enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(image.currentType)==-1 && image.imageSource!==""
+            text: qsTr("Rotate left")
+            onTriggered: {
+                image.setRotation -= 90
+            }
+        }
+        MenuItem {
+            icon.source: "image://svg/:/rotateright.svg"
+            enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(image.currentType)==-1 && image.imageSource!==""
+            text: qsTr("Rotate right")
+            onTriggered: {
+                image.setRotation += 90
+            }
+        }
+        onAboutToShow: {
+            toplevel.menuOpen = true
+        }
+        onAboutToHide: {
+            toplevel.menuOpen = false
+        }
+        Connections {
+            target: toplevel
+            function onCloseAllMenus() {
+                maincontextmenu.close()
+            }
+        }
+    }
 
     // we keep focus on this item in order to catch key presses
     Item {

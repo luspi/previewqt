@@ -42,6 +42,14 @@ Rectangle {
     border.width: 1
     border.color: "white"
 
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        onClicked: {
+            toplevel.showMainContextMenu()
+        }
+    }
+
     // left part of the bar
     Row {
 
@@ -78,6 +86,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Open in external application")
+            active: image.imageSource!==""
             source: "image://svg/:/external.svg"
             onClicked: {
                 if(image.imageSource === "") return
@@ -87,12 +96,18 @@ Rectangle {
                 } else
                     extNotSet.open()
             }
+            MouseArea {
+                enabled: !parent.active
+                anchors.fill: parent
+                acceptedButtons: Qt.RightButton|Qt.LeftButton
+                onClicked: {}
+            }
         }
 
         // rotate left
         PQIconButton {
             id: rotleftbut
-            enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(image.currentType)==-1 && image.imageSource!==""
+            active: ["sph", "vid", "mpv", "bok", "txt"].indexOf(image.currentType)==-1 && image.imageSource!==""
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Rotate image to the left")
@@ -100,18 +115,30 @@ Rectangle {
             onClicked: {
                 image.setRotation -= 90
             }
+            MouseArea {
+                enabled: !parent.active
+                anchors.fill: parent
+                acceptedButtons: Qt.RightButton|Qt.LeftButton
+                onClicked: {}
+            }
         }
 
         // rotate right
         PQIconButton {
             id: rotrightbut
-            enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(image.currentType)==-1 && image.imageSource!==""
+            active: ["sph", "vid", "mpv", "bok", "txt"].indexOf(image.currentType)==-1 && image.imageSource!==""
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Rotate image to the right")
             source: "image://svg/:/rotateright.svg"
             onClicked: {
                 image.setRotation += 90
+            }
+            MouseArea {
+                enabled: !parent.active
+                anchors.fill: parent
+                acceptedButtons: Qt.RightButton|Qt.LeftButton
+                onClicked: {}
             }
         }
 
@@ -166,6 +193,7 @@ Rectangle {
         anchors.fill: parent
         enabled: toplevel.menuOpen
         hoverEnabled: true
+        acceptedButtons: Qt.LeftButton
         onClicked: {
             toplevel.closeAllMenus()
         }

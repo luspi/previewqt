@@ -86,11 +86,17 @@ Item {
     MouseArea {
         id: imagemouse
         anchors.fill: parent
+        enabled: !toplevel.menuOpen
         anchors.margins: -5
         hoverEnabled: true
+        acceptedButtons: Qt.LeftButton|Qt.RightButton
         cursorShape: image.imageSource === "" ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: (mouse) => {
-            if(image.imageSource === "")
+            if(mouse.button === Qt.RightButton)
+                toplevel.showMainContextMenu()
+            else if(toplevel.menuOpen)
+                toplevel.closeAllMenus()
+            else if(image.imageSource === "")
                 toplevel.openNewFile()
         }
         onPositionChanged: (mouse) => {
@@ -100,7 +106,8 @@ Item {
                 toplevel.toprowMakeVisible = false
         }
 
-        onDoubleClicked: {
+        onDoubleClicked: (mouse) => {
+            if(mouse.button === Qt.RightButton) return
             if(toplevel.isFullscreen)
                 toplevel.showNormal()
             else

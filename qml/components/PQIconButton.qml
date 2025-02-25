@@ -30,7 +30,7 @@ Rectangle {
     width: height
     height: parent.height
 
-    color: enabled ?
+    color: active ?
                (control.down ? "#000000" : (control.hovered ? "#444444" : "#222222")) :
                "#88666666"
     Behavior on color { ColorAnimation { duration: 200 } }
@@ -43,6 +43,8 @@ Rectangle {
     property bool down: false
     property bool hovered: false
 
+    // we use active instead of enabled to keep the mouse area active
+    property bool active: true
     property string source: ""
 
     signal pressed()
@@ -58,7 +60,7 @@ Rectangle {
         sourceSize: Qt.size(width, height)
         mipmap: false
         smooth: false
-        opacity: enabled ? 1 : 0.5
+        opacity: active ? 1 : 0.5
         Behavior on opacity { NumberAnimation { duration: 200 } }
     }
 
@@ -82,28 +84,64 @@ Rectangle {
 
     ToolTip {
         delay: 500
-        text: parent.enabled ? control.tooltip : qsTr("Action not supported for this file type")
+        text: parent.active ? control.tooltip : (image.imageSource==="" ? qsTr("No file loaded") : qsTr("Action not supported for this file type"))
         visible: text!=="" && control.hovered
+    }
+
+    Menu {
+        id: menu
+        MenuItem {
+            enabled: false
+            font.italic: true
+            text: control.tooltip
+        }
+        MenuSeparator {}
+        MenuItem {
+            text: qsTr("Trigger action")
+            onTriggered: {
+                control.clicked()
+            }
+        }
+        onAboutToShow: {
+            toplevel.menuOpen = true
+        }
+        onAboutToHide: {
+            toplevel.menuOpen = false
+        }
+        Connections {
+            target: toplevel
+            function onCloseAllMenus() {
+                menu.close()
+            }
+        }
     }
 
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+        acceptedButtons: Qt.LeftButton|Qt.RightButton
         onEntered:
             control.hovered = true
         onExited:
             control.hovered = false
         onPressed: {
             control.down = true
+            if(!control.active) return
             control.pressed()
         }
         onReleased: {
             control.down = false
+            if(!control.active) return
             control.released()
         }
-        onClicked:
-            control.clicked()
+        onClicked: (mouse) => {
+            if(!control.active) return
+            if(mouse.button === Qt.RightButton)
+                menu.popup()
+            else
+                control.clicked()
+        }
     }
 
 }
