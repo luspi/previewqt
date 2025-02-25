@@ -127,6 +127,48 @@ Rectangle {
                 focusitem.forceActiveFocus()
             }
 
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.RightButton
+                onClicked: {
+                    contextmenu.popup()
+                }
+            }
+
+            Menu {
+
+                id: contextmenu
+
+                MenuItem {
+                    text: qsTr("Copy all content")
+                    onTriggered: {
+                        PQCScripts.copyTextToClipboard(imageitem.text)
+                    }
+                }
+                MenuItem {
+                    text: qsTr("Select all")
+                    onTriggered: {
+                        imageitem.selectAll()
+                    }
+                }
+                MenuSeparator {}
+                MenuItem {
+                    enabled: imageitem.selectedText.length>0
+                    text: qsTr("Copy selection")
+                    onTriggered: {
+                        PQCScripts.copyTextToClipboard(imageitem.selectedText)
+                    }
+                }
+                MenuItem {
+                    enabled: imageitem.selectedText.length>0
+                    text: qsTr("Search for selected text")
+                    onTriggered: {
+                        searchrect.show()
+                    }
+                }
+
+            }
+
             Timer {
                 interval: 100
                 running: true
