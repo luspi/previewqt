@@ -136,22 +136,6 @@ ApplicationWindow {
                 settings.item.show()
             }
         }
-        MenuItem {
-            icon.source: "image://svg/:/about.svg"
-            text: qsTr("About")
-            onTriggered: {
-                about.active = true
-                about.item.show()
-            }
-        }
-        MenuItem {
-            icon.source: "image://svg/:/help.svg"
-            text: qsTr("Help")
-            onTriggered: {
-                help.active = true
-                help.item.show()
-            }
-        }
         MenuSeparator {}
         MenuItem {
             icon.source: "image://svg/:/external.svg"
@@ -180,6 +164,30 @@ ApplicationWindow {
             text: qsTr("Rotate right")
             onTriggered: {
                 image.setRotation += 90
+            }
+        }
+        MenuSeparator {}
+        MenuItem {
+            icon.source: "image://svg/:/about.svg"
+            text: qsTr("About")
+            onTriggered: {
+                about.active = true
+                about.item.show()
+            }
+        }
+        MenuItem {
+            icon.source: "image://svg/:/help.svg"
+            text: qsTr("Help")
+            onTriggered: {
+                help.active = true
+                help.item.show()
+            }
+        }
+        MenuItem {
+            icon.source: "image://svg/:/exit.svg"
+            text: qsTr("Quit")
+            onTriggered: {
+                Qt.quit()
             }
         }
         onAboutToShow: {
