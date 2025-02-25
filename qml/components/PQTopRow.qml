@@ -142,18 +142,6 @@ Rectangle {
             }
         }
 
-        // close window
-        PQIconButton {
-            id: exitbut
-            y: (parent.height-height)/2
-            height: toprow.height-2
-            source: "image://svg/:/exit.svg"
-            tooltip: qsTr("Quit PreviewQt")
-            onClicked: {
-                Qt.quit()
-            }
-        }
-
     }
 
     Row {
@@ -184,6 +172,18 @@ Rectangle {
             onClicked: {
                 help.active = true
                 help.item.show()
+            }
+        }
+
+        // close window
+        PQIconButton {
+            id: exitbut
+            y: (parent.height-height)/2
+            height: toprow.height-2
+            source: "image://svg/:/exit.svg"
+            tooltip: qsTr("Quit PreviewQt")
+            onClicked: {
+                Qt.quit()
             }
         }
 
