@@ -267,8 +267,34 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: {
-                searchrect.show()
+            acceptedButtons: Qt.LeftButton|Qt.RightButton
+            onClicked: (mouse) => {
+                if(mouse.button === Qt.LeftButton)
+                    searchrect.show()
+                else
+                    searchmenu.popup()
+            }
+        }
+
+        Menu {
+            id: searchmenu
+            MenuItem {
+                text: qsTr("Search in file")
+                onTriggered: {
+                    searchrect.show()
+                }
+            }
+            onAboutToShow: {
+                toplevel.menuOpen = true
+            }
+            onAboutToHide: {
+                toplevel.menuOpen = false
+            }
+            Connections {
+                target: toplevel
+                function onCloseAllMenus() {
+                    searchmenu.close()
+                }
             }
         }
 
@@ -502,11 +528,40 @@ Rectangle {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
+            acceptedButtons: Qt.LeftButton|Qt.RightButton
             onClicked: {
-                if(settingsrect.visible)
-                    settingsrect.hide()
-                else
-                    settingsrect.show()
+                if(mouse.button === Qt.LeftButton) {
+                    if(settingsrect.visible)
+                        settingsrect.hide()
+                    else
+                        settingsrect.show()
+                } else
+                    settingsmenu.popup()
+            }
+        }
+
+        Menu {
+            id: settingsmenu
+            MenuItem {
+                text: qsTr("Show settings")
+                onTriggered: {
+                    if(settingsrect.visible)
+                        settingsrect.hide()
+                    else
+                        settingsrect.show()
+                }
+            }
+            onAboutToShow: {
+                toplevel.menuOpen = true
+            }
+            onAboutToHide: {
+                toplevel.menuOpen = false
+            }
+            Connections {
+                target: toplevel
+                function onCloseAllMenus() {
+                    settingsmenu.close()
+                }
             }
         }
 
@@ -526,6 +581,12 @@ Rectangle {
         color: colorPalette.base
         border.color: colorPalette.accent
         border.width: 1
+
+        MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton|Qt.RightButton
+            onClicked: {}
+        }
 
         Column {
 
