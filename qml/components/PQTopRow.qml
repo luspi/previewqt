@@ -44,9 +44,25 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        acceptedButtons: Qt.RightButton
-        onClicked: {
-            toplevel.showMainContextMenu()
+        acceptedButtons: Qt.RightButton|Qt.LeftButton
+        onDoubleClicked: {
+            if(toplevel.visibility === Window.Maximized)
+                toplevel.showNormal()
+            else
+                toplevel.showMaximized()
+        }
+
+        onPressed: (mouse) => {
+            if(mouse.button === Qt.LeftButton) {
+                cursorShape = Qt.ClosedHandCursor
+                toplevel.startSystemMove()
+            }
+        }
+        onReleased:
+            cursorShape = Qt.PointingHandCursor
+        onClicked: (mouse) => {
+            if(mouse.button === Qt.RightButton)
+                toplevel.showMainContextMenu()
         }
     }
 
