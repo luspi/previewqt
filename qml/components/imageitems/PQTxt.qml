@@ -30,7 +30,7 @@ import org.kde.syntaxhighlighting 1.0
 
 Rectangle {
 
-    color: colorPalette.base
+    color: colorPalette.window
 
     id: txt_top
 
@@ -76,18 +76,11 @@ Rectangle {
         clip: true
         contentItem.clip: true
 
-        contentHeight: imageitem.height + (hBar.visible ? hBar.height : 0)
-        contentWidth: imageitem.width + (vBar.visible ? vBar.width : 0)
+        contentHeight: imageitem.height + hBar.height
+        contentWidth: imageitem.width + vBar.height
 
         ScrollBar.horizontal: ScrollBar { id: hBar; opacity: (hBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
         ScrollBar.vertical: ScrollBar { id: vBar; opacity: (vBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
-
-        onContentXChanged: {
-            settingsrect.hide()
-        }
-        onContentYChanged: {
-            settingsrect.hide()
-        }
 
         /*1on_PQMKF6*/
         SyntaxHighlighter {
@@ -100,14 +93,30 @@ Rectangle {
         TextEdit {
 
             id: imageitem
+            x: 5
             y: 5
 
-            width: PQCSettings.textWordWrap ? flickme.width-(vBar.visible ? vBar.width : 0) : undefined
+            width: PQCSettings.textWordWrap ? flickme.width-10-(vBar.visible ? vBar.width : 0) : undefined
             height: Math.max(flickme.height-(hBar.visible ? hBar.height : 0), contentHeight)
 
-            color: "white"
-            font.family: "Monospace"
+            color: colorPalette.text
+
             font.pointSize: PQCSettings.textFontPointSize
+            font.family: "Monospace"
+            textFormat: TextEdit.PlainText
+
+            /*1on_PQMKF6*/
+            onFontChanged: {
+                var txt = imageitem.text
+                if(txt === "") return
+                var vpos = vBar.position
+                var hpos = hBar.position
+                imageitem.text = ""
+                imageitem.text = txt
+                vBar.position = vpos
+                hBar.position = hpos
+            }
+            /*1off_PQMKF6*/
 
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
 
@@ -218,11 +227,13 @@ Rectangle {
                     flickme.flick(0, -1500)
                 else if(event.key === Qt.Key_PageUp)
                     flickme.flick(0, 1500)
-                else if(event.key === Qt.Key_End)
+                else if(event.key === Qt.Key_End) {
+                    flickme.contentX = 0
                     flickme.contentY = flickme.contentHeight-flickme.height
-                else if(event.key === Qt.Key_Home)
+                } else if(event.key === Qt.Key_Home) {
+                    flickme.contentX = 0
                     flickme.contentY = 0
-                else
+                } else
                     toplevel.keyPress(event.modifiers, event.key)
             }
 
@@ -251,7 +262,7 @@ Rectangle {
         Behavior on color { ColorAnimation { duration: 200 } }
         radius: 4
 
-        opacity: (searchmouse.containsMouse ? 1 : 0.5) * (1-searchrect.opacity)
+        opacity: (searchmouse.containsMouse ? 1 : 0.1) * (1-searchrect.opacity)
         visible: opacity>0
         Behavior on opacity { NumberAnimation { duration: 200 } }
 
@@ -513,7 +524,7 @@ Rectangle {
         Behavior on color { ColorAnimation { duration: 200 } }
         radius: 4
 
-        opacity: settingsmouse.containsMouse||settingsrect.visible ? 1 : 0.5
+        opacity: settingsmouse.containsMouse||settingsrect.visible ? 1 : 0.1
         Behavior on opacity { NumberAnimation { duration: 200 } }
 
         Image {
@@ -529,7 +540,7 @@ Rectangle {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             acceptedButtons: Qt.LeftButton|Qt.RightButton
-            onClicked: {
+            onClicked: (mouse) => {
                 if(mouse.button === Qt.LeftButton) {
                     if(settingsrect.visible)
                         settingsrect.hide()
@@ -753,10 +764,23 @@ Rectangle {
     Component.onCompleted: {
         // set current file type
         myHighlighter.definition = Repository.definitionForName(PQCScripts.getSuffix(image_top.imageSource))
+        myHighlighter.definition = Repository.definitionForFileName(image_top.imageSource)
 
         // This HAS to be set after setting the styling!
         // Otherwise for slightly larger files the interface is blocked for quite a while.
-        imageitem.text = PQCScripts.getTextFileContents(image_top.imageSource)
+
+        var sec = myHighlighter.definition.section
+
+        if(sec === "Sources" || sec === "Assembler" || sec === "Configuration" || sec === "Database"|| sec === "Hardware" || sec === "Scientific" || sec === "Scripts") {
+            imageitem.textFormat = TextEdit.MarkdownText
+            imageitem.text = '````\n'+PQCScripts.getTextFileContents(image_top.imageSource)+'\n``'
+        } else if(sec === "Markup") {
+            imageitem.textFormat = TextEdit.MarkdownText
+            imageitem.text = PQCScripts.getTextFileContents(image_top.imageSource)
+        } else {
+            imageitem.textFormat = TextEdit.PlainText
+            imageitem.text = PQCScripts.getTextFileContents(image_top.imageSource)
+        }
     }
     /*2on_PQMKF6*/
 
