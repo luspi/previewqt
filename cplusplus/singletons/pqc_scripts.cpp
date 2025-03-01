@@ -1549,7 +1549,7 @@ QSize PQCScripts::fitSizeInsideSize(int w, int h, int maxw, int maxh) {
 
 bool PQCScripts::isUpgrade() {
 
-    return (PQCSettings::get().getVersion() != PQMVERSION);
+    return (PQCSettings::get().getVersion() != PQMVERSION || QString(PQMVERSION) == "dev");
 
 }
 
@@ -1936,9 +1936,14 @@ bool PQCScripts::isTextDocument(QString path) {
 
     qDebug() << "args: path =" << path;
 
+    const QString suffix = QFileInfo(path).suffix();
+    if(PQCFileFormats::get().getAllFormatsText().contains(suffix.toLower()))
+        return true;
+
     QMimeDatabase db;
     QString mimetype = db.mimeTypeForFile(path).name();
-    if(mimetype.startsWith("text/"))
+    qDebug() << "detected mime type:" << mimetype;
+    if(mimetype.startsWith("text/") || PQCFileFormats::get().getAllMimeTypesText().contains(mimetype))
         return true;
 
     return false;

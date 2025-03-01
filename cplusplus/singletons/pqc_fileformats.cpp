@@ -107,6 +107,7 @@ void PQCFileFormats::readFromDatabase() {
     m_formats_video.clear();
     m_formats_libmpv.clear();
     m_formats_ebook.clear();
+    m_formats_text.clear();
 
     m_mimetypes_qt.clear();
     m_mimetypes_resvg.clear();
@@ -121,6 +122,7 @@ void PQCFileFormats::readFromDatabase() {
     m_mimetypes_video.clear();
     m_mimetypes_libmpv.clear();
     m_mimetypes_ebook.clear();
+    m_mimetypes_text.clear();
 
     const QList<QByteArray> qtSupported = QImageReader::supportedImageFormats();
 
@@ -167,6 +169,7 @@ void PQCFileFormats::readFromDatabase() {
 #ifdef PQMVIDEOMPV
         const int libmpv = query.record().value("libmpv").toInt();
 #endif
+        const int text = (cat=="txt" ? 1 : 0);
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
         const QString im_gm_magick = query.record().value("im_gm_magick").toString();
 #endif
@@ -190,7 +193,7 @@ void PQCFileFormats::readFromDatabase() {
         if(qt) {
             // we check the formats against the list of supported image formats
             // this list can vary depending on which plugins are installed
-            if(qtSupported.contains(qt_formatname.toUtf8()) || cat == "ind") {
+            if(qtSupported.contains(qt_formatname.toUtf8())) {
                 supportedByAnyLibrary = true;
                 m_formats_qt << endingsParts;
                 if(mimetypes != "")
@@ -317,6 +320,13 @@ void PQCFileFormats::readFromDatabase() {
         }
 #endif
 
+        if(text) {
+            supportedByAnyLibrary = true;
+            m_formats_text << endingsParts;
+            if(mimetypes != "")
+                m_mimetypes_text << mimetypes.split(",");
+        }
+
         if(supportedByAnyLibrary) {
 
             if(magickToBeAdded && validImGmMagick.length() > 0) {
@@ -351,6 +361,7 @@ void PQCFileFormats::readFromDatabase() {
     m_formats << m_formats_video;
     m_formats << m_formats_libmpv;
     m_formats << m_formats_ebook;
+    m_formats << m_formats_text;
 
     m_mimetypes.clear();
     m_mimetypes << m_mimetypes_qt;
@@ -366,6 +377,7 @@ void PQCFileFormats::readFromDatabase() {
     m_mimetypes << m_mimetypes_video;
     m_mimetypes << m_mimetypes_libmpv;
     m_mimetypes << m_mimetypes_ebook;
+    m_mimetypes << m_mimetypes_text;
 
 }
 
@@ -413,7 +425,7 @@ void PQCFileFormats::validate() {
     QString tmpfile = PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db";
     if(QFileInfo::exists(tmpfile) && !QFile::remove(tmpfile))
         qWarning() << "Error removing old tmp file";
-    if(!QFile::copy(":/imageformats.db", PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db"))
+    if(!QFile::copy(":/fileformats.db", PQCConfigFiles::get().CACHE_DIR()+"/previewqt_tmp.db"))
         qWarning() << "Error copying default db to tmp file";
     QFile::setPermissions(tmpfile,
                           QFileDevice::WriteOwner|QFileDevice::ReadOwner |

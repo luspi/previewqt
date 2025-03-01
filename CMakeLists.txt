@@ -190,7 +190,7 @@ endif()
 set(d "cplusplus")
 set(previewqt_SRC "${d}/main.cpp")
 set(d "cplusplus/singletons")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scripts.cpp" "${d}/pqc_fileformats.cpp" "${d}/pqc_settings.cpp" "${d}/pqc_cache.cpp")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scripts.cpp" "${d}/pqc_fileformats.cpp" "${d}/pqc_settings.cpp" "${d}/pqc_cache.cpp" "${d}/pqc_textprocessing.cpp")
 set(d "cplusplus/files")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadfile.cpp" "${d}/pqc_providerfull.cpp" "${d}/pqc_providersvg.cpp")
 set(d "cplusplus/files/plugins")
@@ -204,7 +204,7 @@ set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_singleinstance.cpp" "${d}/pqc_speci
 
 
 set(d "cplusplus/header")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_fileformats.h" "${d}/pqc_scripts.h" "${d}/pqc_messagehandler.h")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_fileformats.h" "${d}/pqc_scripts.h" "${d}/pqc_messagehandler.h" "${d}/pqc_textprocessing.h")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_photosphere.h" "${d}/pqc_photosphereitem.h" "${d}/pqc_photosphererenderer.h")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_settings.h" "${d}/pqc_singleinstance.h" "${d}/pqc_cache.h" "${d}/pqc_specialactions.h")
 

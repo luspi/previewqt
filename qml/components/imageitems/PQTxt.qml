@@ -24,6 +24,7 @@ import QtQuick
 import QtQuick.Controls
 import PQCScripts // qmllint disable import
 import PQCSettings
+import PQCTextProcessing
 /*1on_PQMKF6*/
 import org.kde.syntaxhighlighting 1.0
 /*2on_PQMKF6*/
@@ -116,16 +117,10 @@ Rectangle {
                 vBar.position = vpos
                 hBar.position = hpos
             }
-            /*1off_PQMKF6*/
+            /*2on_PQMKF6*/
 
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-
             readOnly: true
-
-            // With syntax highlighting the text content is set after the syntax highlighting is set at the end
-            /*1off_PQMNOTKF6
-            text: PQCScripts.getTextFileContents(image_top.imageSource)
-            2off_PQMNOTKF6*/
 
             Component.onCompleted: {
                 image.status = Image.Ready
@@ -738,6 +733,34 @@ Rectangle {
                 }
             }
 
+            Item {
+                height: 39
+                width: 200
+                Rectangle {
+                    color: setautomouse.containsMouse ? colorPalette.highlight : colorPalette.base
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    anchors.fill: parent
+                    opacity: 0.6
+                }
+                CheckBox {
+                    x: 5
+                    width: 190
+                    y: (parent.height-height)/2
+                    font.bold: true
+                    checked: PQCSettings.textAutoFormat
+                    text: qsTr("Auto Format")
+                }
+                MouseArea {
+                    id: setautomouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        PQCSettings.textAutoFormat = !PQCSettings.textAutoFormat
+                    }
+                }
+            }
+
         }
 
         function show() {
@@ -760,32 +783,63 @@ Rectangle {
         }
     }
 
-    /*1on_PQMKF6*/
     Component.onCompleted: {
+
+        /*1on_PQMKF6*/
         // set current file type
         myHighlighter.definition = Repository.definitionForName(PQCScripts.getSuffix(image_top.imageSource))
         myHighlighter.definition = Repository.definitionForFileName(image_top.imageSource)
+        /*2on_PQMKF6*/
 
         // This HAS to be set after setting the styling!
         // Otherwise for slightly larger files the interface is blocked for quite a while.
+        loadText()
 
+    }
+
+    function loadText() {
+
+        /*1on_PQMKF6*/
         var sec = myHighlighter.definition.section
+        /*2on_PQMKF6*/
+        /*1off_PQMNOTKF6
+        var sec = ""
+        2off_PQMNOTKF6*/
+
+        toplevel.overrideTitleSuffix = ""
+
+        var txt = PQCScripts.getTextFileContents(image_top.imageSource)
+        var suf = PQCScripts.getSuffix(image_top.imageSource)
+        if(suf === "json") {
+            sec = ""; // by default this is markdown but we need "normal" formatting
+            if(PQCSettings.textAutoFormat) {
+                toplevel.overrideTitleSuffix = " (auto-format)"
+                txt = PQCTextProcessing.prettifyJSON(txt)
+            }
+        }
 
         if(sec === "Sources" || sec === "Assembler" || sec === "Configuration" || sec === "Database"|| sec === "Hardware" || sec === "Scientific" || sec === "Scripts") {
             imageitem.textFormat = TextEdit.MarkdownText
-            imageitem.text = '````\n'+PQCScripts.getTextFileContents(image_top.imageSource)+'\n``'
+            imageitem.text = '```\n'+txt+'\n```'
         } else if(sec === "Markup") {
             imageitem.textFormat = TextEdit.MarkdownText
-            imageitem.text = PQCScripts.getTextFileContents(image_top.imageSource)
+            imageitem.text = (suf === "md" ? txt : ('```\n'+txt+'\n```'))
         } else {
             imageitem.textFormat = TextEdit.PlainText
-            imageitem.text = PQCScripts.getTextFileContents(image_top.imageSource)
+            imageitem.text = txt
         }
+
     }
-    /*2on_PQMKF6*/
 
     Component.onDestruction: {
         toplevel.menuOpen = false
+    }
+
+    Connections {
+        target: PQCSettings
+        function onTextAutoFormatChanged() {
+            txt_top.loadText()
+        }
     }
 
     Connections {

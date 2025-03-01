@@ -46,6 +46,7 @@
 #include <pqc_singleinstance.h>
 #include <pqc_configfiles.h>
 #include <pqc_cache.h>
+#include <pqc_textprocessing.h>
 
 #ifdef Q_OS_WIN
 #include <QQuickWindow>
@@ -231,6 +232,8 @@ int main(int argc, char *argv[]) {
     VIPS_INIT(argv[0]);
 #endif
 
+    PQCFileFormats::get().validate();
+
     // Check for upgrade to PreviewQt
     if(PQCScripts::get().isUpgrade()) {
 
@@ -254,6 +257,7 @@ int main(int argc, char *argv[]) {
     qmlRegisterSingletonInstance("PQCCache", 1, 0, "PQCCache", &PQCCache::get());
     qmlRegisterSingletonInstance("PQCScripts", 1, 0, "PQCScripts", &PQCScripts::get());
     qmlRegisterSingletonInstance("PQCFileFormats", 1, 0, "PQCFileFormats", &PQCFileFormats::get());
+    qmlRegisterSingletonInstance("PQCTextProcessing", 1, 0, "PQCTextProcessing", &PQCTextProcessing::get());
 
     engine.addImageProvider("full", new PQCProviderFull);
     engine.addImageProvider("svg", new PQCProviderSVG);

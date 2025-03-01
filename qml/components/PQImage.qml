@@ -141,6 +141,7 @@ Item {
         imageloader.source = ""
         setRotation = 0
         toplevel.overrideTitle = ""
+        toplevel.overrideTitleSuffix = ""
 
         if(path === "") {
             imageSource = ""
