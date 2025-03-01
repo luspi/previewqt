@@ -93,6 +93,22 @@ void PQCFileFormats::readFromDatabase() {
 
     qDebug() << "";
 
+    m_num = 0;
+    m_num_qt = 0;
+    m_num_resvg = 0;
+    m_num_libvips = 0;
+    m_num_magick = 0;
+    m_num_libraw = 0;
+    m_num_poppler = 0;
+    m_num_xcftools = 0;
+    m_num_devil = 0;
+    m_num_freeimage = 0;
+    m_num_archive = 0;
+    m_num_video = 0;
+    m_num_libmpv = 0;
+    m_num_ebook = 0;
+    m_num_text = 0;
+
     m_formats.clear();
     m_formats_qt.clear();
     m_formats_resvg.clear();
@@ -194,6 +210,7 @@ void PQCFileFormats::readFromDatabase() {
             // we check the formats against the list of supported image formats
             // this list can vary depending on which plugins are installed
             if(qtSupported.contains(qt_formatname.toUtf8())) {
+                m_num_qt += 1;
                 supportedByAnyLibrary = true;
                 m_formats_qt << endingsParts;
                 if(mimetypes != "")
@@ -203,6 +220,7 @@ void PQCFileFormats::readFromDatabase() {
 
 #ifdef PQMRESVG
         if(resvg) {
+            m_num_resvg += 1;
             supportedByAnyLibrary = true;
             m_formats_resvg << endingsParts;
             if(mimetypes != "")
@@ -212,6 +230,7 @@ void PQCFileFormats::readFromDatabase() {
 
 #ifdef PQMLIBVIPS
         if(libvips) {
+            m_num_libvips += 1;
             supportedByAnyLibrary = true;
             m_formats_libvips << endingsParts;
             if(mimetypes != "")
@@ -243,6 +262,7 @@ void PQCFileFormats::readFromDatabase() {
             }
 
             if(alright) {
+                m_num_magick += 1;
                 supportedByAnyLibrary = true;
                 magickToBeAdded = true;
                 m_formats_magick << endingsParts;
@@ -253,6 +273,7 @@ void PQCFileFormats::readFromDatabase() {
 #endif
 #ifdef PQMRAW
         if(libraw) {
+            m_num_libraw += 1;
             supportedByAnyLibrary = true;
             m_formats_libraw << endingsParts;
             if(mimetypes != "")
@@ -261,6 +282,7 @@ void PQCFileFormats::readFromDatabase() {
 #endif
 #if defined(PQMPOPPLER) || defined(PQMQTPDF)
         if(poppler) {
+            m_num_poppler += 1;
             supportedByAnyLibrary = true;
             m_formats_poppler << endingsParts;
             if(mimetypes != "")
@@ -268,6 +290,7 @@ void PQCFileFormats::readFromDatabase() {
         }
 #endif
         if(xcftools) {
+            m_num_xcftools += 1;
             supportedByAnyLibrary = true;
             m_formats_xcftools << endingsParts;
             if(mimetypes != "")
@@ -275,6 +298,7 @@ void PQCFileFormats::readFromDatabase() {
         }
 #ifdef PQMDEVIL
         if(devil) {
+            m_num_devil += 1;
             supportedByAnyLibrary = true;
             m_formats_devil << endingsParts;
             if(mimetypes != "")
@@ -283,6 +307,7 @@ void PQCFileFormats::readFromDatabase() {
 #endif
 #ifdef PQMFREEIMAGE
         if(freeimage) {
+            m_num_freeimage += 1;
             supportedByAnyLibrary = true;
             m_formats_freeimage << endingsParts;
             if(mimetypes != "")
@@ -293,10 +318,12 @@ void PQCFileFormats::readFromDatabase() {
         if(archive) {
             supportedByAnyLibrary = true;
             if(cat == "bok") {
+                m_num_ebook += 1;
                 m_formats_ebook << endingsParts;
                 if(mimetypes != "")
                     m_mimetypes_ebook << mimetypes.split(",");
             } else {
+                m_num_archive += 1;
                 m_formats_archive << endings.split(",");
                 if(mimetypes != "")
                     m_mimetypes_archive << mimetypes.split(",");
@@ -305,6 +332,7 @@ void PQCFileFormats::readFromDatabase() {
 #endif
 #ifdef PQMVIDEOQT
         if(video) {
+            m_num_video += 1;
             supportedByAnyLibrary = true;
             m_formats_video << endingsParts;
             if(mimetypes != "")
@@ -313,6 +341,7 @@ void PQCFileFormats::readFromDatabase() {
 #endif
 #ifdef PQMVIDEOMPV
         if(libmpv) {
+            m_num_libmpv += 1;
             supportedByAnyLibrary = true;
             m_formats_libmpv << endingsParts;
             if(mimetypes != "")
@@ -321,6 +350,7 @@ void PQCFileFormats::readFromDatabase() {
 #endif
 
         if(text) {
+            m_num_text += 1;
             supportedByAnyLibrary = true;
             m_formats_text << endingsParts;
             if(mimetypes != "")
@@ -328,6 +358,8 @@ void PQCFileFormats::readFromDatabase() {
         }
 
         if(supportedByAnyLibrary) {
+
+            m_num += 1;
 
             if(magickToBeAdded && validImGmMagick.length() > 0) {
                 for(QString &e : endingsParts) {

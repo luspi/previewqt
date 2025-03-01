@@ -1346,6 +1346,8 @@ QString PQCScripts::getConfigInfo(bool formatHTML) {
 
     txt += QString(" - Compiled with %1Qt %2%3, running with %4Qt %5%6%7").arg(bold1, QT_VERSION_STR, bold2, bold1, qVersion(), bold2, nl);
 
+    txt += QString(" - Total of %1%2%3 supported file formats%4").arg(bold1).arg(PQCFileFormats::get().getNumFormats()).arg(bold2, nl);
+
 #ifdef PQMEXIV2
     txt += QString(" - %1Exiv2%2: %3%4").arg(bold1, bold2, Exiv2::version(), nl);
 #endif

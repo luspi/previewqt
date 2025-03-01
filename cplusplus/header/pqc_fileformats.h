@@ -48,8 +48,16 @@ public:
         return m_formats;
     }
 
+    Q_INVOKABLE int getNumFormats() {
+        return m_num;
+    }
+
     Q_INVOKABLE QStringList getAllMimeTypes() {
         return m_mimetypes;
+    }
+
+    Q_INVOKABLE int getNumFormatsQt() {
+        return m_num_qt;
     }
 
     Q_INVOKABLE QStringList getAllFormatsQt() {
@@ -60,12 +68,20 @@ public:
         return m_mimetypes_qt;
     }
 
+    Q_INVOKABLE int getNumFormatsResvg() {
+        return m_num_resvg;
+    }
+
     Q_INVOKABLE QStringList getAllFormatsResvg() {
         return m_formats_resvg;
     }
 
     Q_INVOKABLE QStringList getAllMimeTypesResvg() {
         return m_mimetypes_resvg;
+    }
+
+    Q_INVOKABLE int getNumFormatsLibVips() {
+        return m_num_libvips;
     }
 
     Q_INVOKABLE QStringList getAllFormatsLibVips() {
@@ -76,12 +92,20 @@ public:
         return m_mimetypes_libvips;
     }
 
+    Q_INVOKABLE int getNumFormatsMagick() {
+        return m_num_magick;
+    }
+
     Q_INVOKABLE QStringList getAllFormatsMagick() {
         return m_formats_magick;
     }
 
     Q_INVOKABLE QStringList getAllMimeTypesMagick() {
         return m_mimetypes_magick;
+    }
+
+    Q_INVOKABLE int getNumFormatsLibRaw() {
+        return m_num_libraw;
     }
 
     Q_INVOKABLE QStringList getAllFormatsLibRaw() {
@@ -92,12 +116,20 @@ public:
         return m_mimetypes_libraw;
     }
 
+    Q_INVOKABLE int getNumFormatsPoppler() {
+        return m_num_poppler;
+    }
+
     Q_INVOKABLE QStringList getAllFormatsPoppler() {
         return m_formats_poppler;
     }
 
     Q_INVOKABLE QStringList getAllMimeTypesPoppler() {
         return m_mimetypes_poppler;
+    }
+
+    Q_INVOKABLE int getNumFormatsXCFTools() {
+        return m_num_xcftools;
     }
 
     Q_INVOKABLE QStringList getAllFormatsXCFTools() {
@@ -108,12 +140,20 @@ public:
         return m_mimetypes_xcftools;
     }
 
+    Q_INVOKABLE int getNumFormatsDevIL() {
+        return m_num_devil;
+    }
+
     Q_INVOKABLE QStringList getAllFormatsDevIL() {
         return m_formats_devil;
     }
 
     Q_INVOKABLE QStringList getAllMimeTypesDevIL() {
         return m_mimetypes_devil;
+    }
+
+    Q_INVOKABLE int getNumFormatsFreeImage() {
+        return m_num_freeimage;
     }
 
     Q_INVOKABLE QStringList getAllFormatsFreeImage() {
@@ -124,12 +164,20 @@ public:
         return m_mimetypes_freeimage;
     }
 
+    Q_INVOKABLE int getNumFormatsLibArchive() {
+        return m_num_archive;
+    }
+
     Q_INVOKABLE QStringList getAllFormatsLibArchive() {
         return m_formats_archive;
     }
 
     Q_INVOKABLE QStringList getAllMimeTypesLibArchive() {
         return m_mimetypes_archive;
+    }
+
+    Q_INVOKABLE int getNumFormatsVideo() {
+        return m_num_video;
     }
 
     Q_INVOKABLE QStringList getAllFormatsVideo() {
@@ -140,6 +188,10 @@ public:
         return m_mimetypes_video;
     }
 
+    Q_INVOKABLE int getNumFormatsLibmpv() {
+        return m_num_libmpv;
+    }
+
     Q_INVOKABLE QStringList getAllFormatsLibmpv() {
         return m_formats_libmpv;
     }
@@ -148,12 +200,20 @@ public:
         return m_mimetypes_libmpv;
     }
 
+    Q_INVOKABLE int getNumFormatsEBook() {
+        return m_num_ebook;
+    }
+
     Q_INVOKABLE QStringList getAllFormatsEBook() {
         return m_formats_ebook;
     }
 
     Q_INVOKABLE QStringList getAllMimeTypesEBook() {
         return m_mimetypes_ebook;
+    }
+
+    Q_INVOKABLE int getNumFormatsText() {
+        return m_num_text;
     }
 
     Q_INVOKABLE QStringList getAllFormatsText() {
@@ -183,35 +243,50 @@ private:
 
     QSqlDatabase db;
 
+    int m_num;
     QStringList m_formats;
     QStringList m_mimetypes;
 
+    int m_num_qt;
     QStringList m_formats_qt;
     QStringList m_mimetypes_qt;
+    int m_num_resvg;
     QStringList m_formats_resvg;
     QStringList m_mimetypes_resvg;
+    int m_num_libvips;
     QStringList m_formats_libvips;
     QStringList m_mimetypes_libvips;
+    int m_num_magick;
     QStringList m_formats_magick;
     QStringList m_mimetypes_magick;
+    int m_num_libraw;
     QStringList m_formats_libraw;
     QStringList m_mimetypes_libraw;
+    int m_num_poppler;
     QStringList m_formats_poppler;
     QStringList m_mimetypes_poppler;
+    int m_num_xcftools;
     QStringList m_formats_xcftools;
     QStringList m_mimetypes_xcftools;
+    int m_num_devil;
     QStringList m_formats_devil;
     QStringList m_mimetypes_devil;
+    int m_num_freeimage;
     QStringList m_formats_freeimage;
     QStringList m_mimetypes_freeimage;
+    int m_num_archive;
     QStringList m_formats_archive;
     QStringList m_mimetypes_archive;
+    int m_num_video;
     QStringList m_formats_video;
     QStringList m_mimetypes_video;
+    int m_num_libmpv;
     QStringList m_formats_libmpv;
     QStringList m_mimetypes_libmpv;
+    int m_num_ebook;
     QStringList m_formats_ebook;
     QStringList m_mimetypes_ebook;
+    int m_num_text;
     QStringList m_formats_text;
     QStringList m_mimetypes_text;
 
