@@ -1179,7 +1179,9 @@ bool PQCScripts::openInDefault(QString path) {
     QFileInfo info(path);
     const QString suffix = info.suffix().toLower();
 
-    QString exe = "photoqt";
+    QString exe = "";
+
+    // first check for file endings
 
     if(PQCFileFormats::get().getAllFormatsPoppler().contains(suffix)) {
 
@@ -1202,6 +1204,10 @@ bool PQCScripts::openInDefault(QString path) {
 
         exe = PQCSettings::get().getDefaultAppVideos();
 
+    } else if(PQCFileFormats::get().getAllFormatsText().contains(suffix)) {
+
+        exe = PQCSettings::get().getDefaultAppText();
+
     } else if(PQCFileFormats::get().getAllFormatsQt().contains(suffix) || PQCFileFormats::get().getAllFormatsFreeImage().contains(suffix) ||
         PQCFileFormats::get().getAllFormatsDevIL().contains(suffix) || PQCFileFormats::get().getAllFormatsLibRaw().contains(suffix) ||
         PQCFileFormats::get().getAllFormatsLibVips().contains(suffix) || PQCFileFormats::get().getAllFormatsMagick().contains(suffix) ||
@@ -1209,6 +1215,58 @@ bool PQCScripts::openInDefault(QString path) {
 
         exe = PQCSettings::get().getDefaultAppImages();
 
+    }
+
+    // if nothing found check mime types
+
+    if(exe == "") {
+
+        QMimeDatabase db;
+        QString mimetype = db.mimeTypeForFile(path).name();
+
+        if(PQCFileFormats::get().getAllMimeTypesPoppler().contains(mimetype)) {
+
+            exe = PQCSettings::get().getDefaultAppDocuments();
+
+        } else if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype) &&
+                   (suffix == "cbr" || suffix == "cbt" || suffix == "cbz" || suffix == "cb7")) {
+
+            exe = PQCSettings::get().getDefaultAppComicBooks();
+
+        } else if(PQCFileFormats::get().getAllMimeTypesEBook().contains(mimetype)) {
+
+            exe = PQCSettings::get().getDefaultAppEBooks();
+
+        } else if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype)) {
+
+            exe = PQCSettings::get().getDefaultAppArchives();
+
+        } else if(PQCFileFormats::get().getAllMimeTypesLibmpv().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesVideo().contains(mimetype)) {
+
+            exe = PQCSettings::get().getDefaultAppVideos();
+
+        } else if(PQCFileFormats::get().getAllMimeTypesText().contains(mimetype)) {
+
+            exe = PQCSettings::get().getDefaultAppText();
+
+        } else if(PQCFileFormats::get().getAllMimeTypesQt().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesFreeImage().contains(mimetype) ||
+                   PQCFileFormats::get().getAllMimeTypesDevIL().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesLibRaw().contains(mimetype) ||
+                   PQCFileFormats::get().getAllMimeTypesLibVips().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesMagick().contains(mimetype) ||
+                   PQCFileFormats::get().getAllMimeTypesResvg().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesXCFTools().contains(mimetype)) {
+
+            exe = PQCSettings::get().getDefaultAppImages();
+
+        }
+
+    }
+
+    // if nothing found default to photoqt
+    if(exe == "") {
+#ifdef WIN32
+        exe = "photoqt.exe";
+#else
+        exe = "photoqt";
+#endif
     }
 
     QProcess proc;
