@@ -274,6 +274,9 @@ Rectangle {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             acceptedButtons: Qt.LeftButton|Qt.RightButton
+
+            ToolTip { text: qsTr("search in file (Ctrl+F)") }
+
             onClicked: (mouse) => {
                 if(mouse.button === Qt.LeftButton)
                     searchrect.show()
@@ -602,6 +605,9 @@ Rectangle {
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
             acceptedButtons: Qt.LeftButton|Qt.RightButton
+
+            ToolTip { text: qsTr("settings specific for text files") }
+
             onClicked: (mouse) => {
                 if(mouse.button === Qt.LeftButton) {
                     if(settingsrect.visible)
