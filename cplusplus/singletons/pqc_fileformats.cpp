@@ -557,32 +557,15 @@ void PQCFileFormats::validate() {
 
         // check whether an entry with that name exists in the in-production database
         QSqlQuery check(dbinstalled);
-        check.prepare("SELECT count(endings) FROM imageformats WHERE endings=:endings");
-        check.bindValue(":endings", endings);
+        check.prepare("SELECT count(uniqueid) FROM imageformats WHERE uniqueid=:uniqueid");
+        check.bindValue(":uniqueid", uniqueid);
         if(!check.exec()) {
             qWarning() << QString("Error checking ending (%1):").arg(endings) << check.lastError().text();
             continue;
         }
         check.next();
         int count = check.value(0).toInt();
-
         check.clear();
-
-        bool updateByEnding = true;
-
-        // if ENDINGS does not exist, check for description
-        if(count == 0) {
-            QSqlQuery check(dbinstalled);
-            check.prepare("SELECT count(description) FROM imageformats WHERE description=:description");
-            check.bindValue(":description", description);
-            if(!check.exec()) {
-                qWarning() << QString("Error checking description (%1/%2):").arg(endings, description) << check.lastError().text();
-                continue;
-            }
-            check.next();
-            count = check.value(0).toInt();
-            updateByEnding = false;
-        }
 
         // if entry does not exist, add it
         if(count == 0) {
@@ -624,10 +607,7 @@ void PQCFileFormats::validate() {
         } else {
 
             QSqlQuery check(dbinstalled);
-            if(updateByEnding)
-                check.prepare("UPDATE imageformats SET  mimetypes=:mimetypes, uniqueid=:uniqueid, description=:description, category=:category, qt=:qt, resvg=:resvg, libvips=:libvips, imagemagick=:imagemagick, graphicsmagick=:graphicsmagick, libraw=:libraw, poppler=:poppler, xcftools=:xcftools, devil=:devil, freeimage=:freeimage, archive=:archive, video=:video, libmpv=:libmpv, im_gm_magick=:im_gm_magick, qt_formatname=:qt_formatname WHERE endings=:endings");
-            else
-                check.prepare("UPDATE imageformats SET  endings=:endings, uniqueid=:uniqueid, mimetypes=:mimetypes, category=:category, qt=:qt, resvg=:resvg, libvips=:libvips, imagemagick=:imagemagick, graphicsmagick=:graphicsmagick, libraw=:libraw, poppler=:poppler, xcftools=:xcftools, devil=:devil, freeimage=:freeimage, archive=:archive, video=:video, libmpv=:libmpv, im_gm_magick=:im_gm_magick, qt_formatname=:qt_formatname WHERE description=:description");
+            check.prepare("UPDATE imageformats SET  endings=:endings, description=:description, mimetypes=:mimetypes, category=:category, qt=:qt, resvg=:resvg, libvips=:libvips, imagemagick=:imagemagick, graphicsmagick=:graphicsmagick, libraw=:libraw, poppler=:poppler, xcftools=:xcftools, devil=:devil, freeimage=:freeimage, archive=:archive, video=:video, libmpv=:libmpv, im_gm_magick=:im_gm_magick, qt_formatname=:qt_formatname WHERE uniqueid=:uniqueid");
 
             check.bindValue(":endings", endings);
             check.bindValue(":uniqueid", uniqueid);
