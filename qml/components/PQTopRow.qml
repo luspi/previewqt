@@ -77,7 +77,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-2
             source: "image://svg/:/open.svg"
-            tooltip: qsTr("Open a file")
+            tooltip: qsTr("Open a file (Ctrl+O)")
             onClicked: {
                 toplevel.openNewFile()
             }
@@ -89,7 +89,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-2
             source: "image://svg/:/settings.svg"
-            tooltip: qsTr("Open settings")
+            tooltip: qsTr("Open settings (Ctrl+P)")
             onClicked: {
                 settings.active = true
                 settings.item.show()
@@ -101,7 +101,7 @@ Rectangle {
             id: openwithdefaultbut
             y: (parent.height-height)/2
             height: toprow.height-2
-            tooltip: qsTr("Open in external application")
+            tooltip: qsTr("Open in external application") + " (" + PQCSettings.defaultAppShortcut + ")"
             active: image.imageSource!==""
             source: "image://svg/:/external.svg"
             onClicked: {
@@ -171,7 +171,7 @@ Rectangle {
             borderLeft: true
             height: toprow.height-2
             source: "image://svg/:/about.svg"
-            tooltip: qsTr("About PreviewQt")
+            tooltip: qsTr("About PreviewQt (Ctrl+I)")
             onClicked: {
                 about.active = true
                 about.item.show()
@@ -184,7 +184,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-2
             source: "image://svg/:/help.svg"
-            tooltip: qsTr("Help")
+            tooltip: qsTr("Help (F1)")
             onClicked: {
                 help.active = true
                 help.item.show()
@@ -197,7 +197,7 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-2
             source: "image://svg/:/exit.svg"
-            tooltip: qsTr("Quit PreviewQt")
+            tooltip: qsTr("Quit PreviewQt (Ctrl+Q)")
             onClicked: {
                 Qt.quit()
             }
