@@ -373,17 +373,6 @@ void PQCSettings::setTextSearchCaseSensitive(bool val) {
     }
 }
 
-bool PQCSettings::getTextAutoFormat() {
-    return m_textAutoFormat;
-}
-void PQCSettings::setTextAutoFormat(bool val) {
-    if(m_textAutoFormat != val) {
-        m_textAutoFormat = val;
-        saveTimer->start();
-        Q_EMIT textAutoFormatChanged();
-    }
-}
-
 void PQCSettings::loadSettings() {
 
     setVersion(settings->value("version", "").toString());
@@ -408,7 +397,6 @@ void PQCSettings::loadSettings() {
     setTextWordWrap(settings->value("textWordWrap", true).toBool());
     setTextFontPointSize(settings->value("textFontPointSize", 12).toInt());
     setTextSearchCaseSensitive(settings->value("textSearchCaseSensitive", false).toBool());
-    setTextAutoFormat(settings->value("textAutoFormat", false).toBool());
 
 }
 
@@ -435,6 +423,5 @@ void PQCSettings::saveSettings() {
     settings->setValue("closeWhenLosingFocus", m_closeWhenLosingFocus);
     settings->setValue("textWordWrap", m_textWordWrap);
     settings->setValue("textFontPointSize", m_textFontPointSize);
-    settings->setValue("textAutoFormat", m_textAutoFormat);
 
 }

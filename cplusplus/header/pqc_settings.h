@@ -130,10 +130,6 @@ public:
     bool getTextSearchCaseSensitive();
     void setTextSearchCaseSensitive(bool val);
 
-    Q_PROPERTY(bool textAutoFormat READ getTextAutoFormat WRITE setTextAutoFormat NOTIFY textAutoFormatChanged)
-    bool getTextAutoFormat();
-    void setTextAutoFormat(bool val);
-
     Q_INVOKABLE bool getFirstStart() { return firstStart; }
 
 private:
@@ -161,7 +157,6 @@ private:
     bool m_textWordWrap;
     int m_textFontPointSize;
     bool m_textSearchCaseSensitive;
-    bool m_textAutoFormat;
 
     QSettings *settings;
     QTimer *saveTimer;
@@ -206,7 +201,6 @@ Q_SIGNALS:
     void textWordWrapChanged();
     void textFontPointSizeChanged();
     void textSearchCaseSensitiveChanged();
-    void textAutoFormatChanged();
 
 };
 

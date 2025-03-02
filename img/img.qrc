@@ -27,5 +27,6 @@
         <file>font-minus.svg</file>
         <file>font-plus.svg</file>
         <file>magnifyingglass.svg</file>
+        <file>magicwand.svg</file>
     </qresource>
 </RCC>

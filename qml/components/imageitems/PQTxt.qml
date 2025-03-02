@@ -509,6 +509,73 @@ Rectangle {
     }
 
     Rectangle {
+        id: formatbut
+        x: (parent.width-settingsbut.width-width-5)
+        y: (parent.height-height)
+
+        width: 35
+        height: 35
+        color: formatmouse.containsPress ? "#21262b" : (formatmouse.containsMouse ? "#61666b" : "#31363b")
+        Behavior on color { ColorAnimation { duration: 200 } }
+        radius: 4
+
+        property bool formatText: false
+        onFormatTextChanged: {
+            if(visible)
+                txt_top.loadText()
+        }
+
+        opacity: formatmouse.containsMouse||formatText ? 1 : 0.1
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+
+        Image {
+            anchors.fill: parent
+            anchors.margins: 6
+            sourceSize: Qt.size(width, height)
+            source: "image://svg/:/magicwand.svg"
+        }
+
+        MouseArea {
+            id: formatmouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            acceptedButtons: Qt.LeftButton|Qt.RightButton
+
+            ToolTip { text: qsTr("automatically reformat file (Ctrl+R)") }
+
+            onClicked: (mouse) => {
+                if(mouse.button === Qt.LeftButton) {
+                    formatbut.formatText = !formatbut.formatText
+                } else
+                    formatmenu.popup()
+            }
+        }
+
+        Menu {
+            id: formatmenu
+            MenuItem {
+                text: qsTr("Auto-format text")
+                onTriggered:
+                    formatbut.formatText = !formatbut.formatText
+            }
+            onAboutToShow: {
+                toplevel.menuOpen = true
+            }
+            onAboutToHide: {
+                toplevel.menuOpen = false
+            }
+            Connections {
+                target: toplevel
+                function onCloseAllMenus() {
+                    formatmenu.close()
+                }
+            }
+        }
+
+    }
+
+    Rectangle {
         id: settingsbut
         x: (parent.width-width)
         y: (parent.height-height)
@@ -733,34 +800,6 @@ Rectangle {
                 }
             }
 
-            Item {
-                height: 39
-                width: 200
-                Rectangle {
-                    color: setautomouse.containsMouse ? colorPalette.highlight : colorPalette.base
-                    Behavior on color { ColorAnimation { duration: 200 } }
-                    anchors.fill: parent
-                    opacity: 0.6
-                }
-                CheckBox {
-                    x: 5
-                    width: 190
-                    y: (parent.height-height)/2
-                    font.bold: true
-                    checked: PQCSettings.textAutoFormat
-                    text: qsTr("Auto Format")
-                }
-                MouseArea {
-                    id: setautomouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        PQCSettings.textAutoFormat = !PQCSettings.textAutoFormat
-                    }
-                }
-            }
-
         }
 
         function show() {
@@ -810,10 +849,14 @@ Rectangle {
 
         var txt = PQCScripts.getTextFileContents(image_top.imageSource)
         var suf = PQCScripts.getSuffix(image_top.imageSource)
+
+        var canReFormat = ["json"]
+        formatbut.visible = canReFormat.indexOf(suf)>-1
+
         if(suf === "json") {
             sec = ""; // by default this is markdown but we need "normal" formatting
-            if(PQCSettings.textAutoFormat) {
-                toplevel.overrideTitleSuffix = " (auto-format)"
+            if(formatbut.formatText) {
+                toplevel.overrideTitleSuffix = " (reformatted)"
                 txt = PQCTextProcessing.prettifyJSON(txt)
             }
         }
@@ -836,13 +879,6 @@ Rectangle {
     }
 
     Connections {
-        target: PQCSettings
-        function onTextAutoFormatChanged() {
-            txt_top.loadText()
-        }
-    }
-
-    Connections {
 
         target: toplevel
 
@@ -851,6 +887,10 @@ Rectangle {
             if(modifiers === Qt.ControlModifier && keycode === Qt.Key_F) {
 
                 searchrect.show()
+
+            } else if(modifiers === Qt.ControlModifier && keycode === Qt.Key_R) {
+
+                formatbut.formatText = !formatbut.formatText
 
             }
 
