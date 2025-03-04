@@ -25,7 +25,10 @@ function(composeDesktopFile)
     set(MIMETYPE "${MIMETYPE}image/x-portable-greymap;image/x-xpmi;image/png;image/vnd.adobe.photoshop;image/tiff;")
     set(MIMETYPE "${MIMETYPE}image/sgi;image/svg+xml;image/x-targa;image/x-tga;image/tiff-fx;")
     set(MIMETYPE "${MIMETYPE}font/sfnt;image/vnd.wap.wbmp;image/webp;image/x-xbitmap;image/x-xbm;")
-    set(MIMETYPE "${MIMETYPE}image/x-xcf;image/x-xpixmap;")
+    set(MIMETYPE "${MIMETYPE}image/x-xcf;image/x-xpixmap;text/plain;application/vnd.kde.kxmlguirc;")
+    set(MIMETYPE "${MIMETYPE}application/json;application/xml;text/xml;application/x-yaml;application/sql;")
+    set(MIMETYPE "${MIMETYPE}application/javascript;application/x-sh;application/x-httpd-php;application/x-latex;")
+    set(MIMETYPE "${MIMETYPE}application/rtf;application/x-troff;application/x-troff-man;application/x-desktop;")
 
     file(APPEND "${fname}" "MimeType=${MIMETYPE}")
 
