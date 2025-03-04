@@ -78,7 +78,7 @@ Rectangle {
         contentItem.clip: true
 
         contentHeight: imageitem.height + hBar.height
-        contentWidth: imageitem.width + vBar.height
+        contentWidth: PQCSettings.textWordWrap ? parent.width : (imageitem.contentWidth + vBar.height)
 
         ScrollBar.horizontal: ScrollBar { id: hBar; opacity: (hBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
         ScrollBar.vertical: ScrollBar { id: vBar; opacity: (vBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
@@ -119,7 +119,7 @@ Rectangle {
             }
             /*2on_PQMKF6*/
 
-            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            wrapMode: PQCSettings.textWordWrap ? Text.WrapAtWordBoundaryOrAnywhere : Text.NoWrap
             readOnly: true
 
             Component.onCompleted: {
