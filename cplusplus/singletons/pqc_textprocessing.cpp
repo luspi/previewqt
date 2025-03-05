@@ -1,7 +1,5 @@
 #include <pqc_textprocessing.h>
 
-#include <QRegularExpression>
-
 PQCTextProcessing::PQCTextProcessing() {
 
 }

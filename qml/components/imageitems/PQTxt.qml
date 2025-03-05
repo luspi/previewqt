@@ -77,8 +77,8 @@ Rectangle {
         clip: true
         contentItem.clip: true
 
-        contentHeight: imageitem.height + hBar.height
-        contentWidth: PQCSettings.textWordWrap ? parent.width : (imageitem.contentWidth + vBar.height)
+        contentHeight: cont.height + (htmldisplay.visible ? 0 : hBar.height)
+        contentWidth: htmldisplay.visible ? flickme.width : (cont.width + vBar.height)
 
         ScrollBar.horizontal: ScrollBar { id: hBar; opacity: (hBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
         ScrollBar.vertical: ScrollBar { id: vBar; opacity: (vBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
@@ -91,145 +91,176 @@ Rectangle {
         }
         /*2on_PQMKF6*/
 
-        TextEdit {
+        Item {
 
-            id: imageitem
-            x: 5
-            y: 5
+            id: cont
 
-            width: PQCSettings.textWordWrap ? flickme.width-10-(vBar.visible ? vBar.width : 0) : undefined
-            height: Math.max(flickme.height-(hBar.visible ? hBar.height : 0), contentHeight)
+            width: htmldisplay.visible ? htmldisplay.width : imageitem.width
+            height: htmldisplay.visible ? htmldisplay.height : imageitem.height
 
-            color: colorPalette.text
-
-            font.pointSize: PQCSettings.textFontPointSize
-            font.family: "Monospace"
-            textFormat: TextEdit.PlainText
-
-            /*1on_PQMKF6*/
-            onFontChanged: {
-                var txt = imageitem.text
-                if(txt === "") return
-                var vpos = vBar.position
-                var hpos = hBar.position
-                imageitem.text = ""
-                imageitem.text = txt
-                vBar.position = vpos
-                hBar.position = hpos
-            }
-            /*2on_PQMKF6*/
-
-            wrapMode: PQCSettings.textWordWrap ? Text.WrapAtWordBoundaryOrAnywhere : Text.NoWrap
-            readOnly: true
-
-            Component.onCompleted: {
-                image.status = Image.Ready
-                imageitem.forceActiveFocus()
-            }
-
-            Component.onDestruction: {
-                focusitem.forceActiveFocus()
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                acceptedButtons: Qt.RightButton
-                onClicked: {
-                    contextmenu.popup()
+            Rectangle {
+                id: htmldisplay
+                visible: htmldisplay_txt.text!==""
+                width: txt_top.width
+                height: htmldisplay_txt.height
+                color: "white"
+                Text {
+                    id: htmldisplay_txt
+                    width: txt_top.width
+                    height: contentHeight
+                    textFormat: Text.RichText
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+                    onClicked: {}
                 }
             }
 
-            Menu {
+            TextEdit {
 
-                id: contextmenu
+                id: imageitem
+                x: 5
+                y: 5
 
-                MenuItem {
-                    enabled: imageitem.selectedText.length>0
-                    text: qsTr("Copy selection")
+                width: PQCSettings.textWordWrap ? flickme.width-10-(vBar.visible ? vBar.width : 0) : undefined
+                height: Math.max(flickme.height-(hBar.visible ? hBar.height : 0), contentHeight)
+
+                color: colorPalette.text
+
+                visible: !htmldisplay.visible
+
+                font.pointSize: PQCSettings.textFontPointSize
+                font.family: "Monospace"
+                textFormat: TextEdit.PlainText
+
+                /*1on_PQMKF6*/
+                onFontChanged: {
+                    var txt = imageitem.text
+                    if(txt === "") return
+                    var vpos = vBar.position
+                    var hpos = hBar.position
+                    imageitem.text = ""
+                    imageitem.text = txt
+                    vBar.position = vpos
+                    hBar.position = hpos
+                }
+                /*2on_PQMKF6*/
+
+                wrapMode: PQCSettings.textWordWrap ? Text.WrapAtWordBoundaryOrAnywhere : Text.NoWrap
+                readOnly: true
+
+                Component.onCompleted: {
+                    image.status = Image.Ready
+                    imageitem.forceActiveFocus()
+                }
+
+                Component.onDestruction: {
+                    focusitem.forceActiveFocus()
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    acceptedButtons: Qt.RightButton
+                    onClicked: {
+                        contextmenu.popup()
+                    }
+                }
+
+                Menu {
+
+                    id: contextmenu
+
+                    MenuItem {
+                        enabled: imageitem.selectedText.length>0
+                        text: qsTr("Copy selection")
+                        onTriggered: {
+                            PQCScripts.copyTextToClipboard(imageitem.selectedText)
+                        }
+                    }
+                    MenuItem {
+                        enabled: imageitem.selectedText.length>0
+                        text: qsTr("Search for selected text")
+                        onTriggered: {
+                            searchrect.show()
+                        }
+                    }
+
+                    MenuSeparator {}
+
+                    MenuItem {
+                        text: qsTr("Select all")
+                        onTriggered: {
+                            imageitem.selectAll()
+                        }
+                    }
+                    MenuItem {
+                        text: qsTr("Copy all content")
+                        onTriggered: {
+                            PQCScripts.copyTextToClipboard(imageitem.text)
+                        }
+                    }
+
+                }
+
+                Timer {
+                    interval: 100
+                    running: true
+                    property bool firsttime: true
                     onTriggered: {
-                        PQCScripts.copyTextToClipboard(imageitem.selectedText)
-                    }
-                }
-                MenuItem {
-                    enabled: imageitem.selectedText.length>0
-                    text: qsTr("Search for selected text")
-                    onTriggered: {
-                        searchrect.show()
-                    }
-                }
+                        if(firsttime) {
+                            if(toplevel.width < flickme.defw || toplevel.height < flickme.defh)
+                                image.statusChanged()
+                            firsttime = false
+                            restart()
+                        } else {
+                            flickme.width = Qt.binding(function() { return image_top.width})
+                            flickme.height = Qt.binding(function() { return image_top.height})
+                        }
 
-                MenuSeparator {}
-
-                MenuItem {
-                    text: qsTr("Select all")
-                    onTriggered: {
-                        imageitem.selectAll()
-                    }
-                }
-                MenuItem {
-                    text: qsTr("Copy all content")
-                    onTriggered: {
-                        PQCScripts.copyTextToClipboard(imageitem.text)
                     }
                 }
 
-            }
-
-            Timer {
-                interval: 100
-                running: true
-                property bool firsttime: true
-                onTriggered: {
-                    if(firsttime) {
-                        if(toplevel.width < flickme.defw || toplevel.height < flickme.defh)
-                            image.statusChanged()
-                        firsttime = false
-                        restart()
-                    } else {
-                        flickme.width = Qt.binding(function() { return image_top.width})
-                        flickme.height = Qt.binding(function() { return image_top.height})
-                    }
-
+                Keys.onPressed: (event) => {
+                    if(event.key === Qt.Key_Down) {
+                        if(flickme.contentHeight <= flickme.height) return
+                        if(event.modifiers === Qt.ControlModifier)
+                            vBar.position = Math.min(1-(flickme.height/flickme.contentHeight), vBar.position + (1/(imageitem.lineCount-1)))
+                        else
+                            flickme.flick(0, -500)
+                    } else if(event.key === Qt.Key_Up) {
+                        if(flickme.contentHeight <= flickme.height) return
+                        if(event.modifiers === Qt.ControlModifier)
+                            vBar.position = Math.max(0, vBar.position - (1/(imageitem.lineCount-1)))
+                        else
+                            flickme.flick(0, 500)
+                    } else if(event.key === Qt.Key_Right) {
+                        if(flickme.contentWidth <= flickme.width) return
+                        if(event.modifiers === Qt.ControlModifier)
+                            hBar.position = Math.min(1-(flickme.width/flickme.contentWidth), hBar.position + (10/flickme.contentWidth))
+                        else
+                            flickme.flick(-500, 0)
+                    } else if(event.key === Qt.Key_Left) {
+                        if(flickme.contentWidth <= flickme.width) return
+                        if(event.modifiers === Qt.ControlModifier)
+                            hBar.position = Math.max(0, hBar.position - (10/flickme.contentWidth))
+                        else
+                            flickme.flick(500, 0)
+                    } else if(event.key === Qt.Key_PageDown)
+                        flickme.flick(0, -1500)
+                    else if(event.key === Qt.Key_PageUp)
+                        flickme.flick(0, 1500)
+                    else if(event.key === Qt.Key_End) {
+                        flickme.contentX = 0
+                        flickme.contentY = flickme.contentHeight-flickme.height
+                    } else if(event.key === Qt.Key_Home) {
+                        flickme.contentX = 0
+                        flickme.contentY = 0
+                    } else
+                        toplevel.keyPress(event.modifiers, event.key)
                 }
-            }
 
-            Keys.onPressed: (event) => {
-                if(event.key === Qt.Key_Down) {
-                    if(flickme.contentHeight <= flickme.height) return
-                    if(event.modifiers === Qt.ControlModifier)
-                        vBar.position = Math.min(1-(flickme.height/flickme.contentHeight), vBar.position + (1/(imageitem.lineCount-1)))
-                    else
-                        flickme.flick(0, -500)
-                } else if(event.key === Qt.Key_Up) {
-                    if(flickme.contentHeight <= flickme.height) return
-                    if(event.modifiers === Qt.ControlModifier)
-                        vBar.position = Math.max(0, vBar.position - (1/(imageitem.lineCount-1)))
-                    else
-                        flickme.flick(0, 500)
-                } else if(event.key === Qt.Key_Right) {
-                    if(flickme.contentWidth <= flickme.width) return
-                    if(event.modifiers === Qt.ControlModifier)
-                        hBar.position = Math.min(1-(flickme.width/flickme.contentWidth), hBar.position + (10/flickme.contentWidth))
-                    else
-                        flickme.flick(-500, 0)
-                } else if(event.key === Qt.Key_Left) {
-                    if(flickme.contentWidth <= flickme.width) return
-                    if(event.modifiers === Qt.ControlModifier)
-                        hBar.position = Math.max(0, hBar.position - (10/flickme.contentWidth))
-                    else
-                        flickme.flick(500, 0)
-                } else if(event.key === Qt.Key_PageDown)
-                    flickme.flick(0, -1500)
-                else if(event.key === Qt.Key_PageUp)
-                    flickme.flick(0, 1500)
-                else if(event.key === Qt.Key_End) {
-                    flickme.contentX = 0
-                    flickme.contentY = flickme.contentHeight-flickme.height
-                } else if(event.key === Qt.Key_Home) {
-                    flickme.contentX = 0
-                    flickme.contentY = 0
-                } else
-                    toplevel.keyPress(event.modifiers, event.key)
             }
 
         }
@@ -528,7 +559,7 @@ Rectangle {
                 txt_top.loadText()
         }
 
-        opacity: formatmouse.containsMouse||formatText ? 1 : 0.1
+        opacity: formatmouse.containsMouse ? 1 : (formatText ? 0.5 : 0.1)
         Behavior on opacity { NumberAnimation { duration: 200 } }
 
         Image {
@@ -545,7 +576,7 @@ Rectangle {
             cursorShape: Qt.PointingHandCursor
             acceptedButtons: Qt.LeftButton|Qt.RightButton
 
-            ToolTip { text: qsTr("automatically reformat file (Ctrl+R)") }
+            ToolTip { text: qsTr("process file (Ctrl+R)") }
 
             onClicked: (mouse) => {
                 if(mouse.button === Qt.LeftButton) {
@@ -558,7 +589,7 @@ Rectangle {
         Menu {
             id: formatmenu
             MenuItem {
-                text: qsTr("Auto-format text")
+                text: qsTr("Process text")
                 onTriggered:
                     formatbut.formatText = !formatbut.formatText
             }
@@ -856,15 +887,22 @@ Rectangle {
         var txt = PQCScripts.getTextFileContents(image_top.imageSource)
         var suf = PQCScripts.getSuffix(image_top.imageSource)
 
-        var canReFormat = ["json"]
+        var canReFormat = ["json","html"]
         formatbut.visible = canReFormat.indexOf(suf)>-1
 
         if(suf === "json") {
             sec = ""; // by default this is markdown but we need "normal" formatting
             if(formatbut.formatText) {
-                toplevel.overrideTitleSuffix = " (reformatted)"
+                toplevel.overrideTitleSuffix = " (processed)"
                 txt = PQCTextProcessing.prettifyJSON(txt)
             }
+        } else if(suf === "html") {
+            if(formatbut.formatText) {
+                toplevel.overrideTitleSuffix = " (processed)"
+                htmldisplay_txt.text = txt
+                txt = ""
+            } else
+                htmldisplay_txt.text = ""
         }
 
         if(sec === "Sources" || sec === "Assembler" || sec === "Configuration" || sec === "Database"|| sec === "Hardware" || sec === "Scientific" || sec === "Scripts") {
