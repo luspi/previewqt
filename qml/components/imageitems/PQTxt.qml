@@ -897,7 +897,6 @@ Rectangle {
 
 
         if(suf === "json") {
-            sec = ""; // by default this is markdown but we need "normal" formatting
             if(formatbut.formatText)
                 txt = PQCTextProcessing.prettifyJSON(txt)
         } else if(suf === "html" || suf === "htm" || suf === "xhtml" || suf === "md") {
