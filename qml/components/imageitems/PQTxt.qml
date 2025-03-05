@@ -114,7 +114,7 @@ Rectangle {
                     height: contentHeight
                     textFormat: htmldisplay.isMarkdown ? Text.MarkdownText : Text.RichText
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                    font.pointSize: PQCSettings.textFontPointSize
+                    font.pointSize: Math.max(4, PQCSettings.textFontPointSize)
                 }
                 MouseArea {
                     anchors.fill: parent
@@ -136,7 +136,7 @@ Rectangle {
 
                 visible: !htmldisplay.visible
 
-                font.pointSize: PQCSettings.textFontPointSize
+                font.pointSize: Math.max(4, PQCSettings.textFontPointSize)
                 font.family: "Monospace"
                 textFormat: TextEdit.PlainText
 
@@ -941,6 +941,18 @@ Rectangle {
             } else if(modifiers === Qt.ControlModifier && keycode === Qt.Key_R) {
 
                 formatbut.formatText = !formatbut.formatText
+
+            } else if(modifiers === Qt.ControlModifier && (keycode === Qt.Key_Plus || keycode === Qt.Key_Equal)) {
+
+                PQCSettings.textFontPointSize += 1
+
+            } else if(modifiers === Qt.ControlModifier && keycode === Qt.Key_Minus) {
+
+                PQCSettings.textFontPointSize = Math.max(4, PQCSettings.textFontPointSize-1)
+
+            } else if(modifiers === Qt.ControlModifier && keycode === Qt.Key_0) {
+
+                PQCSettings.textFontPointSize = 12
 
             }
 
