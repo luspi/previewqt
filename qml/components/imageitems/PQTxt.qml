@@ -78,7 +78,7 @@ Rectangle {
         contentItem.clip: true
 
         contentHeight: cont.height + (htmldisplay.visible ? 0 : hBar.height)
-        contentWidth: htmldisplay.visible ? flickme.width : (cont.width + vBar.height)
+        contentWidth: (htmldisplay.visible||PQCSettings.textWordWrap) ? flickme.width : (cont.width + vBar.height)
 
         ScrollBar.horizontal: ScrollBar { id: hBar; opacity: (hBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
         ScrollBar.vertical: ScrollBar { id: vBar; opacity: (vBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
@@ -102,15 +102,19 @@ Rectangle {
                 id: htmldisplay
                 visible: htmldisplay_txt.text!==""
                 width: txt_top.width
-                height: htmldisplay_txt.height
+                height: htmldisplay_txt.height+10
                 color: "white"
+                property bool isMarkdown: false
                 Text {
                     id: htmldisplay_txt
                     baseUrl: "file://" + PQCScripts.getDir(image_top.imageSource) + "/"
-                    width: txt_top.width
+                    x: 5
+                    y: 5
+                    width: txt_top.width-10
                     height: contentHeight
-                    textFormat: Text.RichText
+                    textFormat: htmldisplay.isMarkdown ? Text.MarkdownText : Text.RichText
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    font.pointSize: PQCSettings.textFontPointSize
                 }
                 MouseArea {
                     anchors.fill: parent
@@ -864,7 +868,6 @@ Rectangle {
 
         /*1on_PQMKF6*/
         // set current file type
-        myHighlighter.definition = Repository.definitionForName(PQCScripts.getSuffix(image_top.imageSource))
         myHighlighter.definition = Repository.definitionForFileName(image_top.imageSource)
         /*2on_PQMKF6*/
 
@@ -883,23 +886,23 @@ Rectangle {
         var sec = ""
         2off_PQMNOTKF6*/
 
-        toplevel.overrideTitleSuffix = ""
+        imageitem.text = ""
+        toplevel.overrideTitleSuffix = (formatbut.formatText ? " (processed)" : "")
 
         var txt = PQCScripts.getTextFileContents(image_top.imageSource)
         var suf = PQCScripts.getSuffix(image_top.imageSource)
 
         var canReFormat = ["json","html"]
-        formatbut.visible = canReFormat.indexOf(suf)>-1
+        formatbut.visible = (canReFormat.indexOf(suf)>-1 || sec === "Markup")
+
 
         if(suf === "json") {
             sec = ""; // by default this is markdown but we need "normal" formatting
-            if(formatbut.formatText) {
-                toplevel.overrideTitleSuffix = " (processed)"
+            if(formatbut.formatText)
                 txt = PQCTextProcessing.prettifyJSON(txt)
-            }
-        } else if(suf === "html") {
+        } else if(suf === "html" || suf === "htm" || suf === "xhtml" || suf === "md") {
             if(formatbut.formatText) {
-                toplevel.overrideTitleSuffix = " (processed)"
+                htmldisplay.isMarkdown = (suf === "md" ? true : false)
                 htmldisplay_txt.text = txt
                 txt = ""
             } else
@@ -909,9 +912,6 @@ Rectangle {
         if(sec === "Sources" || sec === "Assembler" || sec === "Configuration" || sec === "Database"|| sec === "Hardware" || sec === "Scientific" || sec === "Scripts") {
             imageitem.textFormat = TextEdit.MarkdownText
             imageitem.text = '```\n'+txt+'\n```'
-        } else if(sec === "Markup") {
-            imageitem.textFormat = TextEdit.MarkdownText
-            imageitem.text = (suf === "md" ? txt : ('```\n'+txt+'\n```'))
         } else {
             imageitem.textFormat = TextEdit.PlainText
             imageitem.text = txt
