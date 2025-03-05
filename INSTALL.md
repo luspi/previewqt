@@ -21,6 +21,7 @@ Dependencies that are needed by default, but can be disabled via CMake:
 - [FreeImage](https://freeimage.sourceforge.io)
 - [DevIL](http://openil.sourceforge.net)
 - [libmpv](https://mpv.io/)
+- [KSyntaxHighlighting](https://invent.kde.org/frameworks/syntax-highlighting)
 
 Dependencies that are disabled by default, but can be enabled via CMake:
 

@@ -23,6 +23,7 @@
 - FreeImage
 - DevIL
 - libmpv
+- KSyntaxHighlighting
 
 > Dependencies that are disabled by default, but can be enabled via CMake:
 - LibVips
