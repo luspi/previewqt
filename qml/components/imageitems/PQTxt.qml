@@ -892,8 +892,8 @@ Rectangle {
         var txt = PQCScripts.getTextFileContents(image_top.imageSource)
         var suf = PQCScripts.getSuffix(image_top.imageSource)
 
-        var canReFormat = ["json","html"]
-        formatbut.visible = (canReFormat.indexOf(suf)>-1 || sec === "Markup")
+        var canReFormat = ["json","html","htm","xhtml","md"]
+        formatbut.visible = (canReFormat.indexOf(suf)>-1)
 
 
         if(suf === "json") {
@@ -909,12 +909,14 @@ Rectangle {
                 htmldisplay_txt.text = ""
         }
 
-        if(sec === "Sources" || sec === "Assembler" || sec === "Configuration" || sec === "Database"|| sec === "Hardware" || sec === "Scientific" || sec === "Scripts") {
-            imageitem.textFormat = TextEdit.MarkdownText
-            imageitem.text = '```\n'+txt+'\n```'
-        } else {
-            imageitem.textFormat = TextEdit.PlainText
-            imageitem.text = txt
+        if(txt !== "") {
+            if(sec === "Sources" || sec === "Assembler" || sec === "Configuration" || sec === "Database"|| sec === "Hardware" || sec === "Scientific" || sec === "Scripts") {
+                imageitem.textFormat = TextEdit.MarkdownText
+                imageitem.text = '```\n'+txt+'\n```'
+            } else {
+                imageitem.textFormat = TextEdit.PlainText
+                imageitem.text = txt
+            }
         }
 
     }
