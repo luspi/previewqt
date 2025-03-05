@@ -910,13 +910,17 @@ Rectangle {
         }
 
         if(txt !== "") {
+            /*1on_PQMKF6*/
             if(sec === "Sources" || sec === "Assembler" || sec === "Configuration" || sec === "Database"|| sec === "Hardware" || sec === "Scientific" || sec === "Scripts") {
                 imageitem.textFormat = TextEdit.MarkdownText
                 imageitem.text = '```\n'+txt+'\n```'
             } else {
+            /*2on_PQMKF6*/
                 imageitem.textFormat = TextEdit.PlainText
                 imageitem.text = txt
+            /*1on_PQMKF6*/
             }
+            /*2on_PQMKF6*/
         }
 
     }
