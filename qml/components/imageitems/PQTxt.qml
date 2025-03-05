@@ -106,6 +106,7 @@ Rectangle {
                 color: "white"
                 Text {
                     id: htmldisplay_txt
+                    baseUrl: "file://" + PQCScripts.getDir(image_top.imageSource) + "/"
                     width: txt_top.width
                     height: contentHeight
                     textFormat: Text.RichText
