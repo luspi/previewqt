@@ -60,7 +60,6 @@ ApplicationWindow {
         anchors.fill: parent
         anchors.margins: 5
         anchors.bottomMargin: 45
-        clip: true
 
         opacity: 1 - configcontainer.opacity
         visible: opacity>0
@@ -78,13 +77,21 @@ ApplicationWindow {
             Image {
 
                 x: (parent.width-width)/2
-                width: Math.min(flickable.width/2, 300)
+                width: Math.min(flickable.width/2, 200)
                 height: width
                 sourceSize: Qt.size(width, height)
                 smooth: true
                 mipmap: false
 
                 source: "image://svg/:/logo_full.svg"
+
+                Rectangle {
+                    x: -(flickable.width-parent.width)/2-5
+                    width: flickable.width+10
+                    height: parent.height
+                    color: "#ffffff"
+                    z: -1
+                }
 
                 MouseArea {
                     anchors.fill: parent
@@ -309,6 +316,13 @@ ApplicationWindow {
         width: parent.width
         height: 1
         color: "black"
+    }
+    Rectangle {
+        x: 0
+        y: parent.height-45
+        width: parent.width
+        height: 45
+        color: colorPalette.base
     }
 
     Button {
