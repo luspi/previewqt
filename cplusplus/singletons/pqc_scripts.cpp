@@ -1949,9 +1949,9 @@ void PQCScripts::updateTranslation() {
 
     for(const QString &c : allcodes) {
 
-        if(QFile(":/lang/photoqt_" + c + ".qm").exists()) {
+        if(QFile(":/lang/previewqt_" + c + ".qm").exists()) {
 
-            if(trans->load(":/lang/photoqt_" + c))
+            if(trans->load(":/lang/previewqt_" + c))
                 qApp->installTranslator(trans);
             else
                 qWarning() << "Unable to install translator for language code" << c;
@@ -1960,9 +1960,9 @@ void PQCScripts::updateTranslation() {
 
             const QString cc = c.split("_").at(0);
 
-            if(QFile(":/lang/photoqt_" + cc + ".qm").exists()) {
+            if(QFile(":/lang/previewqt_" + cc + ".qm").exists()) {
 
-                if(trans->load(":/lang/photoqt_" + cc))
+                if(trans->load(":/lang/previewqt_" + cc))
                     qApp->installTranslator(trans);
                 else
                     qWarning() << "Unable to install translator for language code" << cc;
@@ -1973,9 +1973,9 @@ void PQCScripts::updateTranslation() {
 
             const QString cc = QString("%1_%2").arg(c, c.toUpper());
 
-            if(QFile(":/lang/photoqt_" + cc + ".qm").exists()) {
+            if(QFile(":/lang/previewqt_" + cc + ".qm").exists()) {
 
-                if(trans->load(":/lang/photoqt_" + cc))
+                if(trans->load(":/lang/previewqt_" + cc))
                     qApp->installTranslator(trans);
                 else
                     qWarning() << "Unable to install translator for language code" << c;
