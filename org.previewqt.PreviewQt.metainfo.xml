@@ -17,6 +17,7 @@
             <li>Archives (zip, tar.gz, rar, 7-zip) with the ability to explore its content</li>
             <li>Comic Books (cbz, cbt, cbr, cb7) including page navigation</li>
             <li>E-Books (epub) including navigation and font scaling</li>
+            <li>Text files including syntax highlighting and search feature</li>
         </ul>
         <p>If you are using Dolphin file manager, PreviewQt can be invoked by shortcut to load whichever file is currently highlighted to allow for previewing any file easily without having to se PreviewQt as default application. You can pass files to PreviewQt by means of a remote application (small square) wth any file dropped on it passed on to PreviewQt. If you are running KDE Plasma 6, there is also a plasmoid that integrates nicely with your desktop.</p>
         <p>If you like the overall concept of PreviewQt but would like to have more features, check out the fully featured image viewer PhotoQt.</p>
@@ -104,6 +105,14 @@
         <content_attribute id="money-gambling">none</content_attribute>
     </content_rating>
     <releases>
+        <release version="4.0" date="2025-03-04">
+            <description>
+                It has been a little while since the last release of PreviewQt, so it's about time for some updates and a bunch of new features.
+            </description>
+            <url>
+                https://previewqt.org/news/previewqt-4.0
+            </url>
+        </release>
         <release version="3.0" date="2024-05-22">
             <description>
                 PreviewQt 3.0 brings a whole range of new and exciting features, including e-book support, adjusting window size to content, and the ability to request PreviewQt (through shortcut) to load any selected file in the Dolphin file manager.

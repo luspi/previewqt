@@ -1,5 +1,24 @@
- Changelog PreviewQt - Copyright (C) 2024, Lukas Spies (Lukas@previewqt.org), License: GPLv2 (or later)
+ Changelog PreviewQt - Copyright (C) 2025, Lukas Spies (Lukas@previewqt.org), License: GPLv2 (or later)
 ----------------------------------------------------------------------------------------------------------
+
+ Release 4.0 - 2025-03-06
+----------------------------
+- add: support for text files including syntax highlighting (using KSyntaxHighlighting) and search
+- add: text processing feature for (re-)formatting text files, currently for: JSON, MD, HTML
+- add: tweaks for fully portable build
+- add: context menus in various places
+- add: total number of supported file formats to about window
+- add: tooltips to various UI elements
+- add: shortcut info to tooltips
+- improve: provide all files for selection in file dialog
+- improve: plugin for libarchive, libvips, and qt
+- improve: CMakeLists.txt syntax
+- improve: move quit button in top row to far left with other generic functions
+- improve: use empty area in top row for moving window
+- improve: balancing file suffixes and mime types for handling files
+- improve: make color schemes follow global theme
+- windows: application submitted to Windows Store
+
 
  Release 3.0 - 2024-05-22
 ----------------------------
