@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="3e3"
+   height="4e3"
+   version="1.1"
+   viewBox="0 0 793.75 1058.3"
+   id="svg3"
+   sodipodi:docname="txt.svg"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3" />
+  <sodipodi:namedview
+     id="namedview3"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.2205"
+     inkscape:cx="1498.8662"
+     inkscape:cy="2000"
+     inkscape:window-width="1920"
+     inkscape:window-height="1128"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3" />
+  <rect
+     x="46.411"
+     y="46.411"
+     width="700.93"
+     height="965.51"
+     rx="91.824"
+     ry="101.98"
+     fill="#f00"
+     stroke="#f00"
+     stroke-linecap="round"
+     stroke-linejoin="round"
+     stroke-miterlimit="0"
+     stroke-width="92.823"
+     style="paint-order:stroke fill markers"
+     id="rect1" />
+  <path
+     d="M 214.24,289.58 H 579.5"
+     id="path1"
+     style="stroke:#ffffff;stroke-width:50;stroke-linecap:round" />
+  <path
+     d="M 212.64713,389.52 H 554.63464"
+     id="path2"
+     style="stroke:#ffffff;stroke-width:48.3809;stroke-linecap:round" />
+  <path
+     d="M 211.05425,489.25 H 529.76918"
+     id="path3"
+     style="stroke:#ffffff;stroke-width:46.7057;stroke-linecap:round" />
+  <text
+     x="246.16951"
+     y="827.80219"
+     fill="#000000"
+     font-family="sans-serif"
+     font-size="167.57px"
+     stroke-width=".26458"
+     style="line-height:1.25"
+     xml:space="preserve"
+     id="text3"><tspan
+       x="246.16951"
+       y="827.80219"
+       fill="#ffffff"
+       font-family="'DejaVu Sans Mono'"
+       font-size="167.57px"
+       font-weight="bold"
+       stroke-width=".26458"
+       id="tspan3">ZZZ</tspan></text>
+</svg>

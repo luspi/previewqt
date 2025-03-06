@@ -1,29 +1,29 @@
 ##########################################################################
 ##                                                                      ##
-## Copyright (C) 2011-2023 Lukas Spies                                  ##
-## Contact: https://photoqt.org                                         ##
+## Copyright (C) 2011-2025 Lukas Spies                                  ##
+## Contact: https://previewqt.org                                       ##
 ##                                                                      ##
-## This file is part of PhotoQt.                                        ##
+## This file is part of PreviewQt.                                      ##
 ##                                                                      ##
-## PhotoQt is free software: you can redistribute it and/or modify      ##
+## PreviewQt is free software: you can redistribute it and/or modify    ##
 ## it under the terms of the GNU General Public License as published by ##
 ## the Free Software Foundation, either version 2 of the License, or    ##
 ## (at your option) any later version.                                  ##
 ##                                                                      ##
-## PhotoQt is distributed in the hope that it will be useful,           ##
+## PreviewQt is distributed in the hope that it will be useful,         ##
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of       ##
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        ##
 ## GNU General Public License for more details.                         ##
 ##                                                                      ##
 ## You should have received a copy of the GNU General Public License    ##
-## along with PhotoQt. If not, see <http://www.gnu.org/licenses/>.      ##
+## along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    ##
 ##                                                                      ##
 ##########################################################################
 
 import numpy as np
 import sys
 
-known_args = np.array(['all', 'filetypecolors', 'filetypes', 'cmake', 'windowsrc', 'nsi'])
+known_args = np.array(['all', 'filetypecolors', 'filetypes', 'cmake', 'windowsrc', 'nsi', 'formatsdb'])
 
 if len(sys.argv) != 2 or sys.argv[1] not in known_args:
 
@@ -36,6 +36,7 @@ One of the following flags is required:
  cmake\t\tGenerate CMake desktop file creation
  windowsrc\tGenerate windows resource file
  nsi\t\tGenerate nsi entries
+ formatsdb\t\tSQL for writing formats to website database
 """)
 
     exit()
@@ -65,7 +66,7 @@ if which == 'filetypecolors':
 
 
     # create database connection
-    conn = sqlite3.connect('imageformats.db')
+    conn = sqlite3.connect('fileformats.db')
     c = conn.cursor()
 
     # get all data
@@ -137,8 +138,8 @@ if which == 'all' or which == 'filetypes':
         167.569,
         158.75,
         141.111,
-        123.472,
-        114.653
+        113.472,
+        94.653
         ]
     xy = [
         [344.67334, 827.80219],
@@ -148,10 +149,10 @@ if which == 'all' or which == 'filetypes':
         [142.90329, 827.80219],
 
         [108.4817, 834.60229],
-        [98.047729, 834.97253],
-        [98.233337, 835.34283],
+        [60.047729, 834.97253],
+        [0.233337, 835.34283],
 
-        [85.050117, 842.14288],
+        [0.050117, 842.14288],
         ]
 
     print("Generating filetype icons...")
@@ -178,7 +179,7 @@ if which == 'all' or which == 'filetypes':
             if e == "unknown":
                 l = 1
 
-            qrc_cont += f"        <file>filetypes/{e}.ico</file>\n"
+            qrc_cont += f"        <file>filetypes/{e}.svg</file>\n"
 
             if e == "svg" or e == "svgz":
                 category = "svg"
@@ -249,12 +250,10 @@ if which == 'all' or which == 'filetypes':
                         os.system(f"convert -background none -gravity center -compress zip {fname_large} -resize {size}x{size} -extent {size}x{size} -compress zip output/tmp/{e}{size}.png")
                     os.system(f"optipng -o7 -strip all output/tmp/{e}{size}.png")
 
-                # pool_obj = multiprocessing.Pool()
-                # pool_obj.map(convert,[256,128,64,48,32,16])
-                for s in [256,128,64,48,32,16]:
-                    convert(s)
+                pool_obj = multiprocessing.Pool()
+                pool_obj.map(convert,[256,128,64,48,32,16])
 
-                exe = "./go-png2ico "
+                exe = "go-png2ico "
                 for sze in [256,128,64,48,32,16]:
                     exe += f"output/tmp/{e}{sze}.png "
                 exe += f"output/ico/{e}.ico"
@@ -287,7 +286,7 @@ if which == 'all' or which == 'cmake':
     print("Generating addition to CMake ComposeDesktopFile()...")
 
     # create database connection
-    conn = sqlite3.connect('imageformats.db')
+    conn = sqlite3.connect('fileformats.db')
     c = conn.cursor()
 
     # get all data
@@ -299,9 +298,7 @@ if which == 'all' or which == 'cmake':
     cont = "set(MIMETYPE \""
     i = 0
     for row in data:
-        if row[4] == "vid" or row[4] == "doc":
-            continue
-        if row[2] != "":
+        if row[2] != "" and row[4] == "img":
             parts = row[2].split(",")
             for p in parts:
                 if p not in mt:
@@ -310,7 +307,7 @@ if which == 'all' or which == 'cmake':
                     cont += f"{p};"
                     i += 1
                     mt = np.append(mt, p)
-    cont += "\")\n\nfile(APPEND \"org.photoqt.photoqt.desktop\" \"MimeType=${MIMETYPE}\")\n"
+    cont += "\")\n\nfile(APPEND \"org.previewqt.previewqt.desktop\" \"MimeType=${MIMETYPE}\")\n"
 
     f_new = open("output/add_to_ComposeDesktopFile.cmake", "w")
     f_new.write(cont)
@@ -331,6 +328,8 @@ if which == 'all' or which == 'windowsrc':
 
     cont = "IDI_ICON1               ICON    DISCARDABLE     \"windows/icon.ico\"\n";
 
+    recorded = []
+
     iF = 2
     for row in data:
 
@@ -338,11 +337,13 @@ if which == 'all' or which == 'windowsrc':
 
         for e in endng:
 
-            cont += f"{iF}               ICON    DISCARDABLE     \"img/filetypes/{e}.ico\"\n";
+            if e in recorded:
+                continue
+            recorded.append(e)
+
+            cont += f"{iF}               ICON    DISCARDABLE     \"windows/filetypes/{e}.ico\"\n";
 
             iF += 1
-
-    cont += f"{iF}               ICON    DISCARDABLE     \"img/filetypes/unknown.ico\"\n";
 
     f_new = open("output/windowsicons.rc", "w")
     f_new.write(cont)
@@ -394,7 +395,7 @@ if which == 'all' or which == 'nsi':
     print("Generating additions to install script...")
 
     # create database connection
-    conn = sqlite3.connect('imageformats.db')
+    conn = sqlite3.connect('fileformats.db')
     c = conn.cursor()
 
     # get all data
@@ -415,7 +416,7 @@ if which == 'all' or which == 'nsi':
 
         endings = row[0].split(",")
 
-        desc = row[2]
+        desc = row[3]
         if ":" in desc:
             desc = desc.split(":")[1].strip()
 
@@ -427,7 +428,7 @@ if which == 'all' or which == 'nsi':
             if endings[0] == "zip" or endings[0] == "rar" or endings[0] == "7z":
                 continue
 
-            line = f"${{RegisterExtension}} \"$INSTDIR\\photoqt.exe\" \".{e}\" \"{desc}\"\n"
+            line = f"${{RegisterExtension}} \"$INSTDIR\\previewqt.exe\" \".{e}\" \"{desc}\"\n"
             un_line = f"${{UnRegisterExtension}} \".{e}\" \"{desc}\"\n"
 
             if endings[0] in ["eps", "pdf", "ps"]:
@@ -436,7 +437,7 @@ if which == 'all' or which == 'nsi':
             elif endings[0] in ["psd", "xcf"]:
                 psdcont += line
                 un_psdcont += un_line
-            elif row[4] == 1:
+            else:
                 cont += line
                 un_cont += un_line
 
@@ -464,3 +465,37 @@ if which == 'all' or which == 'nsi':
     un_f_new.write(un_psdcont)
     un_f_new.close()
 
+
+#############################################################
+#############################################################
+# GENERATE NSI ENTRIES
+if which == 'all' or which == 'formatsdb':
+
+    sqltxt = "delete from imageformats;\n"
+
+    conndb = sqlite3.connect('fileformats.db')
+    cdb = conndb.cursor()
+
+    cdb.execute("SELECT endings,description,qt,imagemagick,graphicsmagick,libraw,poppler,xcftools,devil,freeimage,archive,video,libmpv FROM imageformats ORDER BY endings")
+    data = cdb.fetchall()
+
+    for row in data:
+
+        end = row[0]
+        des = row[1]
+        qt  = row[2]
+        im  = row[3]
+        gm  = row[4]
+        raw = row[5]
+        pop = row[6]
+        xcf = row[7]
+        dev = row[8]
+        fre = row[9]
+        arc = row[10]
+        vid = row[11]
+        mpv = row[12]
+
+        sqltxt += f"INSERT INTO imageformats (`endings`,`description`,`qt`,`imagemagick`,`graphicsmagick`,`libraw`,`poppler`,`xcftools`,`devil`,`freeimage`,`archive`,`video`,`libmpv`) VALUES ('{end}', '{des}', {qt}, {im}, {gm}, {raw}, {pop}, {xcf}, {dev}, {fre}, {arc}, {vid}, {mpv});\n"
+
+    f = open("output/imageformats_website.sql", "w")
+    f.write(sqltxt)
