@@ -1,6 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Copyright (C) 2011-2024 Lukas Spies
-; Contact: http://photoqt.org
+; Copyright (C) 2011-2025 Lukas Spies
+; Contact: http://previewqt.org
 ;
 ; This file is part of PreviewQt.
 ;
@@ -29,8 +29,11 @@
 ; - license.txt
 ; - previewqt-setup.nsi (this file)
 ;
+; In addition the EnVar plugin needs to be installed for NSIS:
+; https://nsis.sourceforge.io/EnVar_plug-in
+;
 ; This will then create a new file in the application directory
-; called previewqt-%version%.exe.
+; called previewqt-setup.exe.
 ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -53,7 +56,7 @@ Unicode True
 !define INSTDIR_REG_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\PreviewQt"
 
 ;include the Uninstall log header
-!include AdvUninstLog.nsh
+!include AdvUninstLog2.nsh
 
 !define PREVIEWQT_VERSION "3.0"
 
@@ -75,7 +78,7 @@ RequestExecutionLevel admin
 !define MUI_ICON "icon_install.ico"
 
 ; we have an interactive uninstall
-!insertmacro INTERACTIVE_UNINSTALL
+!insertmacro UNATTENDED_UNINSTALL
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Welcome page
@@ -120,7 +123,7 @@ Section "PreviewQt" SecDummy
 
     ;The output path for where to install files to.
     SetOutPath "$INSTDIR"
-
+    
     ;We start by removing existing files.
     !insertmacro UNINSTALL.NEW_PREUNINSTALL "$INSTDIR"
 
@@ -128,7 +131,7 @@ Section "PreviewQt" SecDummy
     !insertmacro UNINSTALL.LOG_OPEN_INSTALL
 
     ;Recursively add all the files.
-    File /r /x *nsh /x *nsi /x *qmlc /x previewqt-*.exe ".\"
+    File /r /x *nsh /x *nsi /x *qmlc /x previewqt-setup.exe ".\"
 
     ;Close the uninstall log.
     !insertmacro UNINSTALL.LOG_CLOSE_INSTALL
@@ -150,15 +153,15 @@ SectionEnd
 
 Function .onInit
 
-        ;prepare log always within .onInit function
-        !insertmacro UNINSTALL.LOG_PREPARE_INSTALL
+    ;prepare log always within .onInit function
+    !insertmacro UNINSTALL.LOG_PREPARE_INSTALL
 
 FunctionEnd
 
 Function .onInstSuccess
 
-         ;create/update log always within .onInstSuccess function
-         !insertmacro UNINSTALL.LOG_UPDATE_INSTALL
+    ;create/update log always within .onInstSuccess function
+    !insertmacro UNINSTALL.LOG_UPDATE_INSTALL
 
 FunctionEnd
 
@@ -193,14 +196,14 @@ Function FinalStepsInit
         Abort
     ${EndIf}
 
-    ${NSD_CreateLabel} 0 0 100% 18u "Here you can set PreviewQt as default application for all supported file formats. If you decide against this, then you can always still open any file from inside PreviewQt"
+    ${NSD_CreateLabel} 0 0 100% 18u "Here you can set PreviewQt as default application for all supported file formats. If you decide against this, then you can always still open any file from inside PreviewQt."
     Pop $LabelFiletypeDesc
 
-    ${NSD_CreateRadioButton} 0 20u 100% 12u "Do not set as default for any file formats"
+    ${NSD_CreateRadioButton} 0 20u 100% 12u "Do not set as default for any image formats"
     Pop $RadioButtonNone
     ${NSD_OnClick} $RadioButtonNone FinalStepsDisEnable
 
-    ${NSD_CreateRadioButton} 0 33u 100% 12u "Set as default for all supported file formats"
+    ${NSD_CreateRadioButton} 0 33u 100% 12u "Set as default for all supported image formats"
     Pop $RadioButtonAll
     ${NSD_Check} $RadioButtonAll
     ${NSD_OnClick} $RadioButtonAll FinalStepsDisEnable
@@ -253,16 +256,21 @@ Function FinalStepsLeave
     StrCpy $RadioButtonAll_State ${BST_CHECKED}
     StrCpy $CheckboxStartMenu_State ${BST_CHECKED}
 
-    ; The supported file formats can change between installs
-    ; Thus we need to unregister all previous formats and re-register them below
+    ; We need to make sure that the updated file associations are registered
+    ; That's why we unregister the old ones first
     ${UnRegisterExtension} ".3fr" "Hasselblad Raw Image Format"
+    ${UnRegisterExtension} ".3gp" "3rd Generation Partnership Project"
+    ${UnRegisterExtension} ".3g2" "3rd Generation Partnership Project"
     ${UnRegisterExtension} ".aai" "AAI Dune image"
+    ${UnRegisterExtension} ".ai" "Adobe Illustrator (PDF compatible)"
+    ${UnRegisterExtension} ".amv" "AMV video format"
     ${UnRegisterExtension} ".ani" "Animated Windows cursors"
     ${UnRegisterExtension} ".apng" "Animated Portable Network Graphics"
     ${UnRegisterExtension} ".ari" "ARRIFLEX Raw Image Format"
     ${UnRegisterExtension} ".art" "1st Publisher"
     ${UnRegisterExtension} ".arw" "Sony Digital Camera Alpha Raw Image Format"
     ${UnRegisterExtension} ".asf" "Advanced Systems Format"
+    ${UnRegisterExtension} ".avi" "Audio Video Interleave"
     ${UnRegisterExtension} ".avif" "AV1 Image File Format"
     ${UnRegisterExtension} ".avifs" "AV1 Image File Format"
     ${UnRegisterExtension} ".avs" "AVS X image"
@@ -271,6 +279,7 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".bay" "Casio Raw Image Format"
     ${UnRegisterExtension} ".bmp" "Microsoft Windows bitmap"
     ${UnRegisterExtension} ".dib" "Microsoft Windows bitmap"
+    ${UnRegisterExtension} ".bmq" "NuCore RAW image file"
     ${UnRegisterExtension} ".bpg" "Better Portable Graphics"
     ${UnRegisterExtension} ".cals" "Continuous Acquisition and Life-cycle Support Type 1 image"
     ${UnRegisterExtension} ".ct1" "Continuous Acquisition and Life-cycle Support Type 1 image"
@@ -290,6 +299,8 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".cbz" "Comic book archive"
     ${UnRegisterExtension} ".cg3" "CCITT Group 3"
     ${UnRegisterExtension} ".g3" "CCITT Group 3"
+    ${UnRegisterExtension} ".cg4" "CCITT Group 4"
+    ${UnRegisterExtension} ".g4" "CCITT Group 4"
     ${UnRegisterExtension} ".crw" "Canon Digital Camera Raw Image Format"
     ${UnRegisterExtension} ".crr" "Canon Digital Camera Raw Image Format"
     ${UnRegisterExtension} ".cr2" "Canon Digital Camera Raw Image Format"
@@ -303,8 +314,10 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".drf" "Kodak Cineon Raw Image Format"
     ${UnRegisterExtension} ".k25" "Kodak Cineon Raw Image Format"
     ${UnRegisterExtension} ".dcs" "Kodak Cineon Raw Image Format"
+    ${UnRegisterExtension} ".dc2" "Kodak Cineon Raw Image Format"
     ${UnRegisterExtension} ".dcx" "ZSoft IBM PC multi-page Paintbrush image"
     ${UnRegisterExtension} ".dds" "DirectDraw Surface"
+    ${UnRegisterExtension} ".desktop" "Desktop file"
     ${UnRegisterExtension} ".dfont" "Multi-face font package"
     ${UnRegisterExtension} ".dic" "Digital Imaging and Communications in Medicine (DICOM) image"
     ${UnRegisterExtension} ".dcm" "Digital Imaging and Communications in Medicine (DICOM) image"
@@ -312,6 +325,9 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".djv" "DjVu digital document format "
     ${UnRegisterExtension} ".dng" "Adobe Digital Negative Raw Image Format"
     ${UnRegisterExtension} ".dpx" "Digital Moving Picture Exchange"
+    ${UnRegisterExtension} ".epi" "Adobe Encapsulated PostScript Interchange format"
+    ${UnRegisterExtension} ".ept" "Adobe Encapsulated PostScript Interchange format with TIFF preview"
+    ${UnRegisterExtension} ".epub" "Electronic Publication (EPUB)"
     ${UnRegisterExtension} ".erf" "Epson Raw Image Format"
     ${UnRegisterExtension} ".exr" "OpenEXR"
     ${UnRegisterExtension} ".ff" "farbfeld"
@@ -319,12 +335,17 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".fit" "Flexible Image Transport System"
     ${UnRegisterExtension} ".fts" "Flexible Image Transport System"
     ${UnRegisterExtension} ".fl32" "FilmLight floating point image format"
+    ${UnRegisterExtension} ".flv" "Flash Video"
+    ${UnRegisterExtension} ".f4v" "Flash Video"
     ${UnRegisterExtension} ".ftx" "FAKK 2"
     ${UnRegisterExtension} ".gif" "Graphics Interchange Format"
     ${UnRegisterExtension} ".gpr" "GoPro GPR Raw Image Format"
     ${UnRegisterExtension} ".heif" "High Efficiency Image Format"
     ${UnRegisterExtension} ".heic" "High Efficiency Image Format"
     ${UnRegisterExtension} ".hrz" "Slow-scan television"
+    ${UnRegisterExtension} ".html" "XML/HTML files"
+    ${UnRegisterExtension} ".xml" "XML/HTML files"
+    ${UnRegisterExtension} ".xhtml" "XML/HTML files"
     ${UnRegisterExtension} ".icns" "Apple Icon Image"
     ${UnRegisterExtension} ".ico" "Microsoft Windows icon format"
     ${UnRegisterExtension} ".iff" "Interchange File Format"
@@ -341,6 +362,8 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".jp2" "JPEG-2000"
     ${UnRegisterExtension} ".jpc" "JPEG-2000"
     ${UnRegisterExtension} ".jpx" "JPEG-2000"
+    ${UnRegisterExtension} ".js" "JavaScript"
+    ${UnRegisterExtension} ".json" "JSON file"
     ${UnRegisterExtension} ".jxl" "JPEG XL"
     ${UnRegisterExtension} ".jxr" "JPEG-XR"
     ${UnRegisterExtension} ".hdp" "JPEG-XR"
@@ -356,14 +379,31 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".mef" "Mamiya Raw Image Format"
     ${UnRegisterExtension} ".miff" "Magick image file format"
     ${UnRegisterExtension} ".mif" "Magick image file format"
+    ${UnRegisterExtension} ".mkv" "Matroska Video"
     ${UnRegisterExtension} ".mng" "Multiple-image Network Graphics"
     ${UnRegisterExtension} ".mos" "Leaf Raw Image Format"
+    ${UnRegisterExtension} ".mov" "QuickTime File Format"
+    ${UnRegisterExtension} ".qt" "QuickTime File Format"
+    ${UnRegisterExtension} ".mp4" "MPEG-4 Part 14"
+    ${UnRegisterExtension} ".m4v" "MPEG-4 Part 14"
     ${UnRegisterExtension} ".mpc" "Magick Persistent Cache image file format"
+    ${UnRegisterExtension} ".mpg" "Moving Picture Experts Group"
+    ${UnRegisterExtension} ".mp2" "Moving Picture Experts Group"
+    ${UnRegisterExtension} ".mpeg" "Moving Picture Experts Group"
+    ${UnRegisterExtension} ".mpe" "Moving Picture Experts Group"
+    ${UnRegisterExtension} ".mpv" "Moving Picture Experts Group"
+    ${UnRegisterExtension} ".m2v" "Moving Picture Experts Group"
+    ${UnRegisterExtension} ".mts" "MPEG Transport Stream"
+    ${UnRegisterExtension} ".m2ts" "MPEG Transport Stream"
+    ${UnRegisterExtension} ".ts" "MPEG Transport Stream"
     ${UnRegisterExtension} ".mtv" "MTV ray tracer bitmap"
     ${UnRegisterExtension} ".pic" "MTV ray tracer bitmap"
     ${UnRegisterExtension} ".mvg" "Magick Vector Graphics"
+    ${UnRegisterExtension} ".mxf" "Material Exchange Format"
     ${UnRegisterExtension} ".nef" "Nikon Digital SLR Camera Raw Image Format"
     ${UnRegisterExtension} ".nrw" "Nikon Digital SLR Camera Raw Image Format"
+    ${UnRegisterExtension} ".ogg" "Theora"
+    ${UnRegisterExtension} ".ogv" "Theora"
     ${UnRegisterExtension} ".ora" "OpenRaster"
     ${UnRegisterExtension} ".orf" "Olympus Digital Camera Raw Image Format"
     ${UnRegisterExtension} ".otb" "On-the-air Bitmap"
@@ -392,6 +432,7 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".pgm" "Portable graymap format (gray scale)"
     ${UnRegisterExtension} ".pgx" "JPEG 2000 uncompressed format"
     ${UnRegisterExtension} ".phm" "Portable float map format 16-bit half"
+    ${UnRegisterExtension} ".php" "PHP scripts"
     ${UnRegisterExtension} ".pic" "Softimage PIC"
     ${UnRegisterExtension} ".picon" "Personal Icon"
     ${UnRegisterExtension} ".pict" "QuickDraw/PICT"
@@ -420,6 +461,8 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".rgf" "LEGO Mindstorms EV3 Robot Graphics File"
     ${UnRegisterExtension} ".rla" "Wavefront RLA File Format"
     ${UnRegisterExtension} ".rle" "Utah Run length encoded image file"
+    ${UnRegisterExtension} ".rm" "RealMedia"
+    ${UnRegisterExtension} ".rtf" "Rich Text Format"
     ${UnRegisterExtension} ".rw2" "Panasonic Raw Image Format"
     ${UnRegisterExtension} ".scr" "ZX-Spectrum SCREEN"
     ${UnRegisterExtension} ".sct" "Scitex Continuous Tone Picture"
@@ -429,10 +472,15 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".alb" "Seattle File Works image"
     ${UnRegisterExtension} ".pwm" "Seattle File Works image"
     ${UnRegisterExtension} ".pwp" "Seattle File Works image"
+    ${UnRegisterExtension} ".sh" "Shell/Bash scripts"
+    ${UnRegisterExtension} ".bash" "Shell/Bash scripts"
+    ${UnRegisterExtension} ".fsh" "Shell/Bash scripts"
     ${UnRegisterExtension} ".sixel" "DEC SIXEL Graphics Format"
+    ${UnRegisterExtension} ".sql" "SQL scripts"
     ${UnRegisterExtension} ".srf" "Sony (Minolta) Raw Image Format"
     ${UnRegisterExtension} ".mrw" "Sony (Minolta) Raw Image Format"
     ${UnRegisterExtension} ".sr2" "Sony (Minolta) Raw Image Format"
+    ${UnRegisterExtension} ".arq" "Sony (Minolta) Raw Image Format"
     ${UnRegisterExtension} ".srw" "Samsung Raw Image Format"
     ${UnRegisterExtension} ".sun" "SUN Rasterfile"
     ${UnRegisterExtension} ".ras" "SUN Rasterfile"
@@ -447,6 +495,7 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".svg" "Scalable Vector Graphics"
     ${UnRegisterExtension} ".svgz" "Scalable Vector Graphics"
     ${UnRegisterExtension} ".tar" "TAR file format"
+    ${UnRegisterExtension} ".tex" "LaTex files"
     ${UnRegisterExtension} ".tga" "Truevision Targa image"
     ${UnRegisterExtension} ".icb" "Truevision Targa image"
     ${UnRegisterExtension} ".vda" "Truevision Targa image"
@@ -454,49 +503,56 @@ Function FinalStepsLeave
     ${UnRegisterExtension} ".tiff" "Tagged Image File Format"
     ${UnRegisterExtension} ".tif" "Tagged Image File Format"
     ${UnRegisterExtension} ".tim" "PSX TIM (PlayStation Graphics)"
+    ${UnRegisterExtension} ".troff" "Troff files"
+    ${UnRegisterExtension} ".t" "Troff files"
+    ${UnRegisterExtension} ".man" "Troff files"
     ${UnRegisterExtension} ".ttf" "TrueType font file"
+    ${UnRegisterExtension} ".txt" "Text document"
     ${UnRegisterExtension} ".vicar" "VICAR rasterfile format"
     ${UnRegisterExtension} ".vic" "VICAR rasterfile format"
     ${UnRegisterExtension} ".img" "VICAR rasterfile format"
     ${UnRegisterExtension} ".viff" "Khoros Visualization Image File Format"
     ${UnRegisterExtension} ".xv" "Khoros Visualization Image File Format"
+    ${UnRegisterExtension} ".vob" "Video Object"
     ${UnRegisterExtension} ".vtf" "Valve Texture Format"
     ${UnRegisterExtension} ".wbmp" "Wireless Bitmap"
+    ${UnRegisterExtension} ".webm" "WebM"
     ${UnRegisterExtension} ".webp" "Google web image format"
     ${UnRegisterExtension} ".wmf" "Windows Metafile"
     ${UnRegisterExtension} ".wmz" "Windows Metafile"
     ${UnRegisterExtension} ".apm" "Windows Metafile"
+    ${UnRegisterExtension} ".wmv" "Windows Media Video"
     ${UnRegisterExtension} ".wpg" "Word Perfect Graphics File"
     ${UnRegisterExtension} ".xbm" "X BitMap"
     ${UnRegisterExtension} ".bm" "X BitMap"
     ${UnRegisterExtension} ".xpm" "X PixMap"
     ${UnRegisterExtension} ".pm" "X PixMap"
     ${UnRegisterExtension} ".xwd" "X Windows system window dump"
-    ${UnRegisterExtension} ".eps" "Encapsulated PostScript"
-    ${UnRegisterExtension} ".epsf" "Encapsulated PostScript"
-    ${UnRegisterExtension} ".epsi" "Encapsulated PostScript"
-    ${UnRegisterExtension} ".pdf" "Adobe Portable Document Format"
-    ${UnRegisterExtension} ".ps" "Adobe Level III PostScript file"
-    ${UnRegisterExtension} ".ps2" "Adobe Level III PostScript file"
-    ${UnRegisterExtension} ".ps3" "Adobe Level III PostScript file"
-    ${UnRegisterExtension} ".psd" "Adobe PhotoShop"
-    ${UnRegisterExtension} ".psb" "Adobe PhotoShop"
-    ${UnRegisterExtension} ".xcf" "Gimp XCF"
+    ${UnRegisterExtension} ".yaml" " YAML files"
+    ${UnRegisterExtension} ".yml" " YAML files"
 
+    ; These might have gotten registered like this, but we don't want to register them at all
+    ${UnRegisterExtension} ".7z" "7z file format"
+    ${UnRegisterExtension} ".rar" "RAR file format"
+    ${UnRegisterExtension} ".zip" "ZIP file format"
 
     ${If} $RadioButtonAll_State == ${BST_CHECKED}
 
         WriteRegStr HKCU "Software\PreviewQt" "fileformats" "all"
 
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".3fr" "Hasselblad Raw Image Format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".3gp" "3rd Generation Partnership Project"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".3g2" "3rd Generation Partnership Project"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".aai" "AAI Dune image"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ai" "Adobe Illustrator (PDF compatible)"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".amv" "AMV video format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ani" "Animated Windows cursors"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".apng" "Animated Portable Network Graphics"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ari" "ARRIFLEX Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".art" "1st Publisher"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".arw" "Sony Digital Camera Alpha Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".asf" "Advanced Systems Format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".avi" "Audio Video Interleave"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".avif" "AV1 Image File Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".avifs" "AV1 Image File Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".avs" "AVS X image"
@@ -505,6 +561,7 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".bay" "Casio Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".bmp" "Microsoft Windows bitmap"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".dib" "Microsoft Windows bitmap"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".bmq" "NuCore RAW image file"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".bpg" "Better Portable Graphics"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".cals" "Continuous Acquisition and Life-cycle Support Type 1 image"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ct1" "Continuous Acquisition and Life-cycle Support Type 1 image"
@@ -524,6 +581,8 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".cbz" "Comic book archive"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".cg3" "CCITT Group 3"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".g3" "CCITT Group 3"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".cg4" "CCITT Group 4"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".g4" "CCITT Group 4"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".crw" "Canon Digital Camera Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".crr" "Canon Digital Camera Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".cr2" "Canon Digital Camera Raw Image Format"
@@ -537,8 +596,10 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".drf" "Kodak Cineon Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".k25" "Kodak Cineon Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".dcs" "Kodak Cineon Raw Image Format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".dc2" "Kodak Cineon Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".dcx" "ZSoft IBM PC multi-page Paintbrush image"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".dds" "DirectDraw Surface"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".desktop" "Desktop file"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".dfont" "Multi-face font package"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".dic" "Digital Imaging and Communications in Medicine (DICOM) image"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".dcm" "Digital Imaging and Communications in Medicine (DICOM) image"
@@ -546,6 +607,9 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".djv" "DjVu digital document format "
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".dng" "Adobe Digital Negative Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".dpx" "Digital Moving Picture Exchange"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".epi" "Adobe Encapsulated PostScript Interchange format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ept" "Adobe Encapsulated PostScript Interchange format with TIFF preview"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".epub" "Electronic Publication (EPUB)"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".erf" "Epson Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".exr" "OpenEXR"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ff" "farbfeld"
@@ -553,12 +617,17 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".fit" "Flexible Image Transport System"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".fts" "Flexible Image Transport System"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".fl32" "FilmLight floating point image format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".flv" "Flash Video"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".f4v" "Flash Video"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ftx" "FAKK 2"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".gif" "Graphics Interchange Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".gpr" "GoPro GPR Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".heif" "High Efficiency Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".heic" "High Efficiency Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".hrz" "Slow-scan television"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".html" "XML/HTML files"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".xml" "XML/HTML files"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".xhtml" "XML/HTML files"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".icns" "Apple Icon Image"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ico" "Microsoft Windows icon format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".iff" "Interchange File Format"
@@ -575,6 +644,8 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".jp2" "JPEG-2000"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".jpc" "JPEG-2000"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".jpx" "JPEG-2000"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".js" "JavaScript"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".json" "JSON file"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".jxl" "JPEG XL"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".jxr" "JPEG-XR"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".hdp" "JPEG-XR"
@@ -590,14 +661,31 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mef" "Mamiya Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".miff" "Magick image file format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mif" "Magick image file format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mkv" "Matroska Video"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mng" "Multiple-image Network Graphics"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mos" "Leaf Raw Image Format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mov" "QuickTime File Format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".qt" "QuickTime File Format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mp4" "MPEG-4 Part 14"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".m4v" "MPEG-4 Part 14"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mpc" "Magick Persistent Cache image file format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mpg" "Moving Picture Experts Group"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mp2" "Moving Picture Experts Group"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mpeg" "Moving Picture Experts Group"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mpe" "Moving Picture Experts Group"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mpv" "Moving Picture Experts Group"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".m2v" "Moving Picture Experts Group"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mts" "MPEG Transport Stream"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".m2ts" "MPEG Transport Stream"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ts" "MPEG Transport Stream"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mtv" "MTV ray tracer bitmap"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".pic" "MTV ray tracer bitmap"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mvg" "Magick Vector Graphics"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mxf" "Material Exchange Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".nef" "Nikon Digital SLR Camera Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".nrw" "Nikon Digital SLR Camera Raw Image Format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ogg" "Theora"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ogv" "Theora"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ora" "OpenRaster"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".orf" "Olympus Digital Camera Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".otb" "On-the-air Bitmap"
@@ -626,6 +714,7 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".pgm" "Portable graymap format (gray scale)"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".pgx" "JPEG 2000 uncompressed format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".phm" "Portable float map format 16-bit half"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".php" "PHP scripts"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".pic" "Softimage PIC"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".picon" "Personal Icon"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".pict" "QuickDraw/PICT"
@@ -654,6 +743,8 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".rgf" "LEGO Mindstorms EV3 Robot Graphics File"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".rla" "Wavefront RLA File Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".rle" "Utah Run length encoded image file"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".rm" "RealMedia"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".rtf" "Rich Text Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".rw2" "Panasonic Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".scr" "ZX-Spectrum SCREEN"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".sct" "Scitex Continuous Tone Picture"
@@ -663,10 +754,15 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".alb" "Seattle File Works image"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".pwm" "Seattle File Works image"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".pwp" "Seattle File Works image"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".sh" "Shell/Bash scripts"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".bash" "Shell/Bash scripts"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".fsh" "Shell/Bash scripts"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".sixel" "DEC SIXEL Graphics Format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".sql" "SQL scripts"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".srf" "Sony (Minolta) Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".mrw" "Sony (Minolta) Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".sr2" "Sony (Minolta) Raw Image Format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".arq" "Sony (Minolta) Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".srw" "Samsung Raw Image Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".sun" "SUN Rasterfile"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ras" "SUN Rasterfile"
@@ -681,6 +777,7 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".svg" "Scalable Vector Graphics"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".svgz" "Scalable Vector Graphics"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".tar" "TAR file format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".tex" "LaTex files"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".tga" "Truevision Targa image"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".icb" "Truevision Targa image"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".vda" "Truevision Targa image"
@@ -688,24 +785,33 @@ Function FinalStepsLeave
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".tiff" "Tagged Image File Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".tif" "Tagged Image File Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".tim" "PSX TIM (PlayStation Graphics)"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".troff" "Troff files"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".t" "Troff files"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".man" "Troff files"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".ttf" "TrueType font file"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".txt" "Text document"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".vicar" "VICAR rasterfile format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".vic" "VICAR rasterfile format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".img" "VICAR rasterfile format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".viff" "Khoros Visualization Image File Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".xv" "Khoros Visualization Image File Format"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".vob" "Video Object"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".vtf" "Valve Texture Format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".wbmp" "Wireless Bitmap"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".webm" "WebM"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".webp" "Google web image format"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".wmf" "Windows Metafile"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".wmz" "Windows Metafile"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".apm" "Windows Metafile"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".wmv" "Windows Media Video"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".wpg" "Word Perfect Graphics File"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".xbm" "X BitMap"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".bm" "X BitMap"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".xpm" "X PixMap"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".pm" "X PixMap"
         ${RegisterExtension} "$INSTDIR\previewqt.exe" ".xwd" "X Windows system window dump"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".yaml" " YAML files"
+        ${RegisterExtension} "$INSTDIR\previewqt.exe" ".yml" " YAML files"
 
         ${If} $CheckboxPdfPs_State == ${BST_CHECKED}
 
@@ -746,6 +852,7 @@ Function FinalStepsLeave
 
             ${RegisterExtension} "$INSTDIR\previewqt.exe" ".psd" "Adobe PhotoShop"
             ${RegisterExtension} "$INSTDIR\previewqt.exe" ".psb" "Adobe PhotoShop"
+            ${RegisterExtension} "$INSTDIR\previewqt.exe" ".psdt" "Adobe PhotoShop"
             ${RegisterExtension} "$INSTDIR\previewqt.exe" ".xcf" "Gimp XCF"
 
         ${Else}
@@ -756,6 +863,7 @@ Function FinalStepsLeave
             ${If} $fileformats_psdxcf == "registered"
                 ${UnRegisterExtension} ".psd" "Adobe PhotoShop"
                 ${UnRegisterExtension} ".psb" "Adobe PhotoShop"
+                ${UnRegisterExtension} ".psdt" "Adobe PhotoShop"
                 ${UnRegisterExtension} ".xcf" "Gimp XCF"
             ${EndIf}
 
@@ -768,7 +876,7 @@ Function FinalStepsLeave
     ${If} $CheckboxDesktop_State == ${BST_CHECKED}
 
         ; create desktop shortcut
-        CreateShortcut "$desktop\PreviewQt.lnk" "$instdir\previewqt.exe" "" "$INSTDIR\icon.ico" 0
+        CreateShortcut "$desktop\PreviewQt.lnk" "$INSTDIR\previewqt.exe" "" "$INSTDIR\icon.ico" 0
 
     ${Else}
 
@@ -809,14 +917,18 @@ Section "Uninstall"
 
         ; ... DE-register file formats ...
         ${UnRegisterExtension} ".3fr" "Hasselblad Raw Image Format"
+        ${UnRegisterExtension} ".3gp" "3rd Generation Partnership Project"
+        ${UnRegisterExtension} ".3g2" "3rd Generation Partnership Project"
         ${UnRegisterExtension} ".aai" "AAI Dune image"
         ${UnRegisterExtension} ".ai" "Adobe Illustrator (PDF compatible)"
+        ${UnRegisterExtension} ".amv" "AMV video format"
         ${UnRegisterExtension} ".ani" "Animated Windows cursors"
         ${UnRegisterExtension} ".apng" "Animated Portable Network Graphics"
         ${UnRegisterExtension} ".ari" "ARRIFLEX Raw Image Format"
         ${UnRegisterExtension} ".art" "1st Publisher"
         ${UnRegisterExtension} ".arw" "Sony Digital Camera Alpha Raw Image Format"
         ${UnRegisterExtension} ".asf" "Advanced Systems Format"
+        ${UnRegisterExtension} ".avi" "Audio Video Interleave"
         ${UnRegisterExtension} ".avif" "AV1 Image File Format"
         ${UnRegisterExtension} ".avifs" "AV1 Image File Format"
         ${UnRegisterExtension} ".avs" "AVS X image"
@@ -825,6 +937,7 @@ Section "Uninstall"
         ${UnRegisterExtension} ".bay" "Casio Raw Image Format"
         ${UnRegisterExtension} ".bmp" "Microsoft Windows bitmap"
         ${UnRegisterExtension} ".dib" "Microsoft Windows bitmap"
+        ${UnRegisterExtension} ".bmq" "NuCore RAW image file"
         ${UnRegisterExtension} ".bpg" "Better Portable Graphics"
         ${UnRegisterExtension} ".cals" "Continuous Acquisition and Life-cycle Support Type 1 image"
         ${UnRegisterExtension} ".ct1" "Continuous Acquisition and Life-cycle Support Type 1 image"
@@ -844,6 +957,8 @@ Section "Uninstall"
         ${UnRegisterExtension} ".cbz" "Comic book archive"
         ${UnRegisterExtension} ".cg3" "CCITT Group 3"
         ${UnRegisterExtension} ".g3" "CCITT Group 3"
+        ${UnRegisterExtension} ".cg4" "CCITT Group 4"
+        ${UnRegisterExtension} ".g4" "CCITT Group 4"
         ${UnRegisterExtension} ".crw" "Canon Digital Camera Raw Image Format"
         ${UnRegisterExtension} ".crr" "Canon Digital Camera Raw Image Format"
         ${UnRegisterExtension} ".cr2" "Canon Digital Camera Raw Image Format"
@@ -857,8 +972,10 @@ Section "Uninstall"
         ${UnRegisterExtension} ".drf" "Kodak Cineon Raw Image Format"
         ${UnRegisterExtension} ".k25" "Kodak Cineon Raw Image Format"
         ${UnRegisterExtension} ".dcs" "Kodak Cineon Raw Image Format"
+        ${UnRegisterExtension} ".dc2" "Kodak Cineon Raw Image Format"
         ${UnRegisterExtension} ".dcx" "ZSoft IBM PC multi-page Paintbrush image"
         ${UnRegisterExtension} ".dds" "DirectDraw Surface"
+        ${UnRegisterExtension} ".desktop" "Desktop file"
         ${UnRegisterExtension} ".dfont" "Multi-face font package"
         ${UnRegisterExtension} ".dic" "Digital Imaging and Communications in Medicine (DICOM) image"
         ${UnRegisterExtension} ".dcm" "Digital Imaging and Communications in Medicine (DICOM) image"
@@ -866,6 +983,9 @@ Section "Uninstall"
         ${UnRegisterExtension} ".djv" "DjVu digital document format "
         ${UnRegisterExtension} ".dng" "Adobe Digital Negative Raw Image Format"
         ${UnRegisterExtension} ".dpx" "Digital Moving Picture Exchange"
+        ${UnRegisterExtension} ".epi" "Adobe Encapsulated PostScript Interchange format"
+        ${UnRegisterExtension} ".ept" "Adobe Encapsulated PostScript Interchange format with TIFF preview"
+        ${UnRegisterExtension} ".epub" "Electronic Publication (EPUB)"
         ${UnRegisterExtension} ".erf" "Epson Raw Image Format"
         ${UnRegisterExtension} ".exr" "OpenEXR"
         ${UnRegisterExtension} ".ff" "farbfeld"
@@ -873,12 +993,17 @@ Section "Uninstall"
         ${UnRegisterExtension} ".fit" "Flexible Image Transport System"
         ${UnRegisterExtension} ".fts" "Flexible Image Transport System"
         ${UnRegisterExtension} ".fl32" "FilmLight floating point image format"
+        ${UnRegisterExtension} ".flv" "Flash Video"
+        ${UnRegisterExtension} ".f4v" "Flash Video"
         ${UnRegisterExtension} ".ftx" "FAKK 2"
         ${UnRegisterExtension} ".gif" "Graphics Interchange Format"
         ${UnRegisterExtension} ".gpr" "GoPro GPR Raw Image Format"
         ${UnRegisterExtension} ".heif" "High Efficiency Image Format"
         ${UnRegisterExtension} ".heic" "High Efficiency Image Format"
         ${UnRegisterExtension} ".hrz" "Slow-scan television"
+        ${UnRegisterExtension} ".html" "XML/HTML files"
+        ${UnRegisterExtension} ".xml" "XML/HTML files"
+        ${UnRegisterExtension} ".xhtml" "XML/HTML files"
         ${UnRegisterExtension} ".icns" "Apple Icon Image"
         ${UnRegisterExtension} ".ico" "Microsoft Windows icon format"
         ${UnRegisterExtension} ".iff" "Interchange File Format"
@@ -895,6 +1020,8 @@ Section "Uninstall"
         ${UnRegisterExtension} ".jp2" "JPEG-2000"
         ${UnRegisterExtension} ".jpc" "JPEG-2000"
         ${UnRegisterExtension} ".jpx" "JPEG-2000"
+        ${UnRegisterExtension} ".js" "JavaScript"
+        ${UnRegisterExtension} ".json" "JSON file"
         ${UnRegisterExtension} ".jxl" "JPEG XL"
         ${UnRegisterExtension} ".jxr" "JPEG-XR"
         ${UnRegisterExtension} ".hdp" "JPEG-XR"
@@ -910,14 +1037,31 @@ Section "Uninstall"
         ${UnRegisterExtension} ".mef" "Mamiya Raw Image Format"
         ${UnRegisterExtension} ".miff" "Magick image file format"
         ${UnRegisterExtension} ".mif" "Magick image file format"
+        ${UnRegisterExtension} ".mkv" "Matroska Video"
         ${UnRegisterExtension} ".mng" "Multiple-image Network Graphics"
         ${UnRegisterExtension} ".mos" "Leaf Raw Image Format"
+        ${UnRegisterExtension} ".mov" "QuickTime File Format"
+        ${UnRegisterExtension} ".qt" "QuickTime File Format"
+        ${UnRegisterExtension} ".mp4" "MPEG-4 Part 14"
+        ${UnRegisterExtension} ".m4v" "MPEG-4 Part 14"
         ${UnRegisterExtension} ".mpc" "Magick Persistent Cache image file format"
+        ${UnRegisterExtension} ".mpg" "Moving Picture Experts Group"
+        ${UnRegisterExtension} ".mp2" "Moving Picture Experts Group"
+        ${UnRegisterExtension} ".mpeg" "Moving Picture Experts Group"
+        ${UnRegisterExtension} ".mpe" "Moving Picture Experts Group"
+        ${UnRegisterExtension} ".mpv" "Moving Picture Experts Group"
+        ${UnRegisterExtension} ".m2v" "Moving Picture Experts Group"
+        ${UnRegisterExtension} ".mts" "MPEG Transport Stream"
+        ${UnRegisterExtension} ".m2ts" "MPEG Transport Stream"
+        ${UnRegisterExtension} ".ts" "MPEG Transport Stream"
         ${UnRegisterExtension} ".mtv" "MTV ray tracer bitmap"
         ${UnRegisterExtension} ".pic" "MTV ray tracer bitmap"
         ${UnRegisterExtension} ".mvg" "Magick Vector Graphics"
+        ${UnRegisterExtension} ".mxf" "Material Exchange Format"
         ${UnRegisterExtension} ".nef" "Nikon Digital SLR Camera Raw Image Format"
         ${UnRegisterExtension} ".nrw" "Nikon Digital SLR Camera Raw Image Format"
+        ${UnRegisterExtension} ".ogg" "Theora"
+        ${UnRegisterExtension} ".ogv" "Theora"
         ${UnRegisterExtension} ".ora" "OpenRaster"
         ${UnRegisterExtension} ".orf" "Olympus Digital Camera Raw Image Format"
         ${UnRegisterExtension} ".otb" "On-the-air Bitmap"
@@ -946,6 +1090,7 @@ Section "Uninstall"
         ${UnRegisterExtension} ".pgm" "Portable graymap format (gray scale)"
         ${UnRegisterExtension} ".pgx" "JPEG 2000 uncompressed format"
         ${UnRegisterExtension} ".phm" "Portable float map format 16-bit half"
+        ${UnRegisterExtension} ".php" "PHP scripts"
         ${UnRegisterExtension} ".pic" "Softimage PIC"
         ${UnRegisterExtension} ".picon" "Personal Icon"
         ${UnRegisterExtension} ".pict" "QuickDraw/PICT"
@@ -974,6 +1119,8 @@ Section "Uninstall"
         ${UnRegisterExtension} ".rgf" "LEGO Mindstorms EV3 Robot Graphics File"
         ${UnRegisterExtension} ".rla" "Wavefront RLA File Format"
         ${UnRegisterExtension} ".rle" "Utah Run length encoded image file"
+        ${UnRegisterExtension} ".rm" "RealMedia"
+        ${UnRegisterExtension} ".rtf" "Rich Text Format"
         ${UnRegisterExtension} ".rw2" "Panasonic Raw Image Format"
         ${UnRegisterExtension} ".scr" "ZX-Spectrum SCREEN"
         ${UnRegisterExtension} ".sct" "Scitex Continuous Tone Picture"
@@ -983,10 +1130,15 @@ Section "Uninstall"
         ${UnRegisterExtension} ".alb" "Seattle File Works image"
         ${UnRegisterExtension} ".pwm" "Seattle File Works image"
         ${UnRegisterExtension} ".pwp" "Seattle File Works image"
+        ${UnRegisterExtension} ".sh" "Shell/Bash scripts"
+        ${UnRegisterExtension} ".bash" "Shell/Bash scripts"
+        ${UnRegisterExtension} ".fsh" "Shell/Bash scripts"
         ${UnRegisterExtension} ".sixel" "DEC SIXEL Graphics Format"
+        ${UnRegisterExtension} ".sql" "SQL scripts"
         ${UnRegisterExtension} ".srf" "Sony (Minolta) Raw Image Format"
         ${UnRegisterExtension} ".mrw" "Sony (Minolta) Raw Image Format"
         ${UnRegisterExtension} ".sr2" "Sony (Minolta) Raw Image Format"
+        ${UnRegisterExtension} ".arq" "Sony (Minolta) Raw Image Format"
         ${UnRegisterExtension} ".srw" "Samsung Raw Image Format"
         ${UnRegisterExtension} ".sun" "SUN Rasterfile"
         ${UnRegisterExtension} ".ras" "SUN Rasterfile"
@@ -1001,6 +1153,7 @@ Section "Uninstall"
         ${UnRegisterExtension} ".svg" "Scalable Vector Graphics"
         ${UnRegisterExtension} ".svgz" "Scalable Vector Graphics"
         ${UnRegisterExtension} ".tar" "TAR file format"
+        ${UnRegisterExtension} ".tex" "LaTex files"
         ${UnRegisterExtension} ".tga" "Truevision Targa image"
         ${UnRegisterExtension} ".icb" "Truevision Targa image"
         ${UnRegisterExtension} ".vda" "Truevision Targa image"
@@ -1008,24 +1161,33 @@ Section "Uninstall"
         ${UnRegisterExtension} ".tiff" "Tagged Image File Format"
         ${UnRegisterExtension} ".tif" "Tagged Image File Format"
         ${UnRegisterExtension} ".tim" "PSX TIM (PlayStation Graphics)"
+        ${UnRegisterExtension} ".troff" "Troff files"
+        ${UnRegisterExtension} ".t" "Troff files"
+        ${UnRegisterExtension} ".man" "Troff files"
         ${UnRegisterExtension} ".ttf" "TrueType font file"
+        ${UnRegisterExtension} ".txt" "Text document"
         ${UnRegisterExtension} ".vicar" "VICAR rasterfile format"
         ${UnRegisterExtension} ".vic" "VICAR rasterfile format"
         ${UnRegisterExtension} ".img" "VICAR rasterfile format"
         ${UnRegisterExtension} ".viff" "Khoros Visualization Image File Format"
         ${UnRegisterExtension} ".xv" "Khoros Visualization Image File Format"
+        ${UnRegisterExtension} ".vob" "Video Object"
         ${UnRegisterExtension} ".vtf" "Valve Texture Format"
         ${UnRegisterExtension} ".wbmp" "Wireless Bitmap"
+        ${UnRegisterExtension} ".webm" "WebM"
         ${UnRegisterExtension} ".webp" "Google web image format"
         ${UnRegisterExtension} ".wmf" "Windows Metafile"
         ${UnRegisterExtension} ".wmz" "Windows Metafile"
         ${UnRegisterExtension} ".apm" "Windows Metafile"
+        ${UnRegisterExtension} ".wmv" "Windows Media Video"
         ${UnRegisterExtension} ".wpg" "Word Perfect Graphics File"
         ${UnRegisterExtension} ".xbm" "X BitMap"
         ${UnRegisterExtension} ".bm" "X BitMap"
         ${UnRegisterExtension} ".xpm" "X PixMap"
         ${UnRegisterExtension} ".pm" "X PixMap"
         ${UnRegisterExtension} ".xwd" "X Windows system window dump"
+        ${UnRegisterExtension} ".yaml" " YAML files"
+        ${UnRegisterExtension} ".yml" " YAML files"
 
         WriteRegStr HKCU "Software\PreviewQt" "fileformats" ""
 
@@ -1049,6 +1211,7 @@ Section "Uninstall"
 
         ${UnRegisterExtension} ".psd" "Adobe PhotoShop"
         ${UnRegisterExtension} ".psb" "Adobe PhotoShop"
+        ${UnRegisterExtension} ".psdt" "Adobe PhotoShop"
         ${UnRegisterExtension} ".xcf" "Gimp XCF"
 
         WriteRegStr HKCU "Software\PreviewQt" "fileformats_psdxcf" ""
@@ -1060,19 +1223,9 @@ Section "Uninstall"
     Delete "$desktop\PreviewQt.lnk"
 
     ;begin uninstall
-    !insertmacro UNINSTALL.LOG_BEGIN_UNINSTALL
-
-    ;uninstall from path, must be repeated for every install logged path individual
-    !insertmacro UNINSTALL.LOG_UNINSTALL "$INSTDIR"
-
-    ;end uninstall, after uninstall from all logged paths has been performed
-    !insertmacro UNINSTALL.LOG_END_UNINSTALL
-
+    !insertmacro UNINSTALL.NEW_UNINSTALL "$OUTDIR"
+    
     DeleteRegKey ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}"
-
-    ; Remove environment variables
-    EnVar::Delete "PHOTOQT_MAGICK_CODER_MODULE_PATH"
-    EnVar::Delete "PHOTOQT_MAGICK_FILTER_MODULE_PATH"
 
     System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)'
 
