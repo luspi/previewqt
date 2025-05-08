@@ -151,7 +151,9 @@ QString PQCSpecialActions::getSelectedFile_dolphin() {
     // 2. Backup current clipboard interface
 
     QString backupClipboard = clipboardGet();
-    clipboardSet(" ");
+
+    // Note: Don't set a temporary (e.g., empty) clipboard content!
+    // It might make retrieving the file copied by dolphin impossible to retrieve.
 
     /******************************************************************/
     // 3. Prompt dolphin to copy selected location to clipboard
@@ -183,6 +185,7 @@ QString PQCSpecialActions::getSelectedFile_dolphin() {
 
     QString ret = clipboardGet();
     if(!QFileInfo(ret).isFile()) {
+        qDebug() << "Failed to read copied file from clipboard";
         clipboardSet(backupClipboard);
         return "";
     }
@@ -190,6 +193,7 @@ QString PQCSpecialActions::getSelectedFile_dolphin() {
     /******************************************************************/
     // 5. Reset previous clipboard content
 
+    qDebug() << "Successfully read copied file from clipboard:" << ret;
     clipboardSet(backupClipboard);
 
     /******************************************************************/
@@ -207,12 +211,17 @@ QString PQCSpecialActions::clipboardGet() {
 
     if(klipperInterface.isValid()) {
 
+        qDebug() << "Valid response received from klipper";
+
         // Calling the getClipboardContents method
         QDBusReply<QString> reply = klipperInterface.call("getClipboardContents");
 
         // Checking if the call was successful
-        if(reply.isValid())
+        if(reply.isValid()) {
+            qDebug() << "Received valid klipper reply:" << reply;
             return reply.value();
+        } else
+            qDebug() << "Invalid klipper reply received:" << reply;
 
     }
 
