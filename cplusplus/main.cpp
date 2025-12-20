@@ -246,12 +246,7 @@ int main(int argc, char *argv[]) {
     }
 
     QQmlApplicationEngine engine;
-    const QUrl url("qrc:/src/qml/PQMainWindow.qml");
-    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
-        &app, [url](QObject *obj, const QUrl &objUrl) {
-            if (!obj && url == objUrl)
-                QCoreApplication::exit(-1);
-        }, Qt::QueuedConnection);
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &app, []() { QApplication::exit(-1); }, Qt::QueuedConnection);
 
     qmlRegisterSingletonInstance("PQCSettings", 1, 0, "PQCSettings", &PQCSettings::get());
     qmlRegisterSingletonInstance("PQCCache", 1, 0, "PQCCache", &PQCCache::get());
@@ -270,7 +265,14 @@ int main(int argc, char *argv[]) {
     qmlRegisterType<PQCMPVObject>("PQCMPVObject", 1, 0, "PQCMPVObject");
 #endif
 
-    engine.load(url);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+    engine.loadFromModule("PreviewQt", "PQMainWindow");
+#else
+    // In Qt 6.4 this path is not automatically added as import path meaning without this PhotoQt wont find any of its modules
+    // We also cannot use loadFromModule() as that does not exist yet.
+    engine.addImportPath(":/");
+    engine.load("qrc:/PreviewQt/qml/PQMainWindow.qml");
+#endif
 
     int ret = app.exec();
 

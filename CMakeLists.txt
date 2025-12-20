@@ -2,22 +2,18 @@
 # CMakeLists for PreviewQt: http://previewqt.org/ #
 ###################################################
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.26)
 project(previewqt LANGUAGES CXX)
 
 ##################################################################
 ####  GLOBAL VERSION STRING FOR ALL FILES (INCLUDING CPP/QML) ####
 ##################################################################
 
-SET(APPVERSION "4.0")
+SET(APPVERSION "dev")
 
-########################################
-####  SOME SETTINGS/FLAGS FOR CMAKE ####
-########################################
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+###################################
+####  ENSURE BUILD TYPE IS SET ####
+###################################
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -31,9 +27,9 @@ option(WITH_IMAGEMAGICK           "Configure with support for the ImageMagick li
 option(WITH_GRAPHICSMAGICK        "Configure with support for the GraphicsMagick library" OFF)
 option(WITH_LIBRAW                "Configure with support for the libraw library" ON)
 option(WITH_DEVIL                 "Configure with support for the DevIL library" ON)
-option(WITH_FREEIMAGE             "Configure with support for the FreeImage library" ON)
-option(WITH_POPPLER               "Configure with support for the Poppler library" ON)
-option(WITH_QTPDF                 "Configure with support for the QtPDF module (instead of Poppler)" OFF)
+option(WITH_FREEIMAGE             "Configure with support for the FreeImage library" OFF)
+option(WITH_POPPLER               "Configure with support for the Poppler library" OFF)
+option(WITH_QTPDF                 "Configure with support for the QtPDF module (instead of Poppler)" ON)
 option(WITH_LIBARCHIVE            "Configure with support for the libarchive library" ON)
 option(WITH_VIDEO_QT              "Configure with video support through Qt" ON)
 option(WITH_VIDEO_MPV             "Configure with video support through MPV" ON)
@@ -52,116 +48,6 @@ option(WITH_PORTABLETWEAKS        "Apply tweaks for a build of a portable versio
 option(WITH_ADAPTSOURCE           "Adapt and change the source files for the current Qt version (if necessary)" OFF)
 option(WITH_FLATPAKBUILD          "Enable this option if this is a build for Flatpak" OFF)
 
-##################################################################################################################
-# The options above were renamed for 4.0
-# For the time being we still check for the old names and pass any value on to the new options
-if(DEFINED IMAGEMAGICK)
-    message("** The IMAGEMAGICK option is deprecated, use WITH_IMAGEMAGICK instead: ${IMAGEMAGICK}")
-    set(WITH_IMAGEMAGICK ${IMAGEMAGICK} CACHE BOOL "Configure with support for the ImageMagick library" FORCE)
-    unset(IMAGEMAGICK CACHE)
-endif()
-if(DEFINED GRAPHICSMAGICK)
-    message("** The GRAPHICSMAGICK option is deprecated, use WITH_GRAPHICSMAGICK instead")
-    set(WITH_GRAPHICSMAGICK ${GRAPHICSMAGICK} CACHE BOOL "Configure with support the for GraphicsMagick library" FORCE)
-    unset(GRAPHICSMAGICK CACHE)
-endif()
-if(DEFINED RAW)
-    message("** The RAW option is deprecated, use WITH_LIBRAW instead")
-    set(WITH_LIBRAW ${RAW} CACHE BOOL "Configure with support for the libraw library" FORCE)
-    unset(RAW CACHE)
-endif()
-if(DEFINED DEVIL)
-    message("** The DEVIL option is deprecated, use WITH_DEVIL instead")
-    set(WITH_DEVIL ${DEVIL} CACHE BOOL "Configure with support for the DevIL library" FORCE)
-    unset(DEVIL CACHE)
-endif()
-if(DEFINED FREEIMAGE)
-    message("** The FREEIMAGE option is deprecated, use WITH_FREEIMAGE instead")
-    set(WITH_FREEIMAGE ${FREEIMAGE} CACHE BOOL "Configure with support for the FreeImage library" FORCE)
-    unset(FREEIMAGE CACHE)
-endif()
-if(DEFINED POPPLER)
-    message("** The POPPLER option is deprecated, use WITH_POPPLER instead")
-    set(WITH_POPPLER ${POPPLER} CACHE BOOL "Configure with support for the Poppler library" FORCE)
-    unset(POPPLER CACHE)
-endif()
-if(DEFINED QTPDF)
-    message("** The QTPDF option is deprecated, use WITH_QTPDF instead")
-    set(WITH_QTPDF ${QTPDF} CACHE BOOL "Configure with support for the QtPDF module (instead of Poppler)" FORCE)
-    unset(QTPDF CACHE)
-endif()
-if(DEFINED LIBARCHIVE)
-    message("** The LIBARCHIVE option is deprecated, use WITH_LIBARCHIVE instead")
-    set(WITH_LIBARCHIVE ${LIBARCHIVE} CACHE BOOL "Configure with support for the libarchive library" FORCE)
-    unset(LIBARCHIVE CACHE)
-endif()
-if(DEFINED VIDEO_QT)
-    message("** The VIDEO_QT option is deprecated, use WITH_VIDEO_QT instead")
-    set(WITH_VIDEO_QT ${VIDEO_QT} CACHE BOOL "Configure with video support through Qt" FORCE)
-    unset(VIDEO_QT CACHE)
-endif()
-if(DEFINED VIDEO_MPV)
-    message("** The VIDEO_MPV option is deprecated, use WITH_VIDEO_MPV instead")
-    set(WITH_VIDEO_MPV ${VIDEO_MPV} CACHE BOOL "Configure with video support through MPV" FORCE)
-    unset(VIDEO_MPV CACHE)
-endif()
-if(DEFINED LIBVIPS)
-    message("** The LIBVIPS option is deprecated, use WITH_LIBVIPS instead")
-    set(WITH_LIBVIPS ${LIBVIPS} CACHE BOOL "Configure with support for the libvips library" FORCE)
-    unset(LIBVIPS CACHE)
-endif()
-if(DEFINED RESVG)
-    message("** The RESVG option is deprecated, use WITH_RESVG instead")
-    set(WITH_RESVG ${RESVG} CACHE BOOL "Configure with support for the resvg library (better SVG support)" FORCE)
-    unset(RESVG CACHE)
-endif()
-if(DEFINED EXIV2)
-    message("** The EXIV2 option is deprecated, use WITH_EXIV2 instead")
-    set(WITH_EXIV2 ${EXIV2} CACHE BOOL "Configure with support for the Exiv2 library" FORCE)
-    unset(EXIV2 CACHE)
-endif()
-if(DEFINED EXIV2_ENABLE_BMFF)
-    message("** The EXIV2_ENABLE_BMFF option is deprecated, use WITH_EXIV2_ENABLE_BMFF instead")
-    set(WITH_EXIV2_ENABLE_BMFF ${EXIV2_ENABLE_BMFF} CACHE BOOL "Configure with BMFF format support in Exiv2 (if available) - only needed for Exiv2 0.27.x and before" FORCE)
-    unset(EXIV2_ENABLE_BMFF CACHE)
-endif()
-if(DEFINED LCMS2)
-    message("** The LCMS2 option is deprecated, use WITH_LCMS2 instead")
-    set(WITH_LCMS2 ${LCMS2} CACHE BOOL "Configure with support for the Little CMS library (advanced color management)" FORCE)
-    unset(LCMS2 CACHE)
-endif()
-if(DEFINED MOTIONPHOTO)
-    message("** The MOTIONPHOTO option is deprecated, use WITH_MOTIONPHOTO instead")
-    set(WITH_MOTIONPHOTO ${MOTIONPHOTO} CACHE BOOL "Configure with support for Google Motion Photos and Apple Live Photos" FORCE)
-    unset(MOTIONPHOTO CACHE)
-endif()
-if(DEFINED PHOTOSPHERE)
-    message("** The PHOTOSPHERE option is deprecated, use WITH_PHOTOSPHERE instead")
-    set(WITH_PHOTOSPHERE ${PHOTOSPHERE} CACHE BOOL "Configure with support for photo spheres and 360 degree panoramic views" FORCE)
-    unset(PHOTOSPHERE CACHE)
-endif()
-if(DEFINED EPUB)
-    message("** The EPUB option is deprecated, use WITH_EPUB instead")
-    set(WITH_EPUB ${EPUB} CACHE BOOL "Configure with support for EPUB files" FORCE)
-    unset(EPUB CACHE)
-endif()
-if(DEFINED KF6SYNTAXHIGHLIGHT)
-    message("** The KF6SYNTAXHIGHLIGHT option is deprecated, use WITH_KF6SYNTAXHIGHLIGHT instead")
-    set(WITH_KF6SYNTAXHIGHLIGHT ${KF6SYNTAXHIGHLIGHT} CACHE BOOL "Configure with support for KSyntaxHighlighting for syntax highlighting" FORCE)
-    unset(KF6SYNTAXHIGHLIGHT CACHE)
-endif()
-if(DEFINED FLATPAKBUILD)
-    message("** The FLATPAKBUILD option is deprecated, use WITH_FLATPAKBUILD instead")
-    set(WITH_FLATPAKBUILD ${FLATPAKBUILD} CACHE BOOL "Enable this option if this is a build for Flatpak" FORCE)
-    unset(FLATPAKBUILD CACHE)
-endif()
-if(DEFINED ADAPT_SOURCE)
-    message("** The ADAPT_SOURCE option is deprecated, use WITH_ADAPTSOURCE instead")
-    set(WITH_ADAPTSOURCE ${ADAPT_SOURCE} CACHE BOOL "Adapt and change the source files for the current Qt version (if necessary)" FORCE)
-    unset(ADAPT_SOURCE CACHE)
-endif()
-##################################################################################################################
-##################################################################################################################
 
 #####################################
 #### RESOLVE CONFLICTING OPTIONS ####
@@ -263,52 +149,106 @@ list(APPEND CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 #########
 
 if(WITH_IMAGEMAGICK)
-    find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
+    find_package(ImageMagick COMPONENTS Magick++)
+    if(NOT ${ImageMagick_FOUND})
+        message("** ImageMagick not found. Disabling.")
+        SET(WITH_IMAGEMAGICK OFF)
+    endif()
 endif()
 
 if(WITH_GRAPHICSMAGICK)
-    find_package(GraphicsMagick REQUIRED)
+    find_package(GraphicsMagick)
+    if(NOT ${MAGICK++_FOUND})
+        message("** GraphicsMagick not found. Disabling.")
+        SET(WITH_GRAPHICSMAGICK OFF)
+    endif()
 endif()
 
 if(WITH_LIBRAW)
-    find_package(LibRaw REQUIRED)
+    find_package(LibRaw)
+    if(NOT ${LibRaw_FOUND})
+        message("** LibRaw not found. Disabling.")
+        SET(WITH_LIBRAW OFF)
+    endif()
 endif()
 
 if(WITH_DEVIL)
-    find_package(DevIL REQUIRED)
+    find_package(DevIL)
+    if(NOT ${DevIL_FOUND})
+        message("** DevIL not found. Disabling.")
+        SET(WITH_DEVIL OFF)
+    endif()
 endif()
 
 if(WITH_FREEIMAGE)
-    find_package(FreeImage REQUIRED)
+    find_package(FreeImage)
+    if(NOT ${FREEIMAGE_FOUND})
+        message("** FreeImage not found. Disabling.")
+        SET(WITH_FREEIMAGE OFF)
+    endif()
 endif()
 
 if(WITH_POPPLER)
-    find_package(Poppler COMPONENTS Qt6 REQUIRED)
+    find_package(Poppler COMPONENTS Qt6)
+    if(NOT ${Poppler_FOUND})
+        message("** Poppler not found. Disabling.")
+        SET(WITH_POPPLER OFF)
+    endif()
 endif()
 
 if(WITH_QTPDF)
-    find_package(Qt6 COMPONENTS Pdf REQUIRED)
+    find_package(Qt6 COMPONENTS Pdf)
+    if(NOT ${Qt6Pdf_FOUND})
+        message("** Qt PDF component not found. Disabling.")
+        SET(WITH_QTPDF OFF)
+    endif()
 endif()
 
 if(WITH_LIBARCHIVE)
-    find_package(LibArchive REQUIRED)
+    find_package(LibArchive)
+    if(NOT ${LibArchive_FOUND})
+        message("** LibArchive not found. Disabling.")
+        SET(WITH_LIBARCHIVE OFF)
+    endif()
 endif()
 
 if(WITH_VIDEO_MPV)
-    find_package(Libmpv REQUIRED)
+    find_package(Libmpv)
+    if(NOT ${Libmpv_FOUND})
+        message("** libmpv not found. Disabling.")
+        SET(WITH_VIDEO_MPV OFF)
+    endif()
 endif()
 
 if(WITH_LIBVIPS)
-    pkg_search_module(GLIB REQUIRED glib-2.0 gobject-2.0)
-    pkg_search_module(VIPS REQUIRED vips-cpp)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(GLIB glib-2.0 gobject-2.0)
+    if(NOT ${GLIB_FOUND})
+        message("** glib not found. Disabling libvips.")
+        SET(WITH_LIBVIPS OFF)
+    else()
+        pkg_search_module(VIPS vips-cpp)
+        if(NOT ${VIPS_FOUND})
+            message("** libvips not found. Disabling.")
+            SET(WITH_LIBVIPS OFF)
+        endif()
+    endif()
 endif()
 
 if(WITH_EXIV2)
-    find_package(exiv2 REQUIRED)
+    find_package(exiv2)
+    if(NOT ${exiv2_FOUND})
+        message("** Exiv2 not found. Disabling.")
+        SET(WITH_EXIV2 OFF)
+    endif()
 endif()
 
 if(WITH_LCMS2)
-    find_package(LCMS2 REQUIRED)
+    find_package(LCMS2)
+    if(NOT ${LCMS2_FOUND})
+        message("** LCMS2 not found. Disabling.")
+        SET(WITH_LCMS2 OFF)
+    endif()
 endif()
 
 if(WITH_EPUB)
@@ -323,34 +263,53 @@ endif()
 
 if(WITH_FLATPAKBUILD)
     find_package(PkgConfig REQUIRED)
-    pkg_search_module(GLIB REQUIRED glib-2.0 gobject-2.0 gio-2.0)
+    if(NOT ${PkgConfig_FOUND})
+        message("** PkgConfig not found. Disabling flatpak workaround.")
+        SET(WITH_FLATPAKBUILD OFF)
+    else()
+        pkg_search_module(GLIB glib-2.0 gobject-2.0 gio-2.0)
+        if(NOT ${GLIB_FOUND})
+            message("** GLIB not found. Disabling flatpak workaround.")
+            SET(WITH_FLATPAKBUILD OFF)
+        endif()
+    endif()
 endif()
 
 
-###############################
-#### ADDITIONAL QT OPTIONS ####
-###############################
+########################
+#### QT SETUP STUFF ####
+########################
 
-add_definitions(-DQT_NO_KEYWORDS)
+qt_standard_project_setup(REQUIRES 6.4)
 
-# we always want to capture debug/log context information
-add_definitions(-DQT_MESSAGELOGCONTEXT)
+qt_add_resources(previewqt_SRC img/img.qrc misc/misc.qrc)
 
 #############################
 #### Add the executeable ####
 #############################
 
 if(WIN32)
-    qt_add_executable(previewqt ${previewqt_SRC} img/img.qrc misc/misc.qrc windowsicons.rc)
+    qt_add_executable(previewqt ${previewqt_SRC} windowsicons.rc)
 else()
-    qt_add_executable(previewqt ${previewqt_SRC} img/img.qrc misc/misc.qrc)
+    qt_add_executable(previewqt ${previewqt_SRC})
 endif()
+
+# ensure that the QTP0001 policy is set to NEW otherwise the QML files will not be found on import (on Qt 6.8+)
+if(QT_KNOWN_POLICY_QTP0001)
+    qt_policy(SET QTP0001 "NEW")
+endif()
+# disable warning with this policy not being set (on Qt 6.8+)
+if(QT_KNOWN_POLICY_QTP0004)
+    qt_policy(SET QTP0004 "OLD")
+endif()
+
+# add qml files
+qt_add_qml_module(previewqt URI PreviewQt VERSION 1.0 QML_FILES ${previewqt_QML})
+
+###########################
 
 # set the version number
 target_compile_definitions(previewqt PRIVATE PQMVERSION="${APPVERSION}")
-
-# add qml files
-qt_add_qml_module(previewqt URI src VERSION 1.0 QML_FILES ${previewqt_QML} RESOURCE_PREFIX)
 
 # set some properties for executable
 set_target_properties(previewqt PROPERTIES
@@ -373,6 +332,17 @@ if(WITH_EPUB)
     target_link_libraries(previewqt PRIVATE Qt6::WebEngineQuick)
 endif()
 
+
+###############################
+#### ADDITIONAL QT OPTIONS ####
+###############################
+
+# Since Python might be imported we have to avoid using Qt keywords (like 'slots') to avoid naming conflicts
+target_compile_definitions(previewqt PRIVATE QT_NO_KEYWORDS)
+
+# we always want to capture debug/log context information
+target_compile_definitions(previewqt PRIVATE QT_MESSAGELOGCONTEXT)
+
 ##################################
 #### COMPOSE THE DESKTOP FILE ####
 ##################################
@@ -392,213 +362,183 @@ qt_add_translations(previewqt TS_FILES ${files} RESOURCE_PREFIX "/lang")
 #### CUSTOM OPTIONS ####
 ########################
 
+SET(STATUS_FORMATS_ENABLED "")
+SET(STATUS_FORMATS_DISABLED "")
+SET(STATUS_ENABLED "")
+SET(STATUS_DISABLED "")
+
 if(WITH_IMAGEMAGICK)
-    if(NOT ${ImageMagick_FOUND})
-        message(FATAL_ERROR "** Unable to locate ImageMagick... is it installed?")
-    else()
-        message("** Using ImageMagick ${ImageMagick_VERSION_STRING}")
-        # These checks are necessary to "fix" compiling PreviewQt with both ImageMagick 6 and 7 available
-        if(ImageMagick_VERSION_STRING MATCHES "^7")
-            string(REPLACE "libMagick++-6." "libMagick++-7." ImageMagick_LIBRARIES "${ImageMagick_LIBRARIES}")
-            string(REPLACE "ImageMagick-6" "ImageMagick-7" ImageMagick_INCLUDE_DIRS "${ImageMagick_INCLUDE_DIRS}")
-        endif()
-        target_compile_definitions(previewqt PRIVATE PQMIMAGEMAGICK)
-        target_compile_definitions(previewqt PRIVATE MAGICKCORE_QUANTUM_DEPTH=16)
-        target_compile_definitions(previewqt PRIVATE MAGICKCORE_HDRI_ENABLE=1)
-        target_link_libraries(previewqt PRIVATE ImageMagick::Magick++)
+    list(APPEND STATUS_FORMATS_ENABLED "ImageMagick ${ImageMagick_VERSION_STRING}")
+    # These checks are necessary to "fix" compiling PreviewQt with both ImageMagick 6 and 7 available
+    if(ImageMagick_VERSION_STRING MATCHES "^7")
+        string(REPLACE "libMagick++-6." "libMagick++-7." ImageMagick_LIBRARIES "${ImageMagick_LIBRARIES}")
+        string(REPLACE "ImageMagick-6" "ImageMagick-7" ImageMagick_INCLUDE_DIRS "${ImageMagick_INCLUDE_DIRS}")
     endif()
+    target_compile_definitions(previewqt PRIVATE PQMIMAGEMAGICK)
+    target_link_libraries(previewqt PRIVATE ImageMagick::Magick++)
 else()
-    message("** ImageMagick DISABLED")
+    list(APPEND STATUS_FORMATS_DISABLED "ImageMagick")
 endif()
 
 if(WITH_GRAPHICSMAGICK)
-    if(NOT ${MAGICK++_FOUND})
-        message(FATAL_ERROR "** Unable to locate GraphicsMagick... is it installed?")
-    else()
-        message("** Using Graphicsmagick")
-        target_include_directories(previewqt PRIVATE ${MAGICK++_INCLUDE_DIR})
-        target_compile_definitions(previewqt PRIVATE PQMGRAPHICSMAGICK)
-        target_link_libraries(previewqt PRIVATE "GraphicsMagick++")
-    endif()
+    list(APPEND STATUS_FORMATS_ENABLED "Graphicsmagick")
+    target_include_directories(previewqt PRIVATE "${MAGICK++_INCLUDE_DIR}")
+    target_compile_definitions(previewqt PRIVATE PQMGRAPHICSMAGICK)
+    target_link_libraries(previewqt PRIVATE "GraphicsMagick++")
 else()
-    message("** Graphicsmagick DISABLED")
+    list(APPEND STATUS_FORMATS_DISABLED "GraphicsMagick")
 endif()
 
 if(WITH_LIBRAW)
-    if(NOT ${LibRaw_FOUND})
-        message(FATAL_ERROR "** Unable to locate LibRaw... is it installed?")
+    list(APPEND STATUS_FORMATS_ENABLED "LibRaw")
+    find_package(OpenMP)
+    if(OpenMP_C_FOUND)
+        message("OPENMP_C FOUND")
+        target_link_libraries(previewqt PUBLIC OpenMP::OpenMP_C)
     else()
-        message("** Using LibRaw")
-        target_compile_definitions(previewqt PRIVATE PQMRAW)
-        target_include_directories(previewqt PRIVATE ${LibRaw_INCLUDE_DIR})
-        target_link_libraries(previewqt PRIVATE ${LibRaw_LIBRARIES})
+        message("OPENMP_C NOT FOUND")
     endif()
+    target_compile_definitions(previewqt PRIVATE PQMRAW)
+    target_include_directories(previewqt PRIVATE "${LibRaw_INCLUDE_DIR}")
+    target_link_libraries(previewqt PRIVATE ${LibRaw_LIBRARIES})
 else()
-    message("** LibRaw DISABLED")
+    list(APPEND STATUS_FORMATS_DISABLED "LibRaw")
 endif()
 
 if(WITH_DEVIL)
-    if(NOT ${DevIL_FOUND})
-        message(FATAL_ERROR "** Unable to locate DevIL... is it installed?")
-    else()
-        message("** Using DevIL")
-        target_compile_definitions(previewqt PRIVATE PQMDEVIL)
-        target_link_libraries(previewqt PRIVATE DevIL::IL)
-    endif()
+    list(APPEND STATUS_FORMATS_ENABLED "DevIL")
+    target_compile_definitions(previewqt PRIVATE PQMDEVIL)
+    target_link_libraries(previewqt PRIVATE DevIL::IL)
 else()
-    message("** DevIL DISABLED")
+    list(APPEND STATUS_FORMATS_DISABLED "DevIL")
 endif()
 
 if(WITH_FREEIMAGE)
-    if(NOT ${FREEIMAGE_FOUND})
-        message(FATAL_ERROR "** Unable to locate FreeImage... is it installed?")
-    else()
-        message("** Using FreeImage")
-        target_include_directories(previewqt PRIVATE ${FREEIMAGE_INCLUDE_DIRS})
-        target_compile_definitions(previewqt PRIVATE PQMFREEIMAGE)
-        target_link_libraries(previewqt PRIVATE ${FREEIMAGE_C_LIBRARY})
-    endif()
+    list(APPEND STATUS_FORMATS_ENABLED "FreeImage")
+    target_include_directories(previewqt PRIVATE "${FREEIMAGE_INCLUDE_DIRS}")
+    target_compile_definitions(previewqt PRIVATE PQMFREEIMAGE)
+    target_link_libraries(previewqt PRIVATE ${FREEIMAGE_C_LIBRARY})
 else()
-    message("** FreeImage DISABLED")
+    list(APPEND STATUS_FORMATS_DISABLED "FreeImage")
 endif()
 
 if(WITH_POPPLER)
-    if(NOT ${Poppler_FOUND})
-        message(FATAL_ERROR "** Unable to locate Poppler... is it installed?")
-    else()
-        message("** Using Poppler ${Poppler_VERSION}")
-        target_include_directories(previewqt PRIVATE ${Poppler_INCLUDE_DIRS})
-        target_compile_definitions(previewqt PRIVATE PQMPOPPLER)
-        target_link_libraries(previewqt PRIVATE ${Poppler_LIBRARIES})
-    endif()
+    list(APPEND STATUS_FORMATS_ENABLED "Poppler ${Poppler_VERSION}")
+    target_include_directories(previewqt PRIVATE "${Poppler_INCLUDE_DIRS}")
+    target_compile_definitions(previewqt PRIVATE PQMPOPPLER)
+    target_link_libraries(previewqt PRIVATE ${Poppler_LIBRARIES})
 else()
-    message("** Poppler DISABLED")
+    list(APPEND STATUS_FORMATS_DISABLED "Poppler")
 endif()
 
 if(WITH_QTPDF)
-    message("** Using QtPDF module")
+    list(APPEND STATUS_FORMATS_ENABLED "QtPDF module")
     target_compile_definitions(previewqt PRIVATE PQMQTPDF)
+else()
+    list(APPEND STATUS_FORMATS_DISABLED "QtPDF module")
 endif()
 
 if(WITH_LIBARCHIVE)
-    if(NOT ${LibArchive_FOUND})
-        message(FATAL_ERROR "** Unable to locate LibArchive... is it installed?")
-    else()
-        message("** Using LibArchive " ${LibArchive_VERSION})
-        target_compile_definitions(previewqt PRIVATE PQMLIBARCHIVE)
-        target_link_libraries(previewqt PRIVATE LibArchive::LibArchive)
-    endif()
+    list(APPEND STATUS_FORMATS_ENABLED "LibArchive ${LibArchive_VERSION}")
+    target_compile_definitions(previewqt PRIVATE PQMLIBARCHIVE)
+    target_link_libraries(previewqt PRIVATE LibArchive::LibArchive)
 else()
-    message("** LibArchive disabled")
+    list(APPEND STATUS_FORMATS_DISABLED "LibArchive")
 endif()
 
 if(WITH_VIDEO_QT)
+    list(APPEND STATUS_FORMATS_ENABLED "Qt video module")
     target_compile_definitions(previewqt PRIVATE PQMVIDEOQT)
+else()
+    list(APPEND STATUS_FORMATS_DISABLED "Qt video module")
 endif()
 
 if(WITH_VIDEO_MPV)
-    if(NOT ${Libmpv_FOUND})
-        message(FATAL_ERROR "** Unable to locate libmpv... is it installed?")
-    else()
-        message("** Using libmpv " ${Libmpv_VERSION})
-        target_compile_definitions(previewqt PRIVATE PQMVIDEOMPV)
-        target_link_libraries(previewqt PRIVATE Libmpv::Libmpv)
-    endif()
+    list(APPEND STATUS_FORMATS_ENABLED "libmpv ${Libmpv_VERSION}")
+    target_compile_definitions(previewqt PRIVATE PQMVIDEOMPV)
+    target_link_libraries(previewqt PRIVATE Libmpv::Libmpv)
 else()
-    message("** libmpv DISABLED")
+    list(APPEND STATUS_FORMATS_DISABLED "libmpv")
 endif()
 
 if(WITH_LIBVIPS)
-    message("** Using libvips")
-    target_include_directories(previewqt PRIVATE ${GLIB_INCLUDE_DIRS})
+    list(APPEND STATUS_FORMATS_ENABLED "libvips")
+    target_include_directories(previewqt PRIVATE "${GLIB_INCLUDE_DIRS}")
     target_compile_definitions(previewqt PRIVATE PQMLIBVIPS)
-    target_link_libraries(previewqt PRIVATE ${GLIB_LIBRARIES})
-    target_link_libraries(previewqt PRIVATE "vips")
-    target_link_libraries(previewqt PRIVATE "gobject-2.0")
-    target_link_libraries(previewqt PRIVATE "vips-cpp")
+    target_link_libraries(previewqt PRIVATE "${GLIB_LIBRARIES}" "vips" "gobject-2.0" "vips-cpp")
 else()
-    message("** libvips DISABLED")
+    list(APPEND STATUS_FORMATS_DISABLED "libvips")
 endif()
 
 if(WITH_RESVG)
+    list(APPEND STATUS_FORMATS_ENABLED "resvg")
     target_link_libraries(previewqt PRIVATE "resvg")
-    message("** Using resvg")
     target_compile_definitions(previewqt PRIVATE PQMRESVG)
 else()
-    message("** resvg DISABLED")
+    list(APPEND STATUS_FORMATS_DISABLED "resvg")
 endif()
 
 if(WITH_EXIV2)
-    if(NOT ${exiv2_FOUND})
-        message(FATAL_ERROR "** Unable to locate Exiv2... is it installed?")
-    else()
-        message("** Using Exiv2 ${exiv2_VERSION}")
-        target_compile_definitions(previewqt PRIVATE PQMEXIV2)
-        target_link_libraries(previewqt PRIVATE exiv2lib)
-        if(WITH_EXIV2_ENABLE_BMFF)
-            target_compile_definitions(previewqt PRIVATE PQMEXIV2_ENABLE_BMFF)
+    list(APPEND STATUS_ENABLED "Exiv2 ${exiv2_VERSION}")
+    target_compile_definitions(previewqt PRIVATE PQMEXIV2)
+    target_link_libraries(previewqt PRIVATE "exiv2lib")
+    if(WITH_EXIV2_ENABLE_BMFF)
+        target_compile_definitions(previewqt PRIVATE PQMEXIV2_ENABLE_BMFF)
+    endif()
+    if(WIN32)
+        target_compile_definitions(previewqt PRIVATE NOMINMAX)
+    endif()
+    # if exiv2 0.27.x is used some c++ features removed in c++17 need to be re-enabled
+    if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+        if(${exiv2_VERSION} MATCHES "^0\.27\.")
+            message("** Enabling C++ features removed in C++17 for Exiv2 0.27.x")
+            message("** Please update Exiv2 to at least 0.28.x!")
+            target_compile_definitions(previewqt PRIVATE _HAS_AUTO_PTR_ETC=1)
         endif()
-        if(WIN32)
-            target_compile_definitions(previewqt PRIVATE NOMINMAX)
-        endif()
-        # if exiv2 0.27.x is used some c++ features removed in c++17 need to be re-enabled
-        if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-            if(${exiv2_VERSION} MATCHES "^0\.27\.")
-                message("** Enabling C++ features removed in C++17 for Exiv2 0.27.x")
-                message("** Please update Exiv2 to at least 0.28.x!")
-                target_compile_definitions(previewqt PRIVATE _HAS_AUTO_PTR_ETC=1)
-            endif()
-        elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-            if(${exiv2_VERSION} MATCHES "^0\.27\.")
-                message("** Enabling C++ features removed in C++17 for Exiv2 0.27.x")
-                message("** Please update Exiv2 to at least 0.28.x!")
-                add_definitions(-fpermissive)
-            endif()
+    elseif (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        if(${exiv2_VERSION} MATCHES "^0\.27\.")
+            message("** Enabling C++ features removed in C++17 for Exiv2 0.27.x")
+            message("** Please update Exiv2 to at least 0.28.x!")
+            add_definitions(-fpermissive)
         endif()
     endif()
 else()
-    message("** Exiv2 DISABLED")
+    list(APPEND STATUS_DISABLED "Exiv2")
 endif()
 
 if(WITH_LCMS2)
-    if(NOT ${LCMS2_FOUND})
-        message(FATAL_ERROR "** Unable to locate LCMS2... is it installed?")
-    else()
-        message("** Using LCMS2 " ${LCMS2_VERSION})
-        target_include_directories(previewqt PRIVATE ${LCMS2_INCLUDE_DIR})
-        target_compile_definitions(previewqt PRIVATE PQMLCMS2)
-        target_link_libraries(previewqt PRIVATE ${LCMS2_LIBRARIES})
-    endif()
+    list(APPEND STATUS_ENABLED "LCMS2 ${LCMS2_VERSION}")
+    target_include_directories(previewqt PRIVATE "${LCMS2_INCLUDE_DIR}")
+    target_compile_definitions(previewqt PRIVATE PQMLCMS2)
+    target_link_libraries(previewqt PRIVATE ${LCMS2_LIBRARIES})
 else()
-    message("** LCMS2 DISABLED")
+    list(APPEND STATUS_DISABLED "LCMS2")
 endif()
 
 if(WITH_MOTIONPHOTO)
-    message("** Support for Motion Photos and Apple Live Photos enabled")
+    list(APPEND STATUS_ENABLED "Motion photos and Apple live photos")
     target_compile_definitions(previewqt PRIVATE PQMMOTIONPHOTO)
 else()
-    message("** Support for Motion Photos and Apple Live Photos DISABLED")
+    list(APPEND STATUS_DISABLED "Motion photos and Apple live photos")
 endif()
 
 if(WITH_PHOTOSPHERE)
-    message("** Support for photo spheres enabled")
-    message("** NOTE: When changing the WITH_PHOTOSPHERE option the source tree")
-    message("**       might need to be cleaned before the next build")
+    list(APPEND STATUS_ENABLED "Photo spheres")
     target_compile_definitions(previewqt PRIVATE PQMPHOTOSPHERE)
 else()
-    message("** Support for photo spheres DISABLED")
+    list(APPEND STATUS_DISABLED "Photo spheres")
 endif()
 
 if(WITH_EPUB)
-    message("** Support for EPUB enabled")
+    list(APPEND STATUS_ENABLED "EPUB")
     target_compile_definitions(previewqt PRIVATE PQMEPUB)
 else()
-    message("** Support for EPUB DISABLED")
+    list(APPEND STATUS_DISABLED "EPUB")
 endif()
 
 if(WITH_KF6SYNTAXHIGHLIGHT)
 
-    message("** Using KSyntaxHighlight")
+    list(APPEND STATUS_ENABLED "KSyntaxHighlight")
     target_compile_definitions(previewqt PRIVATE PQMKSYNTAXHIGHLIGHT)
 
     foreach(QMLFILE "qml/components/imageitems/PQTxt.qml")
@@ -638,7 +578,7 @@ if(WITH_KF6SYNTAXHIGHLIGHT)
 
 else()
 
-    message("** KSyntaxHighlight DISABLED")
+    list(APPEND STATUS_DISABLED "KSyntaxHighlight")
 
     foreach(QMLFILE "qml/components/imageitems/PQTxt.qml")
 
@@ -675,18 +615,46 @@ else()
 endif()
 
 if(WITH_FLATPAKBUILD)
-    message("** Enabling Flatpak workarounds")
+    list(APPEND STATUS_ENABLED "Flatpak workarounds")
     target_compile_definitions(previewqt PRIVATE PQMFLATPAKBUILD)
-    target_include_directories(previewqt PRIVATE ${GLIB_INCLUDE_DIRS})
-    target_link_libraries(previewqt PRIVATE ${GLIB_LIBRARIES})
-    target_link_libraries(previewqt PRIVATE "gobject-2.0")
-    target_link_libraries(previewqt PRIVATE "gio-2.0")
+    target_include_directories(previewqt PRIVATE "${GLIB_INCLUDE_DIRS}")
+    target_link_libraries(previewqt PRIVATE "${GLIB_LIBRARIES}" "gobject-2.0" "gio-2.0")
+else()
+    list(APPEND STATUS_DISABLED "Flatpak workarounds")
 endif()
 
-if(PORTABLETWEAKS)
-    message("** Enabling Portable tweaks")
+if(WITH_PORTABLETWEAKS)
+    list(APPEND STATUS_ENABLED "Portable tweaks (do not use unless you know what you are doing!)")
     target_compile_definitions(previewqt PRIVATE PQMPORTABLETWEAKS)
+else()
+    list(APPEND STATUS_DISABLED "Portable tweaks (leave disabled unless you know what you are doing!)")
 endif()
+
+message("")
+message("** The following options are enabled for this build:")
+message("")
+foreach(opt IN LISTS STATUS_FORMATS_ENABLED)
+    message("    - ${opt}")
+endforeach()
+message("")
+foreach(opt IN LISTS STATUS_ENABLED)
+    message("    - ${opt}")
+endforeach()
+message("")
+
+
+message("")
+message("")
+message("** The following options are DISABLED for this build:")
+message("")
+foreach(opt IN LISTS STATUS_FORMATS_DISABLED)
+    message("    - ${opt}")
+endforeach()
+message("")
+foreach(opt IN LISTS STATUS_DISABLED)
+    message("    - ${opt}")
+endforeach()
+message("")
 
 #######################
 #### INSTALL FILES ####
@@ -694,56 +662,58 @@ endif()
 
 if(UNIX)
 
+    include(GNUInstallDirs)
+
     # Install executeable
     install(
         TARGETS previewqt
-        DESTINATION bin/
+        DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 
     # Install desktop file
     install(
         FILES org.previewqt.PreviewQt.desktop
-        DESTINATION share/applications
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/applications
     )
 
     # And install all the icons
     install(
         FILES icons/16x16/org.previewqt.PreviewQt.png
-        DESTINATION share/icons/hicolor/16x16/apps/
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/16x16/apps/
     )
     install(
         FILES icons/32x32/org.previewqt.PreviewQt.png
-        DESTINATION share/icons/hicolor/32x32/apps/
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps/
     )
     install(
         FILES icons/48x48/org.previewqt.PreviewQt.png
-        DESTINATION share/icons/hicolor/48x48/apps/
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/48x48/apps/
     )
     install(
         FILES icons/64x64/org.previewqt.PreviewQt.png
-        DESTINATION share/icons/hicolor/64x64/apps/
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/64x64/apps/
     )
     install(
         FILES icons/128x128/org.previewqt.PreviewQt.png
-        DESTINATION share/icons/hicolor/128x128/apps/
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps/
     )
     install(
         FILES icons/256x256/org.previewqt.PreviewQt.png
-        DESTINATION share/icons/hicolor/256x256/apps/
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps/
     )
     install(
         FILES icons/512x512/org.previewqt.PreviewQt.png
-        DESTINATION share/icons/hicolor/512x512/apps/
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/512x512/apps/
     )
     if(NOT WITH_FLATPAKBUILD)
         install(
             FILES icons/1024x1024/org.previewqt.PreviewQt.png
-            DESTINATION share/icons/hicolor/1024x1024/apps/
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/1024x1024/apps/
         )
     endif()
     install(
         FILES org.previewqt.PreviewQt.metainfo.xml
-        DESTINATION share/metainfo/
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo/
     )
 
 endif()
@@ -753,7 +723,5 @@ endif()
 #### UNINSTALL TARGET ####
 ##########################
 
-if(UNIX)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/CMake/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
-    add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-endif()
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/CMake/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
+add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
