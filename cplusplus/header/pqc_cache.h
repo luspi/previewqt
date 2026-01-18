@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQCCACHE_H
-#define PQCCACHE_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -52,5 +50,3 @@ private:
     QSettings *cache;
 
 };
-
-#endif // PQCCACHE_H

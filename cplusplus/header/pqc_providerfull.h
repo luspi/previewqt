@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQCPROVIDERFULL_H
-#define PQCPROVIDERFULL_H
+#pragma once
 
 #include <QQuickImageProvider>
 
@@ -34,6 +32,3 @@ public:
     QImage requestImage(const QString &url, QSize *origSize, const QSize &requestedSize);
 
 };
-
-
-#endif // PQCPROVIDERFULL_H

@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQCSINGLEINSTANCE_H
-#define PQCSINGLEINSTANCE_H
+#pragma once
 
 #include <QApplication>
 
@@ -52,5 +50,3 @@ private:
     void showHelpMessage();
 
 };
-
-#endif // PQSINGLEINSTANCE_H

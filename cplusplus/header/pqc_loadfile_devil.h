@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQCLOADIMAGEDEVIL_H
-#define PQCLOADIMAGEDEVIL_H
+#pragma once
 
 #include <QMutex>
 
@@ -62,5 +60,3 @@ private:
 #endif
 
 };
-
-#endif // PQCLOADIMAGEDEVIL_H

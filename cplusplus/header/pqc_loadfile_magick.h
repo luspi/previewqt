@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQCLOADIMAGEMAGICK_H
-#define PQCLOADIMAGEMAGICK_H
+#pragma once
 
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
 #include <Magick++/Image.h>
@@ -43,5 +41,3 @@ public:
 #endif
 
 };
-
-#endif // PQCLOADIMAGEMAGICK_H

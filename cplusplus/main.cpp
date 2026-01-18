@@ -112,25 +112,31 @@ int main(int argc, char *argv[]) {
 #endif
 
 #ifdef PQMPORTABLETWEAKS
-    if(argc > 1) {
-        qputenv("PREVIEWQT_EXE_BASEDIR", argv[1]);
-        // create directory and set hidden attribute
+    // create directory and set hidden attribute
 #ifdef Q_OS_WIN
-        QString folder = QString("%1/previewqt-data").arg(argv[1]);
-        QDir dir;
-        dir.mkdir(folder);
-        SetFileAttributesA(dir.toNativeSeparators(folder).toLocal8Bit(), FILE_ATTRIBUTE_HIDDEN);
-#else
-        QString folder = QString("%1/.previewqt-data").arg(argv[1]);
-        QDir dir;
-        dir.mkdir(folder);
-#endif
+    QString configLocation = argc > 1 ? QDir::fromNativeSeparators(argv[1]) : QCoreApplication::applicationDirPath();
+    QFileInfo info(configLocation);
+    if(info.isRelative())
+        configLocation = info.absoluteFilePath();
+    QString oldportablefolder = QString("%1/previewqt-data").arg(configLocation);
+    QString portablefolder = QString("%1/PreviewQtData").arg(configLocation);
+    QDir olddir(oldportablefolder);
+    QDir newdir(portablefolder);
+    if(olddir.exists() && !newdir.exists()) {
+        SetFileAttributesA(olddir.absolutePath().toLocal8Bit(), FILE_ATTRIBUTE_NORMAL);
+        // move old dir to new dir and remove hidden flag
+        if(!olddir.rename(oldportablefolder, portablefolder))
+            qWarning() << "Error renaming previewqt-data to PreviewQtData";
     } else {
-#ifndef Q_OS_WIN
-        QFileInfo f(argv[0]);
-#endif
-        qputenv("PREVIEWQT_EXE_BASEDIR", f.absolutePath().toLocal8Bit());
+        // make sure new dir exists
+        newdir.mkdir(portablefolder);
     }
+#else
+    QString portablefolder = QString("%1/.PreviewQtData").arg(argc > 1 ? argv[1] : QCoreApplication::applicationDirPath());
+    QDir dir;
+    dir.mkdir(portablefolder);
+#endif
+    qputenv("PREVIEWQT_PORTABLE_DATA_LOCATION", portablefolder.toLocal8Bit());
 #endif
 
 #ifdef PQMEPUB

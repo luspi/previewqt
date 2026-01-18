@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQCSETTINGS_H
-#define PQCSETTINGS_H
+#pragma once
 
 #include <QObject>
 
@@ -203,5 +201,3 @@ Q_SIGNALS:
     void textSearchCaseSensitiveChanged();
 
 };
-
-#endif

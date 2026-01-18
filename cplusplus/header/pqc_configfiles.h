@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQCCONFIGFILES_H
-#define PQCCONFIGFILES_H
+#pragma once
 
 #include <QObject>
 #include <QStandardPaths>
@@ -62,17 +60,9 @@ private:
     PQCConfigFiles() {
 
 #ifdef PQMPORTABLETWEAKS
-        previewqt_exe_basedir = qgetenv("PREVIEWQT_EXE_BASEDIR");
-#endif
-
-#ifdef PQMPORTABLETWEAKS
-#ifdef Q_OS_WIN
-        m_CONFIG_DIR = QString("%1/previewqt-data/config/").arg(previewqt_exe_basedir);
-        m_CACHE_DIR = QString("%1/previewqt-data/cache/").arg(previewqt_exe_basedir);
-#else
-        m_CONFIG_DIR = QString("%1/.previewqt-data/config/").arg(previewqt_exe_basedir);
-        m_CACHE_DIR = QString("%1/.previewqt-data/cache/").arg(previewqt_exe_basedir);
-#endif
+        const QString portablefolder = qgetenv("PREVIEWQT_PORTABLE_DATA_LOCATION");
+        m_CONFIG_DIR = QString("%1/config/").arg(portablefolder);
+        m_CACHE_DIR = QString("%1/cache/").arg(portablefolder);
 #else
         m_CONFIG_DIR = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
         m_CACHE_DIR = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
@@ -86,11 +76,4 @@ private:
     QString m_CACHE_DIR;
     QString m_IMAGEFORMATS_DB;
 
-
-#ifdef PQMPORTABLETWEAKS
-    QString previewqt_exe_basedir;
-#endif
-
 };
-
-#endif // PQCCONFIGFILES_H

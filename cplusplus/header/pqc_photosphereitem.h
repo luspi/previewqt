@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQC_PHOTOSPHERE
-#define PQC_PHOTOSPHERE
+#pragma once
 
 #include <QVector3D>
 #include <QOpenGLBuffer>
@@ -46,6 +44,3 @@ private:
     bool isSetup = false;
 
 };
-
-#endif
-

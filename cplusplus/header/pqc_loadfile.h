@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQCLoadFile_H
-#define PQCLoadFile_H
+#pragma once
 
 #include <QImage>
 #include <QDateTime>
@@ -54,5 +52,3 @@ private:
     QString cachedImageSource;
     QDateTime cachedImageLastModified;
 };
-
-#endif // PQCLoadFile_H

@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQCLoadFileLibVips_H
-#define PQCLoadFileLibVips_H
+#pragma once
 
 class QSize;
 class QString;
@@ -36,5 +34,3 @@ public:
     static QString load(QString filename, QSize, QSize &origSize, QImage &img, QImage &fullImage);
 
 };
-
-#endif // PQCLoadFileLibVips_H

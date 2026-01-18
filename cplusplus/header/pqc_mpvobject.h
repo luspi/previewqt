@@ -20,9 +20,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef MPVRENDERER_H_
-#define MPVRENDERER_H_
+#pragma once
 
 #ifdef PQMVIDEOMPV
 
@@ -61,7 +59,5 @@ Q_SIGNALS:
 private Q_SLOTS:
     void doUpdate();
 };
-
-#endif
 
 #endif

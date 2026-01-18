@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQC_PHOTOSPHERERENDERER
-#define PQC_PHOTOSPHERERENDERER
+#pragma once
 
 #include <QQuickFramebufferObject>
 #include <QMatrix4x4>
@@ -57,5 +55,3 @@ public:
     QOpenGLTexture *texturePhotoSphere;
 
 };
-
-#endif

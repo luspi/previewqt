@@ -19,9 +19,7 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
-
-#ifndef PQCSCRIPTS_H
-#define PQCSCRIPTS_H
+#pragma once
 
 #include <QObject>
 #include <QMap>
@@ -130,5 +128,3 @@ Q_SIGNALS:
     void commandLineArgumentReceived(QString msg);
 
 };
-
-#endif
