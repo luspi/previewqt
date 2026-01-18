@@ -28,14 +28,14 @@ ApplicationWindow {
 
     id: welcome_top
 
-    SystemPalette { id: colorPalette; colorGroup: SystemPalette.Active }
-
     //: window title
     title: qsTr("Welcome to PreviewQt")
 
     // some stylings
     visible: false
     modality: Qt.ApplicationModal
+
+    color: palette.base
 
     // in this window, this item catches all key presses
     Item {
@@ -74,7 +74,7 @@ ApplicationWindow {
                 text: qsTr("Welcome to PreviewQt")
                 font.pointSize: 20
                 font.bold: true
-                color: colorPalette.text
+                color: palette.text
             }
 
             Text {
@@ -82,21 +82,21 @@ ApplicationWindow {
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 font.bold: true
                 text: qsTr("PreviewQt is a simple application for previewing all kinds of files.")
-                color: colorPalette.text
+                color: palette.text
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: qsTr("It is optimized for speed and lightweight and thus does not have all the features one might expect from an image/document viewer. You can always pass on a file to an external application through a button and shortcut. The selection of external applications can be adjusted freely.")
-                color: colorPalette.text
+                color: palette.text
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: qsTr("When not in use, PreviewQt sits idle in the system tray, ready to be shown as instanteneously as possible.")
-                color: colorPalette.text
+                color: palette.text
             }
 
             Text {
@@ -104,14 +104,14 @@ ApplicationWindow {
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 font.bold: true
                 text: qsTr("Questions? Feedback? Send me an email:") + " Lukas@previewqt.org"
-                color: colorPalette.text
+                color: palette.text
             }
 
             Text {
                 width: parent.width
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: qsTr("Also check out the website:") + " https://previewqt.org/"
-                color: colorPalette.text
+                color: palette.text
             }
 
         }

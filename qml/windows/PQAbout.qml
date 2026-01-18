@@ -29,8 +29,6 @@ ApplicationWindow {
 
     id: about_top
 
-    SystemPalette { id: colorPalette; colorGroup: SystemPalette.Active }
-
     //: window title
     title: qsTr("About")
 
@@ -39,6 +37,8 @@ ApplicationWindow {
     modality: Qt.ApplicationModal
     width: 500
     height: 500
+
+    color: palette.base
 
     // in this window, this item catches all key presses
     Item {
@@ -85,14 +85,6 @@ ApplicationWindow {
 
                 source: "image://svg/:/logo_full.svg"
 
-                Rectangle {
-                    x: -(flickable.width-parent.width)/2-5
-                    width: flickable.width+10
-                    height: parent.height
-                    color: "#ffffff"
-                    z: -1
-                }
-
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
@@ -125,27 +117,27 @@ ApplicationWindow {
                     Text {
                         font.bold: true
                         text: qsTr("Version:")
-                        color: colorPalette.text
+                        color: palette.text
                     }
                     Text {
                         font.bold: true
                         text: qsTr("License:")
-                        color: colorPalette.text
+                        color: palette.text
                     }
                     Text {
                         font.bold: true
                         text: qsTr("Website:")
-                        color: colorPalette.text
+                        color: palette.text
                     }
                     Text {
                         font.bold: true
                         text: qsTr("Developer:")
-                        color: colorPalette.text
+                        color: palette.text
                     }
                     Text {
                         font.bold: true
                         text: qsTr("Contact:")
-                        color: colorPalette.text
+                        color: palette.text
                     }
 
                 }
@@ -156,7 +148,7 @@ ApplicationWindow {
 
                     Text {
                         text: "PreviewQt v" + PQCScripts.getVersion()
-                        color: colorPalette.text
+                        color: palette.text
                     }
 
                     Text {
@@ -167,7 +159,7 @@ ApplicationWindow {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: Qt.openUrlExternally("https://opensource.org/license/gpl-2-0")
                         }
-                        color: colorPalette.text
+                        color: palette.text
                     }
                     Text {
                         text: "https://previewqt.org/"
@@ -177,7 +169,7 @@ ApplicationWindow {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: Qt.openUrlExternally("https://previewqt.org/")
                         }
-                        color: colorPalette.text
+                        color: palette.text
                     }
                     Text {
                         text: "Lukas Spies"
@@ -187,7 +179,7 @@ ApplicationWindow {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: Qt.openUrlExternally("https://luspi.de")
                         }
-                        color: colorPalette.text
+                        color: palette.text
                     }
                     Text {
                         text: "Lukas@previewqt.org"
@@ -197,7 +189,7 @@ ApplicationWindow {
                             cursorShape: Qt.PointingHandCursor
                             onClicked: Qt.openUrlExternally("mailto:Lukas@previewqt.org")
                         }
-                        color: colorPalette.text
+                        color: palette.text
                     }
 
                 }
@@ -215,7 +207,7 @@ ApplicationWindow {
 
                 text: qsTr("PreviewQt is a lightweight application allowing for quickly previewing a wide range of files, from images and videos to documents and archives. A list of supported file formats can be found on its website, though the number of actually supported formats might be even higher. If you like PreviewQt and would like to have a fully featured image viewer along the same lines check out PhotoQt: https://photoqt.org")
 
-                color: colorPalette.text
+                color: palette.text
 
             }
 
@@ -231,7 +223,7 @@ ApplicationWindow {
         id: configcontainer
         anchors.fill: parent
         anchors.bottomMargin: 45
-        color: colorPalette.base
+        color: palette.base
         clip: true
         opacity: 0
         visible: opacity>0
@@ -268,7 +260,7 @@ ApplicationWindow {
                     font.pointSize: 18
                     font.bold: true
                     text: qsTr("Configuration")
-                    color: colorPalette.text
+                    color: palette.text
                 }
 
                 Button {
@@ -284,7 +276,7 @@ ApplicationWindow {
                     id: configtxt
                     x: (parent.width-width)/2
                     text: ""
-                    color: colorPalette.text
+                    color: palette.text
                 }
 
                 Item {
@@ -322,7 +314,7 @@ ApplicationWindow {
         y: parent.height-45
         width: parent.width
         height: 45
-        color: colorPalette.base
+        color: palette.base
     }
 
     Button {
