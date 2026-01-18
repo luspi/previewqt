@@ -412,6 +412,8 @@ if which == 'all' or which == 'nsi':
     un_pdfcont = ""
     un_psdcont = ""
 
+    endingentered = []
+
     for row in data:
 
         endings = row[0].split(",")
@@ -425,11 +427,13 @@ if which == 'all' or which == 'nsi':
             line = ""
             un_line = ""
 
-            if endings[0] == "zip" or endings[0] == "rar" or endings[0] == "7z":
+            if endings[0] == "zip" or endings[0] == "rar" or endings[0] == "7z" or e in endingentered:
                 continue
 
-            line = f"${{RegisterExtension}} \"$INSTDIR\\previewqt.exe\" \".{e}\" \"{desc}\"\n"
-            un_line = f"${{UnRegisterExtension}} \".{e}\" \"{desc}\"\n"
+            endingentered.append(e)
+
+            line = f"${{RegisterExtension}} \"$INSTDIR\\previewqt.exe\" \".{e}\" \"{endings[0].lower()}file\"\n"
+            un_line = f"${{UnRegisterExtension}} \".{e}\" \"{endings[0].lower()}file\"\n"
 
             if endings[0] in ["eps", "pdf", "ps"]:
                 pdfcont += line
@@ -476,26 +480,27 @@ if which == 'all' or which == 'formatsdb':
     conndb = sqlite3.connect('fileformats.db')
     cdb = conndb.cursor()
 
-    cdb.execute("SELECT endings,description,qt,imagemagick,graphicsmagick,libraw,poppler,xcftools,devil,freeimage,archive,video,libmpv FROM imageformats ORDER BY endings")
+    cdb.execute("SELECT endings,description,category,qt,imagemagick,graphicsmagick,libraw,poppler,xcftools,devil,freeimage,archive,video,libmpv FROM imageformats ORDER BY endings")
     data = cdb.fetchall()
 
     for row in data:
 
         end = row[0]
         des = row[1]
-        qt  = row[2]
-        im  = row[3]
-        gm  = row[4]
-        raw = row[5]
-        pop = row[6]
-        xcf = row[7]
-        dev = row[8]
-        fre = row[9]
-        arc = row[10]
-        vid = row[11]
-        mpv = row[12]
+        cat = row[2]
+        qt  = row[3]
+        im  = row[4]
+        gm  = row[5]
+        raw = row[6]
+        pop = row[7]
+        xcf = row[8]
+        dev = row[9]
+        fre = row[10]
+        arc = row[11]
+        vid = row[12]
+        mpv = row[13]
 
-        sqltxt += f"INSERT INTO imageformats (`endings`,`description`,`qt`,`imagemagick`,`graphicsmagick`,`libraw`,`poppler`,`xcftools`,`devil`,`freeimage`,`archive`,`video`,`libmpv`) VALUES ('{end}', '{des}', {qt}, {im}, {gm}, {raw}, {pop}, {xcf}, {dev}, {fre}, {arc}, {vid}, {mpv});\n"
+        sqltxt += f"INSERT INTO imageformats (`endings`,`description`,`qt`,`imagemagick`,`graphicsmagick`,`libraw`,`poppler`,`xcftools`,`devil`,`freeimage`,`archive`,`video`,`libmpv`,`text`) VALUES ('{end}', '{des}', {qt}, {im}, {gm}, {raw}, {pop}, {xcf}, {dev}, {fre}, {arc}, {vid}, {mpv}, {1 if cat=='txt' else 0});\n"
 
     f = open("output/imageformats_website.sql", "w")
     f.write(sqltxt)
