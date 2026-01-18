@@ -56,6 +56,10 @@ public:
     bool getLaunchHiddenToSystemTray();
     void setLaunchHiddenToSystemTray(bool val);
 
+    Q_PROPERTY(bool notifyNextLaunchHiddenToSystemTray READ getNotifyNextLaunchHiddenToSystemTray WRITE setNotifyNextLaunchHiddenToSystemTray NOTIFY notifyNextlaunchHiddenToSystemTrayChanged)
+    bool getNotifyNextLaunchHiddenToSystemTray();
+    void setNotifyNextLaunchHiddenToSystemTray(bool val);
+
     Q_PROPERTY(bool maximizeImageSizeAndAdjustWindow READ getMaximizeImageSizeAndAdjustWindow WRITE setMaximizeImageSizeAndAdjustWindow NOTIFY maximizeImageSizeAndAdjustWindowChanged)
     bool getMaximizeImageSizeAndAdjustWindow();
     void setMaximizeImageSizeAndAdjustWindow(bool val);
@@ -137,6 +141,7 @@ private:
     QString m_language;
     bool m_topBarAutoHide;
     bool m_launchHiddenToSystemTray;
+    bool m_notifyNextlaunchHiddenToSystemTray;
     bool m_maximizeImageSizeAndAdjustWindow;
     int m_defaultWindowWidth;
     int m_defaultWindowHeight;
@@ -181,6 +186,7 @@ Q_SIGNALS:
     void languageChanged();
     void topBarAutoHideChanged();
     void launchHiddenToSystemTrayChanged();
+    void notifyNextlaunchHiddenToSystemTrayChanged();
     void maximizeImageSizeAndAdjustWindowChanged();
     void defaultWindowWidthChanged();
     void defaultWindowHeightChanged();

@@ -378,7 +378,8 @@ ApplicationWindow {
             }
 
         // if no image has been passed on and PreviewQt is supposed to be loaded hidden
-        } else if(PQCSettings.launchHiddenToSystemTray) {
+        } else if(PQCSettings.launchHiddenToSystemTray && PQCSettings.notifyNextLaunchHiddenToSystemTray) {
+            PQCSettings.notifyNextLaunchHiddenToSystemTray = false
             // show launch message
             var title = qsTr("PreviewQt launched")
             var content = qsTr("PreviewQt has been launched and hidden to the system tray.")
