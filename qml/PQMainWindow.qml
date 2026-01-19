@@ -82,11 +82,16 @@ ApplicationWindow {
 
     // when hiding to tray, we do some cleanup
     onClosing: (close) => {
-        close.accepted = false
-        toplevel.visibility = Window.Hidden
-        image.loadImage("")
-        extNotSet.hide()
-        PQCScripts.deleteTemporaryFiles()
+        if(PQCSettings.hideToSystemTray) {
+            close.accepted = false
+            toplevel.visibility = Window.Hidden
+            image.loadImage("")
+            extNotSet.hide()
+            PQCScripts.deleteTemporaryFiles()
+        } else {
+            PQCScripts.deleteTemporaryFiles()
+            Qt.quit()
+        }
     }
 
     onVisibilityChanged: (visibility) => {

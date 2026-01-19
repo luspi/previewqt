@@ -164,6 +164,17 @@ void PQCSettings::setTopBarAutoHide(bool val) {
     }
 }
 
+bool PQCSettings::getHideToSystemTray() {
+    return m_hideToSystemTray;
+}
+void PQCSettings::setHideToSystemTray(bool val) {
+    if(m_hideToSystemTray != val) {
+        m_hideToSystemTray = val;
+        saveTimer->start();
+        Q_EMIT hideToSystemTrayChanged();
+    }
+}
+
 bool PQCSettings::getLaunchHiddenToSystemTray() {
     return m_launchHiddenToSystemTray;
 }
@@ -389,6 +400,7 @@ void PQCSettings::loadSettings() {
     setVersion(settings->value("version", "").toString());
     setLanguage(settings->value("language", "en").toString());
     setTopBarAutoHide(settings->value("topBarAutoHide", false).toBool());
+    setHideToSystemTray(settings->value("hideToSystemTray", true).toBool());
     setLaunchHiddenToSystemTray(settings->value("launchHiddenToSystemTray", false).toBool());
     setNotifyNextLaunchHiddenToSystemTray(settings->value("notifyNextlaunchHiddenToSystemTray", true).toBool());
     setMaximizeImageSizeAndAdjustWindow(settings->value("maximizeImageSizeAndAdjustWindow", true).toBool());
@@ -417,6 +429,7 @@ void PQCSettings::saveSettings() {
     settings->setValue("version", m_version);
     settings->setValue("language", m_language);
     settings->setValue("topBarAutoHide", m_topBarAutoHide);
+    settings->setValue("hideToSystemTray", m_hideToSystemTray);
     settings->setValue("launchHiddenToSystemTray", m_launchHiddenToSystemTray);
     settings->setValue("notifyNextlaunchHiddenToSystemTray", m_notifyNextlaunchHiddenToSystemTray);
     settings->setValue("maximizeImageSizeAndAdjustWindow", m_maximizeImageSizeAndAdjustWindow);

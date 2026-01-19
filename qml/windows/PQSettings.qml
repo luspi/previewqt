@@ -266,9 +266,22 @@ ApplicationWindow {
                 }
 
                 CheckBox {
+                    id: hideToTray
+                    text: qsTr("Hide to system tray when closing window")
+                    checked: PQCSettings.hideToSystemTray
+                    onCheckedChanged: {
+                        catchKeyPress.forceActiveFocus()
+                        if(PQCSettings.hideToSystemTray !== checked)
+                            PQCSettings.hideToSystemTray = checked
+                    }
+                }
+
+                CheckBox {
+                    x: 20
                     text: qsTr("Launch PreviewQt hidden to system tray")
-                    width: generalsettings.usableWidth
+                    width: generalsettings.usableWidth-20
                     checked: PQCSettings.launchHiddenToSystemTray
+                    enabled: hideToTray.checked
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
                         if(PQCSettings.launchHiddenToSystemTray !== checked)
