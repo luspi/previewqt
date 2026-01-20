@@ -28,19 +28,19 @@
 
 class QProcess;
 
-class PQCScriptsSpecificActions : public QObject {
+class PQCScriptsImages : public QObject {
 
     Q_OBJECT
 
 public:
-    static PQCScriptsSpecificActions& get() {
-        static PQCScriptsSpecificActions instance;
+    static PQCScriptsImages& get() {
+        static PQCScriptsImages instance;
         return instance;
     }
-    ~PQCScriptsSpecificActions();
+    ~PQCScriptsImages();
 
-    PQCScriptsSpecificActions(PQCScriptsSpecificActions const&)     = delete;
-    void operator=(PQCScriptsSpecificActions const&) = delete;
+    PQCScriptsImages(PQCScriptsImages const&)     = delete;
+    void operator=(PQCScriptsImages const&) = delete;
 
     bool isArchive(QString path);
     bool isComicBook(QString path);
@@ -65,12 +65,9 @@ public:
     void analyzeEpubMetaData(QString subfolder, QString txt, QString &title, QString &coverId, QMap<QString, QString> &outFileList, QStringList &outIdOrder);
 
 private:
-    PQCScriptsSpecificActions();
+    PQCScriptsImages();
 
     QMap<QString,QStringList> archiveContents;
     QString generateArchiveId(QString path);
-
-Q_SIGNALS:
-    void commandLineArgumentReceived(QString msg);
 
 };

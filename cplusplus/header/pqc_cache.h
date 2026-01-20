@@ -23,6 +23,7 @@
 
 #include <QObject>
 #include <QVariant>
+#include <QQmlEngine>
 
 class QSettings;
 class QTimer;
@@ -30,23 +31,17 @@ class QTimer;
 class PQCCache : public QObject {
 
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
 
 public:
-    static PQCCache& get() {
-        static PQCCache instance;
-        return instance;
-    }
+    PQCCache();
     ~PQCCache();
-
-    PQCCache(PQCCache const&)     = delete;
-    void operator=(PQCCache const&) = delete;
 
     Q_INVOKABLE void setEntry(QString path, QString value);
     Q_INVOKABLE QString getEntry(QString path);
 
 private:
-    PQCCache();
-
     QSettings *cache;
 
 };

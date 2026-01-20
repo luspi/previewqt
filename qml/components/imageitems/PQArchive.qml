@@ -36,7 +36,7 @@ Item {
 
     property string source: image_top.imageSource // qmllint disable unqualified
 
-    property bool thisIsAComicBook: PQCScriptsSpecificActions.isComicBook(source) // qmllint disable unqualified
+    property bool thisIsAComicBook: PQCScriptsImages.isComicBook(source) // qmllint disable unqualified
     property var fileList: []
     property int currentFile: 0
     property int fileCount: fileList.length
@@ -94,7 +94,7 @@ Item {
         interval: 100
         running: true
         onTriggered: {
-            arc_top.fileList = PQCScriptsSpecificActions.getArchiveContent(arc_top.source, true)
+            arc_top.fileList = PQCScriptsImages.getArchiveContent(arc_top.source, true)
             if(arc_top.source.includes("::ARC::"))
                 arc_top.currentFile = arc_top.fileList.indexOf(arc_top.source.split("::ARC::")[0])
         }
@@ -108,7 +108,7 @@ Item {
         target: image_top // qmllint disable unqualified
         function onImageSourceChanged(imageSource) {
             arc_top.currentFile = 0
-            arc_top.fileList = PQCScriptsSpecificActions.getArchiveContent(arc_top.source, true)
+            arc_top.fileList = PQCScriptsImages.getArchiveContent(arc_top.source, true)
             updateSource()
         }
     }

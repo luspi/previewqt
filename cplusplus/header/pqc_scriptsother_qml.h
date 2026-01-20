@@ -35,7 +35,10 @@ class PQCScriptsOtherQML : public QObject {
     QML_NAMED_ELEMENT(PQCScriptsOther)
 
 public:
-    explicit PQCScriptsOtherQML() {};
+    explicit PQCScriptsOtherQML() {
+        connect(&PQCScriptsOther::get(), &PQCScriptsOther::commandLineArgumentReceived,
+                this, &PQCScriptsOtherQML::commandLineArgumentReceived);
+    };
     ~PQCScriptsOtherQML() {}
 
     Q_INVOKABLE QString keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key keycode) {
@@ -50,5 +53,8 @@ public:
         return PQCScriptsOther::get().getStartupMessage();
     }
 
+Q_SIGNALS:
+    // picked up from PQCScriptsImages and passed on to QML
+    void commandLineArgumentReceived(QString msg);
 
 };

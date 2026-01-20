@@ -374,9 +374,9 @@ ApplicationWindow {
             else {
                 var path = msg.split(":/:/:")[0]
                 var inside = msg.split(":/:/:")[1]
-                if(PQCScriptsSpecificActions.isArchive(path))
+                if(PQCScriptsImages.isArchive(path))
                     image.loadImage("%1::ARC::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
-                else if(PQCScriptsSpecificActions.isPDFDocument(path))
+                else if(PQCScriptsImages.isPDFDocument(path))
                     image.loadImage("%1::PDF::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
                 else
                     image.loadImage(PQCScriptsFilesPaths.cleanPath(msg))
@@ -497,7 +497,7 @@ ApplicationWindow {
     // listen to command line arguments
     Connections {
 
-        target: PQCScripts
+        target: PQCScriptsOther
 
         function onCommandLineArgumentReceived(msg) {
 
@@ -534,9 +534,9 @@ ApplicationWindow {
                 }
 
                 if(fileInside != "") {
-                    if(PQCScriptsSpecificActions.isPDFDocument(path))
+                    if(PQCScriptsImages.isPDFDocument(path))
                         image.loadImage("%1::PDF::%2".arg(fileInside).arg(path))
-                    else if(PQCScriptsSpecificActions.isArchive(path))
+                    else if(PQCScriptsImages.isArchive(path))
                         image.loadImage("%1::ARC::%2".arg(fileInside).arg(path))
                     else
                         image.loadImage(path)

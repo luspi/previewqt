@@ -1,5 +1,5 @@
 #include <pqc_specialactions.h>
-#include <pqc_scriptsspecificactions.h>
+#include <pqc_scriptsimages.h>
 #include <pqc_scriptsfilespaths.h>
 #include <pqc_fileformats.h>
 #include <pqc_loadfile.h>
@@ -66,12 +66,12 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
 
     }
 
-    bool isPDF = PQCScriptsSpecificActions::get().isPDFDocument(filename);
-    bool isARC = PQCScriptsSpecificActions::get().isArchive(filename);
+    bool isPDF = PQCScriptsImages::get().isPDFDocument(filename);
+    bool isARC = PQCScriptsImages::get().isArchive(filename);
 
     QStringList archiveContent;
     if(isARC)
-        archiveContent = PQCScriptsSpecificActions::get().getArchiveContent(filename, true);
+        archiveContent = PQCScriptsImages::get().getArchiveContent(filename, true);
     \
         QString filenameToLoad = filename;
     if(isPDF)
@@ -93,7 +93,7 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
 
     if(isPDF) {
         std::cout << "file number: " << fileNumInside << std::endl;
-        std::cout << "file count: " << PQCScriptsSpecificActions::get().getDocumentPageCount(filename) << std::endl;
+        std::cout << "file count: " << PQCScriptsImages::get().getDocumentPageCount(filename) << std::endl;
     } else if(isARC) {
         std::cout << "file number: " << fileNumInside << std::endl;
         std::cout << "file name (inside): " << archiveContent[fileNumInside].toStdString() << std::endl;

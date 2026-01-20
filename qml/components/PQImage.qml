@@ -154,31 +154,31 @@ Item {
 
         PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(imageSource)
 
-        if(PQCScriptsSpecificActions.isPDFDocument(imageSource)) {
+        if(PQCScriptsImages.isPDFDocument(imageSource)) {
             currentType = "doc"
             imageloader.source = "imageitems/PQDocument.qml"
-        } else if(PQCScriptsSpecificActions.isEpub(imageSource)) {
+        } else if(PQCScriptsImages.isEpub(imageSource)) {
             currentType = "bok"
             imageloader.source = "imageitems/PQEPUB.qml"
-        } else if(PQCScriptsSpecificActions.isArchive(imageSource)) {
+        } else if(PQCScriptsImages.isArchive(imageSource)) {
             currentType = "ani"
             imageloader.source = "imageitems/PQArchive.qml"
-        } else if(PQCScriptsSpecificActions.isMpvVideo(imageSource)) {
+        } else if(PQCScriptsImages.isMpvVideo(imageSource)) {
             currentType = "arc"
             imageloader.source = "imageitems/PQVideoMpv.qml"
-        } else if(PQCScriptsSpecificActions.isQtVideo(imageSource)) {
+        } else if(PQCScriptsImages.isQtVideo(imageSource)) {
             currentType = "mpv"
             imageloader.source = "imageitems/PQVideoQt.qml"
-        } else if(PQCScriptsSpecificActions.isItAnimated(imageSource)) {
+        } else if(PQCScriptsImages.isItAnimated(imageSource)) {
             currentType = "vid"
             imageloader.source = "imageitems/PQImageAnimated.qml"
-        } else if(PQCScriptsSpecificActions.isPhotoSphere(imageSource)) {
+        } else if(PQCScriptsImages.isPhotoSphere(imageSource)) {
             currentType = "sph"
             imageloader.source = "imageitems/PQPhotoSphere.qml"
-        } else if(PQCScriptsSpecificActions.isSVG(imageSource)) {
+        } else if(PQCScriptsImages.isSVG(imageSource)) {
             currentType = "svg"
             imageloader.source = "imageitems/PQSVG.qml"
-        } else if(PQCScriptsSpecificActions.isTextDocument(imageSource)) {
+        } else if(PQCScriptsImages.isTextDocument(imageSource)) {
             currentType = "txt"
             imageloader.source = "imageitems/PQTxt.qml"
         } else {

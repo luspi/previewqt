@@ -36,7 +36,7 @@
 #include <QClipboard>
 
 #include <pqc_singleinstance.h>
-#include <pqc_scriptsspecificactions.h>
+#include <pqc_scriptsimages.h>
 #include <pqc_scriptsconfig.h>
 #include <pqc_scriptsfilespaths.h>
 #include <pqc_scriptsother.h>
@@ -149,10 +149,10 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
     QByteArray message = "";
     if(fileNumInside > 0) {
-        if(PQCScriptsSpecificActions::get().isPDFDocument(filename)) {
+        if(PQCScriptsImages::get().isPDFDocument(filename)) {
             message = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename).arg(fileNumInside));
-        } else if(PQCScriptsSpecificActions::get().isArchive(filename)) {
-            QStringList cont = PQCScriptsSpecificActions::get().getArchiveContent(filename, true);
+        } else if(PQCScriptsImages::get().isArchive(filename)) {
+            QStringList cont = PQCScriptsImages::get().getArchiveContent(filename, true);
             if(fileNumInside < cont.length())
                 message = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename, cont[fileNumInside]));
             else
@@ -247,7 +247,7 @@ void PQCSingleInstance::handleMessage(QString msg) {
 
     qDebug() << "args: msg =" << msg;
 
-    Q_EMIT PQCScriptsSpecificActions::get().commandLineArgumentReceived(msg);
+    Q_EMIT PQCScriptsOther::get().commandLineArgumentReceived(msg);
 
 }
 

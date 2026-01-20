@@ -24,7 +24,7 @@
 #include <pqc_loadfile_archive.h>
 #include <pqc_configfiles.h>
 #include <pqc_fileformats.h>
-#include <pqc_scriptsspecificactions.h>
+#include <pqc_scriptsimages.h>
 #include <QSize>
 #include <QtDebug>
 #include <QFileInfo>
@@ -56,7 +56,7 @@ QString PQCLoadFileArchive::load(QString filename, QSize maxSize, QSize &origSiz
         archivefile = parts.at(1);
         compressedFilename = parts.at(0);
     } else {
-        QStringList cont = PQCScriptsSpecificActions::get().getArchiveContent(archivefile, true);
+        QStringList cont = PQCScriptsImages::get().getArchiveContent(archivefile, true);
         if(cont.length() == 0) {
             errormsg = "Unable to list contents of archive file...";
             qWarning() << errormsg;

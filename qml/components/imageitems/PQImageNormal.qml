@@ -85,7 +85,7 @@ Item {
 
             if(PQCScriptsConfig.isMotionPhotoSupportEnabled()) {
 
-                var what = PQCScriptsSpecificActions.isMotionPhoto(image_top.imageSource)
+                var what = PQCScriptsImages.isMotionPhoto(image_top.imageSource)
 
                 if(what > 0) {
 
@@ -94,7 +94,7 @@ Item {
                     if(what === 1)
                         src = PQCScriptsFilesPaths.getDir(image_top.imageSource) + "/" + PQCScriptsFilesPaths.getBasename(image_top.imageSource) + ".mov"
                     else if(what === 2 || what === 3)
-                        src = PQCScriptsSpecificActions.extractMotionPhoto(image_top.imageSource)
+                        src = PQCScriptsImages.extractMotionPhoto(image_top.imageSource)
 
                     if(src != "") {
 
@@ -104,7 +104,7 @@ Item {
                         var suf = PQCScriptsFilesPaths.getSuffix(image_top.imageSource).toLowerCase()
                         if(suf !== "heic" && suf !== "heif") {
 
-                            var orientation = PQCScriptsSpecificActions.getExifOrientation(image_top.imageSource)
+                            var orientation = PQCScriptsImages.getExifOrientation(image_top.imageSource)
                             switch(orientation) {
 
                             case 1:

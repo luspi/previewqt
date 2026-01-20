@@ -45,7 +45,6 @@
 #include <pqc_settingscpp.h>
 #include <pqc_singleinstance.h>
 #include <pqc_configfiles.h>
-#include <pqc_cache.h>
 #include <pqc_textprocessing.h>
 
 #ifdef Q_OS_WIN
@@ -254,7 +253,6 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &app, []() { QApplication::exit(-1); }, Qt::QueuedConnection);
 
-    qmlRegisterSingletonInstance("PQCCache", 1, 0, "PQCCache", &PQCCache::get());
     qmlRegisterSingletonInstance("PQCFileFormats", 1, 0, "PQCFileFormats", &PQCFileFormats::get());
     qmlRegisterSingletonInstance("PQCTextProcessing", 1, 0, "PQCTextProcessing", &PQCTextProcessing::get());
 

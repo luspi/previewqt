@@ -22,7 +22,7 @@
 
 import QtQuick
 import QtQuick.Controls
-import PQCCache
+import PreviewQt
 
 Item {
 
@@ -82,7 +82,7 @@ Item {
     }
 
     property int currentPage: 0
-    property int pageCount: PQCScriptsSpecificActions.getDocumentPageCount(image_top.imageSource)
+    property int pageCount: PQCScriptsImages.getDocumentPageCount(image_top.imageSource)
 
     onCurrentPageChanged: {
         if(image_top.imageSource === "") {

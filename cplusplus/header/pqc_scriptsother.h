@@ -52,4 +52,7 @@ private:
 
     QString m_startupMessage;
 
+Q_SIGNALS:
+    void commandLineArgumentReceived(QString msg);
+
 };

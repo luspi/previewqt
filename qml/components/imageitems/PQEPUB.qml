@@ -23,7 +23,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtWebEngine
-import PQCCache
 import PreviewQt
 
 Item {
@@ -77,7 +76,7 @@ Item {
     Component.onCompleted: {
 
         // load book
-        book = PQCScriptsSpecificActions.loadEPUB(image_top.imageSource)
+        book = PQCScriptsImages.loadEPUB(image_top.imageSource)
 
         // set book title
         toplevel.overrideTitle = book[0]

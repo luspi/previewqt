@@ -20,7 +20,7 @@
  **                                                                      **
  **************************************************************************/
 
-#include <pqc_scriptsspecificactions.h>
+#include <pqc_scriptsimages.h>
 #include <pqc_fileformats.h>
 #include <pqc_configfiles.h>
 #include <pqc_settingscpp.h>
@@ -87,11 +87,11 @@
 #include <lcms2.h>
 #endif
 
-PQCScriptsSpecificActions::PQCScriptsSpecificActions() {}
+PQCScriptsImages::PQCScriptsImages() {}
 
-PQCScriptsSpecificActions::~PQCScriptsSpecificActions() {}
+PQCScriptsImages::~PQCScriptsImages() {}
 
-QStringList PQCScriptsSpecificActions::getArchiveContent(QString path, bool insideFilenameOnly) {
+QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenameOnly) {
 
     qDebug() << "args: path =" << path;
 
@@ -234,7 +234,7 @@ QStringList PQCScriptsSpecificActions::getArchiveContent(QString path, bool insi
 
 }
 
-int PQCScriptsSpecificActions::isMotionPhoto(QString path) {
+int PQCScriptsImages::isMotionPhoto(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -332,7 +332,7 @@ int PQCScriptsSpecificActions::isMotionPhoto(QString path) {
 
 }
 
-QString PQCScriptsSpecificActions::extractMotionPhoto(QString path) {
+QString PQCScriptsImages::extractMotionPhoto(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -410,7 +410,7 @@ QString PQCScriptsSpecificActions::extractMotionPhoto(QString path) {
 
 }
 
-int PQCScriptsSpecificActions::getExifOrientation(QString path) {
+int PQCScriptsImages::getExifOrientation(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -463,7 +463,7 @@ int PQCScriptsSpecificActions::getExifOrientation(QString path) {
 
 }
 
-bool PQCScriptsSpecificActions::isPhotoSphere(QString path) {
+bool PQCScriptsImages::isPhotoSphere(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -528,7 +528,7 @@ bool PQCScriptsSpecificActions::isPhotoSphere(QString path) {
 
 }
 
-bool PQCScriptsSpecificActions::isMpvVideo(QString path) {
+bool PQCScriptsImages::isMpvVideo(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -556,7 +556,7 @@ bool PQCScriptsSpecificActions::isMpvVideo(QString path) {
 
 }
 
-bool PQCScriptsSpecificActions::isQtVideo(QString path) {
+bool PQCScriptsImages::isQtVideo(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -584,12 +584,12 @@ bool PQCScriptsSpecificActions::isQtVideo(QString path) {
 
 }
 
-bool PQCScriptsSpecificActions::isItAnimated(QString filename) {
+bool PQCScriptsImages::isItAnimated(QString filename) {
     QImageReader reader(filename);
     return (reader.supportsAnimation()&&reader.imageCount()>1);
 }
 
-bool PQCScriptsSpecificActions::isPDFDocument(QString path) {
+bool PQCScriptsImages::isPDFDocument(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -606,7 +606,7 @@ bool PQCScriptsSpecificActions::isPDFDocument(QString path) {
 
 }
 
-int PQCScriptsSpecificActions::getDocumentPageCount(QString path) {
+int PQCScriptsImages::getDocumentPageCount(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -642,7 +642,7 @@ int PQCScriptsSpecificActions::getDocumentPageCount(QString path) {
 
 }
 
-bool PQCScriptsSpecificActions::isArchive(QString path) {
+bool PQCScriptsImages::isArchive(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -663,7 +663,7 @@ bool PQCScriptsSpecificActions::isArchive(QString path) {
 
 }
 
-bool PQCScriptsSpecificActions::isComicBook(QString path) {
+bool PQCScriptsImages::isComicBook(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -679,7 +679,7 @@ bool PQCScriptsSpecificActions::isComicBook(QString path) {
 
 }
 
-bool PQCScriptsSpecificActions::isEpub(QString path) {
+bool PQCScriptsImages::isEpub(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -695,14 +695,14 @@ bool PQCScriptsSpecificActions::isEpub(QString path) {
 
 }
 
-QString PQCScriptsSpecificActions::generateArchiveId(QString path) {
+QString PQCScriptsImages::generateArchiveId(QString path) {
 
     QFileInfo info(path);
     return QString("%1_%2").arg(info.lastModified().toMSecsSinceEpoch()).arg(info.absoluteFilePath());
 
 }
 
-bool PQCScriptsSpecificActions::isSVG(QString path) {
+bool PQCScriptsImages::isSVG(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -711,7 +711,7 @@ bool PQCScriptsSpecificActions::isSVG(QString path) {
 
 }
 
-QVariantList PQCScriptsSpecificActions::loadEPUB(QString path) {
+QVariantList PQCScriptsImages::loadEPUB(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -904,7 +904,7 @@ QVariantList PQCScriptsSpecificActions::loadEPUB(QString path) {
 
 }
 
-void PQCScriptsSpecificActions::analyzeEpubMetaData(QString subfolder, QString txt,
+void PQCScriptsImages::analyzeEpubMetaData(QString subfolder, QString txt,
                                      QString &title, QString &coverId,
                                      QMap<QString, QString> &outFileList, QStringList &outIdOrder) {
 
@@ -1001,7 +1001,7 @@ void PQCScriptsSpecificActions::analyzeEpubMetaData(QString subfolder, QString t
 
 }
 
-bool PQCScriptsSpecificActions::isTextDocument(QString path) {
+bool PQCScriptsImages::isTextDocument(QString path) {
 
     qDebug() << "args: path =" << path;
 
@@ -1019,7 +1019,7 @@ bool PQCScriptsSpecificActions::isTextDocument(QString path) {
 
 }
 
-QString PQCScriptsSpecificActions::getTextFileContents(QString path) {
+QString PQCScriptsImages::getTextFileContents(QString path) {
 
     qDebug() << "args: path =" << path;
 

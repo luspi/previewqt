@@ -888,7 +888,7 @@ Rectangle {
         imageitem.text = ""
         toplevel.overrideTitleSuffix = (formatbut.formatText ? " (processed)" : "")
 
-        var txt = PQCScriptsSpecificActions.getTextFileContents(image_top.imageSource)
+        var txt = PQCScriptsImages.getTextFileContents(image_top.imageSource)
         var suf = PQCScriptsFilesPaths.getSuffix(image_top.imageSource)
 
         var canReFormat = ["json","html","htm","xhtml","md"]

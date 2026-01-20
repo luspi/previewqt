@@ -22,6 +22,7 @@
 
 import QtQuick
 import QtMultimedia
+import PreviewQt
 
 Item {
 

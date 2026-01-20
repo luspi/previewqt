@@ -21,7 +21,7 @@
  **************************************************************************/
 #pragma once
 
-#include <pqc_scriptsspecificactions.h>
+#include <pqc_scriptsimages.h>
 #include <QObject>
 #include <QMap>
 #include <QImage>
@@ -30,90 +30,83 @@
 
 class QProcess;
 
-class PQCScriptsSpecificActionsQML : public QObject {
+class PQCScriptsImagesQML : public QObject {
 
     Q_OBJECT
     QML_ELEMENT
     QML_SINGLETON
-    QML_NAMED_ELEMENT(PQCScriptsSpecificActions)
+    QML_NAMED_ELEMENT(PQCScriptsImages)
 
 public:
-    PQCScriptsSpecificActionsQML() {
-        connect(&PQCScriptsSpecificActions::get(), &PQCScriptsSpecificActions::commandLineArgumentReceived,
-                this, &PQCScriptsSpecificActionsQML::commandLineArgumentReceived);
-    }
-    ~PQCScriptsSpecificActionsQML() {}
+    PQCScriptsImagesQML() {}
+    ~PQCScriptsImagesQML() {}
 
     Q_INVOKABLE bool isArchive(QString path) {
-        return PQCScriptsSpecificActions::get().isArchive(path);
+        return PQCScriptsImages::get().isArchive(path);
     }
 
     Q_INVOKABLE bool isComicBook(QString path) {
-        return PQCScriptsSpecificActions::get().isComicBook(path);
+        return PQCScriptsImages::get().isComicBook(path);
     }
 
     Q_INVOKABLE bool isEpub(QString path) {
-        return PQCScriptsSpecificActions::get().isEpub(path);
+        return PQCScriptsImages::get().isEpub(path);
     }
 
     Q_INVOKABLE bool isTextDocument(QString path) {
-        return PQCScriptsSpecificActions::get().isTextDocument(path);
+        return PQCScriptsImages::get().isTextDocument(path);
     }
 
     Q_INVOKABLE bool isMpvVideo(QString path) {
-        return PQCScriptsSpecificActions::get().isMpvVideo(path);
+        return PQCScriptsImages::get().isMpvVideo(path);
     }
 
     Q_INVOKABLE bool isQtVideo(QString path) {
-        return PQCScriptsSpecificActions::get().isQtVideo(path);
+        return PQCScriptsImages::get().isQtVideo(path);
     }
 
     Q_INVOKABLE bool isPDFDocument(QString path) {
-        return PQCScriptsSpecificActions::get().isPDFDocument(path);
+        return PQCScriptsImages::get().isPDFDocument(path);
     }
 
     Q_INVOKABLE bool isSVG(QString path) {
-        return PQCScriptsSpecificActions::get().isSVG(path);
+        return PQCScriptsImages::get().isSVG(path);
     }
 
     Q_INVOKABLE bool isPhotoSphere(QString path) {
-        return PQCScriptsSpecificActions::get().isPhotoSphere(path);
+        return PQCScriptsImages::get().isPhotoSphere(path);
     }
 
     Q_INVOKABLE int isMotionPhoto(QString path) {
-        return PQCScriptsSpecificActions::get().isMotionPhoto(path);
+        return PQCScriptsImages::get().isMotionPhoto(path);
     }
 
     Q_INVOKABLE bool isItAnimated(QString filename) {
-        return PQCScriptsSpecificActions::get().isItAnimated(filename);
+        return PQCScriptsImages::get().isItAnimated(filename);
     }
 
     Q_INVOKABLE int getDocumentPageCount(QString path) {
-        return PQCScriptsSpecificActions::get().getDocumentPageCount(path);
+        return PQCScriptsImages::get().getDocumentPageCount(path);
     }
 
     Q_INVOKABLE QString extractMotionPhoto(QString path) {
-        return PQCScriptsSpecificActions::get().extractMotionPhoto(path);
+        return PQCScriptsImages::get().extractMotionPhoto(path);
     }
 
     Q_INVOKABLE int getExifOrientation(QString path) {
-        return PQCScriptsSpecificActions::get().getExifOrientation(path);
+        return PQCScriptsImages::get().getExifOrientation(path);
     }
 
     Q_INVOKABLE QString getTextFileContents(QString path) {
-        return PQCScriptsSpecificActions::get().getTextFileContents(path);
+        return PQCScriptsImages::get().getTextFileContents(path);
     }
 
     Q_INVOKABLE QStringList getArchiveContent(QString path, bool insideFilenameOnly = false) {
-        return PQCScriptsSpecificActions::get().getArchiveContent(path);
+        return PQCScriptsImages::get().getArchiveContent(path);
     }
 
     Q_INVOKABLE QVariantList loadEPUB(QString path) {
-        return PQCScriptsSpecificActions::get().loadEPUB(path);
+        return PQCScriptsImages::get().loadEPUB(path);
     }
-
-
-Q_SIGNALS:
-    void commandLineArgumentReceived(QString msg);
 
 };
