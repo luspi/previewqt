@@ -23,8 +23,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import PQCSettings
-import PQCScripts
+import PreviewQt
 
 Rectangle {
 
@@ -106,7 +105,7 @@ Rectangle {
             source: "image://svg/:/external.svg"
             onClicked: {
                 if(image.imageSource === "") return
-                if(PQCScripts.openInDefault(image.imageSource)) {
+                if(PQCScriptsFilesPaths.openInDefault(image.imageSource)) {
                     if(PQCSettings.closeAfterDefaultApp)
                         toplevel.close()
                 } else

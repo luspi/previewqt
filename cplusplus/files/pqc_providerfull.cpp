@@ -22,7 +22,8 @@
 
 #include <pqc_providerfull.h>
 #include <pqc_loadfile.h>
-#include <pqc_scripts.h>
+#include <pqc_scriptsfilespaths.h>
+#include <pqc_scriptsother.h>
 #include <QFileInfo>
 #include <QCoreApplication>
 
@@ -42,7 +43,7 @@ QImage PQCProviderFull::requestImage(const QString &url, QSize *origSize, const 
         rotation = path.split(":::")[0].toInt();
         path = path.split(":::")[1];
     }
-    QString filename = PQCScripts::cleanPath(path);
+    QString filename = PQCScriptsFilesPaths::get().cleanPath(path);
 
     QString filenameForChecking = filename;
     if(filenameForChecking.contains("::PDF::"))
@@ -71,7 +72,7 @@ QImage PQCProviderFull::requestImage(const QString &url, QSize *origSize, const 
         return QImage();
 
     // check for embedded color profile
-    PQCScripts::get().applyEmbeddedColorProfile(ret);
+    PQCScriptsOther::get().applyEmbeddedColorProfile(ret);
 
     // apply rotation
     QTransform transform;

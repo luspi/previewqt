@@ -22,7 +22,6 @@
 
 import QtQuick
 import QtQuick.Controls
-import PQCScripts
 import PQCCache
 
 Item {
@@ -51,13 +50,13 @@ Item {
             }
             if(image_top.imageSource.includes("::PDF::")) {
                 currentPage = image_top.imageSource.split("::PDF::")[0]*1
-                source = "image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)
+                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding(image_top.imageSource)
             } else {
                 var page = PQCCache.getEntry(image_top.imageSource)
                 if(page === "")
                     page = currentPage
                 currentPage = page
-                source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(page).arg(image_top.imageSource))
+                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::PDF::%2".arg(page).arg(image_top.imageSource))
             }
         }
 
@@ -83,7 +82,7 @@ Item {
     }
 
     property int currentPage: 0
-    property int pageCount: PQCScripts.getDocumentPageCount(image_top.imageSource)
+    property int pageCount: PQCScriptsSpecificActions.getDocumentPageCount(image_top.imageSource)
 
     onCurrentPageChanged: {
         if(image_top.imageSource === "") {
@@ -92,9 +91,9 @@ Item {
         }
         imageitem.asynchronous = false
         if(image_top.imageSource.includes("::PDF::")) {
-            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource.split("::PDF::")[1]))
+            imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource.split("::PDF::")[1]))
         } else {
-            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource))
+            imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource))
         }
         imageitem.asynchronous = true
 

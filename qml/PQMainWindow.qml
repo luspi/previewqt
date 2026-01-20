@@ -24,9 +24,9 @@ import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
-import PQCScripts
 import PQCFileFormats
-import PQCSettings
+
+import PreviewQt
 
 import "./components"
 
@@ -58,7 +58,7 @@ ApplicationWindow {
                 (overrideTitle+" | ") :
                 (image.imageSource == "" ?
                      "" :
-                     (PQCScripts.getFilename(image.imageSource) + (overrideTitleSuffix!="" ?
+                     (PQCScriptsFilesPaths.getFilename(image.imageSource) + (overrideTitleSuffix!="" ?
                                                                        overrideTitleSuffix :
                                                                        "") + " | "))) + "PreviewQt"
 
@@ -87,9 +87,9 @@ ApplicationWindow {
             toplevel.visibility = Window.Hidden
             image.loadImage("")
             extNotSet.hide()
-            PQCScripts.deleteTemporaryFiles()
+            PQCScriptsFilesPaths.deleteTemporaryFiles()
         } else {
-            PQCScripts.deleteTemporaryFiles()
+            PQCScriptsFilesPaths.deleteTemporaryFiles()
             Qt.quit()
         }
     }
@@ -155,7 +155,7 @@ ApplicationWindow {
             text: qsTr("Open externally")
             onTriggered: {
                 if(image.imageSource === "") return
-                if(PQCScripts.openInDefault(image.imageSource)) {
+                if(PQCScriptsFilesPaths.openInDefault(image.imageSource)) {
                     if(PQCSettings.closeAfterDefaultApp)
                         toplevel.close()
                 } else
@@ -349,7 +349,7 @@ ApplicationWindow {
     // some things are done once window is set up
     Component.onCompleted: {
 
-        PQCScripts.updateTranslation()
+        PQCScriptsConfig.updateTranslation()
 
         // set the default window size
         toplevel.width = PQCSettings.defaultWindowWidth
@@ -364,22 +364,22 @@ ApplicationWindow {
                 showNormal()
         }
 
-        var msg = PQCScripts.fromPercentEncoding(PQCScripts.getStartupMessage())
+        var msg = PQCScriptsFilesPaths.fromPercentEncoding(PQCScriptsOther.getStartupMessage())
 
         // if an image has been passed on, load that image
         if(msg !== "-") {
 
             if(!msg.includes(":/:/:"))
-                image.loadImage(PQCScripts.cleanPath(msg))
+                image.loadImage(PQCScriptsFilesPaths.cleanPath(msg))
             else {
                 var path = msg.split(":/:/:")[0]
                 var inside = msg.split(":/:/:")[1]
-                if(PQCScripts.isArchive(path))
-                    image.loadImage("%1::ARC::%2".arg(inside).arg(PQCScripts.cleanPath(path)))
-                else if(PQCScripts.isPDFDocument(path))
-                    image.loadImage("%1::PDF::%2".arg(inside).arg(PQCScripts.cleanPath(path)))
+                if(PQCScriptsSpecificActions.isArchive(path))
+                    image.loadImage("%1::ARC::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
+                else if(PQCScriptsSpecificActions.isPDFDocument(path))
+                    image.loadImage("%1::PDF::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
                 else
-                    image.loadImage(PQCScripts.cleanPath(msg))
+                    image.loadImage(PQCScriptsFilesPaths.cleanPath(msg))
             }
 
         // if no image has been passed on and PreviewQt is supposed to be loaded hidden
@@ -408,7 +408,7 @@ ApplicationWindow {
     function processKeyEvent(modifiers, keycode) {
 
         // convert to text
-        var txt = PQCScripts.keycodeToString(modifiers, keycode)
+        var txt = PQCScriptsOther.keycodeToString(modifiers, keycode)
 
         if(extNotSet.visible) {
             if(txt === "Esc")
@@ -485,7 +485,7 @@ ApplicationWindow {
 
             if(image.imageSource === "") return
 
-            if(PQCScripts.openInDefault(image.imageSource)) {
+            if(PQCScriptsFilesPaths.openInDefault(image.imageSource)) {
                 if(PQCSettings.closeAfterDefaultApp)
                     toplevel.close()
             } else
@@ -503,7 +503,7 @@ ApplicationWindow {
 
             closeAllMenus()
 
-            msg = PQCScripts.fromPercentEncoding(msg)
+            msg = PQCScriptsFilesPaths.fromPercentEncoding(msg)
 
             // empty message -> show window
             if(msg === "-") {
@@ -523,20 +523,20 @@ ApplicationWindow {
                 var fileInside = ""
                 var path = msg
                 if(msg.includes(":/:/:")) {
-                    path = PQCScripts.cleanPath(msg.split(":/:/:")[0])
+                    path = PQCScriptsFilesPaths.cleanPath(msg.split(":/:/:")[0])
                     fileInside = msg.split(":/:/:")[1]
                 }
 
                 // check if file exists
-                if(!PQCScripts.doesFileExist(path)) {
+                if(!PQCScriptsFilesPaths.doesFileExist(path)) {
                     trayicon.item.showMessage(qsTr("File does not exist."), qsTr("The requested file does not exist:") + " %1".arg(path))
                     return
                 }
 
                 if(fileInside != "") {
-                    if(PQCScripts.isPDFDocument(path))
+                    if(PQCScriptsSpecificActions.isPDFDocument(path))
                         image.loadImage("%1::PDF::%2".arg(fileInside).arg(path))
-                    else if(PQCScripts.isArchive(path))
+                    else if(PQCScriptsSpecificActions.isArchive(path))
                         image.loadImage("%1::ARC::%2".arg(fileInside).arg(path))
                     else
                         image.loadImage(path)
@@ -637,8 +637,8 @@ ApplicationWindow {
     }
 
     function openNewFile() {
-        var path = PQCScripts.openNewFile()
-        if(path != "")
+        var path = PQCScriptsFilesPaths.openNewFile()
+        if(path !== "")
             image.loadImage(path)
     }
 
@@ -648,7 +648,7 @@ ApplicationWindow {
         if(!PQCSettings.maximizeImageSizeAndAdjustWindow || isMaximized || isFullscreen || manualWindowSizeChange)
             return
 
-        var fitsize = PQCScripts.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight)
+        var fitsize = PQCScriptsOther.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight)
 
         toplevelAni.stop()
         toplevelAni.w_from = toplevel.width

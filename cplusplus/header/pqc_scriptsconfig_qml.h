@@ -19,47 +19,47 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
+#pragma once
 
-import QtQuick
-import Qt.labs.platform
+#include <pqc_scriptsconfig.h>
+#include <QObject>
+#include <QQmlEngine>
 
-SystemTrayIcon {
+class QTranslator;
 
-    // style tray icon
-    visible: true
-    icon.source: "image://svg/:/logo.svg"
+class PQCScriptsConfigQML : public QObject {
 
-    // show/hide application window
-    onActivated: {
-        if(toplevel.visible)
-            toplevel.close()
-        else {
-            toplevel.show()
-            toplevel.raise()
-            toplevel.requestActivate()
-        }
+    Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+    QML_NAMED_ELEMENT(PQCScriptsConfig)
+
+public:
+    explicit PQCScriptsConfigQML() {};
+    ~PQCScriptsConfigQML() {}
+
+    Q_INVOKABLE QString getConfigInfo(bool formatHTML = true) {
+        return PQCScriptsConfig::get().getConfigInfo(formatHTML);
     }
 
-    // the context menu
-    menu: Menu {
-        visible: false
-        MenuItem {
-            text: toplevel.visible ? qsTr("Hide window") : qsTr("Show window")
-            onTriggered: {
-                toplevel.visible = !toplevel.visible
-            }
-        }
-        MenuItem {
-            text: qsTr("Quit PreviewQt")
-            onTriggered:
-                Qt.quit()
-        }
+    Q_INVOKABLE QString getVersion()  {
+        return PQCScriptsConfig::get().getVersion();
     }
 
-    // check if a message is to be shown once set up
-    Component.onCompleted: {
-        if(toplevel.messageWhenReady[0] !== "")
-            showMessage(toplevel.messageWhenReady[0], toplevel.messageWhenReady[1], SystemTrayIcon.Information, 5000)
+    Q_INVOKABLE bool isQtAtLeast6_5()  {
+        return PQCScriptsConfig::get().isQtAtLeast6_5();
     }
 
- }
+    Q_INVOKABLE bool isMotionPhotoSupportEnabled() {
+        return PQCScriptsConfig::get().isMotionPhotoSupportEnabled();
+    }
+
+    Q_INVOKABLE bool amIOnWindows() {
+        return PQCScriptsConfig::get().amIOnWindows();
+    }
+
+    Q_INVOKABLE void updateTranslation() {
+        return PQCScriptsConfig::get().updateTranslation();
+    }
+
+};

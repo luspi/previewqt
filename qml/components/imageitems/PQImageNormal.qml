@@ -22,8 +22,7 @@
 
 import QtQuick
 import QtMultimedia
-import PQCScripts
-import PQCSettings
+import PreviewQt
 
 Item {
 
@@ -42,7 +41,7 @@ Item {
 
         id: imageitem
 
-        source: image_top.imageSource!=="" ? ("image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)) : ""
+        source: image_top.imageSource!=="" ? ("image://full/" + PQCScriptsFilesPaths.toPercentEncoding(image_top.imageSource)) : ""
 
         asynchronous: true
 
@@ -84,28 +83,28 @@ Item {
 
         onTriggered: {
 
-            if(PQCScripts.isMotionPhotoSupportEnabled()) {
+            if(PQCScriptsConfig.isMotionPhotoSupportEnabled()) {
 
-                var what = PQCScripts.isMotionPhoto(image_top.imageSource)
+                var what = PQCScriptsSpecificActions.isMotionPhoto(image_top.imageSource)
 
                 if(what > 0) {
 
                     var src = ""
 
                     if(what === 1)
-                        src = PQCScripts.getDir(image_top.imageSource) + "/" + PQCScripts.getBasename(image_top.imageSource) + ".mov"
+                        src = PQCScriptsFilesPaths.getDir(image_top.imageSource) + "/" + PQCScriptsFilesPaths.getBasename(image_top.imageSource) + ".mov"
                     else if(what === 2 || what === 3)
-                        src = PQCScripts.extractMotionPhoto(image_top.imageSource)
+                        src = PQCScriptsSpecificActions.extractMotionPhoto(image_top.imageSource)
 
                     if(src != "") {
 
                         // HEIF/HEIC images are a little trickier with their orientation handling
                         // We need to ignore this value as the Exif orientation might not be correct
                         // See also: https://github.com/Exiv2/exiv2/issues/2958
-                        var suf = PQCScripts.getSuffix(image_top.imageSource).toLowerCase()
+                        var suf = PQCScriptsFilesPaths.getSuffix(image_top.imageSource).toLowerCase()
                         if(suf !== "heic" && suf !== "heif") {
 
-                            var orientation = PQCScripts.getExifOrientation(image_top.imageSource)
+                            var orientation = PQCScriptsSpecificActions.getExifOrientation(image_top.imageSource)
                             switch(orientation) {
 
                             case 1:
@@ -158,7 +157,7 @@ Item {
 
                         videoloader.active = false
                         // earlier versions of Qt6 seem to struggle if only one slash is used
-                        if(PQCScripts.isQtAtLeast6_5())
+                        if(PQCScriptsConfigQML.isQtAtLeast6_5())
                             videoloader.mediaSrc = "file:/" + src
                         else
                             videoloader.mediaSrc = "file://" + src

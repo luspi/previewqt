@@ -76,7 +76,8 @@ endif()
 set(d "cplusplus")
 set(previewqt_SRC "${d}/main.cpp")
 set(d "cplusplus/singletons")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scripts.cpp" "${d}/pqc_fileformats.cpp" "${d}/pqc_settings.cpp" "${d}/pqc_cache.cpp" "${d}/pqc_textprocessing.cpp")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_fileformats.cpp" "${d}/pqc_settings.cpp" "${d}/pqc_cache.cpp" "${d}/pqc_textprocessing.cpp")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scriptsconfig.cpp" "${d}/pqc_scriptsfilespaths.cpp" "${d}/pqc_scriptsother.cpp" "${d}/pqc_scriptsspecificactions.cpp")
 set(d "cplusplus/files")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadfile.cpp" "${d}/pqc_providerfull.cpp" "${d}/pqc_providersvg.cpp")
 set(d "cplusplus/files/plugins")
@@ -90,9 +91,12 @@ set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_singleinstance.cpp" "${d}/pqc_speci
 
 
 set(d "cplusplus/header")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_fileformats.h" "${d}/pqc_scripts.h" "${d}/pqc_messagehandler.h" "${d}/pqc_textprocessing.h")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_fileformats.h" "${d}/pqc_messagehandler.h" "${d}/pqc_textprocessing.h")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_photosphere.h" "${d}/pqc_photosphereitem.h" "${d}/pqc_photosphererenderer.h")
 set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_settings.h" "${d}/pqc_singleinstance.h" "${d}/pqc_cache.h" "${d}/pqc_specialactions.h")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_settingscpp.h")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scriptsconfig.h" "${d}/pqc_scriptsfilespaths.h" "${d}/pqc_scriptsother.h" "${d}/pqc_scriptsspecificactions.h")
+set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scriptsconfig_qml.h" "${d}/pqc_scriptsfilespaths_qml.h" "${d}/pqc_scriptsother_qml.h" "${d}/pqc_scriptsspecificactions_qml.h")
 
 set(d "qml")
 set(previewqt_QML "${d}/PQMainWindow.qml")

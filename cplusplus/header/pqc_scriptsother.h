@@ -19,47 +19,37 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
+#pragma once
 
-import QtQuick
-import Qt.labs.platform
+#include <QObject>
+#include <QImage>
 
-SystemTrayIcon {
+class QTranslator;
 
-    // style tray icon
-    visible: true
-    icon.source: "image://svg/:/logo.svg"
+class PQCScriptsOther : public QObject {
 
-    // show/hide application window
-    onActivated: {
-        if(toplevel.visible)
-            toplevel.close()
-        else {
-            toplevel.show()
-            toplevel.raise()
-            toplevel.requestActivate()
-        }
+    Q_OBJECT
+
+public:
+    static PQCScriptsOther& get() {
+        static PQCScriptsOther instance;
+        return instance;
     }
+    ~PQCScriptsOther();
 
-    // the context menu
-    menu: Menu {
-        visible: false
-        MenuItem {
-            text: toplevel.visible ? qsTr("Hide window") : qsTr("Show window")
-            onTriggered: {
-                toplevel.visible = !toplevel.visible
-            }
-        }
-        MenuItem {
-            text: qsTr("Quit PreviewQt")
-            onTriggered:
-                Qt.quit()
-        }
-    }
+    PQCScriptsOther(PQCScriptsOther const&) = delete;
+    void operator=(PQCScriptsOther const&) = delete;
 
-    // check if a message is to be shown once set up
-    Component.onCompleted: {
-        if(toplevel.messageWhenReady[0] !== "")
-            showMessage(toplevel.messageWhenReady[0], toplevel.messageWhenReady[1], SystemTrayIcon.Information, 5000)
-    }
+    QString keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key keycode);
+    QSize fitSizeInsideSize(int w, int h, int maxw, int maxh);
+    int toLcmsFormat(QImage::Format fmt);
+    bool applyEmbeddedColorProfile(QImage &img);
+    QString getStartupMessage(){ return m_startupMessage; }
+    void setStartupMessage(QString val) { m_startupMessage = val; }
 
- }
+private:
+    PQCScriptsOther();
+
+    QString m_startupMessage;
+
+};

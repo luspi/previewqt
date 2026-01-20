@@ -23,7 +23,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtMultimedia
-import PQCScripts
+import PreviewQt
 
 Video {
 
@@ -32,7 +32,7 @@ Video {
     parent: image_top
 
     // earlier versions of Qt6 seem to struggle if only one slash is used
-    source: image_top.imageSource!=="" ? ((PQCScripts.isQtAtLeast6_5() ? "file:/" : "file://") + image_top.imageSource) : ""
+    source: image_top.imageSource!=="" ? ((PQCScriptsConfig.isQtAtLeast6_5() ? "file:/" : "file://") + image_top.imageSource) : ""
     onSourceChanged: {
         video.play()
     }
@@ -66,7 +66,7 @@ Video {
         if(playbackState === MediaPlayer.StoppedState) {
 
             // earlier versions of Qt6 seem to struggle if only one slash is used
-            if(PQCScripts.isQtAtLeast6_5())
+            if(PQCScriptsConfig.isQtAtLeast6_5())
                 video.source = "file:/" + image_top.imageSource
             else
                 video.source = "file://" + image_top.imageSource

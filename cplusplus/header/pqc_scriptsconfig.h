@@ -19,47 +19,41 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
+#pragma once
 
-import QtQuick
-import Qt.labs.platform
+#include <QObject>
 
-SystemTrayIcon {
+class QTranslator;
 
-    // style tray icon
-    visible: true
-    icon.source: "image://svg/:/logo.svg"
+class PQCScriptsConfig : public QObject {
 
-    // show/hide application window
-    onActivated: {
-        if(toplevel.visible)
-            toplevel.close()
-        else {
-            toplevel.show()
-            toplevel.raise()
-            toplevel.requestActivate()
-        }
+    Q_OBJECT
+
+public:
+    static PQCScriptsConfig& get() {
+        static PQCScriptsConfig instance;
+        return instance;
     }
+    ~PQCScriptsConfig();
 
-    // the context menu
-    menu: Menu {
-        visible: false
-        MenuItem {
-            text: toplevel.visible ? qsTr("Hide window") : qsTr("Show window")
-            onTriggered: {
-                toplevel.visible = !toplevel.visible
-            }
-        }
-        MenuItem {
-            text: qsTr("Quit PreviewQt")
-            onTriggered:
-                Qt.quit()
-        }
-    }
+    PQCScriptsConfig(PQCScriptsConfig const&) = delete;
+    void operator=(PQCScriptsConfig const&) = delete;
 
-    // check if a message is to be shown once set up
-    Component.onCompleted: {
-        if(toplevel.messageWhenReady[0] !== "")
-            showMessage(toplevel.messageWhenReady[0], toplevel.messageWhenReady[1], SystemTrayIcon.Information, 5000)
-    }
+    QString getConfigInfo(bool formatHTML = true);
+    QString getVersion();
+    bool isQtAtLeast6_5();
+    bool isMotionPhotoSupportEnabled();
+    bool amIOnWindows();
+    bool isUpgrade();
+    bool isDebug();
+    void setDebug(bool val);
+    void updateTranslation();
 
- }
+private:
+    PQCScriptsConfig();
+
+    bool m_debug;
+    QTranslator *trans;
+    QString currentTranslation;
+
+};

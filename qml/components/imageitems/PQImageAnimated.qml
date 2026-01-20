@@ -22,7 +22,6 @@
 
 import QtQuick
 import QtQuick.Controls
-import PQCScripts
 
 Item {
 
@@ -41,7 +40,7 @@ Item {
 
         id: imageitem
 
-        source: image_top.imageSource!=="" ? ("file:/" + PQCScripts.toPercentEncoding(image_top.imageSource)) : ""
+        source: image_top.imageSource!=="" ? ("file:/" + PQCScriptsFilesPaths.toPercentEncoding(image_top.imageSource)) : ""
 
         asynchronous: true
 

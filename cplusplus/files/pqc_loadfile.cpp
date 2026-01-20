@@ -35,7 +35,6 @@
 
 #include <pqc_loadfile.h>
 #include <pqc_fileformats.h>
-#include <pqc_scripts.h>
 #include <QSize>
 #include <QImage>
 #include <QFileInfo>

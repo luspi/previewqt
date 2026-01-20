@@ -22,6 +22,7 @@
 #pragma once
 
 #include <QObject>
+#include <QQmlEngine>
 
 class QSettings;
 class QTimer;
@@ -29,124 +30,47 @@ class QTimer;
 class PQCSettings : public QObject {
 
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
 
 public:
-    static PQCSettings& get() {
-        static PQCSettings instance;
-        return instance;
-    }
+    explicit PQCSettings();
     ~PQCSettings();
 
-    PQCSettings(PQCSettings const&)     = delete;
-    void operator=(PQCSettings const&) = delete;
-
-    Q_PROPERTY(QString version READ getVersion WRITE setVersion NOTIFY versionChanged)
-    QString getVersion();
-    void setVersion(QString val);
-
-    Q_PROPERTY(QString language READ getLanguage WRITE setLanguage NOTIFY languageChanged)
-    QString getLanguage();
-    void setLanguage(QString val);
-
-    Q_PROPERTY(bool topBarAutoHide READ getTopBarAutoHide WRITE setTopBarAutoHide NOTIFY topBarAutoHideChanged)
-    bool getTopBarAutoHide();
-    void setTopBarAutoHide(bool val);
-
-    Q_PROPERTY(bool hideToSystemTray READ getHideToSystemTray WRITE setHideToSystemTray NOTIFY hideToSystemTrayChanged)
-    bool getHideToSystemTray();
-    void setHideToSystemTray(bool val);
-
-    Q_PROPERTY(bool launchHiddenToSystemTray READ getLaunchHiddenToSystemTray WRITE setLaunchHiddenToSystemTray NOTIFY launchHiddenToSystemTrayChanged)
-    bool getLaunchHiddenToSystemTray();
-    void setLaunchHiddenToSystemTray(bool val);
-
-    Q_PROPERTY(bool notifyNextLaunchHiddenToSystemTray READ getNotifyNextLaunchHiddenToSystemTray WRITE setNotifyNextLaunchHiddenToSystemTray NOTIFY notifyNextlaunchHiddenToSystemTrayChanged)
-    bool getNotifyNextLaunchHiddenToSystemTray();
-    void setNotifyNextLaunchHiddenToSystemTray(bool val);
-
-    Q_PROPERTY(bool maximizeImageSizeAndAdjustWindow READ getMaximizeImageSizeAndAdjustWindow WRITE setMaximizeImageSizeAndAdjustWindow NOTIFY maximizeImageSizeAndAdjustWindowChanged)
-    bool getMaximizeImageSizeAndAdjustWindow();
-    void setMaximizeImageSizeAndAdjustWindow(bool val);
-
-    Q_PROPERTY(int defaultWindowWidth READ getDefaultWindowWidth WRITE setDefaultWindowWidth NOTIFY defaultWindowWidthChanged)
-    int getDefaultWindowWidth();
-    void setDefaultWindowWidth(int val);
-
-    Q_PROPERTY(int defaultWindowHeight READ getDefaultWindowHeight WRITE setDefaultWindowHeight NOTIFY defaultWindowHeightChanged)
-    int getDefaultWindowHeight();
-    void setDefaultWindowHeight(int val);
-
-    Q_PROPERTY(bool defaultWindowMaximized READ getDefaultWindowMaximized WRITE setDefaultWindowMaximized NOTIFY defaultWindowMaximizedChanged)
-    bool getDefaultWindowMaximized();
-    void setDefaultWindowMaximized(bool val);
-
-    Q_PROPERTY(QString defaultAppShortcut READ getDefaultAppShortcut WRITE setDefaultAppShortcut NOTIFY defaultAppShortcutChanged)
-    QString getDefaultAppShortcut();
-    void setDefaultAppShortcut(QString val);
-
-    Q_PROPERTY(QString defaultAppImages READ getDefaultAppImages WRITE setDefaultAppImages NOTIFY defaultAppImagesChanged)
-    QString getDefaultAppImages();
-    void setDefaultAppImages(QString val);
-
-    Q_PROPERTY(QString defaultAppDocuments READ getDefaultAppDocuments WRITE setDefaultAppDocuments NOTIFY defaultAppDocumentsChanged)
-    QString getDefaultAppDocuments();
-    void setDefaultAppDocuments(QString val);
-
-    Q_PROPERTY(QString defaultAppArchives READ getDefaultAppArchives WRITE setDefaultAppArchives NOTIFY defaultAppArchivesChanged)
-    QString getDefaultAppArchives();
-    void setDefaultAppArchives(QString val);
-
-    Q_PROPERTY(QString defaultAppVideos READ getDefaultAppVideos WRITE setDefaultAppVideos NOTIFY defaultAppVideosChanged)
-    QString getDefaultAppVideos();
-    void setDefaultAppVideos(QString val);
-
-    Q_PROPERTY(QString defaultAppComicBooks READ getDefaultAppComicBooks WRITE setDefaultAppComicBooks NOTIFY defaultAppComicBooksChanged)
-    QString getDefaultAppComicBooks();
-    void setDefaultAppComicBooks(QString val);
-
-    Q_PROPERTY(QString defaultAppEBooks READ getDefaultAppEBooks WRITE setDefaultAppEBooks NOTIFY defaultAppEBooksChanged)
-    QString getDefaultAppEBooks();
-    void setDefaultAppEBooks(QString val);
-
-    Q_PROPERTY(QString defaultAppText READ getDefaultAppText WRITE setDefaultAppText NOTIFY defaultAppTextChanged)
-    QString getDefaultAppText();
-    void setDefaultAppText(QString val);
-
-    Q_PROPERTY(bool closeAfterDefaultApp READ getCloseAfterDefaultApp WRITE setCloseAfterDefaultApp NOTIFY closeAfterDefaultAppChanged)
-    bool getCloseAfterDefaultApp();
-    void setCloseAfterDefaultApp(bool val);
-
-    Q_PROPERTY(QString filedialogLocation READ getFiledialogLocation WRITE setFiledialogLocation NOTIFY filedialogLocationChanged)
-    QString getFiledialogLocation();
-    void setFiledialogLocation(QString val);
-
-    Q_PROPERTY(bool closeWhenLosingFocus READ getCloseWhenLosingFocus WRITE setCloseWhenLosingFocus NOTIFY closeWhenLosingFocusChanged)
-    bool getCloseWhenLosingFocus();
-    void setCloseWhenLosingFocus(bool val);
-
-    Q_PROPERTY(bool textWordWrap READ getTextWordWrap WRITE setTextWordWrap NOTIFY textWordWrapChanged)
-    bool getTextWordWrap();
-    void setTextWordWrap(bool val);
-
-    Q_PROPERTY(int textFontPointSize READ getTextFontPointSize WRITE setTextFontPointSize NOTIFY textFontPointSizeChanged)
-    int getTextFontPointSize();
-    void setTextFontPointSize(int val);
-
-    Q_PROPERTY(bool textSearchCaseSensitive READ getTextSearchCaseSensitive WRITE setTextSearchCaseSensitive NOTIFY textSearchCaseSensitiveChanged)
-    bool getTextSearchCaseSensitive();
-    void setTextSearchCaseSensitive(bool val);
+    Q_PROPERTY(QString version MEMBER m_version NOTIFY versionChanged)
+    Q_PROPERTY(QString language MEMBER m_language NOTIFY languageChanged)
+    Q_PROPERTY(bool topBarAutoHide MEMBER m_topBarAutoHide NOTIFY topBarAutoHideChanged)
+    Q_PROPERTY(bool hideToSystemTray MEMBER m_hideToSystemTray NOTIFY hideToSystemTrayChanged)
+    Q_PROPERTY(bool launchHiddenToSystemTray MEMBER m_launchHiddenToSystemTray NOTIFY launchHiddenToSystemTrayChanged)
+    Q_PROPERTY(bool notifyNextLaunchHiddenToSystemTray MEMBER m_notifyNextLaunchHiddenToSystemTray NOTIFY notifyNextlaunchHiddenToSystemTrayChanged)
+    Q_PROPERTY(bool maximizeImageSizeAndAdjustWindow MEMBER m_maximizeImageSizeAndAdjustWindow NOTIFY maximizeImageSizeAndAdjustWindowChanged)
+    Q_PROPERTY(int defaultWindowWidth MEMBER m_defaultWindowWidth NOTIFY defaultWindowWidthChanged)
+    Q_PROPERTY(int defaultWindowHeight MEMBER m_defaultWindowHeight NOTIFY defaultWindowHeightChanged)
+    Q_PROPERTY(bool defaultWindowMaximized MEMBER m_defaultWindowMaximized NOTIFY defaultWindowMaximizedChanged)
+    Q_PROPERTY(QString defaultAppShortcut MEMBER m_defaultAppShortcut NOTIFY defaultAppShortcutChanged)
+    Q_PROPERTY(QString defaultAppImages MEMBER m_defaultAppImages NOTIFY defaultAppImagesChanged)
+    Q_PROPERTY(QString defaultAppDocuments MEMBER m_defaultAppDocuments NOTIFY defaultAppDocumentsChanged)
+    Q_PROPERTY(QString defaultAppArchives MEMBER m_defaultAppArchives NOTIFY defaultAppArchivesChanged)
+    Q_PROPERTY(QString defaultAppVideos MEMBER m_defaultAppVideos NOTIFY defaultAppVideosChanged)
+    Q_PROPERTY(QString defaultAppComicBooks MEMBER m_defaultAppComicBooks NOTIFY defaultAppComicBooksChanged)
+    Q_PROPERTY(QString defaultAppEBooks MEMBER m_defaultAppEBooks NOTIFY defaultAppEBooksChanged)
+    Q_PROPERTY(QString defaultAppText MEMBER m_defaultAppText NOTIFY defaultAppTextChanged)
+    Q_PROPERTY(bool closeAfterDefaultApp MEMBER m_closeAfterDefaultApp NOTIFY closeAfterDefaultAppChanged)
+    Q_PROPERTY(QString filedialogLocation MEMBER m_filedialogLocation NOTIFY filedialogLocationChanged)
+    Q_PROPERTY(bool closeWhenLosingFocus MEMBER m_closeWhenLosingFocus NOTIFY closeWhenLosingFocusChanged)
+    Q_PROPERTY(bool textWordWrap MEMBER m_textWordWrap NOTIFY textWordWrapChanged)
+    Q_PROPERTY(int textFontPointSize MEMBER m_textFontPointSize NOTIFY textFontPointSizeChanged)
+    Q_PROPERTY(bool textSearchCaseSensitive MEMBER m_textSearchCaseSensitive NOTIFY textSearchCaseSensitiveChanged)
 
     Q_INVOKABLE bool getFirstStart() { return firstStart; }
 
 private:
-    PQCSettings();
-
     QString m_version;
     QString m_language;
     bool m_topBarAutoHide;
     bool m_hideToSystemTray;
     bool m_launchHiddenToSystemTray;
-    bool m_notifyNextlaunchHiddenToSystemTray;
+    bool m_notifyNextLaunchHiddenToSystemTray;
     bool m_maximizeImageSizeAndAdjustWindow;
     int m_defaultWindowWidth;
     int m_defaultWindowHeight;

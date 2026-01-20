@@ -1,5 +1,6 @@
 #include <pqc_specialactions.h>
-#include <pqc_scripts.h>
+#include <pqc_scriptsspecificactions.h>
+#include <pqc_scriptsfilespaths.h>
 #include <pqc_fileformats.h>
 #include <pqc_loadfile.h>
 
@@ -17,7 +18,7 @@ PQCSpecialActions::PQCSpecialActions() {}
 
 void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
 
-    QString filename = PQCScripts::get().toAbsolutePath(PQCScripts::cleanPath(path));
+    QString filename = PQCScriptsFilesPaths::get().toAbsolutePath(PQCScriptsFilesPaths::cleanPath(path));
 
     QString tmpfile = QString("%1/tmpfile.jpg").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
     if(QFileInfo::exists(tmpfile))
@@ -41,7 +42,7 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
         std::cout << "display mime: " << mime.toStdString() << std::endl
                   << "source mime: " << mime.toStdString() << std::endl
                   << "tmp path: " << filename.toStdString() << std::endl
-                  << "file name: " << PQCScripts::get().getFilename(filename).toStdString() << std::endl
+                  << "file name: " << PQCScriptsFilesPaths::get().getFilename(filename).toStdString() << std::endl
                   << "video: yes" << std::endl;
 
         return;
@@ -55,7 +56,7 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
         std::cout << "display mime: " << mime.toStdString() << std::endl
                   << "source mime: " << mime.toStdString() << std::endl
                   << "tmp path: " << filename.toStdString() << std::endl
-                  << "file name: " << PQCScripts::get().getFilename(filename).toStdString() << std::endl;
+                  << "file name: " << PQCScriptsFilesPaths::get().getFilename(filename).toStdString() << std::endl;
 
         QImageReader reader(filename);
         if(reader.supportsAnimation())
@@ -65,12 +66,12 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
 
     }
 
-    bool isPDF = PQCScripts::get().isPDFDocument(filename);
-    bool isARC = PQCScripts::get().isArchive(filename);
+    bool isPDF = PQCScriptsSpecificActions::get().isPDFDocument(filename);
+    bool isARC = PQCScriptsSpecificActions::get().isArchive(filename);
 
     QStringList archiveContent;
     if(isARC)
-        archiveContent = PQCScripts::get().getArchiveContent(filename);
+        archiveContent = PQCScriptsSpecificActions::get().getArchiveContent(filename, true);
     \
         QString filenameToLoad = filename;
     if(isPDF)
@@ -88,11 +89,11 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
     std::cout << "display mime: image/jpeg" << std::endl
               << "source mime: " << db.mimeTypeForFile(filename).name().toStdString() << std::endl
               << "tmp path: " << QString("%1/tmpfile.jpg").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).toStdString() << std::endl
-              << "file name: " << PQCScripts::get().getFilename(filename).toStdString() << std::endl;
+              << "file name: " << PQCScriptsFilesPaths::get().getFilename(filename).toStdString() << std::endl;
 
     if(isPDF) {
         std::cout << "file number: " << fileNumInside << std::endl;
-        std::cout << "file count: " << PQCScripts::get().getDocumentPageCount(filename) << std::endl;
+        std::cout << "file count: " << PQCScriptsSpecificActions::get().getDocumentPageCount(filename) << std::endl;
     } else if(isARC) {
         std::cout << "file number: " << fileNumInside << std::endl;
         std::cout << "file name (inside): " << archiveContent[fileNumInside].toStdString() << std::endl;

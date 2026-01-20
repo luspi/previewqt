@@ -19,47 +19,58 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
+#pragma once
 
-import QtQuick
-import Qt.labs.platform
+#include <QObject>
+#include <QMap>
+#include <QImage>
+#include <QTranslator>
 
-SystemTrayIcon {
+class QProcess;
 
-    // style tray icon
-    visible: true
-    icon.source: "image://svg/:/logo.svg"
+class PQCScriptsSpecificActions : public QObject {
 
-    // show/hide application window
-    onActivated: {
-        if(toplevel.visible)
-            toplevel.close()
-        else {
-            toplevel.show()
-            toplevel.raise()
-            toplevel.requestActivate()
-        }
+    Q_OBJECT
+
+public:
+    static PQCScriptsSpecificActions& get() {
+        static PQCScriptsSpecificActions instance;
+        return instance;
     }
+    ~PQCScriptsSpecificActions();
 
-    // the context menu
-    menu: Menu {
-        visible: false
-        MenuItem {
-            text: toplevel.visible ? qsTr("Hide window") : qsTr("Show window")
-            onTriggered: {
-                toplevel.visible = !toplevel.visible
-            }
-        }
-        MenuItem {
-            text: qsTr("Quit PreviewQt")
-            onTriggered:
-                Qt.quit()
-        }
-    }
+    PQCScriptsSpecificActions(PQCScriptsSpecificActions const&)     = delete;
+    void operator=(PQCScriptsSpecificActions const&) = delete;
 
-    // check if a message is to be shown once set up
-    Component.onCompleted: {
-        if(toplevel.messageWhenReady[0] !== "")
-            showMessage(toplevel.messageWhenReady[0], toplevel.messageWhenReady[1], SystemTrayIcon.Information, 5000)
-    }
+    bool isArchive(QString path);
+    bool isComicBook(QString path);
+    bool isEpub(QString path);
+    bool isTextDocument(QString path);
+    bool isMpvVideo(QString path);
+    bool isQtVideo(QString path);
+    bool isPDFDocument(QString path);
+    bool isSVG(QString path);
+    bool isPhotoSphere(QString path);
+    int isMotionPhoto(QString path);
+    bool isItAnimated(QString filename);
 
- }
+    int getDocumentPageCount(QString path);
+    QString extractMotionPhoto(QString path);
+    int getExifOrientation(QString path);
+    QString getTextFileContents(QString path);
+
+    QStringList getArchiveContent(QString path, bool insideFilenameOnly = false);
+
+    QVariantList loadEPUB(QString path);
+    void analyzeEpubMetaData(QString subfolder, QString txt, QString &title, QString &coverId, QMap<QString, QString> &outFileList, QStringList &outIdOrder);
+
+private:
+    PQCScriptsSpecificActions();
+
+    QMap<QString,QStringList> archiveContents;
+    QString generateArchiveId(QString path);
+
+Q_SIGNALS:
+    void commandLineArgumentReceived(QString msg);
+
+};

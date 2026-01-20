@@ -19,47 +19,36 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
+#pragma once
 
-import QtQuick
-import Qt.labs.platform
+#include <pqc_scriptsother.h>
+#include <QObject>
+#include <QQmlEngine>
 
-SystemTrayIcon {
+class QTranslator;
 
-    // style tray icon
-    visible: true
-    icon.source: "image://svg/:/logo.svg"
+class PQCScriptsOtherQML : public QObject {
 
-    // show/hide application window
-    onActivated: {
-        if(toplevel.visible)
-            toplevel.close()
-        else {
-            toplevel.show()
-            toplevel.raise()
-            toplevel.requestActivate()
-        }
+    Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+    QML_NAMED_ELEMENT(PQCScriptsOther)
+
+public:
+    explicit PQCScriptsOtherQML() {};
+    ~PQCScriptsOtherQML() {}
+
+    Q_INVOKABLE QString keycodeToString(Qt::KeyboardModifiers modifiers, Qt::Key keycode) {
+        return PQCScriptsOther::get().keycodeToString(modifiers, keycode);
     }
 
-    // the context menu
-    menu: Menu {
-        visible: false
-        MenuItem {
-            text: toplevel.visible ? qsTr("Hide window") : qsTr("Show window")
-            onTriggered: {
-                toplevel.visible = !toplevel.visible
-            }
-        }
-        MenuItem {
-            text: qsTr("Quit PreviewQt")
-            onTriggered:
-                Qt.quit()
-        }
+    Q_INVOKABLE QSize fitSizeInsideSize(int w, int h, int maxw, int maxh) {
+        return PQCScriptsOther::get().fitSizeInsideSize(w, h, maxw, maxh);
     }
 
-    // check if a message is to be shown once set up
-    Component.onCompleted: {
-        if(toplevel.messageWhenReady[0] !== "")
-            showMessage(toplevel.messageWhenReady[0], toplevel.messageWhenReady[1], SystemTrayIcon.Information, 5000)
+    Q_INVOKABLE QString getStartupMessage() {
+        return PQCScriptsOther::get().getStartupMessage();
     }
 
- }
+
+};

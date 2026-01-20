@@ -21,8 +21,7 @@
  **************************************************************************/
 
 import QtQuick
-import PQCScripts
-import PQCSettings
+import PreviewQt
 
 Item {
 
@@ -118,8 +117,8 @@ Item {
     DropArea {
         anchors.fill: parent
         onDropped: (drop) => {
-            var src = PQCScripts.cleanPath(drop.text)
-            if(PQCScripts.isFileSupported(src))
+            var src = PQCScriptsFilesPaths.cleanPath(drop.text)
+            if(PQCScriptsFilesPaths.isFileSupported(src))
                 loadImage(src)
         }
     }
@@ -150,36 +149,36 @@ Item {
             return
         }
 
-        imageSource = PQCScripts.cleanPath(path)
+        imageSource = PQCScriptsFilesPaths.cleanPath(path)
         image.status = Image.Loading
 
-        PQCSettings.filedialogLocation = PQCScripts.getDir(imageSource)
+        PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(imageSource)
 
-        if(PQCScripts.isPDFDocument(imageSource)) {
+        if(PQCScriptsSpecificActions.isPDFDocument(imageSource)) {
             currentType = "doc"
             imageloader.source = "imageitems/PQDocument.qml"
-        } else if(PQCScripts.isEpub(imageSource)) {
+        } else if(PQCScriptsSpecificActions.isEpub(imageSource)) {
             currentType = "bok"
             imageloader.source = "imageitems/PQEPUB.qml"
-        } else if(PQCScripts.isArchive(imageSource)) {
+        } else if(PQCScriptsSpecificActions.isArchive(imageSource)) {
             currentType = "ani"
             imageloader.source = "imageitems/PQArchive.qml"
-        } else if(PQCScripts.isMpvVideo(imageSource)) {
+        } else if(PQCScriptsSpecificActions.isMpvVideo(imageSource)) {
             currentType = "arc"
             imageloader.source = "imageitems/PQVideoMpv.qml"
-        } else if(PQCScripts.isQtVideo(imageSource)) {
+        } else if(PQCScriptsSpecificActions.isQtVideo(imageSource)) {
             currentType = "mpv"
             imageloader.source = "imageitems/PQVideoQt.qml"
-        } else if(PQCScripts.isItAnimated(imageSource)) {
+        } else if(PQCScriptsSpecificActions.isItAnimated(imageSource)) {
             currentType = "vid"
             imageloader.source = "imageitems/PQImageAnimated.qml"
-        } else if(PQCScripts.isPhotoSphere(imageSource)) {
+        } else if(PQCScriptsSpecificActions.isPhotoSphere(imageSource)) {
             currentType = "sph"
             imageloader.source = "imageitems/PQPhotoSphere.qml"
-        } else if(PQCScripts.isSVG(imageSource)) {
+        } else if(PQCScriptsSpecificActions.isSVG(imageSource)) {
             currentType = "svg"
             imageloader.source = "imageitems/PQSVG.qml"
-        } else if(PQCScripts.isTextDocument(imageSource)) {
+        } else if(PQCScriptsSpecificActions.isTextDocument(imageSource)) {
             currentType = "txt"
             imageloader.source = "imageitems/PQTxt.qml"
         } else {

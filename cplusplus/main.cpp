@@ -38,11 +38,11 @@
 #endif
 
 #include <pqc_messagehandler.h>
-#include <pqc_scripts.h>
+#include <pqc_scriptsconfig.h>
 #include <pqc_fileformats.h>
 #include <pqc_providerfull.h>
 #include <pqc_providersvg.h>
-#include <pqc_settings.h>
+#include <pqc_settingscpp.h>
 #include <pqc_singleinstance.h>
 #include <pqc_configfiles.h>
 #include <pqc_cache.h>
@@ -241,22 +241,20 @@ int main(int argc, char *argv[]) {
     PQCFileFormats::get().validate();
 
     // Check for upgrade to PreviewQt
-    if(PQCScripts::get().isUpgrade()) {
+    if(PQCScriptsConfig::get().isUpgrade()) {
 
         // Validate image formats database
         PQCFileFormats::get().validate();
 
         // Update stored version number
-        PQCSettings::get().setVersion(PQMVERSION);
+        PQCSettingsCPP::get().setVersion(PQMVERSION);
 
     }
 
     QQmlApplicationEngine engine;
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &app, []() { QApplication::exit(-1); }, Qt::QueuedConnection);
 
-    qmlRegisterSingletonInstance("PQCSettings", 1, 0, "PQCSettings", &PQCSettings::get());
     qmlRegisterSingletonInstance("PQCCache", 1, 0, "PQCCache", &PQCCache::get());
-    qmlRegisterSingletonInstance("PQCScripts", 1, 0, "PQCScripts", &PQCScripts::get());
     qmlRegisterSingletonInstance("PQCFileFormats", 1, 0, "PQCFileFormats", &PQCFileFormats::get());
     qmlRegisterSingletonInstance("PQCTextProcessing", 1, 0, "PQCTextProcessing", &PQCTextProcessing::get());
 

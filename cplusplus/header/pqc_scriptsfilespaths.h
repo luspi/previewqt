@@ -19,47 +19,43 @@
  ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
  **                                                                      **
  **************************************************************************/
+#pragma once
 
-import QtQuick
-import Qt.labs.platform
+#include <QObject>
 
-SystemTrayIcon {
+class QTranslator;
 
-    // style tray icon
-    visible: true
-    icon.source: "image://svg/:/logo.svg"
+class PQCScriptsFilesPaths : public QObject {
 
-    // show/hide application window
-    onActivated: {
-        if(toplevel.visible)
-            toplevel.close()
-        else {
-            toplevel.show()
-            toplevel.raise()
-            toplevel.requestActivate()
-        }
+    Q_OBJECT
+
+public:
+    static PQCScriptsFilesPaths& get() {
+        static PQCScriptsFilesPaths instance;
+        return instance;
     }
+    ~PQCScriptsFilesPaths();
 
-    // the context menu
-    menu: Menu {
-        visible: false
-        MenuItem {
-            text: toplevel.visible ? qsTr("Hide window") : qsTr("Show window")
-            onTriggered: {
-                toplevel.visible = !toplevel.visible
-            }
-        }
-        MenuItem {
-            text: qsTr("Quit PreviewQt")
-            onTriggered:
-                Qt.quit()
-        }
-    }
+    PQCScriptsFilesPaths(PQCScriptsFilesPaths const&) = delete;
+    void operator=(PQCScriptsFilesPaths const&) = delete;
 
-    // check if a message is to be shown once set up
-    Component.onCompleted: {
-        if(toplevel.messageWhenReady[0] !== "")
-            showMessage(toplevel.messageWhenReady[0], toplevel.messageWhenReady[1], SystemTrayIcon.Information, 5000)
-    }
+    static QString cleanPath(QString path);
+    static QString cleanPath_windows(QString path);
+    QString getBasename(QString fullpath);
+    QString getFilename(QString path);
+    QString getDir(QString fullpath);
+    QString getSuffix(QString path);
+    QString toPercentEncoding(QString str);
+    QString fromPercentEncoding(QByteArray str);
+    bool doesFileExist(QString path);
+    bool isFileSupported(QString path);
+    QString toAbsolutePath(QString path);
+    QString openNewFile();
+    void deleteTemporaryFiles();
+    bool openInDefault(QString path);
+    void copyTextToClipboard(QString txt);
 
- }
+private:
+    PQCScriptsFilesPaths();
+
+};

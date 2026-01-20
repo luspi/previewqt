@@ -22,8 +22,7 @@
 
 import QtQuick
 import QtQuick.Controls
-import PQCScripts   // qmllint disable import
-import PQCSettings  // qmllint disable import
+import PreviewQt
 
 Item {
 
@@ -37,7 +36,7 @@ Item {
 
     property string source: image_top.imageSource // qmllint disable unqualified
 
-    property bool thisIsAComicBook: PQCScripts.isComicBook(source) // qmllint disable unqualified
+    property bool thisIsAComicBook: PQCScriptsSpecificActions.isComicBook(source) // qmllint disable unqualified
     property var fileList: []
     property int currentFile: 0
     property int fileCount: fileList.length
@@ -58,9 +57,9 @@ Item {
                 return
             }
             if(arc_top.source.includes("::ARC::") || arc_top.fileCount == 0)
-                source = "image://full/" + PQCScripts.toPercentEncoding(arc_top.source) // qmllint disable unqualified
+                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding(arc_top.source) // qmllint disable unqualified
             else
-                source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(arc_top.fileList[arc_top.currentFile]).arg(arc_top.source))
+                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::ARC::%2".arg(arc_top.fileList[arc_top.currentFile]).arg(arc_top.source))
         }
 
         asynchronous: true
@@ -95,7 +94,7 @@ Item {
         interval: 100
         running: true
         onTriggered: {
-            arc_top.fileList = PQCScripts.getArchiveContent(arc_top.source) // qmllint disable unqualified
+            arc_top.fileList = PQCScriptsSpecificActions.getArchiveContent(arc_top.source, true)
             if(arc_top.source.includes("::ARC::"))
                 arc_top.currentFile = arc_top.fileList.indexOf(arc_top.source.split("::ARC::")[0])
         }
@@ -109,7 +108,7 @@ Item {
         target: image_top // qmllint disable unqualified
         function onImageSourceChanged(imageSource) {
             arc_top.currentFile = 0
-            arc_top.fileList = PQCScripts.getArchiveContent(arc_top.source) // qmllint disable unqualified
+            arc_top.fileList = PQCScriptsSpecificActions.getArchiveContent(arc_top.source, true)
             updateSource()
         }
     }
@@ -118,9 +117,9 @@ Item {
         imageitem.asynchronous = false
         if(currentFile == -1 || currentFile >= fileList.length) return
         if(arc_top.source.includes("::ARC::")) {
-            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(arc_top.source.split("::ARC::")[1]))
+            imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(arc_top.source.split("::ARC::")[1]))
         } else {
-            imageitem.source = "image://full/" + PQCScripts.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(arc_top.source))
+            imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(arc_top.source))
         }
         imageitem.asynchronous = true
     }

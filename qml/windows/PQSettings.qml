@@ -26,8 +26,8 @@ import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Dialogs
 import QtQuick.Window
-import PQCSettings
-import PQCScripts
+
+import PreviewQt
 
 ApplicationWindow {
 
@@ -72,7 +72,7 @@ ApplicationWindow {
 
             if(tabbar.currentIndex === 1 && shortcutbut.checked) {
 
-                var txt = PQCScripts.keycodeToString(event.modifiers, event.key)
+                var txt = PQCScriptsOther.keycodeToString(event.modifiers, event.key)
                 var reserved = ["Esc", "Space", "Left", "Right", "Up", "Down", "Home", "End"]
 
                 if(txt === "Esc") {
@@ -240,7 +240,7 @@ ApplicationWindow {
                         onCurrentIndexChanged: {
                             catchKeyPress.forceActiveFocus()
                             PQCSettings.language = codes[currentIndex]
-                            PQCScripts.updateTranslation()
+                            PQCScriptsConfig.updateTranslation()
                         }
                     }
                 }
@@ -515,7 +515,7 @@ ApplicationWindow {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: imgoptions_key
-                        visible: !PQCScripts.amIOnWindows()
+                        visible: !PQCScriptsConfig.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -529,7 +529,7 @@ ApplicationWindow {
 
                     Row {
                         spacing: 5
-                        visible: imgcombo.currentIndex === imgcombo.model.length-1 || PQCScripts.amIOnWindows()
+                        visible: imgcombo.currentIndex === imgcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
                         TextField {
                             id: imgedit
                             y: (imgbut.height-height)/2
@@ -564,7 +564,7 @@ ApplicationWindow {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: docoptions_key
-                        visible: !PQCScripts.amIOnWindows()
+                        visible: !PQCScriptsConfig.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -578,7 +578,7 @@ ApplicationWindow {
 
                     Row {
                         spacing: 5
-                        visible: doccombo.currentIndex === doccombo.model.length-1 || PQCScripts.amIOnWindows()
+                        visible: doccombo.currentIndex === doccombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
                         TextField {
                             id: docedit
                             y: (docbut.height-height)/2
@@ -613,7 +613,7 @@ ApplicationWindow {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: vidoptions_key
-                        visible: !PQCScripts.amIOnWindows()
+                        visible: !PQCScriptsConfig.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -627,7 +627,7 @@ ApplicationWindow {
 
                     Row {
                         spacing: 5
-                        visible: vidcombo.currentIndex === vidcombo.model.length-1 || PQCScripts.amIOnWindows()
+                        visible: vidcombo.currentIndex === vidcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
                         TextField {
                             id: videdit
                             y: (vidbut.height-height)/2
@@ -662,7 +662,7 @@ ApplicationWindow {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: arcoptions_key
-                        visible: !PQCScripts.amIOnWindows()
+                        visible: !PQCScriptsConfig.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -676,7 +676,7 @@ ApplicationWindow {
 
                     Row {
                         spacing: 5
-                        visible: arccombo.currentIndex === arccombo.model.length-1 || PQCScripts.amIOnWindows()
+                        visible: arccombo.currentIndex === arccombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
                         TextField {
                             id: arcedit
                             y: (arcbut.height-height)/2
@@ -711,7 +711,7 @@ ApplicationWindow {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: comoptions_key
-                        visible: !PQCScripts.amIOnWindows()
+                        visible: !PQCScriptsConfig.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -725,7 +725,7 @@ ApplicationWindow {
 
                     Row {
                         spacing: 5
-                        visible: comcombo.currentIndex === comcombo.model.length-1 || PQCScripts.amIOnWindows()
+                        visible: comcombo.currentIndex === comcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
                         TextField {
                             id: comedit
                             y: (combut.height-height)/2
@@ -760,7 +760,7 @@ ApplicationWindow {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: bokoptions_key
-                        visible: !PQCScripts.amIOnWindows()
+                        visible: !PQCScriptsConfig.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -774,7 +774,7 @@ ApplicationWindow {
 
                     Row {
                         spacing: 5
-                        visible: bokcombo.currentIndex === bokcombo.model.length-1 || PQCScripts.amIOnWindows()
+                        visible: bokcombo.currentIndex === bokcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
                         TextField {
                             id: bokedit
                             y: (bokbut.height-height)/2
@@ -809,7 +809,7 @@ ApplicationWindow {
                         x: (defaultappsettings.usableWidth-width)/2
                         width: Math.min(300, defaultappsettings.usableWidth*0.8)
                         model: txtoptions_key
-                        visible: !PQCScripts.amIOnWindows()
+                        visible: !PQCScriptsConfig.amIOnWindows()
                         onCurrentIndexChanged: {
                             if(!optionsLoaded) return
                             catchKeyPress.forceActiveFocus()
@@ -823,7 +823,7 @@ ApplicationWindow {
 
                     Row {
                         spacing: 5
-                        visible: txtcombo.currentIndex === txtcombo.model.length-1 || PQCScripts.amIOnWindows()
+                        visible: txtcombo.currentIndex === txtcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
                         TextField {
                             id: txtedit
                             y: (txtbut.height-height)/2
@@ -887,8 +887,8 @@ ApplicationWindow {
     FileDialog {
         id: selectExe
         currentFolder: "file://" + (prevexe.slice(0,1)==="/" ?
-                                       PQCScripts.getDir(prevexe) :
-                                       (PQCScripts.amIOnWindows() ?
+                                       PQCScriptsFilesPaths.getDir(prevexe) :
+                                       (PQCScriptsConfig.amIOnWindows() ?
                                             StandardPaths.standardLocations(StandardPaths.HomeLocation)[0] :
                                             "/usr/bin"))
         nameFilters: "All Files (*.*)"
@@ -897,25 +897,25 @@ ApplicationWindow {
         onAccepted: {
 
             var file = selectedFile
-            var fname = PQCScripts.getFilename(file)
+            var fname = PQCScriptsFilesPaths.getFilename(file)
 
             if(StandardPaths.findExecutable(fname) === file)
                 file = fname
 
             if(category == "images")
-                imgedit.text = PQCScripts.cleanPath(file)
+                imgedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "documents")
-                imgedit.text = PQCScripts.cleanPath(file)
+                imgedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "videos")
-                imgedit.text = PQCScripts.cleanPath(file)
+                imgedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "archives")
-                imgedit.text = PQCScripts.cleanPath(file)
+                imgedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "comicbooks")
-                comedit.text = PQCScripts.cleanPath(file)
+                comedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "ebooks")
-                bokedit.text = PQCScripts.cleanPath(file)
+                bokedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "text")
-                txtedit.text = PQCScripts.cleanPath(file)
+                txtedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else
                 console.warn("Unknown category:", category)
 

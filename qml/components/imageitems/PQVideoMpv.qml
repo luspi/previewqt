@@ -23,7 +23,6 @@
 import QtQuick
 import QtQuick.Controls
 
-import PQCScripts
 import PQCMPVObject
 
 // The MPV object needs to be wrapped in an item

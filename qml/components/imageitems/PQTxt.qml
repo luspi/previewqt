@@ -22,8 +22,7 @@
 
 import QtQuick
 import QtQuick.Controls
-import PQCScripts // qmllint disable import
-import PQCSettings
+import PreviewQt
 import PQCTextProcessing
 /*1on_PQMKF6*/
 import org.kde.syntaxhighlighting 1.0
@@ -107,7 +106,7 @@ Rectangle {
                 property bool isMarkdown: false
                 Text {
                     id: htmldisplay_txt
-                    baseUrl: "file://" + PQCScripts.getDir(image_top.imageSource) + "/"
+                    baseUrl: "file://" + PQCScriptsFilesPaths.getDir(image_top.imageSource) + "/"
                     x: 5
                     y: 5
                     width: txt_top.width-10
@@ -181,7 +180,7 @@ Rectangle {
                         enabled: imageitem.selectedText.length>0
                         text: qsTr("Copy selection")
                         onTriggered: {
-                            PQCScripts.copyTextToClipboard(imageitem.selectedText)
+                            PQCScriptsFilesPaths.copyTextToClipboard(imageitem.selectedText)
                         }
                     }
                     MenuItem {
@@ -203,7 +202,7 @@ Rectangle {
                     MenuItem {
                         text: qsTr("Copy all content")
                         onTriggered: {
-                            PQCScripts.copyTextToClipboard(imageitem.text)
+                            PQCScriptsFilesPaths.copyTextToClipboard(imageitem.text)
                         }
                     }
 
@@ -889,8 +888,8 @@ Rectangle {
         imageitem.text = ""
         toplevel.overrideTitleSuffix = (formatbut.formatText ? " (processed)" : "")
 
-        var txt = PQCScripts.getTextFileContents(image_top.imageSource)
-        var suf = PQCScripts.getSuffix(image_top.imageSource)
+        var txt = PQCScriptsSpecificActions.getTextFileContents(image_top.imageSource)
+        var suf = PQCScriptsFilesPaths.getSuffix(image_top.imageSource)
 
         var canReFormat = ["json","html","htm","xhtml","md"]
         formatbut.visible = (canReFormat.indexOf(suf)>-1)

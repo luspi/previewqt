@@ -22,6 +22,7 @@
 
 #include <pqc_settings.h>
 #include <pqc_configfiles.h>
+#include <pqc_settingscpp.h>
 #include <QSettings>
 #include <QTimer>
 #include <QFileInfo>
@@ -68,49 +69,76 @@ PQCSettings::PQCSettings() {
 
         for(auto &ele : opt_img) {
             if(checkToolExistence(ele)) {
-                setDefaultAppImages(ele);
+                m_defaultAppImages = ele;
                 break;
             }
         }
         for(auto &ele : opt_doc) {
             if(checkToolExistence(ele)) {
-                setDefaultAppDocuments(ele);
+                m_defaultAppDocuments = ele;
                 break;
             }
         }
         for(auto &ele : opt_arc) {
             if(checkToolExistence(ele)) {
-                setDefaultAppArchives(ele);
+                m_defaultAppArchives = ele;
                 break;
             }
         }
         for(auto &ele : opt_com) {
             if(checkToolExistence(ele)) {
-                setDefaultAppComicBooks(ele);
+                m_defaultAppComicBooks = ele;
                 break;
             }
         }
         for(auto &ele : opt_bok) {
             if(checkToolExistence(ele)) {
-                setDefaultAppEBooks(ele);
+                m_defaultAppEBooks = ele;
                 break;
             }
         }
         for(auto &ele : opt_vid) {
             if(checkToolExistence(ele)) {
-                setDefaultAppVideos(ele);
+                m_defaultAppVideos = ele;
                 break;
             }
         }
         for(auto &ele : opt_txt) {
             if(checkToolExistence(ele)) {
-                setDefaultAppText(ele);
+                m_defaultAppText = ele;
                 break;
             }
         }
 
     }
 #endif
+
+    connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::versionChanged, this, [=]() { m_version = PQCSettingsCPP::get().getVersion(); Q_EMIT versionChanged(); });
+
+    connect(this, &PQCSettings::versionChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::languageChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::topBarAutoHideChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::hideToSystemTrayChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::launchHiddenToSystemTrayChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::notifyNextlaunchHiddenToSystemTrayChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::maximizeImageSizeAndAdjustWindowChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultWindowWidthChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultWindowHeightChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultWindowMaximizedChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppShortcutChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppImagesChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppDocumentsChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppArchivesChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppVideosChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppComicBooksChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppEBooksChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppTextChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::closeAfterDefaultAppChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::filedialogLocationChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::closeWhenLosingFocusChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::textWordWrapChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::textFontPointSizeChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::textSearchCaseSensitiveChanged, this, [=]() { saveTimer->start(); });
 
 }
 
@@ -131,296 +159,58 @@ bool PQCSettings::checkToolExistence(QString tool) {
     return !which.exitCode();
 }
 
-QString PQCSettings::getVersion() {
-    return m_version;
-}
-void PQCSettings::setVersion(QString val) {
-    if(m_version != val) {
-        m_version = val;
-        saveTimer->start();
-        Q_EMIT versionChanged();
-    }
-}
-
-QString PQCSettings::getLanguage() {
-    return m_language;
-}
-void PQCSettings::setLanguage(QString val) {
-    if(m_language != val) {
-        m_language = val;
-        saveTimer->start();
-        Q_EMIT languageChanged();
-    }
-}
-
-bool PQCSettings::getTopBarAutoHide() {
-    return m_topBarAutoHide;
-}
-void PQCSettings::setTopBarAutoHide(bool val) {
-    if(m_topBarAutoHide != val) {
-        m_topBarAutoHide = val;
-        saveTimer->start();
-        Q_EMIT topBarAutoHideChanged();
-    }
-}
-
-bool PQCSettings::getHideToSystemTray() {
-    return m_hideToSystemTray;
-}
-void PQCSettings::setHideToSystemTray(bool val) {
-    if(m_hideToSystemTray != val) {
-        m_hideToSystemTray = val;
-        saveTimer->start();
-        Q_EMIT hideToSystemTrayChanged();
-    }
-}
-
-bool PQCSettings::getLaunchHiddenToSystemTray() {
-    return m_launchHiddenToSystemTray;
-}
-void PQCSettings::setLaunchHiddenToSystemTray(bool val) {
-    if(m_launchHiddenToSystemTray != val) {
-        m_launchHiddenToSystemTray = val;
-        saveTimer->start();
-        Q_EMIT launchHiddenToSystemTrayChanged();
-    }
-}
-
-bool PQCSettings::getNotifyNextLaunchHiddenToSystemTray() {
-    return m_notifyNextlaunchHiddenToSystemTray;
-}
-void PQCSettings::setNotifyNextLaunchHiddenToSystemTray(bool val) {
-    if(m_notifyNextlaunchHiddenToSystemTray != val) {
-        m_notifyNextlaunchHiddenToSystemTray = val;
-        saveTimer->start();
-        Q_EMIT notifyNextlaunchHiddenToSystemTrayChanged();
-    }
-}
-
-bool PQCSettings::getMaximizeImageSizeAndAdjustWindow() {
-    return m_maximizeImageSizeAndAdjustWindow;
-}
-void PQCSettings::setMaximizeImageSizeAndAdjustWindow(bool val) {
-    if(m_maximizeImageSizeAndAdjustWindow != val) {
-        m_maximizeImageSizeAndAdjustWindow = val;
-        saveTimer->start();
-        Q_EMIT maximizeImageSizeAndAdjustWindowChanged();
-    }
-}
-
-int PQCSettings::getDefaultWindowWidth() {
-    return m_defaultWindowWidth;
-}
-void PQCSettings::setDefaultWindowWidth(int val) {
-    if(m_defaultWindowWidth != val) {
-        m_defaultWindowWidth = val;
-        saveTimer->start();
-        Q_EMIT defaultWindowWidthChanged();
-    }
-}
-
-int PQCSettings::getDefaultWindowHeight() {
-    return m_defaultWindowHeight;
-}
-void PQCSettings::setDefaultWindowHeight(int val) {
-    if(m_defaultWindowHeight != val) {
-        m_defaultWindowHeight = val;
-        saveTimer->start();
-        Q_EMIT defaultWindowHeightChanged();
-    }
-}
-
-bool PQCSettings::getDefaultWindowMaximized() {
-    return m_defaultWindowMaximized;
-}
-void PQCSettings::setDefaultWindowMaximized(bool val) {
-    if(m_defaultWindowMaximized != val) {
-        m_defaultWindowMaximized = val;
-        saveTimer->start();
-        Q_EMIT defaultWindowMaximizedChanged();
-    }
-}
-
-QString PQCSettings::getDefaultAppShortcut() {
-    return m_defaultAppShortcut;
-}
-void PQCSettings::setDefaultAppShortcut(QString val) {
-    if(m_defaultAppShortcut != val) {
-        m_defaultAppShortcut = val;
-        saveTimer->start();
-        Q_EMIT defaultAppShortcutChanged();
-    }
-}
-
-QString PQCSettings::getDefaultAppImages() {
-    return m_defaultAppImages;
-}
-void PQCSettings::setDefaultAppImages(QString val) {
-    if(m_defaultAppImages != val) {
-        m_defaultAppImages = val;
-        saveTimer->start();
-        Q_EMIT defaultAppImagesChanged();
-    }
-}
-
-QString PQCSettings::getDefaultAppDocuments() {
-    return m_defaultAppDocuments;
-}
-void PQCSettings::setDefaultAppDocuments(QString val) {
-    if(m_defaultAppDocuments != val) {
-        m_defaultAppDocuments = val;
-        saveTimer->start();
-        Q_EMIT defaultAppDocumentsChanged();
-    }
-}
-
-QString PQCSettings::getDefaultAppArchives() {
-    return m_defaultAppArchives;
-}
-void PQCSettings::setDefaultAppArchives(QString val) {
-    if(m_defaultAppArchives != val) {
-        m_defaultAppArchives = val;
-        saveTimer->start();
-        Q_EMIT defaultAppArchivesChanged();
-    }
-}
-
-QString PQCSettings::getDefaultAppVideos() {
-    return m_defaultAppVideos;
-}
-void PQCSettings::setDefaultAppVideos(QString val) {
-    if(m_defaultAppVideos != val) {
-        m_defaultAppVideos = val;
-        saveTimer->start();
-        Q_EMIT defaultAppVideosChanged();
-    }
-}
-
-QString PQCSettings::getDefaultAppComicBooks() {
-    return m_defaultAppComicBooks;
-}
-void PQCSettings::setDefaultAppComicBooks(QString val) {
-    if(m_defaultAppComicBooks != val) {
-        m_defaultAppComicBooks = val;
-        saveTimer->start();
-        Q_EMIT defaultAppComicBooksChanged();
-    }
-}
-
-QString PQCSettings::getDefaultAppEBooks() {
-    return m_defaultAppEBooks;
-}
-void PQCSettings::setDefaultAppEBooks(QString val) {
-    if(m_defaultAppEBooks != val) {
-        m_defaultAppEBooks = val;
-        saveTimer->start();
-        Q_EMIT defaultAppEBooksChanged();
-    }
-}
-
-QString PQCSettings::getDefaultAppText() {
-    return m_defaultAppText;
-}
-void PQCSettings::setDefaultAppText(QString val) {
-    if(m_defaultAppText != val) {
-        m_defaultAppText = val;
-        saveTimer->start();
-        Q_EMIT defaultAppTextChanged();
-    }
-}
-
-bool PQCSettings::getCloseAfterDefaultApp() {
-    return m_closeAfterDefaultApp;
-}
-void PQCSettings::setCloseAfterDefaultApp(bool val) {
-    if(m_closeAfterDefaultApp != val) {
-        m_closeAfterDefaultApp = val;
-        saveTimer->start();
-        Q_EMIT closeAfterDefaultAppChanged();
-    }
-}
-
-QString PQCSettings::getFiledialogLocation() {
-    return m_filedialogLocation;
-}
-void PQCSettings::setFiledialogLocation(QString val) {
-    if(m_filedialogLocation != val) {
-        m_filedialogLocation = val;
-        saveTimer->start();
-        Q_EMIT filedialogLocationChanged();
-    }
-}
-
-bool PQCSettings::getCloseWhenLosingFocus() {
-    return m_closeWhenLosingFocus;
-}
-void PQCSettings::setCloseWhenLosingFocus(bool val) {
-    if(m_closeWhenLosingFocus != val) {
-        m_closeWhenLosingFocus = val;
-        saveTimer->start();
-        Q_EMIT closeWhenLosingFocusChanged();
-    }
-}
-
-bool PQCSettings::getTextWordWrap() {
-    return m_textWordWrap;
-}
-void PQCSettings::setTextWordWrap(bool val) {
-    if(m_textWordWrap != val) {
-        m_textWordWrap = val;
-        saveTimer->start();
-        Q_EMIT textWordWrapChanged();
-    }
-}
-
-int PQCSettings::getTextFontPointSize() {
-    return m_textFontPointSize;
-}
-void PQCSettings::setTextFontPointSize(int val) {
-    if(m_textFontPointSize != val) {
-        m_textFontPointSize = val;
-        saveTimer->start();
-        Q_EMIT textFontPointSizeChanged();
-    }
-}
-
-bool PQCSettings::getTextSearchCaseSensitive() {
-    return m_textSearchCaseSensitive;
-}
-void PQCSettings::setTextSearchCaseSensitive(bool val) {
-    if(m_textSearchCaseSensitive != val) {
-        m_textSearchCaseSensitive = val;
-        saveTimer->start();
-        Q_EMIT textSearchCaseSensitiveChanged();
-    }
-}
-
 void PQCSettings::loadSettings() {
 
-    setVersion(settings->value("version", "").toString());
-    setLanguage(settings->value("language", "en").toString());
-    setTopBarAutoHide(settings->value("topBarAutoHide", false).toBool());
-    setHideToSystemTray(settings->value("hideToSystemTray", true).toBool());
-    setLaunchHiddenToSystemTray(settings->value("launchHiddenToSystemTray", false).toBool());
-    setNotifyNextLaunchHiddenToSystemTray(settings->value("notifyNextlaunchHiddenToSystemTray", true).toBool());
-    setMaximizeImageSizeAndAdjustWindow(settings->value("maximizeImageSizeAndAdjustWindow", true).toBool());
-    setDefaultWindowWidth(settings->value("defaultWindowWidth", 500).toInt());
-    setDefaultWindowHeight(settings->value("defaultWindowHeight", 400).toInt());
-    setDefaultWindowMaximized(settings->value("defaultWindowMaximized", false).toBool());
-    setDefaultAppShortcut(settings->value("defaultAppShortcut", "E").toString());
-    setDefaultAppImages(settings->value("defaultAppImages", opt_img[0]).toString());
-    setDefaultAppDocuments(settings->value("defaultAppDocuments", opt_doc[0]).toString());
-    setDefaultAppArchives(settings->value("defaultAppArchives", opt_arc[0]).toString());
-    setDefaultAppVideos(settings->value("defaultAppVideos", opt_vid[0]).toString());
-    setDefaultAppComicBooks(settings->value("defaultAppComicBooks", opt_com[0]).toString());
-    setDefaultAppEBooks(settings->value("defaultAppEBooks", opt_bok[0]).toString());
-    setDefaultAppText(settings->value("defaultAppText", opt_txt[0]).toString());
-    setCloseAfterDefaultApp(settings->value("closeAfterDefaultApp", true).toBool());
-    setFiledialogLocation(settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString());
-    setCloseWhenLosingFocus(settings->value("closeWhenLosingFocus", false).toBool());
-    setTextWordWrap(settings->value("textWordWrap", true).toBool());
-    setTextFontPointSize(settings->value("textFontPointSize", 12).toInt());
-    setTextSearchCaseSensitive(settings->value("textSearchCaseSensitive", false).toBool());
+    m_version = settings->value("version", "").toString();
+    if(PQCSettingsCPP::get().getVersion() != "" && m_version != PQCSettingsCPP::get().getVersion()) m_version = PQCSettingsCPP::get().getVersion();
+    m_language = settings->value("language", "en").toString();
+    m_topBarAutoHide = settings->value("topBarAutoHide", false).toBool();
+    m_hideToSystemTray = settings->value("hideToSystemTray", true).toBool();
+    m_launchHiddenToSystemTray = settings->value("launchHiddenToSystemTray", false).toBool();
+    m_notifyNextLaunchHiddenToSystemTray = settings->value("notifyNextlaunchHiddenToSystemTray", true).toBool();
+    m_maximizeImageSizeAndAdjustWindow = settings->value("maximizeImageSizeAndAdjustWindow", true).toBool();
+    m_defaultWindowWidth = settings->value("defaultWindowWidth", 500).toInt();
+    m_defaultWindowHeight = settings->value("defaultWindowHeight", 400).toInt();
+    m_defaultWindowMaximized = settings->value("defaultWindowMaximized", false).toBool();
+    m_defaultAppShortcut = settings->value("defaultAppShortcut", "E").toString();
+    m_defaultAppImages = settings->value("defaultAppImages", opt_img[0]).toString();
+    m_defaultAppDocuments = settings->value("defaultAppDocuments", opt_doc[0]).toString();
+    m_defaultAppArchives = settings->value("defaultAppArchives", opt_arc[0]).toString();
+    m_defaultAppVideos = settings->value("defaultAppVideos", opt_vid[0]).toString();
+    m_defaultAppComicBooks = settings->value("defaultAppComicBooks", opt_com[0]).toString();
+    m_defaultAppEBooks = settings->value("defaultAppEBooks", opt_bok[0]).toString();
+    m_defaultAppText = settings->value("defaultAppText", opt_txt[0]).toString();
+    m_closeAfterDefaultApp = settings->value("closeAfterDefaultApp", true).toBool();
+    m_filedialogLocation = settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString();
+    m_closeWhenLosingFocus = settings->value("closeWhenLosingFocus", false).toBool();
+    m_textWordWrap = settings->value("textWordWrap", true).toBool();
+    m_textFontPointSize = settings->value("textFontPointSize", 12).toInt();
+    m_textSearchCaseSensitive = settings->value("textSearchCaseSensitive", false).toBool();
+
+    Q_EMIT versionChanged();
+    Q_EMIT languageChanged();
+    Q_EMIT topBarAutoHideChanged();
+    Q_EMIT hideToSystemTrayChanged();
+    Q_EMIT launchHiddenToSystemTrayChanged();
+    Q_EMIT notifyNextlaunchHiddenToSystemTrayChanged();
+    Q_EMIT maximizeImageSizeAndAdjustWindowChanged();
+    Q_EMIT defaultWindowWidthChanged();
+    Q_EMIT defaultWindowHeightChanged();
+    Q_EMIT defaultWindowMaximizedChanged();
+    Q_EMIT defaultAppShortcutChanged();
+    Q_EMIT defaultAppImagesChanged();
+    Q_EMIT defaultAppDocumentsChanged();
+    Q_EMIT defaultAppArchivesChanged();
+    Q_EMIT defaultAppVideosChanged();
+    Q_EMIT defaultAppComicBooksChanged();
+    Q_EMIT defaultAppEBooksChanged();
+    Q_EMIT defaultAppTextChanged();
+    Q_EMIT closeAfterDefaultAppChanged();
+    Q_EMIT filedialogLocationChanged();
+    Q_EMIT closeWhenLosingFocusChanged();
+    Q_EMIT textWordWrapChanged();
+    Q_EMIT textFontPointSizeChanged();
+    Q_EMIT textSearchCaseSensitiveChanged();
 
 }
 
@@ -431,7 +221,7 @@ void PQCSettings::saveSettings() {
     settings->setValue("topBarAutoHide", m_topBarAutoHide);
     settings->setValue("hideToSystemTray", m_hideToSystemTray);
     settings->setValue("launchHiddenToSystemTray", m_launchHiddenToSystemTray);
-    settings->setValue("notifyNextlaunchHiddenToSystemTray", m_notifyNextlaunchHiddenToSystemTray);
+    settings->setValue("notifyNextlaunchHiddenToSystemTray", m_notifyNextLaunchHiddenToSystemTray);
     settings->setValue("maximizeImageSizeAndAdjustWindow", m_maximizeImageSizeAndAdjustWindow);
     settings->setValue("defaultWindowWidth", m_defaultWindowWidth);
     settings->setValue("defaultWindowHeight", m_defaultWindowHeight);

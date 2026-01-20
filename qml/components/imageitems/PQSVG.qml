@@ -22,8 +22,6 @@
 
 import QtQuick
 import QtMultimedia
-import PQCScripts
-import PQCSettings
 
 Item {
 
@@ -42,7 +40,7 @@ Item {
 
         id: imageitem
 
-        source: image_top.imageSource!=="" ? ("image://full/" + PQCScripts.toPercentEncoding(image_top.imageSource)) : ""
+        source: image_top.imageSource!=="" ? ("image://full/" + PQCScriptsFilesPaths.toPercentEncoding(image_top.imageSource)) : ""
 
         asynchronous: true
 

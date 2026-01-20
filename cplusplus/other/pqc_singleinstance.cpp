@@ -25,7 +25,6 @@
 #include <QDir>
 #include <thread>
 #include <iostream>
-#include <qlogging.h>   // needed in this form to compile with Qt 6.2
 
 #include <QQmlApplicationEngine>
 #include <QLocalSocket>
@@ -37,7 +36,10 @@
 #include <QClipboard>
 
 #include <pqc_singleinstance.h>
-#include <pqc_scripts.h>
+#include <pqc_scriptsspecificactions.h>
+#include <pqc_scriptsconfig.h>
+#include <pqc_scriptsfilespaths.h>
+#include <pqc_scriptsother.h>
 #include <pqc_loadfile.h>
 #include <pqc_fileformats.h>
 #include <pqc_specialactions.h>
@@ -82,7 +84,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
             std::cout << std::endl
                       << " ** PreviewQt configuration:"
                       << std::endl << std::endl
-                      << PQCScripts::get().getConfigInfo(false).toStdString()
+                      << PQCScriptsConfig::get().getConfigInfo(false).toStdString()
                       << std::endl;
             std::exit(0);
             return;
@@ -120,7 +122,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     }
 
     // only process and provide generic way to access rendered file
-    if(processonly && QFileInfo::exists(PQCScripts::get().cleanPath(file))) {
+    if(processonly && QFileInfo::exists(PQCScriptsFilesPaths::get().cleanPath(file))) {
 
         PQCSpecialActions::processOnly(file, fileNumInside);
         std::exit(0);
@@ -143,14 +145,14 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     }
 
 
-    QString filename = PQCScripts::get().toAbsolutePath(PQCScripts::cleanPath(file));
+    QString filename = PQCScriptsFilesPaths::get().toAbsolutePath(PQCScriptsFilesPaths::cleanPath(file));
 
     QByteArray message = "";
     if(fileNumInside > 0) {
-        if(PQCScripts::get().isPDFDocument(filename)) {
+        if(PQCScriptsSpecificActions::get().isPDFDocument(filename)) {
             message = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename).arg(fileNumInside));
-        } else if(PQCScripts::get().isArchive(filename)) {
-            QStringList cont = PQCScripts::get().getArchiveContent(filename);
+        } else if(PQCScriptsSpecificActions::get().isArchive(filename)) {
+            QStringList cont = PQCScriptsSpecificActions::get().getArchiveContent(filename, true);
             if(fileNumInside < cont.length())
                 message = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename, cont[fileNumInside]));
             else
@@ -165,7 +167,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         message = "-";
 
     if(setDebug)
-        PQCScripts::get().setDebug(true);
+        PQCScriptsConfig::get().setDebug(true);
 
     socket = nullptr;
     server = nullptr;
@@ -204,7 +206,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         server->listen(server_str);
         connect(server, &QLocalServer::newConnection, this, &PQCSingleInstance::newConnection);
 
-        PQCScripts::get().setStartupMessage(message);
+        PQCScriptsOther::get().setStartupMessage(message);
 
     }
 
@@ -245,7 +247,7 @@ void PQCSingleInstance::handleMessage(QString msg) {
 
     qDebug() << "args: msg =" << msg;
 
-    Q_EMIT PQCScripts::get().commandLineArgumentReceived(msg);
+    Q_EMIT PQCScriptsSpecificActions::get().commandLineArgumentReceived(msg);
 
 }
 

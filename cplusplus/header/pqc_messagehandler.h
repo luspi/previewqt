@@ -22,7 +22,9 @@
 
 // This file is included in main.cpp
 // and this function is installed as message handler
-#include <pqc_scripts.h>
+#ifdef NDEBUG
+#include <pqc_scriptsconfig.h>
+#endif
 
 void pqcMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
 
@@ -34,7 +36,7 @@ void pqcMessageHandler(QtMsgType type, const QMessageLogContext &context, const 
     switch (type) {
     case QtDebugMsg:
 #ifdef NDEBUG
-    if(PQCScripts::get().isDebug()) {
+    if(PQCScriptsConfig::get().isDebug()) {
 #endif
         fprintf(stderr, "%s [D] %s::%s::%u: %s\n", date.toString("yyyy-MM-dd HH:mm:ss.zzz").toLatin1().constData(), filename.constData(), function, context.line, msg.toLocal8Bit().constData());
 #ifdef NDEBUG

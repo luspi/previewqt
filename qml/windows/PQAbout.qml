@@ -23,7 +23,7 @@
 import QtCore
 import QtQuick
 import QtQuick.Controls
-import PQCScripts
+import PreviewQt
 
 ApplicationWindow {
 
@@ -147,7 +147,7 @@ ApplicationWindow {
                     spacing: 5
 
                     Text {
-                        text: "PreviewQt v" + PQCScripts.getVersion()
+                        text: "PreviewQt v" + PQCScriptsConfig.getVersion()
                         color: palette.text
                     }
 
@@ -232,7 +232,7 @@ ApplicationWindow {
         property bool configLoaded: false
         onVisibleChanged: {
             if(visible && !configLoaded) {
-                configtxt.text = PQCScripts.getConfigInfo()
+                configtxt.text = PQCScriptsConfig.getConfigInfo()
                 configLoaded = true
             }
         }
@@ -267,7 +267,7 @@ ApplicationWindow {
                     x: (parent.width-width)/2
                     text: qsTr("Copy to clipboard")
                     onClicked: {
-                        PQCScripts.copyTextToClipboard(PQCScripts.getConfigInfo(false))
+                        PQCScriptsFilesPaths.copyTextToClipboard(PQCScriptsConfig.getConfigInfo(false))
                         catchKeyPress.forceActiveFocus()
                     }
                 }
