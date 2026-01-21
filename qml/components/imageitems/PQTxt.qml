@@ -23,7 +23,6 @@
 import QtQuick
 import QtQuick.Controls
 import PreviewQt
-import PQCTextProcessing
 /*1on_PQMKF6*/
 import org.kde.syntaxhighlighting 1.0
 /*2on_PQMKF6*/

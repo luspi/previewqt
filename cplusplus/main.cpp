@@ -45,7 +45,6 @@
 #include <pqc_settingscpp.h>
 #include <pqc_singleinstance.h>
 #include <pqc_configfiles.h>
-#include <pqc_textprocessing.h>
 
 #ifdef Q_OS_WIN
 #include <QQuickWindow>
@@ -254,7 +253,6 @@ int main(int argc, char *argv[]) {
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &app, []() { QApplication::exit(-1); }, Qt::QueuedConnection);
 
     qmlRegisterSingletonInstance("PQCFileFormats", 1, 0, "PQCFileFormats", &PQCFileFormats::get());
-    qmlRegisterSingletonInstance("PQCTextProcessing", 1, 0, "PQCTextProcessing", &PQCTextProcessing::get());
 
     engine.addImageProvider("full", new PQCProviderFull);
     engine.addImageProvider("svg", new PQCProviderSVG);

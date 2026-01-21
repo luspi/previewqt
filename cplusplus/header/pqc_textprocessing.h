@@ -22,24 +22,18 @@
 #pragma once
 
 #include <QObject>
+#include <QQmlEngine>
 
 class PQCTextProcessing : public QObject {
 
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
 
 public:
-    static PQCTextProcessing& get() {
-        static PQCTextProcessing instance;
-        return instance;
-    }
+    PQCTextProcessing();
     ~PQCTextProcessing();
 
-    PQCTextProcessing(PQCTextProcessing const&)     = delete;
-    void operator=(PQCTextProcessing const&) = delete;
-
     Q_INVOKABLE QString prettifyJSON(QString json);
-
-private:
-    PQCTextProcessing();
 
 };

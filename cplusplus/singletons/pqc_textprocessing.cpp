@@ -1,12 +1,8 @@
 #include <pqc_textprocessing.h>
 
-PQCTextProcessing::PQCTextProcessing() {
+PQCTextProcessing::PQCTextProcessing() {}
 
-}
-
-PQCTextProcessing::~PQCTextProcessing() {
-
-}
+PQCTextProcessing::~PQCTextProcessing() {}
 
 QString PQCTextProcessing::prettifyJSON(QString json) {
 
