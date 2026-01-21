@@ -206,11 +206,11 @@ Rectangle {
 
     MouseArea {
         anchors.fill: parent
-        enabled: toplevel.menuOpen
+        enabled: PQCConstants.menuIsOpen
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton
         onClicked: {
-            toplevel.closeAllMenus()
+            PQCNotify.closeAllMenus()
         }
     }
 

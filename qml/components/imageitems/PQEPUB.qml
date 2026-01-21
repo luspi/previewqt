@@ -79,7 +79,7 @@ Item {
         book = PQCScriptsImages.loadEPUB(image_top.imageSource)
 
         // set book title
-        toplevel.overrideTitle = book[0]
+        PQCConstants.mainwindowOverrideTitle = book[0]
 
         // store document count
         documentCount = book.length-2
@@ -234,7 +234,8 @@ Item {
 
         width: image_top.width
         height: image_top.height
-        sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !toplevel.isMaximized && !toplevel.isFullscreen && !toplevel.manualWindowSizeChange) ?
+        sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !PQCConstants.mainwindowIsMaximized &&
+                     !PQCConstants.mainwindowIsFullscreen && !PQCConstants.mainwindowManuallyResized) ?
                         Qt.size(defw, defh) :
                         Qt.size(image_top.windowWidth, image_top.windowHeight)
 

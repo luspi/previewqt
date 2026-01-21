@@ -22,6 +22,7 @@
 
 import QtQuick
 import QtQuick.Controls
+import PreviewQt
 
 Rectangle {
 
@@ -60,12 +61,12 @@ Rectangle {
         sourceSize: Qt.size(width, height)
         mipmap: false
         smooth: false
-        opacity: active ? 1 : 0.5
+        opacity: control.active ? 1 : 0.5
         Behavior on opacity { NumberAnimation { duration: 200 } }
     }
 
     Rectangle {
-        visible: borderLeft
+        visible: control.borderLeft
         x: 0
         y: 0
         width: 1
@@ -74,7 +75,7 @@ Rectangle {
     }
 
     Rectangle {
-        visible: borderRight
+        visible: control.borderRight
         x: parent.width-1
         y: 0
         width: 1
@@ -103,13 +104,13 @@ Rectangle {
             }
         }
         onAboutToShow: {
-            toplevel.menuOpen = true
+            PQCConstants.menuIsOpen = true
         }
         onAboutToHide: {
-            toplevel.menuOpen = false
+            PQCConstants.menuIsOpen = false
         }
         Connections {
-            target: toplevel
+            target: PQCNotify
             function onCloseAllMenus() {
                 menu.close()
             }

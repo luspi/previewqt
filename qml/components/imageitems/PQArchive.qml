@@ -76,7 +76,8 @@ Item {
 
         width: rotation%180===0 ? image_top.width : image_top.height // qmllint disable unqualified
         height: rotation%180===0 ? image_top.height : image_top.width // qmllint disable unqualified
-        sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !toplevel.isMaximized && !toplevel.isFullscreen && !toplevel.manualWindowSizeChange) ? // qmllint disable unqualified
+        sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !PQCConstants.mainwindowIsMaximized &&
+                     !PQCConstants.mainwindowIsFullscreen && !PQCConstants.mainwindowManuallyResized) ?
                         (rotation%180===0 ? Qt.size(defw, defh) : Qt.size(defh, defw)) :
                         (rotation%180===0 ? Qt.size(image_top.windowWidth, image_top.windowHeight) : Qt.size(image_top.windowHeight, image_top.windowWidth))
 

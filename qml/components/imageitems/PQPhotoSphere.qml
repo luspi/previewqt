@@ -117,7 +117,7 @@ Item {
                 }
 
                 onDoubleClicked: {
-                    if(toplevel.isFullscreen)
+                    if(PQCConstants.mainwindowIsFullscreen)
                         toplevel.showNormal()
                     else
                         toplevel.showFullScreen()

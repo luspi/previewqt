@@ -29,8 +29,8 @@ Item {
 
     x: 5
     y: (PQCSettings.topBarAutoHide ? 0 : 40)+5
-    width: toplevel.width-2*5
-    height: toplevel.height-(PQCSettings.topBarAutoHide ? 0 : 40)-2*5
+    width: PQCConstants.mainwindowWidth-2*5
+    height: PQCConstants.mainwindowHeight-(PQCSettings.topBarAutoHide ? 0 : 40)-2*5
 
     property int setRotation: 0
 
@@ -49,7 +49,7 @@ Item {
     onStatusChanged: {
         if(status == Image.Ready) {
             if(imageloader.item != null) {
-                toplevel.updateWindowSize(imageloader.item.paintedWidth+10, imageloader.item.paintedHeight+10)
+                PQCNotify.updateWindowSize(imageloader.item.paintedWidth+10, imageloader.item.paintedHeight+10)
             }
         }
     }
@@ -68,10 +68,10 @@ Item {
 
     Connections {
         target: image_top
-        function onWidthChanged(width) {
+        function onWidthChanged(width : int) {
             updateWindowSize.restart()
         }
-        function onHeightChanged(height) {
+        function onHeightChanged(height : int) {
             updateWindowSize.restart()
         }
     }
@@ -85,7 +85,7 @@ Item {
     MouseArea {
         id: imagemouse
         anchors.fill: parent
-        enabled: !toplevel.menuOpen
+        enabled: !PQCConstants.menuIsOpen
         anchors.margins: -5
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton|Qt.RightButton
@@ -93,8 +93,8 @@ Item {
         onClicked: (mouse) => {
             if(mouse.button === Qt.RightButton)
                 toplevel.showMainContextMenu()
-            else if(toplevel.menuOpen)
-                toplevel.closeAllMenus()
+            else if(PQCConstants.menuIsOpen)
+                PQCNotify.closeAllMenus()
             else if(image.imageSource === "")
                 toplevel.openNewFile()
         }
@@ -107,7 +107,7 @@ Item {
 
         onDoubleClicked: (mouse) => {
             if(mouse.button === Qt.RightButton) return
-            if(toplevel.isFullscreen)
+            if(PQCConstants.mainwindowIsFullscreen)
                 toplevel.showNormal()
             else
                 toplevel.showFullScreen()
@@ -136,11 +136,11 @@ Item {
     // load a new image
     function loadImage(path) {
 
-        toplevel.manualWindowSizeChange = false
+        PQCConstants.mainwindowManuallyResized = false
         imageloader.source = ""
         setRotation = 0
-        toplevel.overrideTitle = ""
-        toplevel.overrideTitleSuffix = ""
+        PQCConstants.mainwindowOverrideTitle = ""
+        PQCConstants.mainwindowOverrideTitleSuffix = ""
 
         if(path === "") {
             imageSource = ""

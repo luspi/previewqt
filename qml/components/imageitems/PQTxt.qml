@@ -328,13 +328,13 @@ Rectangle {
                 }
             }
             onAboutToShow: {
-                toplevel.menuOpen = true
+                PQCConstants.menuIsOpen = true
             }
             onAboutToHide: {
-                toplevel.menuOpen = false
+                PQCConstants.menuIsOpen = false
             }
             Connections {
-                target: toplevel
+                target: PQCNotify
                 function onCloseAllMenus() {
                     searchmenu.close()
                 }
@@ -522,7 +522,7 @@ Rectangle {
         }
 
         function show() {
-            toplevel.menuOpen = true
+            PQCConstants.menuIsOpen = true
             searchinput.text = (imageitem.selectedText.length > 0 ? imageitem.selectedText : "")
             searchrect.opacity = 1
             searchinput.forceActiveFocus()
@@ -531,13 +531,13 @@ Rectangle {
 
         function hide() {
             findTimer.stop()
-            toplevel.menuOpen = false
+            PQCConstants.menuIsOpen = false
             searchrect.opacity = 0
             focusitem.forceActiveFocus()
         }
 
         Connections {
-            target: toplevel
+            target: PQCNotify
             function onCloseAllMenus() {
                 searchrect.hide()
             }
@@ -597,13 +597,13 @@ Rectangle {
                     formatbut.formatText = !formatbut.formatText
             }
             onAboutToShow: {
-                toplevel.menuOpen = true
+                PQCConstants.menuIsOpen = true
             }
             onAboutToHide: {
-                toplevel.menuOpen = false
+                PQCConstants.menuIsOpen = false
             }
             Connections {
-                target: toplevel
+                target: PQCNotify
                 function onCloseAllMenus() {
                     formatmenu.close()
                 }
@@ -665,13 +665,13 @@ Rectangle {
                 }
             }
             onAboutToShow: {
-                toplevel.menuOpen = true
+                PQCConstants.menuIsOpen = true
             }
             onAboutToHide: {
-                toplevel.menuOpen = false
+                PQCConstants.menuIsOpen = false
             }
             Connections {
-                target: toplevel
+                target: PQCNotify
                 function onCloseAllMenus() {
                     settingsmenu.close()
                 }
@@ -843,19 +843,19 @@ Rectangle {
         }
 
         function show() {
-            toplevel.menuOpen = true
+            PQCConstants.menuIsOpen = true
             height = setentrycol.height
             opacity = 1
         }
         function hide() {
             if(!visible) return
-            toplevel.menuOpen = false
+            PQCConstants.menuIsOpen = false
             height = 0
             opacity = 0
         }
 
         Connections {
-            target: toplevel
+            target: PQCNotify
             function onCloseAllMenus() {
                 settingsrect.hide()
             }
@@ -885,7 +885,7 @@ Rectangle {
         2off_PQMNOTKF6*/
 
         imageitem.text = ""
-        toplevel.overrideTitleSuffix = (formatbut.formatText ? " (processed)" : "")
+        PQCConstants.mainwindowOverrideTitleSuffix = (formatbut.formatText ? " (processed)" : "")
 
         var txt = PQCScriptsImages.getTextFileContents(image_top.imageSource)
         var suf = PQCScriptsFilesPaths.getSuffix(image_top.imageSource)
@@ -911,7 +911,7 @@ Rectangle {
     }
 
     Component.onDestruction: {
-        toplevel.menuOpen = false
+        PQCConstants.menuIsOpen = false
     }
 
     Connections {

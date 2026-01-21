@@ -57,7 +57,8 @@ Item {
 
         width: rotation%180===0 ? image_top.width : image_top.height
         height: rotation%180===0 ? image_top.height : image_top.width
-        sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !toplevel.isMaximized && !toplevel.isFullscreen && !toplevel.manualWindowSizeChange) ?
+        sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !PQCConstants.mainwindowIsMaximized &&
+                     !PQCConstants.mainwindowIsFullscreen && !PQCConstants.mainwindowManuallyResized) ?
                         (rotation%180===0 ? Qt.size(defw, defh) : Qt.size(defh, defw)) :
                         (rotation%180===0 ? Qt.size(image_top.windowWidth, image_top.windowHeight) : Qt.size(image_top.windowHeight, image_top.windowWidth))
 
@@ -67,8 +68,6 @@ Item {
                 source = "image://svg/:/errorimage.svg"
             else if(status == Image.Ready) {
                 asynchronous = false
-                // if(extrasCheckedFor !== image_top.imageSource)
-                    // checkForExtras.restart()
             }
         }
 

@@ -40,35 +40,36 @@ ApplicationWindow {
     minimumWidth: 300
     minimumHeight: 200
 
-    property bool manualWindowSizeChange: false
-    onWidthChanged: {
-        if(!toplevelAni.running)
-            manualWindowSizeChange = true
-    }
-    onHeightChanged: {
-        if(!toplevelAni.running)
-            manualWindowSizeChange = true
+    Item {
+
+        anchors.fill: parent
+
+        onWidthChanged: {
+            PQCConstants.mainwindowWidth = width
+            if(!toplevelAni.running)
+                PQCConstants.mainwindowManuallyResized = true
+        }
+        onHeightChanged: {
+            PQCConstants.mainwindowHeight = height
+            if(!toplevelAni.running)
+                PQCConstants.mainwindowManuallyResized = true
+        }
+
     }
 
     // it is hidden by default until we set the stylings from the settings below
     visibility: Window.Hidden
-    property string overrideTitle: ""
-    property string overrideTitleSuffix: ""
-    title: (overrideTitle!= "" ?
-                (overrideTitle+" | ") :
+    title: (PQCConstants.mainwindowOverrideTitle!== "" ?
+                (PQCConstants.mainwindowOverrideTitle+" | ") :
                 (image.imageSource == "" ?
                      "" :
-                     (PQCScriptsFilesPaths.getFilename(image.imageSource) + (overrideTitleSuffix!="" ?
-                                                                       overrideTitleSuffix :
+                     (PQCScriptsFilesPaths.getFilename(image.imageSource) + (PQCConstants.mainwindowOverrideTitleSuffix!=="" ?
+                                                                       PQCConstants.mainwindowOverrideTitleSuffix :
                                                                        "") + " | "))) + "PreviewQt"
-
-    // convenience property to check whether window is in fullscreen or maximized
-    property bool isFullscreen: toplevel.visibility === Window.FullScreen
-    property bool isMaximized: toplevel.visibility === Window.Maximized
 
     // at startup the tray icon might not be ready when a message is supposed to be shown
     // a message stored here will be shown once the tray icon is ready
-    property var messageWhenReady: ["",""]
+    property list<string> messageWhenReady: ["",""]
 
     // whether the top row is supposed to be shown or not
     // we use a property here as the toprow is hidden behind an asynchronous loader
@@ -95,16 +96,17 @@ ApplicationWindow {
     }
 
     onVisibilityChanged: (visibility) => {
-        if(toplevel.visibility == Window.Hidden) {
-            closeAllMenus()
+
+        PQCConstants.mainwindowIsFullscreen = (visibility === Window.FullScreen)
+        PQCConstants.mainwindowIsMaximized = (visibility === Window.Maximized)
+
+        if(visibility === Window.Hidden) {
+            PQCNotify.closeAllMenus()
         } else {
             ignoreActiveChanges = true
             noLongerIgnoreActiveChanges.restart()
         }
     }
-
-    property bool menuOpen: false
-    signal closeAllMenus()
 
     // this ignores changes to active for hiding when focus is lost
     // this is necessary when 'focus follows mouse' is used and the window is, e.g., opened from the tray
@@ -118,7 +120,7 @@ ApplicationWindow {
     }
 
     onActiveChanged: {
-        if(!active) closeAllMenus()
+        if(!active) PQCNotify.closeAllMenus()
         if(!PQCSettings.closeWhenLosingFocus) return
         if(!active && !ignoreActiveChanges) {
             if((settings.status == Loader.Ready && settings.item.visible) ||
@@ -203,13 +205,13 @@ ApplicationWindow {
             }
         }
         onAboutToShow: {
-            toplevel.menuOpen = true
+            PQCConstants.menuIsOpen = true
         }
         onAboutToHide: {
-            toplevel.menuOpen = false
+            PQCConstants.menuIsOpen = false
         }
         Connections {
-            target: toplevel
+            target: PQCNotify
             function onCloseAllMenus() {
                 maincontextmenu.close()
             }
@@ -405,7 +407,7 @@ ApplicationWindow {
         processKeyEvent(modifiers, keycode)
     }
 
-    function processKeyEvent(modifiers, keycode) {
+    function processKeyEvent(modifiers : int, keycode : int) {
 
         // convert to text
         var txt = PQCScriptsOther.keycodeToString(modifiers, keycode)
@@ -425,12 +427,12 @@ ApplicationWindow {
         // Escape either leaves fullscreen or closes the window
         if(txt === "Esc") {
 
-            if(menuOpen) {
-                closeAllMenus()
+            if(PQCConstants.menuIsOpen) {
+                PQCNotify.closeAllMenus()
                 return
             }
 
-            if(isFullscreen)
+            if(PQCConstants.mainwindowIsFullscreen)
                 toplevel.showNormal()
             else
                 toplevel.close()
@@ -441,8 +443,8 @@ ApplicationWindow {
 
         } else if(txt === "Ctrl+O") {
 
-            if(menuOpen) {
-                closeAllMenus()
+            if(PQCConstants.menuIsOpen) {
+                PQCNotify.closeAllMenus()
                 return
             }
 
@@ -450,8 +452,8 @@ ApplicationWindow {
 
         } else if(txt === "Ctrl+P") {
 
-            if(menuOpen) {
-                closeAllMenus()
+            if(PQCConstants.menuIsOpen) {
+                PQCNotify.closeAllMenus()
                 return
             }
 
@@ -460,8 +462,8 @@ ApplicationWindow {
 
         } else if(txt === "Ctrl+I") {
 
-            if(menuOpen) {
-                closeAllMenus()
+            if(PQCConstants.menuIsOpen) {
+                PQCNotify.closeAllMenus()
                 return
             }
 
@@ -470,8 +472,8 @@ ApplicationWindow {
 
         } else if(txt === "F1") {
 
-            if(menuOpen) {
-                closeAllMenus()
+            if(PQCConstants.menuIsOpen) {
+                PQCNotify.closeAllMenus()
                 return
             }
 
@@ -480,8 +482,8 @@ ApplicationWindow {
 
         } else if(txt === PQCSettings.defaultAppShortcut) {
 
-            if(menuOpen)
-                closeAllMenus()
+            if(PQCConstants.menuIsOpen)
+                PQCNotify.closeAllMenus()
 
             if(image.imageSource === "") return
 
@@ -499,9 +501,9 @@ ApplicationWindow {
 
         target: PQCScriptsOther
 
-        function onCommandLineArgumentReceived(msg) {
+        function onCommandLineArgumentReceived(msg : string) : void {
 
-            closeAllMenus()
+            PQCNotify.closeAllMenus()
 
             msg = PQCScriptsFilesPaths.fromPercentEncoding(msg)
 
@@ -636,31 +638,36 @@ ApplicationWindow {
 
     }
 
+    Connections {
+
+        target: PQCNotify
+
+        function onUpdateWindowSize(w : int, h : int) {
+
+            if(!PQCSettings.maximizeImageSizeAndAdjustWindow || PQCConstants.mainwindowIsMaximized || PQCConstants.mainwindowIsFullscreen || PQCConstants.mainwindowManuallyResized)
+                return
+
+            var fitsize = PQCScriptsOther.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight)
+
+            toplevelAni.stop()
+            toplevelAni.w_from = toplevel.width
+            toplevelAni.w_to = Math.max(fitsize.width, minimumWidth)
+            toplevelAni.h_from = toplevel.height
+            toplevelAni.h_to = Math.max(fitsize.height + (PQCSettings.topBarAutoHide ? 1 : toprow.height), minimumHeight)
+            toplevelAni.x_from = toplevel.x
+            toplevelAni.x_to = toplevel.x + (toplevel.width - toplevelAni.w_to)/2
+            toplevelAni.y_from = toplevel.y
+            toplevelAni.y_to = toplevel.y + (toplevel.height - toplevelAni.h_to)/2
+            toplevelAni.start()
+
+        }
+
+    }
+
     function openNewFile() {
         var path = PQCScriptsFilesPaths.openNewFile()
         if(path !== "")
             image.loadImage(path)
-    }
-
-    // make sure the window is fit to the main image view
-    function updateWindowSize(w, h) {
-
-        if(!PQCSettings.maximizeImageSizeAndAdjustWindow || isMaximized || isFullscreen || manualWindowSizeChange)
-            return
-
-        var fitsize = PQCScriptsOther.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight)
-
-        toplevelAni.stop()
-        toplevelAni.w_from = toplevel.width
-        toplevelAni.w_to = Math.max(fitsize.width, minimumWidth)
-        toplevelAni.h_from = toplevel.height
-        toplevelAni.h_to = Math.max(fitsize.height + (PQCSettings.topBarAutoHide ? 1 : toprow.height), minimumHeight)
-        toplevelAni.x_from = toplevel.x
-        toplevelAni.x_to = toplevel.x + (toplevel.width - toplevelAni.w_to)/2
-        toplevelAni.y_from = toplevel.y
-        toplevelAni.y_to = toplevel.y + (toplevel.height - toplevelAni.h_to)/2
-        toplevelAni.start()
-
     }
 
 }
