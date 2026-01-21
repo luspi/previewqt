@@ -23,7 +23,7 @@
 import QtQuick
 import QtQuick.Controls
 
-import PQCMPVObject
+import PreviewQt
 
 // The MPV object needs to be wrapped in an item
 // and be as empty as shown below

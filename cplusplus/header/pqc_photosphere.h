@@ -28,6 +28,7 @@
 class PQCPhotoSphere : public QQuickFramebufferObject {
 
     Q_OBJECT
+    QML_ELEMENT
 
 public:
     PQCPhotoSphere(QQuickItem *parent = nullptr);

@@ -21,7 +21,6 @@
  **************************************************************************/
 
 import QtQuick
-import PQCPhotoSphere
 import PreviewQt
 
 Item {
