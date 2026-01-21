@@ -107,7 +107,7 @@
     <releases>
         <release version="4.0" date="2025-03-04">
             <description>
-                It has been a little while since the last release of PreviewQt, so it's about time for some updates and a bunch of new features.
+                <p>It has been a little while since the last release of PreviewQt, so it's about time for some updates and a bunch of new features.</p>
             </description>
             <url>
                 https://previewqt.org/news/previewqt-4.0
@@ -115,7 +115,7 @@
         </release>
         <release version="3.0" date="2024-05-22">
             <description>
-                PreviewQt 3.0 brings a whole range of new and exciting features, including e-book support, adjusting window size to content, and the ability to request PreviewQt (through shortcut) to load any selected file in the Dolphin file manager.
+                <p>PreviewQt 3.0 brings a whole range of new and exciting features, including e-book support, adjusting window size to content, and the ability to request PreviewQt (through shortcut) to load any selected file in the Dolphin file manager.</p>
             </description>
             <url>
                 https://previewqt.org/news/previewqt-3.0
@@ -123,7 +123,7 @@
         </release>
         <release version="2.0" date="2024-04-05">
             <description>
-                PreviewQt 2.0 brings some major improvements to its performance and functionality (including rotating images), including two new and convenient ways to interact with PreviewQt.
+                <p>PreviewQt 2.0 brings some major improvements to its performance and functionality (including rotating images), including two new and convenient ways to interact with PreviewQt.</p>
             </description>
             <url>
                 https://previewqt.org/news/previewqt-2.0
@@ -131,7 +131,7 @@
         </release>
         <release version="1.0" date="2024-03-12">
             <description>
-                I would like to present a new member of PhotoQt's family, its little sibling PreviewQt. PreviewQt is a much simpler application than PhotoQt, intended - as the name suggests - to preview all kinds of files. Its focus is on speed and lightweight, aiming to provide as instantaneous of a preview as possible.
+                <p>I would like to present a new member of PhotoQt's family, its little sibling PreviewQt. PreviewQt is a much simpler application than PhotoQt, intended - as the name suggests - to preview all kinds of files. Its focus is on speed and lightweight, aiming to provide as instantaneous of a preview as possible.</p>
             </description>
             <url>
                 https://photoqt.org/news/introducing-previewqt
