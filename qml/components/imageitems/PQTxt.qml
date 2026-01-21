@@ -105,7 +105,7 @@ Rectangle {
                 property bool isMarkdown: false
                 Text {
                     id: htmldisplay_txt
-                    baseUrl: "file://" + PQCScriptsFilesPaths.getDir(image_top.imageSource) + "/"
+                    baseUrl: "file://" + PQCScriptsFilesPaths.getDir(PQCConstants.currentSource) + "/"
                     x: 5
                     y: 5
                     width: txt_top.width-10
@@ -866,7 +866,7 @@ Rectangle {
 
         /*1on_PQMKF6*/
         // set current file type
-        myHighlighter.definition = Repository.definitionForFileName(image_top.imageSource)
+        myHighlighter.definition = Repository.definitionForFileName(PQCConstants.currentSource)
         /*2on_PQMKF6*/
 
         // This HAS to be set after setting the styling!
@@ -887,8 +887,8 @@ Rectangle {
         imageitem.text = ""
         PQCConstants.mainwindowOverrideTitleSuffix = (formatbut.formatText ? " (processed)" : "")
 
-        var txt = PQCScriptsImages.getTextFileContents(image_top.imageSource)
-        var suf = PQCScriptsFilesPaths.getSuffix(image_top.imageSource)
+        var txt = PQCScriptsImages.getTextFileContents(PQCConstants.currentSource)
+        var suf = PQCScriptsFilesPaths.getSuffix(PQCConstants.currentSource)
 
         var canReFormat = ["json","html","htm","xhtml","md"]
         formatbut.visible = (canReFormat.indexOf(suf)>-1)

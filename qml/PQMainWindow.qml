@@ -61,9 +61,9 @@ ApplicationWindow {
     visibility: Window.Hidden
     title: (PQCConstants.mainwindowOverrideTitle!== "" ?
                 (PQCConstants.mainwindowOverrideTitle+" | ") :
-                (image.imageSource == "" ?
+                (PQCConstants.currentSource=== "" ?
                      "" :
-                     (PQCScriptsFilesPaths.getFilename(image.imageSource) + (PQCConstants.mainwindowOverrideTitleSuffix!=="" ?
+                     (PQCScriptsFilesPaths.getFilename(PQCConstants.currentSource) + (PQCConstants.mainwindowOverrideTitleSuffix!=="" ?
                                                                        PQCConstants.mainwindowOverrideTitleSuffix :
                                                                        "") + " | "))) + "PreviewQt"
 
@@ -153,11 +153,11 @@ ApplicationWindow {
         MenuSeparator {}
         MenuItem {
             icon.source: "image://svg/:/external.svg"
-            enabled: image.imageSource!==""
+            enabled: PQCConstants.currentSource!==""
             text: qsTr("Open externally")
             onTriggered: {
-                if(image.imageSource === "") return
-                if(PQCScriptsFilesPaths.openInDefault(image.imageSource)) {
+                if(PQCConstants.currentSource === "") return
+                if(PQCScriptsFilesPaths.openInDefault(PQCConstants.currentSource)) {
                     if(PQCSettings.closeAfterDefaultApp)
                         toplevel.close()
                 } else
@@ -166,7 +166,7 @@ ApplicationWindow {
         }
         MenuItem {
             icon.source: "image://svg/:/rotateleft.svg"
-            enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(image.currentType)==-1 && image.imageSource!==""
+            enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
             text: qsTr("Rotate left")
             onTriggered: {
                 image.setRotation -= 90
@@ -174,7 +174,7 @@ ApplicationWindow {
         }
         MenuItem {
             icon.source: "image://svg/:/rotateright.svg"
-            enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(image.currentType)==-1 && image.imageSource!==""
+            enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
             text: qsTr("Rotate right")
             onTriggered: {
                 image.setRotation += 90
@@ -247,7 +247,7 @@ ApplicationWindow {
         text: qsTr("Click to open file")
         font.pointSize: 12
         font.bold: true
-        visible: image.imageSource===""
+        visible: PQCConstants.currentSource===""
     }
 
     // The main image item
@@ -485,9 +485,9 @@ ApplicationWindow {
             if(PQCConstants.menuIsOpen)
                 PQCNotify.closeAllMenus()
 
-            if(image.imageSource === "") return
+            if(PQCConstants.currentSource === "") return
 
-            if(PQCScriptsFilesPaths.openInDefault(image.imageSource)) {
+            if(PQCScriptsFilesPaths.openInDefault(PQCConstants.currentSource)) {
                 if(PQCSettings.closeAfterDefaultApp)
                     toplevel.close()
             } else

@@ -36,14 +36,9 @@ Item {
 
     clip: true
 
-    // the source of the current image
-    property string imageSource: ""
-
     // these are used for a delay in reloading the image
     property int windowWidth: 200
     property int windowHeight: 200
-
-    property string currentType: ""
 
     property int status: Image.Null
     onStatusChanged: {
@@ -89,13 +84,13 @@ Item {
         anchors.margins: -5
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton|Qt.RightButton
-        cursorShape: image.imageSource === "" ? Qt.PointingHandCursor : Qt.ArrowCursor
+        cursorShape: PQCConstants.currentSource === "" ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: (mouse) => {
             if(mouse.button === Qt.RightButton)
                 toplevel.showMainContextMenu()
             else if(PQCConstants.menuIsOpen)
                 PQCNotify.closeAllMenus()
-            else if(image.imageSource === "")
+            else if(PQCConstants.currentSource === "")
                 toplevel.openNewFile()
         }
         onPositionChanged: (mouse) => {
@@ -143,46 +138,46 @@ Item {
         PQCConstants.mainwindowOverrideTitleSuffix = ""
 
         if(path === "") {
-            imageSource = ""
+            PQCConstants.currentSource = ""
             imageloader.source = ""
             image.status = Image.Null
             return
         }
 
-        imageSource = PQCScriptsFilesPaths.cleanPath(path)
+        PQCConstants.currentSource = PQCScriptsFilesPaths.cleanPath(path)
         image.status = Image.Loading
 
-        PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(imageSource)
+        PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(PQCConstants.currentSource)
 
-        if(PQCScriptsImages.isPDFDocument(imageSource)) {
-            currentType = "doc"
+        if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "doc"
             imageloader.source = "imageitems/PQDocument.qml"
-        } else if(PQCScriptsImages.isEpub(imageSource)) {
-            currentType = "bok"
+        } else if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "bok"
             imageloader.source = "imageitems/PQEPUB.qml"
-        } else if(PQCScriptsImages.isArchive(imageSource)) {
-            currentType = "ani"
+        } else if(PQCScriptsImages.isArchive(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "ani"
             imageloader.source = "imageitems/PQArchive.qml"
-        } else if(PQCScriptsImages.isMpvVideo(imageSource)) {
-            currentType = "arc"
+        } else if(PQCScriptsImages.isMpvVideo(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "arc"
             imageloader.source = "imageitems/PQVideoMpv.qml"
-        } else if(PQCScriptsImages.isQtVideo(imageSource)) {
-            currentType = "mpv"
+        } else if(PQCScriptsImages.isQtVideo(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "mpv"
             imageloader.source = "imageitems/PQVideoQt.qml"
-        } else if(PQCScriptsImages.isItAnimated(imageSource)) {
-            currentType = "vid"
+        } else if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "vid"
             imageloader.source = "imageitems/PQImageAnimated.qml"
-        } else if(PQCScriptsImages.isPhotoSphere(imageSource)) {
-            currentType = "sph"
+        } else if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "sph"
             imageloader.source = "imageitems/PQPhotoSphere.qml"
-        } else if(PQCScriptsImages.isSVG(imageSource)) {
-            currentType = "svg"
+        } else if(PQCScriptsImages.isSVG(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "svg"
             imageloader.source = "imageitems/PQSVG.qml"
-        } else if(PQCScriptsImages.isTextDocument(imageSource)) {
-            currentType = "txt"
+        } else if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "txt"
             imageloader.source = "imageitems/PQTxt.qml"
         } else {
-            currentType = "img"
+            PQCConstants.currentType = "img"
             imageloader.source = "imageitems/PQImageNormal.qml"
         }
 

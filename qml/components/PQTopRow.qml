@@ -101,11 +101,11 @@ Rectangle {
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Open in external application") + " (" + PQCSettings.defaultAppShortcut + ")"
-            active: image.imageSource!==""
+            active: PQCConstants.currentSource!==""
             source: "image://svg/:/external.svg"
             onClicked: {
-                if(image.imageSource === "") return
-                if(PQCScriptsFilesPaths.openInDefault(image.imageSource)) {
+                if(PQCConstants.currentSource === "") return
+                if(PQCScriptsFilesPaths.openInDefault(PQCConstants.currentSource)) {
                     if(PQCSettings.closeAfterDefaultApp)
                         toplevel.close()
                 } else
@@ -122,7 +122,7 @@ Rectangle {
         // rotate left
         PQIconButton {
             id: rotleftbut
-            active: ["sph", "vid", "mpv", "bok", "txt"].indexOf(image.currentType)==-1 && image.imageSource!==""
+            active: ["sph", "vid", "mpv", "bok", "txt"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Rotate image to the left")
@@ -141,7 +141,7 @@ Rectangle {
         // rotate right
         PQIconButton {
             id: rotrightbut
-            active: ["sph", "vid", "mpv", "bok", "txt"].indexOf(image.currentType)==-1 && image.imageSource!==""
+            active: ["sph", "vid", "mpv", "bok", "txt"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Rotate image to the right")

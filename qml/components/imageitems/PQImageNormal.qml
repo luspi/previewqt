@@ -41,7 +41,7 @@ Item {
 
         id: imageitem
 
-        source: image_top.imageSource!=="" ? ("image://full/" + PQCScriptsFilesPaths.toPercentEncoding(image_top.imageSource)) : ""
+        source: PQCConstants.currentSource!=="" ? ("image://full/" + PQCScriptsFilesPaths.toPercentEncoding(PQCConstants.currentSource)) : ""
 
         asynchronous: true
 
@@ -84,26 +84,26 @@ Item {
 
             if(PQCScriptsConfig.isMotionPhotoSupportEnabled()) {
 
-                var what = PQCScriptsImages.isMotionPhoto(image_top.imageSource)
+                var what = PQCScriptsImages.isMotionPhoto(PQCConstants.currentSource)
 
                 if(what > 0) {
 
                     var src = ""
 
                     if(what === 1)
-                        src = PQCScriptsFilesPaths.getDir(image_top.imageSource) + "/" + PQCScriptsFilesPaths.getBasename(image_top.imageSource) + ".mov"
+                        src = PQCScriptsFilesPaths.getDir(PQCConstants.currentSource) + "/" + PQCScriptsFilesPaths.getBasename(PQCConstants.currentSource) + ".mov"
                     else if(what === 2 || what === 3)
-                        src = PQCScriptsImages.extractMotionPhoto(image_top.imageSource)
+                        src = PQCScriptsImages.extractMotionPhoto(PQCConstants.currentSource)
 
                     if(src != "") {
 
                         // HEIF/HEIC images are a little trickier with their orientation handling
                         // We need to ignore this value as the Exif orientation might not be correct
                         // See also: https://github.com/Exiv2/exiv2/issues/2958
-                        var suf = PQCScriptsFilesPaths.getSuffix(image_top.imageSource).toLowerCase()
+                        var suf = PQCScriptsFilesPaths.getSuffix(PQCConstants.currentSource).toLowerCase()
                         if(suf !== "heic" && suf !== "heif") {
 
-                            var orientation = PQCScriptsImages.getExifOrientation(image_top.imageSource)
+                            var orientation = PQCScriptsImages.getExifOrientation(PQCConstants.currentSource)
                             switch(orientation) {
 
                             case 1:

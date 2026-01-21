@@ -44,7 +44,7 @@ Item {
         id: thesphere
         anchors.fill: parent
 
-        source: image_top.imageSource!=="" ? PQCScriptsFilesPaths.toPercentEncoding(image_top.imageSource) : ""
+        source: PQCConstants.currentSource!=="" ? PQCScriptsFilesPaths.toPercentEncoding(PQCConstants.currentSource) : ""
         onSourceChanged: {
             azimuth = 180
             elevation = 0

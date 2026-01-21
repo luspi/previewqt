@@ -41,7 +41,7 @@ Item {
 
         id: imageitem
 
-        source: image_top.imageSource!=="" ? ("image://full/" + PQCScriptsFilesPaths.toPercentEncoding(image_top.imageSource)) : ""
+        source: PQCConstants.currentSource!=="" ? ("image://full/" + PQCScriptsFilesPaths.toPercentEncoding(PQCConstants.currentSource)) : ""
 
         asynchronous: true
 

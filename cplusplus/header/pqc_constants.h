@@ -34,6 +34,8 @@ public:
 
     explicit PQCConstants() : QObject() {
 
+        m_currentSource = "";
+        m_currentType = "";
         m_mainwindowWidth = 0;
         m_mainwindowHeight = 0;
         m_mainwindowManuallyResized = false;
@@ -44,6 +46,9 @@ public:
         m_menuIsOpen = false;
 
     }
+
+    Q_PROPERTY(QString currentSource MEMBER m_currentSource NOTIFY currentSourceChanged)
+    Q_PROPERTY(QString currentType MEMBER m_currentType NOTIFY currentTypeChanged)
 
     Q_PROPERTY(int mainwindowWidth MEMBER m_mainwindowWidth NOTIFY mainwindowWidthChanged)
     Q_PROPERTY(int mainwindowHeight MEMBER m_mainwindowHeight NOTIFY mainwindowHeightChanged)
@@ -56,6 +61,8 @@ public:
     Q_PROPERTY(bool menuIsOpen MEMBER m_menuIsOpen NOTIFY menuIsOpenChanged)
 
 private:
+    QString m_currentSource;
+    QString m_currentType;
     int m_mainwindowWidth;
     int m_mainwindowHeight;
     bool m_mainwindowManuallyResized;
@@ -67,6 +74,8 @@ private:
     bool m_menuIsOpen;
 
 Q_SIGNALS:
+    void currentSourceChanged();
+    void currentTypeChanged();
     void mainwindowWidthChanged();
     void mainwindowHeightChanged();
     void mainwindowManuallyResizedChanged();

@@ -85,7 +85,7 @@ Rectangle {
 
     ToolTip {
         delay: 500
-        text: parent.active ? control.tooltip : (image.imageSource==="" ? qsTr("No file loaded") : qsTr("Action not supported for this file type"))
+        text: parent.active ? control.tooltip : (PQCConstants.currentSource==="" ? qsTr("No file loaded") : qsTr("Action not supported for this file type"))
         visible: text!=="" && control.hovered
     }
 

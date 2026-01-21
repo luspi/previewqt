@@ -32,7 +32,7 @@ Video {
     parent: image_top
 
     // earlier versions of Qt6 seem to struggle if only one slash is used
-    source: image_top.imageSource!=="" ? ((PQCScriptsConfig.isQtAtLeast6_5() ? "file:/" : "file://") + image_top.imageSource) : ""
+    source: PQCConstants.currentSource!=="" ? ((PQCScriptsConfig.isQtAtLeast6_5() ? "file:/" : "file://") + PQCConstants.currentSource) : ""
     onSourceChanged: {
         video.play()
     }
@@ -67,9 +67,9 @@ Video {
 
             // earlier versions of Qt6 seem to struggle if only one slash is used
             if(PQCScriptsConfig.isQtAtLeast6_5())
-                video.source = "file:/" + image_top.imageSource
+                video.source = "file:/" + PQCConstants.currentSource
             else
-                video.source = "file://" + image_top.imageSource
+                video.source = "file://" + PQCConstants.currentSource
 
             video.play()
         }

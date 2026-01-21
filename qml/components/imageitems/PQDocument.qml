@@ -44,19 +44,19 @@ Item {
         source: ""
 
         Component.onCompleted: {
-            if(image_top.imageSource === "") {
+            if(PQCConstants.currentSource === "") {
                 source = ""
                 return
             }
-            if(image_top.imageSource.includes("::PDF::")) {
-                currentPage = image_top.imageSource.split("::PDF::")[0]*1
-                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding(image_top.imageSource)
+            if(PQCConstants.currentSource.includes("::PDF::")) {
+                currentPage = PQCConstants.currentSource.split("::PDF::")[0]*1
+                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding(PQCConstants.currentSource)
             } else {
-                var page = PQCCache.getEntry(image_top.imageSource)
+                var page = PQCCache.getEntry(PQCConstants.currentSource)
                 if(page === "")
                     page = currentPage
                 currentPage = page
-                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::PDF::%2".arg(page).arg(image_top.imageSource))
+                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::PDF::%2".arg(page).arg(PQCConstants.currentSource))
             }
         }
 
@@ -82,22 +82,22 @@ Item {
     }
 
     property int currentPage: 0
-    property int pageCount: PQCScriptsImages.getDocumentPageCount(image_top.imageSource)
+    property int pageCount: PQCScriptsImages.getDocumentPageCount(PQCConstants.currentSource)
 
     onCurrentPageChanged: {
-        if(image_top.imageSource === "") {
+        if(PQCConstants.currentSource === "") {
             source = ""
             return
         }
         imageitem.asynchronous = false
-        if(image_top.imageSource.includes("::PDF::")) {
-            imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource.split("::PDF::")[1]))
+        if(PQCConstants.currentSource.includes("::PDF::")) {
+            imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(PQCConstants.currentSource.split("::PDF::")[1]))
         } else {
-            imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(image_top.imageSource))
+            imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::PDF::%2".arg(currentPage).arg(PQCConstants.currentSource))
         }
         imageitem.asynchronous = true
 
-        PQCCache.setEntry(image_top.imageSource, currentPage)
+        PQCCache.setEntry(PQCConstants.currentSource, currentPage)
     }
 
     Rectangle {

@@ -85,7 +85,7 @@ Item {
         interval: 100
         running: true
         onTriggered: {
-            video.command(["loadfile", image_top.imageSource])
+            video.command(["loadfile", PQCConstants.currentSource])
             getProps.restart()
         }
     }
@@ -122,7 +122,7 @@ Item {
             videoPlaying = !video.getProperty("core-idle")
             if(video.getProperty("eof-reached")) {
                 if(!restarting) {
-                    video.command(["loadfile", image_top.imageSource])
+                    video.command(["loadfile", PQCConstants.currentSource])
                     restarting = true
                 }
             } else {
@@ -171,7 +171,7 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         if(video.getProperty("eof-reached")) {
-                            video.command(["loadfile", image_top.imageSource])
+                            video.command(["loadfile", PQCConstants.currentSource])
                             videoPlaying = true
                         } else {
                             videoPlaying = !videoPlaying
@@ -196,7 +196,7 @@ Item {
                 onValueChanged: {
                     if(pressed) {
                         if(video.getProperty("eof-reached")) {
-                            video.command(["loadfile", image_top.imageSource])
+                            video.command(["loadfile", PQCConstants.currentSource])
                             videoPlaying = false
                             setPosTimeout.pos = value
                             setPosTimeout.restart()

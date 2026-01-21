@@ -76,7 +76,7 @@ Item {
     Component.onCompleted: {
 
         // load book
-        book = PQCScriptsImages.loadEPUB(image_top.imageSource)
+        book = PQCScriptsImages.loadEPUB(PQCConstants.currentSource)
 
         // set book title
         PQCConstants.mainwindowOverrideTitle = book[0]
@@ -85,7 +85,7 @@ Item {
         documentCount = book.length-2
 
         // get cached values (if any)
-        var cached = PQCCache.getEntry(image_top.imageSource)
+        var cached = PQCCache.getEntry(PQCConstants.currentSource)
         var haveCache = (cached!=="")   // note: *after* split() the length of an array is reported as 1
         cached = cached.split("::")
 
@@ -140,7 +140,7 @@ Item {
             // store data
             var val = "%1::%2::%3".arg(currentDocument).arg(view.scrollPosition.y / (view.contentsSize.height-view.height)).arg(view.zoomFactor)
 
-            PQCCache.setEntry(image_top.imageSource, val)
+            PQCCache.setEntry(PQCConstants.currentSource, val)
         }
     }
 
