@@ -48,7 +48,6 @@ option(WITH_PORTABLETWEAKS        "Apply tweaks for a build of a portable versio
 option(WITH_ADAPTSOURCE           "Adapt and change the source files for the current Qt version (if necessary)" OFF)
 option(WITH_FLATPAKBUILD          "Enable this option if this is a build for Flatpak" OFF)
 
-
 #####################################
 #### RESOLVE CONFLICTING OPTIONS ####
 #####################################
@@ -70,74 +69,11 @@ if(WITH_IMAGEMAGICK)
 endif()
 
 #############################
-####  SET list of files  ####
+####  GET list of files  ####
 #############################
 
-set(d "cplusplus")
-set(previewqt_SRC "${d}/main.cpp")
-set(d "cplusplus/singletons")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_fileformats.cpp" "${d}/pqc_settings.cpp" "${d}/pqc_cache.cpp" "${d}/pqc_textprocessing.cpp")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scriptsconfig.cpp" "${d}/pqc_scriptsfilespaths.cpp" "${d}/pqc_scriptsother.cpp" "${d}/pqc_scriptsimages.cpp")
-set(d "cplusplus/files")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadfile.cpp" "${d}/pqc_providerfull.cpp" "${d}/pqc_providersvg.cpp")
-set(d "cplusplus/files/plugins")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadfile_archive.cpp" "${d}/pqc_loadfile_devil.cpp" "${d}/pqc_loadfile_freeimage.cpp")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadfile_libvips.cpp" "${d}/pqc_loadfile_magick.cpp" "${d}/pqc_loadfile_poppler.cpp")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadfile_qt.cpp" "${d}/pqc_loadfile_qtpdf.cpp" "${d}/pqc_loadfile_raw.cpp")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_loadfile_resvg.cpp" "${d}/pqc_loadfile_video.cpp" "${d}/pqc_loadfile_xcf.cpp")
-set(d "cplusplus/other")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_photosphere.cpp" "${d}/pqc_photosphereitem.cpp" "${d}/pqc_photosphererenderer.cpp")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_singleinstance.cpp" "${d}/pqc_specialactions.cpp")
-
-
-set(d "cplusplus/header")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_fileformats.h" "${d}/pqc_messagehandler.h" "${d}/pqc_textprocessing.h")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_photosphere.h" "${d}/pqc_photosphereitem.h" "${d}/pqc_photosphererenderer.h")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_settings.h" "${d}/pqc_singleinstance.h" "${d}/pqc_cache.h" "${d}/pqc_specialactions.h")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_settingscpp.h")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scriptsconfig.h" "${d}/pqc_scriptsfilespaths.h" "${d}/pqc_scriptsother.h" "${d}/pqc_scriptsimages.h")
-set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_scriptsconfig_qml.h" "${d}/pqc_scriptsfilespaths_qml.h" "${d}/pqc_scriptsother_qml.h" "${d}/pqc_scriptsimages_qml.h")
-
-set(d "qml")
-set(previewqt_QML "${d}/PQMainWindow.qml")
-set(d "qml/components")
-set(previewqt_QML ${previewqt_QML} "${d}/PQTopRow.qml" "${d}/PQImage.qml" "${d}/PQIconButton.qml" "${d}/PQTrayIcon.qml")
-set(d "qml/components/imageitems")
-set(previewqt_QML ${previewqt_QML} "${d}/PQImageNormal.qml" "${d}/PQImageAnimated.qml")
-set(previewqt_QML ${previewqt_QML} "${d}/PQDocument.qml" "${d}/PQArchive.qml" "${d}/PQSVG.qml" "${d}/PQTxt.qml")
-set(d "qml/windows")
-set(previewqt_QML ${previewqt_QML} "${d}/PQSettings.qml" "${d}/PQAbout.qml" "${d}/PQHelp.qml" "${d}/PQWelcome.qml")
-
-if(WITH_EPUB)
-    set(d "qml/components/imageitems")
-    set(previewqt_QML ${previewqt_QML} "${d}/PQEPUB.qml")
-endif()
-
-if(WITH_PHOTOSPHERE)
-    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQPhotoSphere.qml")
-endif()
-
-if(WITH_VIDEO_QT)
-    set(d "qml/components/imageitems")
-    set(previewqt_QML ${previewqt_QML} "${d}/PQVideoQt.qml")
-endif()
-
-if(WITH_VIDEO_MPV)
-    set(d "cplusplus/header")
-    set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_mpvobject.h")
-    set(d "cplusplus/other")
-    set(previewqt_SRC ${previewqt_SRC} "${d}/pqc_mpvobject.cpp" )
-    set(d "qml/components/imageitems")
-    set(previewqt_QML ${previewqt_QML} "${d}/PQVideoMpv.qml")
-endif()
-
-if(WITH_QTPDF)
-    if(WITH_POPPLER)
-        set(WITH_POPPLER OFF)
-        message("** For displaying PDF documents you have to choose either Poppler OR QtPDF.")
-        message("** Poppler has been automatically disabled in favour of QtPDF.")
-    endif()
-endif()
+include(CMake/ListFilesCPlusPlus.cmake)
+include(CMake/ListFilesQML.cmake)
 
 ################################
 #### FIND REQUIRED PACKAGES ####
