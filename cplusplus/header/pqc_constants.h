@@ -43,7 +43,9 @@ public:
         m_mainwindowOverrideTitleSuffix = "";
         m_mainwindowIsFullscreen = false;
         m_mainwindowIsMaximized = false;
+        m_toprowForceVisible = false;
         m_menuIsOpen = false;
+        m_trayiconShowNotificationWhenReady = {"", ""};
 
     }
 
@@ -58,7 +60,9 @@ public:
     Q_PROPERTY(bool mainwindowIsFullscreen MEMBER m_mainwindowIsFullscreen NOTIFY mainwindowIsFullscreenChanged)
     Q_PROPERTY(bool mainwindowIsMaximized MEMBER m_mainwindowIsMaximized NOTIFY mainwindowIsMaximizedChanged)
 
+    Q_PROPERTY(bool toprowForceVisible MEMBER m_toprowForceVisible NOTIFY toprowForceVisibleChanged)
     Q_PROPERTY(bool menuIsOpen MEMBER m_menuIsOpen NOTIFY menuIsOpenChanged)
+    Q_PROPERTY(QStringList trayiconShowNotificationWhenReady MEMBER m_trayiconShowNotificationWhenReady NOTIFY trayiconShowNotificationWhenReadyChanged)
 
 private:
     QString m_currentSource;
@@ -71,7 +75,9 @@ private:
     bool m_mainwindowIsFullscreen;
     bool m_mainwindowIsMaximized;
 
+    bool m_toprowForceVisible;
     bool m_menuIsOpen;
+    QStringList m_trayiconShowNotificationWhenReady;
 
 Q_SIGNALS:
     void currentSourceChanged();
@@ -83,6 +89,8 @@ Q_SIGNALS:
     void mainwindowOverrideTitleSuffixChanged();
     void mainwindowIsFullscreenChanged();
     void mainwindowIsMaximizedChanged();
+    void toprowForceVisibleChanged();
     void menuIsOpenChanged();
+    void trayiconShowNotificationWhenReadyChanged();
 
 };

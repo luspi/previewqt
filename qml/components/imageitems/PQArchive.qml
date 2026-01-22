@@ -406,9 +406,9 @@ Item {
 
     Connections {
 
-        target: toplevel // qmllint disable unqualified
+        target: PQCNotify
 
-        function onKeyPress(modifiers, keycode) {
+        function onMainwindowKeyPress(modifiers : int, keycode : int) {
 
             if(modifiers !== Qt.NoModifier)
                 return

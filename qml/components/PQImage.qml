@@ -95,9 +95,9 @@ Item {
         }
         onPositionChanged: (mouse) => {
             if(mouse.y < 30)
-                toplevel.toprowMakeVisible = true
+                PQCConstants.toprowForceVisible = true
             else
-                toplevel.toprowMakeVisible = false
+                PQCConstants.toprowForceVisible = false
         }
 
         onDoubleClicked: (mouse) => {

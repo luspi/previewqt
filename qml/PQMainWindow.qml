@@ -67,19 +67,8 @@ ApplicationWindow {
                                                                        PQCConstants.mainwindowOverrideTitleSuffix :
                                                                        "") + " | "))) + "PreviewQt"
 
-    // at startup the tray icon might not be ready when a message is supposed to be shown
-    // a message stored here will be shown once the tray icon is ready
-    property list<string> messageWhenReady: ["",""]
-
-    // whether the top row is supposed to be shown or not
-    // we use a property here as the toprow is hidden behind an asynchronous loader
-    property bool toprowMakeVisible: false
-
-    // blakc background with slight transparency
+    // black background with slight transparency
     color: "#dd000000"
-
-    // keypress cuaght
-    signal keyPress(var modifiers, var keycode)
 
     // when hiding to tray, we do some cleanup
     onClosing: (close) => {
@@ -228,7 +217,7 @@ ApplicationWindow {
             forceActiveFocus()
 
         Keys.onPressed: (event) => {
-            toplevel.keyPress(event.modifiers, event.key)
+            PQCNotify.mainwindowKeyPress(event.modifiers, event.key)
         }
 
     }
@@ -390,9 +379,10 @@ ApplicationWindow {
             // show launch message
             var title = qsTr("PreviewQt launched")
             var content = qsTr("PreviewQt has been launched and hidden to the system tray.")
-            messageWhenReady = [title, content]
             if(trayicon.status == Loader.Ready)
-                trayicon.item.showMessage(title, content, SystemTrayIcon.Information, 5000)
+                PQCNotify.trayiconShowNotification(title, content)
+            else
+                PQCConstants.trayiconShowNotificationWhenReady = [title, content]
         }
 
         if(PQCSettings.getFirstStart()) {
@@ -400,11 +390,6 @@ ApplicationWindow {
             welcome.item.show()
         }
 
-    }
-
-    // When a key combo has been pressed
-    onKeyPress: (modifiers, keycode) => {
-        processKeyEvent(modifiers, keycode)
     }
 
     function processKeyEvent(modifiers : int, keycode : int) {
@@ -660,6 +645,10 @@ ApplicationWindow {
             toplevelAni.y_to = toplevel.y + (toplevel.height - toplevelAni.h_to)/2
             toplevelAni.start()
 
+        }
+
+        function onMainwindowKeyPress(modifiers : int, keycode : int) {
+            toplevel.processKeyEvent(modifiers, keycode)
         }
 
     }

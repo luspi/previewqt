@@ -261,7 +261,7 @@ Rectangle {
                         flickme.contentX = 0
                         flickme.contentY = 0
                     } else
-                        toplevel.keyPress(event.modifiers, event.key)
+                        PQCNotify.mainwindowKeyPress(event.modifiers, event.key)
                 }
 
             }
@@ -916,9 +916,9 @@ Rectangle {
 
     Connections {
 
-        target: toplevel
+        target: PQCNotify
 
-        function onKeyPress(modifiers, keycode) {
+        function onMainwindowKeyPress(modifiers : int, keycode : int) {
 
             if(modifiers === Qt.ControlModifier && keycode === Qt.Key_F) {
 

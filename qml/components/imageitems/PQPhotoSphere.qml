@@ -196,9 +196,9 @@ Item {
 
     Connections {
 
-        target: toplevel
+        target: PQCNotify
 
-        function onKeyPress(modifiers, keycode) {
+        function onMainwindowKeyPress(modifiers : int, keycode : int) {
 
             if(keycode === Qt.Key_Left)
                 moveView("left")

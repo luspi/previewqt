@@ -22,8 +22,11 @@
 
 import QtQuick
 import Qt.labs.platform
+import PreviewQt
 
 SystemTrayIcon {
+
+    id: traytop
 
     // style tray icon
     visible: true
@@ -54,12 +57,22 @@ SystemTrayIcon {
             onTriggered:
                 Qt.quit()
         }
+
+        // This cannot be part of the SystemTrayIcon element, that results in the error:
+        // 'Cannot assign to non-existent default property'
+        Connections {
+            target: PQCNotify
+            function onTrayiconShowNotification(title : string, txt : string) {
+                traytop.showMessage(title, txt, SystemTrayIcon.Information, 5000)
+            }
+        }
+
     }
 
     // check if a message is to be shown once set up
     Component.onCompleted: {
-        if(toplevel.messageWhenReady[0] !== "")
-            showMessage(toplevel.messageWhenReady[0], toplevel.messageWhenReady[1], SystemTrayIcon.Information, 5000)
+        if(PQCConstants.trayiconShowNotificationWhenReady[0] !== "")
+            showMessage(PQCConstants.trayiconShowNotificationWhenReady[0], PQCConstants.trayiconShowNotificationWhenReady[1], SystemTrayIcon.Information, 5000)
     }
 
  }

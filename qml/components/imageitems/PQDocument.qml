@@ -336,9 +336,9 @@ Item {
 
     Connections {
 
-        target: toplevel
+        target: PQCNotify
 
-        function onKeyPress(modifiers, keycode) {
+        function onMainwindowKeyPress(modifiers : int, keycode : int) {
 
             if(modifiers !== Qt.NoModifier)
                 return

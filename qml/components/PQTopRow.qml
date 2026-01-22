@@ -31,7 +31,7 @@ Rectangle {
 
     // location of top bar
     x: -1
-    y: toplevel.toprowMakeVisible||!PQCSettings.topBarAutoHide ? -1 : -height-2
+    y: PQCConstants.toprowForceVisible||!PQCSettings.topBarAutoHide ? -1 : -height-2
     Behavior on y { NumberAnimation { duration: 200; easing.type: Easing.InQuint } }
 
     // some stylings

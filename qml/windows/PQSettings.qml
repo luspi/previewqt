@@ -284,8 +284,10 @@ ApplicationWindow {
                     enabled: hideToTray.checked
                     onCheckedChanged: {
                         catchKeyPress.forceActiveFocus()
-                        if(PQCSettings.launchHiddenToSystemTray !== checked)
+                        if(PQCSettings.launchHiddenToSystemTray !== checked) {
                             PQCSettings.launchHiddenToSystemTray = checked
+                            PQCSettings.notifyNextLaunchHiddenToSystemTray = checked
+                        }
                     }
                 }
 
