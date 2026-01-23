@@ -27,9 +27,11 @@ Item {
 
     id: sphere_top
 
-    parent: image_top
+    parent: imageParent
     anchors.fill: parent
     anchors.margins: -5
+
+    property Item imageParent
 
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() {

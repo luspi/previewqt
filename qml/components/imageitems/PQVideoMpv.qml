@@ -40,6 +40,8 @@ Item {
     width: 10
     height: 10
 
+    property Item imageParent
+
     property int videoDuration: 0
     property int videoPosition: 0
     property bool videoPlaying: false
@@ -134,7 +136,7 @@ Item {
 
     Rectangle {
 
-        parent: image_top
+        parent: videotop.imageParent
 
         x: (parent.width-width)/2
         y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)

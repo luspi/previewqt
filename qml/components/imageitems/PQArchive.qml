@@ -34,6 +34,8 @@ Item {
     width: imageitem.width
     height: imageitem.height
 
+    property Item imageParent
+
     property bool thisIsAComicBook: PQCScriptsImages.isComicBook(source) // qmllint disable unqualified
     property var fileList: []
     property int currentFile: 0
@@ -125,7 +127,7 @@ Item {
 
     Rectangle {
 
-        parent: image_top
+        parent: arc_top.imageParent
 
         id: archivelisting
 
@@ -172,7 +174,7 @@ Item {
 
     Rectangle {
 
-        parent: image_top
+        parent: arc_top.imageParent
 
         id: controlitem
 

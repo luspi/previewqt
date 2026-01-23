@@ -26,11 +26,15 @@ import PreviewQt
 
 Item {
 
+    id: ani_top
+
     x: (PQCConstants.imageAvailableSize.width-width)/2
     y: (PQCConstants.imageAvailableSize.height-height)/2
 
     width: imageitem.width
     height: imageitem.height
+
+    property Item imageParent
 
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(imageitem.paintedWidth, imageitem.paintedHeight) })
@@ -65,7 +69,7 @@ Item {
 
     Rectangle {
 
-        parent: image_top
+        parent: ani_top.imageParent
 
         x: (parent.width-width)/2
         y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)

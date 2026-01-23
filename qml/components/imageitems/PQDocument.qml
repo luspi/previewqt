@@ -26,11 +26,15 @@ import PreviewQt
 
 Item {
 
+    id: doc_top
+
     x: (PQCConstants.imageAvailableSize.width-width)/2
     y: (PQCConstants.imageAvailableSize.height-height)/2
 
     width: imageitem.width
     height: imageitem.height
+
+    property Item imageParent
 
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(imageitem.paintedWidth, imageitem.paintedHeight) })
@@ -104,7 +108,7 @@ Item {
 
     Rectangle {
 
-        parent: image_top
+        parent: doc_top.imageParent
 
         id: controlitem
 

@@ -29,7 +29,7 @@ Video {
 
     id: video
 
-    parent: image_top
+    parent: imageParent
 
     // earlier versions of Qt6 seem to struggle if only one slash is used
     source: PQCConstants.currentSource!=="" ? ((PQCScriptsConfig.isQtAtLeast6_5() ? "file:/" : "file://") + PQCConstants.currentSource) : ""
@@ -41,6 +41,8 @@ Video {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(video.width, video.height) })
         PQCConstants.imageAsynchronous = false
     }
+
+    property Item imageParent
 
     property var volumeList: [1.0, 0.8, 0.45, 0]
     property int volumeIndex: 0
@@ -92,7 +94,7 @@ Video {
 
     Rectangle {
 
-        parent: image_top
+        parent: video.imageParent
 
         x: (parent.width-width)/2
         y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)

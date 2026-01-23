@@ -20,16 +20,24 @@ set(previewqt_QML "qml/PQMainWindow.qml"
 
 if(WITH_EPUB)
     set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQEPUB.qml")
+else()
+    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/dummy/PQEPUB.qml")
 endif()
 
 if(WITH_PHOTOSPHERE)
     set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQPhotoSphere.qml")
+else()
+    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/dummy/PQPhotoSphere.qml")
 endif()
 
 if(WITH_VIDEO_QT)
     set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQVideoQt.qml")
+else()
+    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/dummy/PQVideoQt.qml")
 endif()
 
 if(WITH_VIDEO_MPV)
     set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQVideoMpv.qml")
+else()
+    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/dummy/PQVideoMpv.qml")
 endif()

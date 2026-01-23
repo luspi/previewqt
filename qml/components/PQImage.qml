@@ -169,36 +169,106 @@ Item {
 
         if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
             PQCConstants.currentType = "doc"
-            imageloader.source = "imageitems/PQDocument.qml"
+            imageloader.sourceComponent = comp_doc
         } else if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
             PQCConstants.currentType = "bok"
-            imageloader.source = "imageitems/PQEPUB.qml"
+            imageloader.sourceComponent = comp_bok
         } else if(PQCScriptsImages.isArchive(PQCConstants.currentSource)) {
             PQCConstants.currentType = "arc"
-            imageloader.source = "imageitems/PQArchive.qml"
+            imageloader.sourceComponent = comp_arc
         } else if(PQCScriptsImages.isMpvVideo(PQCConstants.currentSource)) {
             PQCConstants.currentType = "mpv"
-            imageloader.source = "imageitems/PQVideoMpv.qml"
+            imageloader.sourceComponent = comp_mpv
         } else if(PQCScriptsImages.isQtVideo(PQCConstants.currentSource)) {
             PQCConstants.currentType = "vid"
-            imageloader.source = "imageitems/PQVideoQt.qml"
+            imageloader.sourceComponent = comp_vid
         } else if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource)) {
             PQCConstants.currentType = "ani"
-            imageloader.source = "imageitems/PQImageAnimated.qml"
+            imageloader.sourceComponent = comp_ani
         } else if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource)) {
             PQCConstants.currentType = "sph"
-            imageloader.source = "imageitems/PQPhotoSphere.qml"
+            imageloader.sourceComponent = comp_sph
         } else if(PQCScriptsImages.isSVG(PQCConstants.currentSource)) {
             PQCConstants.currentType = "svg"
-            imageloader.source = "imageitems/PQSVG.qml"
+            imageloader.sourceComponent = comp_svg
         } else if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource)) {
             PQCConstants.currentType = "txt"
-            imageloader.source = "imageitems/PQTxt.qml"
+            imageloader.sourceComponent = comp_txt
         } else {
             PQCConstants.currentType = "img"
-            imageloader.source = "imageitems/PQImageNormal.qml"
+            imageloader.sourceComponent = comp_img
         }
 
+    }
+
+    Component {
+        id: comp_doc
+        PQDocument {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_bok
+        PQEPUB {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_arc
+        PQArchive {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_mpv
+        PQVideoMpv {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_vid
+        PQVideoQt {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_ani
+        PQImageAnimated {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_sph
+        PQPhotoSphere {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_svg
+        PQSVG {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_txt
+        PQTxt {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_img
+        PQImageNormal {
+            imageParent: image_top
+        }
     }
 
 }
