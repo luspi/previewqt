@@ -33,47 +33,65 @@ Item {
     height: PQCConstants.mainwindowHeight-(PQCSettings.topBarAutoHide ? 0 : 40)-2*5
 
     property int setRotation: 0
+    onSetRotationChanged:
+        PQCConstants.imageRotation = setRotation
 
     clip: true
 
-    // these are used for a delay in reloading the image
-    property int windowWidth: 200
-    property int windowHeight: 200
-
-    property int status: Image.Null
-    onStatusChanged: {
-        if(status == Image.Ready) {
-            if(imageloader.item != null) {
-                PQCNotify.updateWindowSize(imageloader.item.paintedWidth+10, imageloader.item.paintedHeight+10)
-            }
-        }
-    }
-
-    // react to window size changes with a delau
+    // react to window size changes with a delay
     Timer {
         id: updateWindowSize
         interval: 500
         onTriggered: {
             if(imageloader.item != null)
-                imageloader.item.asynchronous = false
-            windowWidth = image_top.width
-            windowHeight = image_top.height
+                PQCNotify.setImageAsync(false)
+            PQCConstants.imageAvailableSizeDelay = PQCConstants.imageAvailableSize
         }
     }
 
     Connections {
         target: image_top
         function onWidthChanged(width : int) {
+            PQCConstants.imageAvailableSize.width = image_top.width
             updateWindowSize.restart()
         }
         function onHeightChanged(height : int) {
+            PQCConstants.imageAvailableSize.height = image_top.height
             updateWindowSize.restart()
         }
     }
 
+    Connections {
+
+        target: PQCNotify
+
+        function onAddRotation(rot : int) {
+            image_top.setRotation += rot
+        }
+
+        function onLoadNewFile(path : string) {
+            image_top.loadImage(path)
+        }
+
+    }
+
+    Connections {
+
+        target: PQCConstants
+
+        function onImageStatusChanged() {
+            if(PQCConstants.imageStatus === Image.Ready) {
+                if(imageloader.item != null) {
+                    PQCNotify.updateWindowSize(PQCConstants.imagePaintedSize.width+10, PQCConstants.imagePaintedSize.height+10)
+                }
+            }
+        }
+
+    }
+
     Component.onCompleted: {
-        windowWidth = image_top.width
-        windowHeight = image_top.height
+        PQCConstants.imageAvailableSize = Qt.size(image_top.width, image_top.height)
+        PQCConstants.imageAvailableSizeDelay = Qt.size(image_top.width, image_top.height)
     }
 
     // react to clicks, double clicks, and movements
@@ -87,11 +105,11 @@ Item {
         cursorShape: PQCConstants.currentSource === "" ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: (mouse) => {
             if(mouse.button === Qt.RightButton)
-                toplevel.showMainContextMenu()
+                PQCNotify.showMainContextMenu()
             else if(PQCConstants.menuIsOpen)
                 PQCNotify.closeAllMenus()
             else if(PQCConstants.currentSource === "")
-                toplevel.openNewFile()
+                PQCNotify.requestNewFile()
         }
         onPositionChanged: (mouse) => {
             if(mouse.y < 30)
@@ -103,9 +121,9 @@ Item {
         onDoubleClicked: (mouse) => {
             if(mouse.button === Qt.RightButton) return
             if(PQCConstants.mainwindowIsFullscreen)
-                toplevel.showNormal()
+                PQCNotify.mainwindowShowNormal()
             else
-                toplevel.showFullScreen()
+                PQCNotify.mainwindowShowFullscreen()
         }
     }
 
@@ -114,7 +132,7 @@ Item {
         onDropped: (drop) => {
             var src = PQCScriptsFilesPaths.cleanPath(drop.text)
             if(PQCScriptsFilesPaths.isFileSupported(src))
-                loadImage(src)
+                image_top.loadImage(src)
         }
     }
 
@@ -140,12 +158,12 @@ Item {
         if(path === "") {
             PQCConstants.currentSource = ""
             imageloader.source = ""
-            image.status = Image.Null
+            PQCConstants.imageStatus = Image.Null
             return
         }
 
         PQCConstants.currentSource = PQCScriptsFilesPaths.cleanPath(path)
-        image.status = Image.Loading
+        PQCConstants.imageStatus = Image.Loading
 
         PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(PQCConstants.currentSource)
 
@@ -156,16 +174,16 @@ Item {
             PQCConstants.currentType = "bok"
             imageloader.source = "imageitems/PQEPUB.qml"
         } else if(PQCScriptsImages.isArchive(PQCConstants.currentSource)) {
-            PQCConstants.currentType = "ani"
+            PQCConstants.currentType = "arc"
             imageloader.source = "imageitems/PQArchive.qml"
         } else if(PQCScriptsImages.isMpvVideo(PQCConstants.currentSource)) {
-            PQCConstants.currentType = "arc"
+            PQCConstants.currentType = "mpv"
             imageloader.source = "imageitems/PQVideoMpv.qml"
         } else if(PQCScriptsImages.isQtVideo(PQCConstants.currentSource)) {
-            PQCConstants.currentType = "mpv"
+            PQCConstants.currentType = "vid"
             imageloader.source = "imageitems/PQVideoQt.qml"
         } else if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource)) {
-            PQCConstants.currentType = "vid"
+            PQCConstants.currentType = "ani"
             imageloader.source = "imageitems/PQImageAnimated.qml"
         } else if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource)) {
             PQCConstants.currentType = "sph"

@@ -34,22 +34,16 @@ SystemTrayIcon {
 
     // show/hide application window
     onActivated: {
-        if(toplevel.visible)
-            toplevel.close()
-        else {
-            toplevel.show()
-            toplevel.raise()
-            toplevel.requestActivate()
-        }
+        PQCNotify.mainwindowToggleVisibility()
     }
 
     // the context menu
     menu: Menu {
         visible: false
         MenuItem {
-            text: toplevel.visible ? qsTr("Hide window") : qsTr("Show window")
+            text: PQCConstants.windowMainVisible ? qsTr("Hide window") : qsTr("Show window")
             onTriggered: {
-                toplevel.visible = !toplevel.visible
+                PQCNotify.mainwindowToggleVisibility()
             }
         }
         MenuItem {

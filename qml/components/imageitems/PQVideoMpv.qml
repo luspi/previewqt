@@ -32,13 +32,10 @@ Item {
 
     id: videotop
 
-    x: (image_top.width-width)/2
-    y: (image_top.height-height)/2
+    x: (PQCConstants.imageAvailableSize.width-width)/2
+    y: (PQCConstants.imageAvailableSize.height-height)/2
 
-    scale: Math.min(image_top.width/width, image_top.height/height)
-
-    // dummy item
-    property bool asynchronous
+    scale: Math.min(PQCConstants.imageAvailableSize.width/width, PQCConstants.imageAvailableSize.height/height)
 
     width: 10
     height: 10
@@ -47,8 +44,10 @@ Item {
     property int videoPosition: 0
     property bool videoPlaying: false
 
-    property int paintedWidth: video.width
-    property int paintedHeight: video.height
+    Component.onCompleted: {
+        PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(video.width, video.height) })
+        PQCConstants.imageAsynchronous = false
+    }
 
     onVideoPlayingChanged: {
         video.command(["set", "pause", (videoPlaying ? "no" : "yes")])
@@ -60,13 +59,13 @@ Item {
 
     onWidthChanged: {
         if(width > 15 && height > 15) {
-            image.status = Image.Ready
+            PQCConstants.imageStatus = Image.Ready
         }
     }
 
     onHeightChanged: {
         if(width > 15 && height > 15) {
-            image.status = Image.Ready
+            PQCConstants.imageStatus = Image.Ready
         }
     }
 
@@ -108,7 +107,7 @@ Item {
             videoDuration = video.getProperty("duration")
             video.setProperty("volume", volumeList[volumeIndex])
             getPosition.restart()
-            focusitem.forceActiveFocus()
+            PQCNotify.resetFocus()
         }
     }
 
@@ -203,6 +202,7 @@ Item {
                         } else
                             video.command(["seek", value, "absolute"])
                     }
+                    PQCNotify.resetFocus()
                 }
             }
             Text {

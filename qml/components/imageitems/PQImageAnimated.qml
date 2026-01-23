@@ -26,16 +26,16 @@ import PreviewQt
 
 Item {
 
-    x: (image_top.width-width)/2
-    y: (image_top.height-height)/2
+    x: (PQCConstants.imageAvailableSize.width-width)/2
+    y: (PQCConstants.imageAvailableSize.height-height)/2
 
     width: imageitem.width
     height: imageitem.height
 
-    property alias sourceSize: imageitem.sourceSize
-    property alias asynchronous: imageitem.asynchronous
-    property alias paintedWidth: imageitem.paintedWidth
-    property alias paintedHeight: imageitem.paintedHeight
+    Component.onCompleted: {
+        PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(imageitem.paintedWidth, imageitem.paintedHeight) })
+        PQCConstants.imageAsynchronous = Qt.binding(function() { return imageitem.asynchronous })
+    }
 
     AnimatedImage {
 
@@ -50,13 +50,13 @@ Item {
         smooth: Math.abs(sourceSize.width-width) > 100
         mipmap: smooth
 
-        rotation: image_top.setRotation
+        rotation: PQCConstants.imageRotation
 
-        width: rotation%180===0 ? image_top.width : image_top.height
-        height: rotation%180===0 ? image_top.height : image_top.width
+        width: rotation%180===0 ? PQCConstants.imageAvailableSize.width : PQCConstants.imageAvailableSize.height
+        height: rotation%180===0 ? PQCConstants.imageAvailableSize.height : PQCConstants.imageAvailableSize.width
 
         onStatusChanged: {
-            image.status = status
+            PQCConstants.imageStatus = status
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
         }
@@ -115,7 +115,7 @@ Item {
                 onValueChanged: {
                     if(pressed)
                         imageitem.currentFrame = value
-                    focusitem.forceActiveFocus()
+                    PQCNotify.resetFocus()
                 }
             }
 
@@ -155,6 +155,10 @@ Item {
 
             }
 
+        }
+
+        function onSetImageAsync(async : bool) {
+            imageitem.asynchronous = async
         }
 
     }

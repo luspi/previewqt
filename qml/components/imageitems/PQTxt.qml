@@ -36,15 +36,10 @@ Rectangle {
     SystemPalette { id: colorPalette; colorGroup: SystemPalette.Active }
 
     x: 0
-    y: (image_top.height-height)/2
+    y: (PQCConstants.imageAvailableSize.height-height)/2
 
     width: flickme.width
     height: flickme.height
-
-    property size sourceSize: Qt.size(width, height)
-    property bool asynchronous: false
-    property alias paintedWidth: flickme.width
-    property alias paintedHeight: flickme.height
 
     Rectangle {
         x: parent.width-width
@@ -155,12 +150,12 @@ Rectangle {
                 readOnly: true
 
                 Component.onCompleted: {
-                    image.status = Image.Ready
+                    PQCConstants.imageStatus = Image.Ready
                     imageitem.forceActiveFocus()
                 }
 
                 Component.onDestruction: {
-                    focusitem.forceActiveFocus()
+                    PQCNotify.resetFocus()
                 }
 
                 MouseArea {
@@ -213,13 +208,13 @@ Rectangle {
                     property bool firsttime: true
                     onTriggered: {
                         if(firsttime) {
-                            if(toplevel.width < flickme.defw || toplevel.height < flickme.defh)
-                                image.statusChanged()
+                            if(PQCConstants.mainwindowWidth < flickme.defw || PQCConstants.mainwindowHeight < flickme.defh)
+                                PQCConstants.imageStatusChanged()
                             firsttime = false
                             restart()
                         } else {
-                            flickme.width = Qt.binding(function() { return image_top.width})
-                            flickme.height = Qt.binding(function() { return image_top.height})
+                            flickme.width = Qt.binding(function() { return PQCConstants.imageAvailableSize.width})
+                            flickme.height = Qt.binding(function() { return PQCConstants.imageAvailableSize.height})
                         }
 
                     }
@@ -376,7 +371,7 @@ Rectangle {
             enabled: searchrect.visible
             onEnabledChanged: {
                 if(!enabled)
-                    focusitem.forceActiveFocus()
+                    PQCNotify.resetFocus()
                 else
                     selectAll()
             }
@@ -390,7 +385,7 @@ Rectangle {
                     if(event.key === Qt.Key_F)
                         selectAll()
                     else
-                        toplevel.processKeyEvent(event.modifiers, event.key)
+                        PQCNotify.mainwindowKeyPress(event.modifiers, event.key)
 
                 } else if(event.key === Qt.Key_Escape) {
 
@@ -533,7 +528,7 @@ Rectangle {
             findTimer.stop()
             PQCConstants.menuIsOpen = false
             searchrect.opacity = 0
-            focusitem.forceActiveFocus()
+            PQCNotify.resetFocus()
         }
 
         Connections {
@@ -863,6 +858,9 @@ Rectangle {
     }
 
     Component.onCompleted: {
+
+        PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(flickme.width, flickme.height) })
+        PQCConstants.imageAsynchronous = false
 
         /*1on_PQMKF6*/
         // set current file type

@@ -37,12 +37,10 @@ Video {
         video.play()
     }
 
-    // dummy item
-    property bool asynchronous
-
-    property size sourceSize: Qt.size(video.width, video.height)
-    property int paintedWidth: video.width
-    property int paintedHeight: video.height
+    Component.onCompleted: {
+        PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(video.width, video.height) })
+        PQCConstants.imageAsynchronous = false
+    }
 
     property var volumeList: [1.0, 0.8, 0.45, 0]
     property int volumeIndex: 0
@@ -50,10 +48,10 @@ Video {
 
     volume: volumeList[volumeIndex]
 
-    x: (image_top.width-width)/2
-    y: (image_top.height-height)/2
+    x: (PQCConstants.imageAvailableSize.width-width)/2
+    y: (PQCConstants.imageAvailableSize.height-height)/2
 
-    scale: Math.min(image_top.width/width, image_top.height/height)
+    scale: Math.min(PQCConstants.imageAvailableSize.width/width, PQCConstants.imageAvailableSize.height/height)
 
     onPositionChanged: {
         if(position >= duration-100) {
@@ -78,13 +76,13 @@ Video {
 
     onWidthChanged: {
         if(width > 15 && height > 15) {
-            image.status = Image.Ready
+            PQCConstants.imageStatus = Image.Ready
         }
     }
 
     onHeightChanged: {
         if(width > 15 && height > 15) {
-            image.status = Image.Ready
+            PQCConstants.imageStatus = Image.Ready
         }
     }
 
@@ -154,6 +152,7 @@ Video {
                 onValueChanged: {
                     if(pressed)
                         videoPosition = value
+                    PQCNotify.resetFocus()
                 }
             }
             Text {

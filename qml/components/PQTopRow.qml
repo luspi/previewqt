@@ -35,7 +35,7 @@ Rectangle {
     Behavior on y { NumberAnimation { duration: 200; easing.type: Easing.InQuint } }
 
     // some stylings
-    width: toplevel.width+2
+    width: PQCConstants.mainwindowWidth+2
     height: 40
     color: "#aa000000"
     border.width: 1
@@ -45,23 +45,20 @@ Rectangle {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton|Qt.LeftButton
         onDoubleClicked: {
-            if(toplevel.visibility === Window.Maximized)
-                toplevel.showNormal()
-            else
-                toplevel.showMaximized()
+            PQCNotify.mainwindowToggleMaximized()
         }
 
         onPressed: (mouse) => {
             if(mouse.button === Qt.LeftButton) {
                 cursorShape = Qt.ClosedHandCursor
-                toplevel.startSystemMove()
+                PQCNotify.mainwindowStartSystemMove()
             }
         }
         onReleased:
             cursorShape = Qt.PointingHandCursor
         onClicked: (mouse) => {
             if(mouse.button === Qt.RightButton)
-                toplevel.showMainContextMenu()
+                PQCNotify.showMainContextMenu()
         }
     }
 
@@ -78,7 +75,7 @@ Rectangle {
             source: "image://svg/:/open.svg"
             tooltip: qsTr("Open a file (Ctrl+O)")
             onClicked: {
-                toplevel.openNewFile()
+                PQCNotify.requestNewFile()
             }
         }
 
@@ -90,8 +87,7 @@ Rectangle {
             source: "image://svg/:/settings.svg"
             tooltip: qsTr("Open settings (Ctrl+P)")
             onClicked: {
-                settings.active = true
-                settings.item.show()
+                PQCNotify.showSubWindow("settings")
             }
         }
 
@@ -107,9 +103,9 @@ Rectangle {
                 if(PQCConstants.currentSource === "") return
                 if(PQCScriptsFilesPaths.openInDefault(PQCConstants.currentSource)) {
                     if(PQCSettings.closeAfterDefaultApp)
-                        toplevel.close()
+                        PQCNotify.mainwindowClose()
                 } else
-                    extNotSet.open()
+                    PQCNotify.showExtNotSet()
             }
             MouseArea {
                 enabled: !parent.active
@@ -128,7 +124,7 @@ Rectangle {
             tooltip: qsTr("Rotate image to the left")
             source: "image://svg/:/rotateleft.svg"
             onClicked: {
-                image.setRotation -= 90
+                PQCNotify.addRotation(-90)
             }
             MouseArea {
                 enabled: !parent.active
@@ -147,7 +143,7 @@ Rectangle {
             tooltip: qsTr("Rotate image to the right")
             source: "image://svg/:/rotateright.svg"
             onClicked: {
-                image.setRotation += 90
+                PQCNotify.addRotation(90)
             }
             MouseArea {
                 enabled: !parent.active
@@ -172,8 +168,7 @@ Rectangle {
             source: "image://svg/:/about.svg"
             tooltip: qsTr("About PreviewQt (Ctrl+I)")
             onClicked: {
-                about.active = true
-                about.item.show()
+                PQCNotify.showSubWindow("about")
             }
         }
 
@@ -185,8 +180,7 @@ Rectangle {
             source: "image://svg/:/help.svg"
             tooltip: qsTr("Help (F1)")
             onClicked: {
-                help.active = true
-                help.item.show()
+                PQCNotify.showSubWindow("help")
             }
         }
 

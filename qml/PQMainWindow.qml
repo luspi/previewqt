@@ -24,11 +24,8 @@ import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
-import PQCFileFormats
 
 import PreviewQt
-
-import "./components"
 
 ApplicationWindow {
 
@@ -75,7 +72,7 @@ ApplicationWindow {
         if(PQCSettings.hideToSystemTray) {
             close.accepted = false
             toplevel.visibility = Window.Hidden
-            image.loadImage("")
+            PQCNotify.loadNewFile("")
             extNotSet.hide()
             PQCScriptsFilesPaths.deleteTemporaryFiles()
         } else {
@@ -90,8 +87,10 @@ ApplicationWindow {
         PQCConstants.mainwindowIsMaximized = (visibility === Window.Maximized)
 
         if(visibility === Window.Hidden) {
+            PQCConstants.windowMainVisible = false
             PQCNotify.closeAllMenus()
         } else {
+            PQCConstants.windowMainVisible = true
             ignoreActiveChanges = true
             noLongerIgnoreActiveChanges.restart()
         }
@@ -112,16 +111,11 @@ ApplicationWindow {
         if(!active) PQCNotify.closeAllMenus()
         if(!PQCSettings.closeWhenLosingFocus) return
         if(!active && !ignoreActiveChanges) {
-            if((settings.status == Loader.Ready && settings.item.visible) ||
-                    (about.status == Loader.Ready && about.item.visible) ||
-                    (help.status == Loader.Ready && help.item.visible))
+            if(PQCConstants.windowSettingsVisible || PQCConstants.windowAboutVisible ||
+                    PQCConstants.windowHelpVisible)
                 return
             toplevel.close()
         }
-    }
-
-    function showMainContextMenu() {
-        maincontextmenu.popup()
     }
 
     Menu {
@@ -129,14 +123,13 @@ ApplicationWindow {
         MenuItem {
             icon.source: "image://svg/:/open.svg"
             text: qsTr("Open file")
-            onTriggered: toplevel.openNewFile()
+            onTriggered: PQCNotify.requestNewFile()
         }
         MenuItem {
             icon.source: "image://svg/:/settings.svg"
             text: qsTr("Settings")
             onTriggered: {
-                settings.active = true
-                settings.item.show()
+                PQCNotify.showSubWindow("settings")
             }
         }
         MenuSeparator {}
@@ -158,7 +151,7 @@ ApplicationWindow {
             enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
             text: qsTr("Rotate left")
             onTriggered: {
-                image.setRotation -= 90
+                PQCNotify.addRotation(-90)
             }
         }
         MenuItem {
@@ -166,7 +159,7 @@ ApplicationWindow {
             enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
             text: qsTr("Rotate right")
             onTriggered: {
-                image.setRotation += 90
+                PQCNotify.addRotation(90)
             }
         }
         MenuSeparator {}
@@ -174,16 +167,14 @@ ApplicationWindow {
             icon.source: "image://svg/:/about.svg"
             text: qsTr("About")
             onTriggered: {
-                about.active = true
-                about.item.show()
+                PQCNotify.showSubWindow("about")
             }
         }
         MenuItem {
             icon.source: "image://svg/:/help.svg"
             text: qsTr("Help")
             onTriggered: {
-                help.active = true
-                help.item.show()
+                PQCNotify.showSubWindow("help")
             }
         }
         MenuItem {
@@ -198,6 +189,7 @@ ApplicationWindow {
         }
         onAboutToHide: {
             PQCConstants.menuIsOpen = false
+            focusitem.forceActiveFocus()
         }
         Connections {
             target: PQCNotify
@@ -361,16 +353,16 @@ ApplicationWindow {
         if(msg !== "-") {
 
             if(!msg.includes(":/:/:"))
-                image.loadImage(PQCScriptsFilesPaths.cleanPath(msg))
+                PQCNotify.loadNewFile(PQCScriptsFilesPaths.cleanPath(msg))
             else {
                 var path = msg.split(":/:/:")[0]
                 var inside = msg.split(":/:/:")[1]
                 if(PQCScriptsImages.isArchive(path))
-                    image.loadImage("%1::ARC::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
+                    PQCNotify.loadNewFile("%1::ARC::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
                 else if(PQCScriptsImages.isPDFDocument(path))
-                    image.loadImage("%1::PDF::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
+                    PQCNotify.loadNewFile("%1::PDF::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
                 else
-                    image.loadImage(PQCScriptsFilesPaths.cleanPath(msg))
+                    PQCNotify.loadNewFile(PQCScriptsFilesPaths.cleanPath(msg))
             }
 
         // if no image has been passed on and PreviewQt is supposed to be loaded hidden
@@ -402,9 +394,8 @@ ApplicationWindow {
                 extNotSet.hide()
             else if(txt === "Enter" || txt === "Return") {
                 extNotSet.hide()
-                settings.active = true
-                settings.item.show()
-                settings.item.selectTab(1)
+                PQCConstants.settingsTabNextTime = 1
+                PQCNotify.showSubWindow("settings")
             }
             return
         }
@@ -433,7 +424,7 @@ ApplicationWindow {
                 return
             }
 
-            openNewFile()
+            PQCNotify.requestNewFile()
 
         } else if(txt === "Ctrl+P") {
 
@@ -442,8 +433,7 @@ ApplicationWindow {
                 return
             }
 
-            settings.active = true
-            settings.item.show()
+            PQCNotify.showSubWindow("settings")
 
         } else if(txt === "Ctrl+I") {
 
@@ -452,8 +442,7 @@ ApplicationWindow {
                 return
             }
 
-            about.active = true
-            about.item.show()
+            PQCNotify.showSubWindow("about")
 
         } else if(txt === "F1") {
 
@@ -462,8 +451,7 @@ ApplicationWindow {
                 return
             }
 
-            help.active = true
-            help.item.show()
+            PQCNotify.showSubWindow("help")
 
         } else if(txt === PQCSettings.defaultAppShortcut) {
 
@@ -522,13 +510,13 @@ ApplicationWindow {
 
                 if(fileInside != "") {
                     if(PQCScriptsImages.isPDFDocument(path))
-                        image.loadImage("%1::PDF::%2".arg(fileInside).arg(path))
+                        PQCNotify.loadNewFile("%1::PDF::%2".arg(fileInside).arg(path))
                     else if(PQCScriptsImages.isArchive(path))
-                        image.loadImage("%1::ARC::%2".arg(fileInside).arg(path))
+                        PQCNotify.loadNewFile("%1::ARC::%2".arg(fileInside).arg(path))
                     else
-                        image.loadImage(path)
+                        PQCNotify.loadNewFile(path)
                 } else
-                    image.loadImage(path)
+                    PQCNotify.loadNewFile(path)
 
                 if(!toplevel.visible) {
                     if(PQCSettings.defaultWindowMaximized)
@@ -604,9 +592,8 @@ ApplicationWindow {
                     text: qsTr("Go to settings")
                     onClicked: {
                         extNotSet.hide()
-                        settings.active = true
-                        settings.item.show()
-                        settings.item.selectTab(1)
+                        PQCConstants.settingsTabNextTime = 1
+                        PQCNotify.showSubWindow("settings")
                     }
                 }
             }
@@ -629,7 +616,8 @@ ApplicationWindow {
 
         function onUpdateWindowSize(w : int, h : int) {
 
-            if(!PQCSettings.maximizeImageSizeAndAdjustWindow || PQCConstants.mainwindowIsMaximized || PQCConstants.mainwindowIsFullscreen || PQCConstants.mainwindowManuallyResized)
+            if(!PQCSettings.maximizeImageSizeAndAdjustWindow || PQCConstants.mainwindowIsMaximized ||
+                    PQCConstants.mainwindowIsFullscreen || PQCConstants.mainwindowManuallyResized)
                 return
 
             var fitsize = PQCScriptsOther.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight)
@@ -651,12 +639,71 @@ ApplicationWindow {
             toplevel.processKeyEvent(modifiers, keycode)
         }
 
-    }
+        function onMainwindowToggleVisibility() {
+            if(toplevel.visible) {
+                PQCSettings.hideToSystemTray = true
+                toplevel.close()
+            } else {
+                toplevel.show()
+                toplevel.raise()
+                toplevel.requestActivate()
+            }
+        }
 
-    function openNewFile() {
-        var path = PQCScriptsFilesPaths.openNewFile()
-        if(path !== "")
-            image.loadImage(path)
+        function onMainwindowToggleMaximized() {
+            if(toplevel.visibility === Window.Maximized)
+                toplevel.showNormal()
+            else
+                toplevel.showMaximized()
+        }
+
+        function onMainwindowStartSystemMove() {
+            toplevel.startSystemMove()
+        }
+
+        function onShowMainContextMenu() {
+            maincontextmenu.popup()
+        }
+
+        function onRequestNewFile() {
+            var path = PQCScriptsFilesPaths.openNewFile()
+            if(path !== "")
+                PQCNotify.loadNewFile(path)
+        }
+
+        function onMainwindowClose() {
+            toplevel.close()
+        }
+
+        function onShowSubWindow(wdw : string) {
+            if(wdw === "help") {
+                if(!help.active)
+                    help.active = true
+            } else if(wdw === "about") {
+                if(!about.active)
+                    about.active = true
+            } else if(wdw === "settings") {
+                if(!settings.active)
+                    settings.active = true
+            }
+        }
+
+        function onShowExtNotSet() {
+            extNotSet.open()
+        }
+
+        function onMainwindowShowNormal() {
+            toplevel.showNormal()
+        }
+
+        function onMainwindowShowFullscreen() {
+            toplevel.showFullScreen()
+        }
+
+        function onResetFocus() {
+            focusitem.forceActiveFocus()
+        }
+
     }
 
 }

@@ -23,6 +23,7 @@
 import QtCore
 import QtQuick
 import QtQuick.Controls
+import PreviewQt
 
 ApplicationWindow {
 
@@ -48,6 +49,10 @@ ApplicationWindow {
 
     width: 500
     height: 350
+
+    onVisibilityChanged: (visibility) => {
+        PQCConstants.windowWelcomeVisible = (visibility === Window.Hidden ? false : true)
+    }
 
     Flickable {
 
@@ -119,7 +124,7 @@ ApplicationWindow {
 
     // when closing we re-focus on main key catcher
     onClosing: {
-        focusitem.forceActiveFocus()
+        PQCNotify.resetFocus()
     }
 
     function show() {

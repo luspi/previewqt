@@ -23,6 +23,7 @@
 
 #include <QObject>
 #include <QQmlEngine>
+#include <QSize>
 
 class PQCConstants : public QObject {
 
@@ -47,6 +48,21 @@ public:
         m_menuIsOpen = false;
         m_trayiconShowNotificationWhenReady = {"", ""};
 
+        m_windowMainVisible = false;
+        m_windowAboutVisible = false;
+        m_windowHelpVisible = false;
+        m_windowSettingsVisible = false;
+        m_windowWelcomeVisible = false;
+
+        m_settingsTabNextTime = -1;
+
+        m_imageStatus = 0;
+        m_imagePaintedSize = QSize(0,0);
+        m_imageAsynchronous = false;
+        m_imageRotation = 0;
+        m_imageAvailableSize = QSize(0,0);
+        m_imageAvailableSizeDelay = QSize(0,0);
+
     }
 
     Q_PROPERTY(QString currentSource MEMBER m_currentSource NOTIFY currentSourceChanged)
@@ -60,9 +76,24 @@ public:
     Q_PROPERTY(bool mainwindowIsFullscreen MEMBER m_mainwindowIsFullscreen NOTIFY mainwindowIsFullscreenChanged)
     Q_PROPERTY(bool mainwindowIsMaximized MEMBER m_mainwindowIsMaximized NOTIFY mainwindowIsMaximizedChanged)
 
+    Q_PROPERTY(bool windowMainVisible MEMBER m_windowMainVisible NOTIFY windowMainVisibleChanged)
+    Q_PROPERTY(bool windowAboutVisible MEMBER m_windowAboutVisible NOTIFY windowAboutVisibleChanged)
+    Q_PROPERTY(bool windowHelpVisible MEMBER m_windowHelpVisible NOTIFY windowHelpVisibleChanged)
+    Q_PROPERTY(bool windowSettingsVisible MEMBER m_windowSettingsVisible NOTIFY windowSettingsVisibleChanged)
+    Q_PROPERTY(bool windowWelcomeVisible MEMBER m_windowWelcomeVisible NOTIFY windowWelcomeVisibleChanged)
+
+    Q_PROPERTY(int settingsTabNextTime MEMBER m_settingsTabNextTime NOTIFY settingsTabNextTimeChanged)
+
     Q_PROPERTY(bool toprowForceVisible MEMBER m_toprowForceVisible NOTIFY toprowForceVisibleChanged)
     Q_PROPERTY(bool menuIsOpen MEMBER m_menuIsOpen NOTIFY menuIsOpenChanged)
     Q_PROPERTY(QStringList trayiconShowNotificationWhenReady MEMBER m_trayiconShowNotificationWhenReady NOTIFY trayiconShowNotificationWhenReadyChanged)
+
+    Q_PROPERTY(int imageStatus MEMBER m_imageStatus NOTIFY imageStatusChanged)
+    Q_PROPERTY(QSize imagePaintedSize MEMBER m_imagePaintedSize NOTIFY imagePaintedSizeChanged)
+    Q_PROPERTY(bool imageAsynchronous MEMBER m_imageAsynchronous NOTIFY imageAsynchronousChanged)
+    Q_PROPERTY(int imageRotation MEMBER m_imageRotation NOTIFY imageRotationChanged)
+    Q_PROPERTY(QSize imageAvailableSize MEMBER m_imageAvailableSize NOTIFY imageAvailableSizeChanged)
+    Q_PROPERTY(QSize imageAvailableSizeDelay MEMBER m_imageAvailableSizeDelay NOTIFY imageAvailableSizeDelayChanged)
 
 private:
     QString m_currentSource;
@@ -74,6 +105,21 @@ private:
     QString m_mainwindowOverrideTitleSuffix;
     bool m_mainwindowIsFullscreen;
     bool m_mainwindowIsMaximized;
+
+    bool m_windowMainVisible;
+    bool m_windowAboutVisible;
+    bool m_windowHelpVisible;
+    bool m_windowSettingsVisible;
+    bool m_windowWelcomeVisible;
+
+    int m_settingsTabNextTime;
+
+    int m_imageStatus;
+    QSize m_imagePaintedSize;
+    bool m_imageAsynchronous;
+    int m_imageRotation;
+    QSize m_imageAvailableSize;
+    QSize m_imageAvailableSizeDelay;
 
     bool m_toprowForceVisible;
     bool m_menuIsOpen;
@@ -92,5 +138,17 @@ Q_SIGNALS:
     void toprowForceVisibleChanged();
     void menuIsOpenChanged();
     void trayiconShowNotificationWhenReadyChanged();
+    void windowMainVisibleChanged();
+    void windowAboutVisibleChanged();
+    void windowHelpVisibleChanged();
+    void windowSettingsVisibleChanged();
+    void windowWelcomeVisibleChanged();
+    void settingsTabNextTimeChanged();
+    void imageStatusChanged();
+    void imagePaintedSizeChanged();
+    void imageAsynchronousChanged();
+    void imageRotationChanged();
+    void imageAvailableSizeChanged();
+    void imageAvailableSizeDelayChanged();
 
 };

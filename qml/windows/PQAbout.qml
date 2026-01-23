@@ -40,6 +40,10 @@ ApplicationWindow {
 
     color: palette.base
 
+    onVisibilityChanged: (visibility) => {
+        PQCConstants.windowAboutVisible = (visibility === Window.Hidden ? false : true)
+    }
+
     // in this window, this item catches all key presses
     Item {
         id: catchKeyPress
@@ -293,7 +297,7 @@ ApplicationWindow {
     // when closing we re-focus on main key catcher
     onClosing: {
         configcontainer.opacity = 0
-        focusitem.forceActiveFocus()
+        PQCNotify.resetFocus()
     }
 
     function show() {
@@ -324,9 +328,26 @@ ApplicationWindow {
         onClicked: {
             if(configcontainer.visible) {
                 configcontainer.opacity = 0
-                focusitem.forceActiveFocus()
+                PQCNotify.resetFocus()
             } else
                 about_top.close()
+        }
+
+    }
+
+    Component.onCompleted: {
+        about_top.show()
+    }
+
+    Connections {
+
+        target: PQCNotify
+
+        function onShowSubWindow(wdw : string) {
+
+            if(wdw === "about")
+                about_top.show()
+
         }
 
     }

@@ -29,8 +29,8 @@ Item {
 
     id: epub_top
 
-    x: (image_top.width-width)/2
-    y: (image_top.height-height)/2
+    x: (PQCConstants.imageAvailableSize.width-width)/2
+    y: (PQCConstants.imageAvailableSize.height-height)/2
 
     width: view.width
     height: view.height
@@ -49,10 +49,6 @@ Item {
         storePagePos.restart()
     onHeightChanged:
         storePagePos.restart()
-
-    property bool asynchronous: false
-    property int paintedWidth: Math.max(view.contentsSize.width, (coverimage.source!=="" ? coverimage.paintedWidth : width))
-    property int paintedHeight: Math.max(view.contentsSize.height, (coverimage.source!=="" ? coverimage.paintedHeight : height))
 
     // where we are at in the e book
     property int documentCount: 1
@@ -74,6 +70,12 @@ Item {
     property real scrollToWhenSetup: -1
 
     Component.onCompleted: {
+
+        PQCConstants.imagePaintedSize = Qt.binding(function() {
+            return Qt.size(Math.max(view.contentsSize.width, (coverimage.source!=="" ? coverimage.paintedWidth : width)),
+                           Math.max(view.contentsSize.height, (coverimage.source!=="" ? coverimage.paintedHeight : height)))
+        })
+        PQCConstants.imageAsynchronous = false
 
         // load book
         book = PQCScriptsImages.loadEPUB(PQCConstants.currentSource)
@@ -152,13 +154,13 @@ Item {
         // hidden when cover image is shown
         visible: currentDocument>-1
 
-        width: image_top.width
-        height: image_top.height
+        width: PQCConstants.imageAvailableSize.width
+        height: PQCConstants.imageAvailableSize.height
 
         onLoadingChanged: (loadingInfo) => {
             if (loadingInfo.status === WebEngineView.LoadSucceededStatus && url !== "") {
 
-                image.status = Image.Ready
+                PQCConstants.imageStatus = Image.Ready
 
                 // this disables user selection of content
                 // we do this to help us force the active focus to the focusitem to catch key presses
@@ -169,7 +171,7 @@ Item {
 
             } else if(loadingInfo.status === WebEngineView.LoadFailedStatus)
 
-                image.status = Image.Error
+                PQCConstants.imageStatus = Image.Error
 
         }
 
@@ -179,7 +181,7 @@ Item {
 
         // load scroll position once content is properly set up
         onContentsSizeChanged: {
-            if(view.loadProgress == 100 && contentsSize.height > 0 && !loadInitiScrollWithDelay.running) {
+            if(view.loadProgress === 100 && contentsSize.height > 0 && !loadInitiScrollWithDelay.running) {
                 if(scrollToWhenSetup != -1) {
                     loadInitiScrollWithDelay.restart()
                 }
@@ -218,7 +220,7 @@ Item {
         running: true
         repeat: true
         onTriggered:
-            focusitem.forceActiveFocus()
+            PQCNotify.resetFocus()
     }
 
     // The cover image
@@ -232,16 +234,16 @@ Item {
         property int defw: Math.max(50, PQCSettings.defaultWindowWidth)
         property int defh: Math.max(50, PQCSettings.defaultWindowHeight)
 
-        width: image_top.width
-        height: image_top.height
+        width: PQCConstants.imageAvailableSize.width
+        height: PQCConstants.imageAvailableSize.height
         sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !PQCConstants.mainwindowIsMaximized &&
                      !PQCConstants.mainwindowIsFullscreen && !PQCConstants.mainwindowManuallyResized) ?
                         Qt.size(defw, defh) :
-                        Qt.size(image_top.windowWidth, image_top.windowHeight)
+                        Qt.size(PQCConstants.imageAvailableSizeDelay.width, PQCConstants.imageAvailableSizeDelay.height)
 
         onStatusChanged: {
             if(status == Image.Ready)
-                image.status = Image.Ready
+                PQCConstants.imageStatus = Image.Ready
         }
 
     }

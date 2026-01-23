@@ -22,6 +22,7 @@
 
 import QtQuick
 import QtQuick.Controls
+import PreviewQt
 
 ApplicationWindow {
 
@@ -35,6 +36,10 @@ ApplicationWindow {
     modality: Qt.ApplicationModal
     width: 500
     height: 500
+
+    onVisibilityChanged: (visibility) => {
+        PQCConstants.windowHelpVisible = (visibility === Window.Hidden ? false : true)
+    }
 
     // in this window, this item catches all key presses
     Item {
@@ -139,7 +144,7 @@ ApplicationWindow {
 
     // when closing we re-focus on main key catcher
     onClosing: {
-        focusitem.forceActiveFocus()
+        PQCNotify.resetFocus()
     }
 
     function show() {
@@ -162,6 +167,23 @@ ApplicationWindow {
         text: qsTr("Close")
         onClicked:
             help_top.close()
+
+    }
+
+    Component.onCompleted: {
+        help_top.show()
+    }
+
+    Connections {
+
+        target: PQCNotify
+
+        function onShowSubWindow(wdw : string) {
+
+            if(wdw === "help")
+                help_top.show()
+
+        }
 
     }
 

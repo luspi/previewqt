@@ -31,13 +31,13 @@ Item {
     anchors.fill: parent
     anchors.margins: -5
 
-    // dummy item
-    property bool asynchronous
-
-    // these ensure that we resize the window to its initial default size
-    property size sourceSize: Qt.size(paintedWidth, paintedHeight)
-    property int paintedWidth: PQCSettings.defaultWindowWidth - 10
-    property int paintedHeight: PQCSettings.defaultWindowHeight - (PQCSettings.topBarAutoHide ? 1 : toprow.height) - 10
+    Component.onCompleted: {
+        PQCConstants.imagePaintedSize = Qt.binding(function() {
+            return Qt.size(PQCSettings.defaultWindowWidth - 10,
+                           PQCSettings.defaultWindowHeight - (PQCSettings.topBarAutoHide ? 1 : toprow.height) - 10)
+        })
+        PQCConstants.imageAsynchronous = false
+    }
 
     PQCPhotoSphere {
 
@@ -118,9 +118,9 @@ Item {
 
                 onDoubleClicked: {
                     if(PQCConstants.mainwindowIsFullscreen)
-                        toplevel.showNormal()
+                        PQCNotify.mainwindowShowNormal()
                     else
-                        toplevel.showFullScreen()
+                        PQCNotify.mainwindowShowFullscreen()
                 }
             }
         }
@@ -153,7 +153,7 @@ Item {
         interval: 50
         running: true
         onTriggered: {
-            image.status = Image.Ready
+            PQCConstants.imageStatus = status
             startPanAfterWindowResize.restart()
         }
     }

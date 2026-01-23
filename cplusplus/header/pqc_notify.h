@@ -34,9 +34,26 @@ public:
     explicit PQCNotify() : QObject() {}
 
 Q_SIGNALS:
-    void closeAllMenus();
-    void updateWindowSize(int w, int h);
-    void trayiconShowNotification(QString title, QString txt);
+    void requestNewFile();
+    void loadNewFile(QString path);
+
+    void mainwindowToggleVisibility();
+    void mainwindowToggleMaximized();
+    void mainwindowShowFullscreen();
+    void mainwindowShowNormal();
+    void mainwindowStartSystemMove();
     void mainwindowKeyPress(int modifiers, int keycode);
+    void mainwindowClose();
+    void updateWindowSize(int w, int h);
+
+    void closeAllMenus();
+    void trayiconShowNotification(QString title, QString txt);
+    void showMainContextMenu();
+    void showSubWindow(QString wdw);
+    void showExtNotSet();
+    void resetFocus();
+
+    void addRotation(int rot);
+    void setImageAsync(bool async);
 
 };

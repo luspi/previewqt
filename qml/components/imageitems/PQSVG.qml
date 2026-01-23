@@ -26,16 +26,16 @@ import PreviewQt
 
 Item {
 
-    x: (image_top.width-width)/2
-    y: (image_top.height-height)/2
+    x: (PQCConstants.imageAvailableSize.width-width)/2
+    y: (PQCConstants.imageAvailableSize.height-height)/2
 
     width: imageitem.width
     height: imageitem.height
 
-    property alias sourceSize: imageitem.sourceSize
-    property alias asynchronous: imageitem.asynchronous
-    property alias paintedWidth: imageitem.paintedWidth
-    property alias paintedHeight: imageitem.paintedHeight
+    Component.onCompleted: {
+        PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(imageitem.paintedWidth, imageitem.paintedHeight) })
+        PQCConstants.imageAsynchronous = Qt.binding(function() { return imageitem.asynchronous })
+    }
 
     Image {
 
@@ -50,16 +50,28 @@ Item {
         smooth: false
         mipmap: false
 
-        rotation: image_top.setRotation
+        rotation: PQCConstants.imageRotation
 
-        width: rotation%180===0 ? image_top.width : image_top.height
-        height: rotation%180===0 ? image_top.height : image_top.width
-        sourceSize: rotation%180===0 ? Qt.size(image_top.windowWidth, image_top.windowHeight) : Qt.size(image_top.windowHeight, image_top.windowWidth)
+        width: rotation%180===0 ? PQCConstants.imageAvailableSize.width : PQCConstants.imageAvailableSize.height
+        height: rotation%180===0 ? PQCConstants.imageAvailableSize.height : PQCConstants.imageAvailableSize.width
+        sourceSize: rotation%180===0 ? Qt.size(PQCConstants.imageAvailableSizeDelay.width,
+                                               PQCConstants.imageAvailableSizeDelay.height) : Qt.size(PQCConstants.imageAvailableSizeDelay.height,
+                                                                                                 PQCConstants.imageAvailableSizeDelay.width)
 
         onStatusChanged: {
-            image.status = status
+            PQCConstants.imageStatus = status
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
+        }
+
+    }
+
+    Connections {
+
+        target: PQCNotify
+
+        function onSetImageAsync(async : bool) {
+            imageitem.asynchronous = async
         }
 
     }

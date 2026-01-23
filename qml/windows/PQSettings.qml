@@ -64,6 +64,10 @@ ApplicationWindow {
     property var txtoptions_key: ["Kate", "KWrite", "Gedit", "Sublime", "(custom)"]
     property var txtoptions_val: ["kate", "kwrite", "gedit", "sublime", ""]
 
+    onVisibilityChanged: (visibility) => {
+        PQCConstants.windowAboutSettingsVisible = (visibility === Window.Hidden ? false : true)
+    }
+
     // For this window, this item catches all key presses
     Item {
         id: catchKeyPress
@@ -113,7 +117,7 @@ ApplicationWindow {
     }
 
     onClosing: {
-        focusitem.forceActiveFocus()
+        PQCNotify.resetFocus()
     }
 
     function show() {
@@ -922,6 +926,30 @@ ApplicationWindow {
                 console.warn("Unknown category:", category)
 
         }
+    }
+
+    Component.onCompleted: {
+        settings_top.show()
+        if(PQCConstants.settingsTabNextTime > -1)
+            settings_top.selectTab(PQCConstants.settingsTabNextTime)
+        PQCConstants.settingsTabNextTime = -1
+    }
+
+    Connections {
+
+        target: PQCNotify
+
+        function onShowSubWindow(wdw : string) {
+
+            if(wdw === "settings") {
+                settings_top.show()
+                if(PQCConstants.settingsTabNextTime > -1)
+                    settings_top.selectTab(PQCConstants.settingsTabNextTime)
+                PQCConstants.settingsTabNextTime = -1
+            }
+
+        }
+
     }
 
     /************************************/

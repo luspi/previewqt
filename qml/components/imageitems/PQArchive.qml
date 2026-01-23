@@ -28,8 +28,8 @@ Item {
 
     id: arc_top
 
-    x: (image_top.width-width)/2 // qmllint disable unqualified
-    y: (image_top.height-height)/2 // qmllint disable unqualified
+    x: (PQCConstants.imageAvailableSize.width-width)/2
+    y: (PQCConstants.imageAvailableSize.height-height)/2
 
     width: imageitem.width
     height: imageitem.height
@@ -39,10 +39,10 @@ Item {
     property int currentFile: 0
     property int fileCount: fileList.length
 
-    property alias sourceSize: imageitem.sourceSize
-    property alias asynchronous: imageitem.asynchronous
-    property alias paintedWidth: imageitem.paintedWidth
-    property alias paintedHeight: imageitem.paintedHeight
+    Component.onCompleted: {
+        PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(imageitem.paintedWidth, imageitem.paintedHeight) })
+        PQCConstants.imageAsynchronous = Qt.binding(function() { return imageitem.asynchronous })
+    }
 
     Image {
 
@@ -67,20 +67,20 @@ Item {
         smooth: false
         mipmap: false
 
-        rotation: image_top.setRotation // qmllint disable unqualified
+        rotation: PQCConstants.imageRotation
 
-        property int defw: Math.max(50, PQCSettings.defaultWindowWidth) // qmllint disable unqualified
-        property int defh: Math.max(50, PQCSettings.defaultWindowHeight) // qmllint disable unqualified
+        property int defw: Math.max(50, PQCSettings.defaultWindowWidth)
+        property int defh: Math.max(50, PQCSettings.defaultWindowHeight)
 
-        width: rotation%180===0 ? image_top.width : image_top.height // qmllint disable unqualified
-        height: rotation%180===0 ? image_top.height : image_top.width // qmllint disable unqualified
+        width: rotation%180===0 ? PQCConstants.imageAvailableSize.width : PQCConstants.imageAvailableSize.height
+        height: rotation%180===0 ? PQCConstants.imageAvailableSize.height : PQCConstants.imageAvailableSize.width
         sourceSize: (PQCSettings.maximizeImageSizeAndAdjustWindow && !PQCConstants.mainwindowIsMaximized &&
                      !PQCConstants.mainwindowIsFullscreen && !PQCConstants.mainwindowManuallyResized) ?
                         (rotation%180===0 ? Qt.size(defw, defh) : Qt.size(defh, defw)) :
-                        (rotation%180===0 ? Qt.size(image_top.windowWidth, image_top.windowHeight) : Qt.size(image_top.windowHeight, image_top.windowWidth))
+                        (rotation%180===0 ? Qt.size(PQCConstants.imageAvailableSizeDelay.width, PQCConstants.imageAvailableSizeDelay.height) : Qt.size(PQCConstants.imageAvailableSizeDelay.height, PQCConstants.imageAvailableSizeDelay.width))
 
         onStatusChanged: {
-            image.status = status // qmllint disable unqualified
+            PQCConstants.imageStatus = status
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
             else if(status == Image.Ready)
@@ -125,7 +125,7 @@ Item {
 
     Rectangle {
 
-        parent: image_top // qmllint disable unqualified
+        parent: image_top
 
         id: archivelisting
 
@@ -162,7 +162,7 @@ Item {
             model: arc_top.fileList
             currentIndex: arc_top.currentFile
             onCurrentIndexChanged: {
-                focusitem.forceActiveFocus() // qmllint disable unqualified
+                PQCNotify.resetFocus()
                 if(currentIndex !== arc_top.currentFile)
                     arc_top.currentFile = currentIndex
             }
@@ -172,7 +172,7 @@ Item {
 
     Rectangle {
 
-        parent: image_top // qmllint disable unqualified
+        parent: image_top
 
         id: controlitem
 
@@ -384,7 +384,7 @@ Item {
                             pagenumberspin.forceActiveFocus()
                             value = arc_top.currentFile+1
                         } else
-                            focusitem.forceActiveFocus() // qmllint disable unqualified
+                            PQCNotify.resetFocus()
                     }
 
                     Keys.onPressed: (event) => {
@@ -431,6 +431,10 @@ Item {
 
             }
 
+        }
+
+        function onSetImageAsync(async : bool) {
+            imageitem.asynchronous = async
         }
 
     }
