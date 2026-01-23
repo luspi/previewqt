@@ -189,7 +189,8 @@ QString PQCLoadFileArchive::load(QString filename, QSize maxSize, QSize &origSiz
                 dir.mkpath(info.absolutePath());
 
             // write buffer to file
-            file.open(QIODevice::WriteOnly);
+            if(!file.open(QIODevice::WriteOnly))
+                qWarning() << "ERROR: Unable to write buffer to file:" << temppath;
             QDataStream out(&file);   // we will serialize the data into the file
             out.writeRawData((const char*) buff,size);
             file.close();

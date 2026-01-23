@@ -391,7 +391,10 @@ QString PQCScriptsImages::extractMotionPhoto(QString path) {
 
                 // write video to temporary file
                 QFile outfile(videofilename);
-                outfile.open(QIODevice::WriteOnly);
+                if(!outfile.open(QIODevice::WriteOnly)) {
+                    qWarning() << "ERROR: Unable to write video to file";
+                    return "";
+                }
                 QDataStream out(&outfile);
                 out.writeRawData(videodata, info.size()-i);
                 outfile.close();
@@ -800,7 +803,10 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
             dir.mkpath(info.absolutePath());
 
         // write buffer to file
-        file.open(QIODevice::ReadWrite);
+        if(!file.open(QIODevice::ReadWrite)) {
+            qWarning() << "ERROR: Unable to write buffer to file:" << temppath;
+            continue;
+        }
         QDataStream out(&file);   // we will serialize the data into the file
         out.writeRawData((const char*) buff,size);
         delete[] buff;
