@@ -49,16 +49,13 @@ Item {
         }
     }
 
-    Connections {
-        target: image_top
-        function onWidthChanged(width : int) {
-            PQCConstants.imageAvailableSize.width = image_top.width
-            updateWindowSize.restart()
-        }
-        function onHeightChanged(height : int) {
-            PQCConstants.imageAvailableSize.height = image_top.height
-            updateWindowSize.restart()
-        }
+    onWidthChanged: {
+        PQCConstants.imageAvailableSize.width = width
+        updateWindowSize.restart()
+    }
+    onHeightChanged: {
+        PQCConstants.imageAvailableSize.height = height
+        updateWindowSize.restart()
     }
 
     Connections {
@@ -147,7 +144,7 @@ Item {
     }
 
     // load a new image
-    function loadImage(path) {
+    function loadImage(path : string) {
 
         PQCConstants.mainwindowManuallyResized = false
         imageloader.source = ""

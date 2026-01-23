@@ -44,9 +44,9 @@ Video {
 
     property Item imageParent
 
-    property var volumeList: [1.0, 0.8, 0.45, 0]
+    property list<double> volumeList: [1.0, 0.8, 0.45, 0]
     property int volumeIndex: 0
-    property var volumeIcon: ["high", "medium", "low", "mute"]
+    property list<string> volumeIcon: ["high", "medium", "low", "mute"]
 
     volume: volumeList[volumeIndex]
 
@@ -77,12 +77,16 @@ Video {
     }
 
     onWidthChanged: {
+        console.warn(">>>>>> width =", width)
+        PQCConstants.imagePaintedSize.width = width
         if(width > 15 && height > 15) {
             PQCConstants.imageStatus = Image.Ready
         }
     }
 
     onHeightChanged: {
+        console.warn(">>>>>> height =", height)
+        PQCConstants.imagePaintedSize.height = height
         if(width > 15 && height > 15) {
             PQCConstants.imageStatus = Image.Ready
         }

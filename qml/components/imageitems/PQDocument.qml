@@ -53,13 +53,13 @@ Item {
                 return
             }
             if(PQCConstants.currentSource.includes("::PDF::")) {
-                currentPage = PQCConstants.currentSource.split("::PDF::")[0]*1
+                doc_top.currentPage = PQCConstants.currentSource.split("::PDF::")[0]*1
                 source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding(PQCConstants.currentSource)
             } else {
                 var page = PQCCache.getEntry(PQCConstants.currentSource)
                 if(page === "")
-                    page = currentPage
-                currentPage = page
+                    page = doc_top.currentPage
+                doc_top.currentPage = page
                 source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::PDF::%2".arg(page).arg(PQCConstants.currentSource))
             }
         }
@@ -92,7 +92,7 @@ Item {
 
     onCurrentPageChanged: {
         if(PQCConstants.currentSource === "") {
-            source = ""
+            imageitem.source = ""
             return
         }
         imageitem.asynchronous = false
@@ -120,7 +120,7 @@ Item {
         color: "#88000000"
 
         // only show when needed
-        opacity: pageCount>1 ? (hovered ? 1 : 0.3) : 0
+        opacity: doc_top.pageCount>1 ? (hovered ? 1 : 0.3) : 0
         Behavior on opacity { NumberAnimation { duration: 200 } }
         visible: opacity>0
         enabled: visible
@@ -168,7 +168,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: currentPage = 0
+                        onClicked: doc_top.currentPage = 0
                     }
                 }
 
@@ -190,7 +190,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: currentPage = (currentPage+pageCount-1)%pageCount
+                        onClicked: doc_top.currentPage = (doc_top.currentPage+doc_top.pageCount-1)%doc_top.pageCount
                     }
                 }
 
@@ -212,7 +212,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: currentPage = (currentPage+1)%pageCount
+                        onClicked: doc_top.currentPage = (doc_top.currentPage+1)%doc_top.pageCount
                     }
                 }
 
@@ -235,7 +235,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: currentPage = pageCount-1
+                        onClicked: doc_top.currentPage = doc_top.pageCount-1
                     }
                 }
 
@@ -293,7 +293,7 @@ Item {
                         id: pagenumbertxt
 
                         y: (parent.height-height)/2
-                        text: "%1/%2".arg(currentPage+1).arg(pageCount)
+                        text: "%1/%2".arg(doc_top.currentPage+1).arg(doc_top.pageCount)
                         color: "white"
 
                         MouseArea {
@@ -351,19 +351,19 @@ Item {
 
             if(keycode === Qt.Key_Left) {
 
-                currentPage = (currentPage+pageCount-1)%pageCount
+                doc_top.currentPage = (doc_top.currentPage+doc_top.pageCount-1)%doc_top.pageCount
 
             } else if(keycode === Qt.Key_Right || keycode === Qt.Key_Space) {
 
-                currentPage = (currentPage+1)%pageCount
+                doc_top.currentPage = (doc_top.currentPage+1)%doc_top.pageCount
 
             } else if(keycode === Qt.Key_Home) {
 
-                currentPage = 0
+                doc_top.currentPage = 0
 
             } else if(keycode === Qt.Key_End) {
 
-                currentPage = pageCount-1
+                doc_top.currentPage = doc_top.pageCount-1
 
             }
 

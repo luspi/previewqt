@@ -85,7 +85,7 @@ Item {
 
                 anchors.fill: parent
 
-                property var clickedPos
+                property point clickedPos
                 property var clickedAzimuth
                 property var clickedElevation
 
@@ -101,8 +101,8 @@ Item {
                 onPositionChanged: (mouse) => {
                     var posDiff = Qt.point(mouse.x-mousearea.clickedPos.x , mouse.y-mousearea.clickedPos.y)
                     var curTan = Math.tan(thesphere.fieldOfView * ((0.5*Math.PI)/180));
-                    thesphere.azimuth = clickedAzimuth - (((3*256)/image.height) * posDiff.x/6) * curTan
-                    thesphere.elevation = clickedElevation + (((3*256)/image.height) * posDiff.y/6) * curTan
+                    thesphere.azimuth = clickedAzimuth - (((3*256)/PQCConstants.imageAvailableSize.height) * posDiff.x/6) * curTan
+                    thesphere.elevation = clickedElevation + (((3*256)/PQCConstants.imageAvailableSize.height) * posDiff.y/6) * curTan
                 }
                 onReleased: {
                     behavior_fov.duration = 50
@@ -155,7 +155,7 @@ Item {
         interval: 50
         running: true
         onTriggered: {
-            PQCConstants.imageStatus = status
+            PQCConstants.imageStatus = Image.Ready
             startPanAfterWindowResize.restart()
         }
     }
@@ -203,27 +203,27 @@ Item {
         function onMainwindowKeyPress(modifiers : int, keycode : int) {
 
             if(keycode === Qt.Key_Left)
-                moveView("left")
+                sphere_top.moveView("left")
 
             else if(keycode === Qt.Key_Right)
-                moveView("right")
+                sphere_top.moveView("right")
 
             else if(keycode === Qt.Key_Up)
-                moveView("up")
+                sphere_top.moveView("up")
 
             else if(keycode === Qt.Key_Down)
-                moveView("down")
+                sphere_top.moveView("down")
 
             else if(keycode === Qt.Key_Plus)
-                zoom("in")
+                sphere_top.zoom("in")
 
             else if(keycode === Qt.Key_Minus)
-                zoom("out")
+                sphere_top.zoom("out")
 
             else if(keycode === Qt.Key_0) {
 
-                moveView("reset")
-                zoom("reset")
+                sphere_top.moveView("reset")
+                sphere_top.zoom("reset")
 
             }
 
@@ -232,7 +232,7 @@ Item {
     }
 
     // these are not handled with the behavior above because key events are handled smoother than mouse events
-    function zoom(dir) {
+    function zoom(dir : string) {
 
         leftrightani.stop()
 
@@ -254,7 +254,7 @@ Item {
     }
 
     // these are not handled with the behavior above because key events are handled smoother than mouse events
-    function moveView(dir) {
+    function moveView(dir : string) {
 
         leftrightani.stop()
 

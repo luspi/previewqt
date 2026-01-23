@@ -108,7 +108,7 @@ Rectangle {
                     PQCNotify.showExtNotSet()
             }
             MouseArea {
-                enabled: !parent.active
+                enabled: !openwithdefaultbut.active
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton|Qt.LeftButton
                 onClicked: {}
@@ -127,7 +127,7 @@ Rectangle {
                 PQCNotify.addRotation(-90)
             }
             MouseArea {
-                enabled: !parent.active
+                enabled: !rotleftbut.active
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton|Qt.LeftButton
                 onClicked: {}
@@ -146,7 +146,7 @@ Rectangle {
                 PQCNotify.addRotation(90)
             }
             MouseArea {
-                enabled: !parent.active
+                enabled: !rotrightbut.active
                 anchors.fill: parent
                 acceptedButtons: Qt.RightButton|Qt.LeftButton
                 onClicked: {}

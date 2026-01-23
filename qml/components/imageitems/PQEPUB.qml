@@ -43,7 +43,7 @@ Item {
         interval: 1000
         running: true
         onTriggered:
-            startup = false
+            epub_top.startup = false
     }
 
     // store the currently manually changed window size
@@ -66,7 +66,7 @@ Item {
     // 0: title of book
     // 1: cover image (can be empty)
     // 2-: filepath for documents composing book
-    property var book: []
+    property list<var> book: []
 
     // some specific cached properties to be loaded after setup
     property real scrollToWhenSetup: -1
@@ -138,11 +138,11 @@ Item {
         onTriggered: {
 
             // we do not do anything if we're still setting it up (will fire some signals)
-            if(startup)
+            if(epub_top.startup)
                 return
 
             // store data
-            var val = "%1::%2::%3".arg(currentDocument).arg(view.scrollPosition.y / (view.contentsSize.height-view.height)).arg(view.zoomFactor)
+            var val = "%1::%2::%3".arg(epub_top.currentDocument).arg(view.scrollPosition.y / (view.contentsSize.height-view.height)).arg(view.zoomFactor)
 
             PQCCache.setEntry(PQCConstants.currentSource, val)
         }
@@ -160,7 +160,7 @@ Item {
         height: PQCConstants.imageAvailableSize.height
 
         onLoadingChanged: (loadingInfo) => {
-            if (loadingInfo.status === WebEngineView.LoadSucceededStatus && url !== "") {
+            if(loadingInfo.status === WebEngineView.LoadSucceededStatus && url !== "") {
 
                 PQCConstants.imageStatus = Image.Ready
 
@@ -179,12 +179,12 @@ Item {
 
         // react to url changes
         onUrlChanged:
-            checkUrlChange()
+            epub_top.checkUrlChange()
 
         // load scroll position once content is properly set up
         onContentsSizeChanged: {
             if(view.loadProgress === 100 && contentsSize.height > 0 && !loadInitiScrollWithDelay.running) {
-                if(scrollToWhenSetup != -1) {
+                if(epub_top.scrollToWhenSetup != -1) {
                     loadInitiScrollWithDelay.restart()
                 }
                 storePagePos.restart()
@@ -196,8 +196,8 @@ Item {
             id: loadInitiScrollWithDelay
             interval: 50
             onTriggered: {
-                view.runJavaScript("window.scrollBy(0,%1);".arg(scrollToWhenSetup * (view.contentsSize.height-view.height) / view.zoomFactor));
-                scrollToWhenSetup = -1
+                view.runJavaScript("window.scrollBy(0,%1);".arg(epub_top.scrollToWhenSetup * (view.contentsSize.height-view.height) / view.zoomFactor));
+                epub_top.scrollToWhenSetup = -1
             }
 
         }
@@ -230,7 +230,7 @@ Item {
 
         id: coverimage
 
-        visible: currentDocument==-1
+        visible: epub_top.currentDocument==-1
         fillMode: Image.PreserveAspectFit
 
         property int defw: Math.max(50, PQCSettings.defaultWindowWidth)
@@ -274,7 +274,7 @@ Item {
             id: changedTimer
             interval: 2000
             onTriggered:
-                parent.textHasChanged = false
+                progressCont.textHasChanged = false
         }
 
         // what progress is done
@@ -374,7 +374,7 @@ Item {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked:
-                            currentDocument = Math.max((book[1] !== "" ? -1 : 0), currentDocument-1)
+                            epub_top.currentDocument = Math.max((epub_top.book[1] !== "" ? -1 : 0), epub_top.currentDocument-1)
                         ToolTip {
                             delay: 500
                             text: qsTr("Go to previous section/chapter")
@@ -404,7 +404,7 @@ Item {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked:
-                            currentDocument = Math.min(documentCount-1, currentDocument+1)
+                            epub_top.currentDocument = Math.min(epub_top.documentCount-1, epub_top.currentDocument+1)
                         ToolTip {
                             delay: 500
                             text: qsTr("Go to next section/chapter")
@@ -420,7 +420,7 @@ Item {
                 y: (parent.height-height)/2
                 color: "white"
                 font.bold: true
-                text: "%1 / %2".arg(currentDocument+(book[1]==="" ? 1 : 2)).arg(documentCount+(book[1]==="" ? 0 : 1))
+                text: "%1 / %2".arg(epub_top.currentDocument+(epub_top.book[1]==="" ? 1 : 2)).arg(epub_top.documentCount+(epub_top.book[1]==="" ? 0 : 1))
                 MouseArea {
                     id: currentMouse
                     anchors.fill: parent
@@ -515,11 +515,11 @@ Item {
 
             if(keycode === Qt.Key_Left) {
 
-                currentDocument = Math.max((book[1] !== "" ? -1 : 0), currentDocument-1)
+                epub_top.currentDocument = Math.max((epub_top.book[1] !== "" ? -1 : 0), epub_top.currentDocument-1)
 
             } else if(keycode === Qt.Key_Right || keycode === Qt.Key_Space) {
 
-                currentDocument = Math.min(documentCount-1, currentDocument+1)
+                epub_top.currentDocument = Math.min(epub_top.documentCount-1, epub_top.currentDocument+1)
 
             } else if(keycode === Qt.Key_Home) {
 
@@ -569,7 +569,7 @@ Item {
 
         // right url recorded
         // three slashes are needed for this to work both in Linux and Windows
-        if(view.url === "file:///" + book[currentDocument+2])
+        if(view.url === Qt.url("file:///" + book[currentDocument+2]))
             return
 
         // the url might contain an anchor -> remove for checking

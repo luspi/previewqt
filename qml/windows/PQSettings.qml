@@ -43,26 +43,26 @@ ApplicationWindow {
 
     property bool optionsLoaded: false
 
-    property var imgoptions_key: ["PhotoQt", "Eye of Gnome", "Eye of Mate", "Geeqie", "GThumb", "GwenView", "LXImage-Qt", "Nomacs", "Ristretto", "Showfoto", "(custom)"]
-    property var imgoptions_val: ["photoqt", "eog",          "eom",         "geeqie", "gthumb", "gwenview", "lximage-qt", "nomacs", "ristretto", "showfoto", ""]
+    property list<string> imgoptions_key: ["PhotoQt", "Eye of Gnome", "Eye of Mate", "Geeqie", "GThumb", "GwenView", "LXImage-Qt", "Nomacs", "Ristretto", "Showfoto", "(custom)"]
+    property list<string> imgoptions_val: ["photoqt", "eog",          "eom",         "geeqie", "gthumb", "gwenview", "lximage-qt", "nomacs", "ristretto", "showfoto", ""]
 
-    property var docoptions_key: ["PhotoQt", "Atril", "Evince", "Okular", "(custom)"]
-    property var docoptions_val: ["photoqt", "atril", "evince", "okular", ""]
+    property list<string> docoptions_key: ["PhotoQt", "Atril", "Evince", "Okular", "(custom)"]
+    property list<string> docoptions_val: ["photoqt", "atril", "evince", "okular", ""]
 
-    property var arcoptions_key: ["PhotoQt", "Ark", "Engrampa", "File Roller", "(custom)"]
-    property var arcoptions_val: ["photoqt", "ark", "engrampa", "file-roller", ""]
+    property list<string> arcoptions_key: ["PhotoQt", "Ark", "Engrampa", "File Roller", "(custom)"]
+    property list<string> arcoptions_val: ["photoqt", "ark", "engrampa", "file-roller", ""]
 
-    property var comoptions_key: ["PhotoQt", "Calibre", "Evince", "MComix", "Okular", "(custom)"]
-    property var comoptions_val: ["photoqt", "calibre", "evince", "mcomix", "okular", ""]
+    property list<string> comoptions_key: ["PhotoQt", "Calibre", "Evince", "MComix", "Okular", "(custom)"]
+    property list<string> comoptions_val: ["photoqt", "calibre", "evince", "mcomix", "okular", ""]
 
-    property var bokoptions_key: ["E-Book viewer", "Calibre", "Evince", "Okular", "(custom)"]
-    property var bokoptions_val: ["ebook-viewer",  "calibre", "evince", "okular", ""]
+    property list<string> bokoptions_key: ["E-Book viewer", "Calibre", "Evince", "Okular", "(custom)"]
+    property list<string> bokoptions_val: ["ebook-viewer",  "calibre", "evince", "okular", ""]
 
-    property var vidoptions_key: ["PhotoQt", "Dragon Player", "Parole", "SMPlayer", "Totem", "VLC", "(custom)"]
-    property var vidoptions_val: ["photoqt", "dragon",        "parole", "smplayer", "totem", "vlc", ""]
+    property list<string> vidoptions_key: ["PhotoQt", "Dragon Player", "Parole", "SMPlayer", "Totem", "VLC", "(custom)"]
+    property list<string> vidoptions_val: ["photoqt", "dragon",        "parole", "smplayer", "totem", "vlc", ""]
 
-    property var txtoptions_key: ["Kate", "KWrite", "Gedit", "Sublime", "(custom)"]
-    property var txtoptions_val: ["kate", "kwrite", "gedit", "sublime", ""]
+    property list<string> txtoptions_key: ["Kate", "KWrite", "Gedit", "Sublime", "(custom)"]
+    property list<string> txtoptions_val: ["kate", "kwrite", "gedit", "sublime", ""]
 
     onVisibilityChanged: (visibility) => {
         PQCConstants.windowAboutSettingsVisible = (visibility === Window.Hidden ? false : true)
@@ -237,7 +237,7 @@ ApplicationWindow {
 
                     ComboBox {
                         id: langcombo
-                        property var codes: ["en", "de_DE"]
+                        property list<string> codes: ["en", "de_DE"]
                         model: ["English",
                                 "Deutsch"]
                         currentIndex: codes.indexOf(PQCSettings.language)
@@ -954,7 +954,7 @@ ApplicationWindow {
 
     /************************************/
 
-    function selectTab(idx) {
+    function selectTab(idx : int) {
         tabbar.currentIndex = idx
     }
 

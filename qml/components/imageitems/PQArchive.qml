@@ -36,8 +36,8 @@ Item {
 
     property Item imageParent
 
-    property bool thisIsAComicBook: PQCScriptsImages.isComicBook(source) // qmllint disable unqualified
-    property var fileList: []
+    property bool thisIsAComicBook: PQCScriptsImages.isComicBook(PQCConstants.currentSource)
+    property list<string> fileList: []
     property int currentFile: 0
     property int fileCount: fileList.length
 
@@ -57,7 +57,7 @@ Item {
                 return
             }
             if(PQCConstants.currentSource.includes("::ARC::") || arc_top.fileCount == 0)
-                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding(PQCConstants.currentSource) // qmllint disable unqualified
+                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding(PQCConstants.currentSource)
             else
                 source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::ARC::%2".arg(arc_top.fileList[arc_top.currentFile]).arg(PQCConstants.currentSource))
         }
@@ -110,7 +110,7 @@ Item {
         function onCurrentSourceChanged() {
             arc_top.currentFile = 0
             arc_top.fileList = PQCScriptsImages.getArchiveContent(PQCConstants.currentSource, true)
-            updateSource()
+            arc_top.updateSource()
         }
     }
 

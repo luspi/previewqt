@@ -32,7 +32,6 @@ class PQCConstants : public QObject {
     QML_SINGLETON
 
 public:
-
     explicit PQCConstants() : QObject() {
 
         m_currentSource = "";
