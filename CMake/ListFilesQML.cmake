@@ -11,6 +11,7 @@ set(previewqt_QML "qml/PQMainWindow.qml"
                   "qml/components/imageitems/PQImageNormal.qml"
                   "qml/components/imageitems/PQSVG.qml"
                   "qml/components/imageitems/PQTxt.qml"
+                  "qml/components/imageitems/PQURL.qml"
 
                   "qml/windows/PQAbout.qml"
                   "qml/windows/PQHelp.qml"

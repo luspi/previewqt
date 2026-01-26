@@ -43,6 +43,8 @@ public:
     QString getVersion();
     bool isQtAtLeast6_5();
     bool isMotionPhotoSupportEnabled();
+    bool isMPVEnabled();
+    bool isQtVideoEnabled();
     bool amIOnWindows();
     bool isUpgrade();
     bool isDebug();

@@ -38,7 +38,10 @@ class PQCScriptsImagesQML : public QObject {
     QML_NAMED_ELEMENT(PQCScriptsImages)
 
 public:
-    PQCScriptsImagesQML() {}
+    PQCScriptsImagesQML() {
+        connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamURL, this, &PQCScriptsImagesQML::receivedStreamURL);
+        connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamError, this, &PQCScriptsImagesQML::receivedStreamError);
+    }
     ~PQCScriptsImagesQML() {}
 
     Q_INVOKABLE bool isArchive(QString path) {
@@ -85,6 +88,18 @@ public:
         return PQCScriptsImages::get().isItAnimated(filename);
     }
 
+    Q_INVOKABLE bool isURL(QString url) {
+        return PQCScriptsImages::get().isURL(url);
+    }
+
+    Q_INVOKABLE bool isStreamVideo(QString url) {
+        return PQCScriptsImages::get().isStreamVideo(url);
+    }
+
+    Q_INVOKABLE void requestStreamURL(QString url) {
+        PQCScriptsImages::get().requestStreamURL(url);
+    }
+
     Q_INVOKABLE int getDocumentPageCount(QString path) {
         return PQCScriptsImages::get().getDocumentPageCount(path);
     }
@@ -108,5 +123,9 @@ public:
     Q_INVOKABLE QVariantList loadEPUB(QString path) {
         return PQCScriptsImages::get().loadEPUB(path);
     }
+
+Q_SIGNALS:
+    void receivedStreamURL(QString url);
+    void receivedStreamError(QString err);
 
 };

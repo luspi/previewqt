@@ -32,7 +32,9 @@ Video {
     parent: imageParent
 
     // earlier versions of Qt6 seem to struggle if only one slash is used
-    source: PQCConstants.currentSource!=="" ? ((PQCScriptsConfig.isQtAtLeast6_5() ? "file:/" : "file://") + PQCConstants.currentSource) : ""
+    source: overrideSource==="" ?
+                (PQCConstants.currentSource!=="" ? ((PQCScriptsConfig.isQtAtLeast6_5() ? "file:/" : "file://") + PQCConstants.currentSource) : "") :
+                overrideSource
     onSourceChanged: {
         video.play()
     }
@@ -43,6 +45,8 @@ Video {
     }
 
     property Item imageParent
+
+    property string overrideSource: ""
 
     property list<double> volumeList: [1.0, 0.8, 0.45, 0]
     property int volumeIndex: 0

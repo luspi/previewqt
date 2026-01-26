@@ -24,4 +24,5 @@ import QtQuick
 
 Item {
     property Item imageParent
+    property string overrideSource
 }

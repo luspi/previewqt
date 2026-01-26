@@ -53,6 +53,10 @@ public:
     bool isPhotoSphere(QString path);
     int isMotionPhoto(QString path);
     bool isItAnimated(QString filename);
+    bool isURL(QString url);
+
+    bool isStreamVideo(QString url);
+    void requestStreamURL(QString url);
 
     int getDocumentPageCount(QString path);
     QString extractMotionPhoto(QString path);
@@ -67,7 +71,13 @@ public:
 private:
     PQCScriptsImages();
 
+    QProcess *m_streamProc;
+
     QMap<QString,QStringList> archiveContents;
     QString generateArchiveId(QString path);
+
+Q_SIGNALS:
+    void receivedStreamURL(QString url);
+    void receivedStreamError(QString err);
 
 };

@@ -54,6 +54,14 @@ public:
         return PQCScriptsConfig::get().isMotionPhotoSupportEnabled();
     }
 
+    Q_INVOKABLE bool isMPVEnabled() {
+        return PQCScriptsConfig::get().isMPVEnabled();
+    }
+
+    Q_INVOKABLE bool isQtVideoEnabled() {
+        return PQCScriptsConfig::get().isQtVideoEnabled();
+    }
+
     Q_INVOKABLE bool amIOnWindows() {
         return PQCScriptsConfig::get().amIOnWindows();
     }

@@ -126,6 +126,7 @@ Item {
 
     DropArea {
         anchors.fill: parent
+        z: 999
         onDropped: (drop) => {
             var src = PQCScriptsFilesPaths.cleanPath(drop.text)
             if(PQCScriptsFilesPaths.isFileSupported(src))
@@ -147,7 +148,7 @@ Item {
     function loadImage(path : string) {
 
         PQCConstants.mainwindowManuallyResized = false
-        imageloader.source = ""
+        imageloader.active = false
         setRotation = 0
         PQCConstants.mainwindowOverrideTitle = ""
         PQCConstants.mainwindowOverrideTitleSuffix = ""
@@ -164,7 +165,10 @@ Item {
 
         PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(PQCConstants.currentSource)
 
-        if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
+        if(PQCScriptsImages.isURL(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "url"
+            imageloader.sourceComponent = comp_url
+        } else if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
             PQCConstants.currentType = "doc"
             imageloader.sourceComponent = comp_doc
         } else if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
@@ -195,6 +199,8 @@ Item {
             PQCConstants.currentType = "img"
             imageloader.sourceComponent = comp_img
         }
+
+        imageloader.active = true
 
     }
 
@@ -264,6 +270,13 @@ Item {
     Component {
         id: comp_img
         PQImageNormal {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_url
+        PQURL {
             imageParent: image_top
         }
     }

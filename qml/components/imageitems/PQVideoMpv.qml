@@ -42,6 +42,8 @@ Item {
 
     property Item imageParent
 
+    property string overrideSource: ""
+
     property int videoDuration: 0
     property int videoPosition: 0
     property bool videoPlaying: false
@@ -86,7 +88,7 @@ Item {
         interval: 100
         running: true
         onTriggered: {
-            video.command(["loadfile", PQCConstants.currentSource])
+            video.command(["loadfile", (overrideSource==="" ? PQCConstants.currentSource : overrideSource)])
             getProps.restart()
         }
     }
@@ -123,7 +125,7 @@ Item {
             videoPlaying = !video.getProperty("core-idle")
             if(video.getProperty("eof-reached")) {
                 if(!restarting) {
-                    video.command(["loadfile", PQCConstants.currentSource])
+                    video.command(["loadfile", (overrideSource==="" ? PQCConstants.currentSource : overrideSource)])
                     restarting = true
                 }
             } else {
@@ -172,7 +174,7 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         if(video.getProperty("eof-reached")) {
-                            video.command(["loadfile", PQCConstants.currentSource])
+                            video.command(["loadfile", (overrideSource==="" ? PQCConstants.currentSource : overrideSource)])
                             videoPlaying = true
                         } else {
                             videoPlaying = !videoPlaying
@@ -197,7 +199,7 @@ Item {
                 onValueChanged: {
                     if(pressed) {
                         if(video.getProperty("eof-reached")) {
-                            video.command(["loadfile", PQCConstants.currentSource])
+                            video.command(["loadfile", (overrideSource==="" ? PQCConstants.currentSource : overrideSource)])
                             videoPlaying = false
                             setPosTimeout.pos = value
                             setPosTimeout.restart()

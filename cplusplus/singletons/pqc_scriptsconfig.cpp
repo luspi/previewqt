@@ -187,6 +187,20 @@ bool PQCScriptsConfig::isMotionPhotoSupportEnabled() {
     return false;
 }
 
+bool PQCScriptsConfig::isMPVEnabled() {
+#ifdef PQMVIDEOMPV
+    return true;
+#endif
+    return false;
+}
+
+bool PQCScriptsConfig::isQtVideoEnabled() {
+#ifdef PQMVIDEOQT
+    return true;
+#endif
+    return false;
+}
+
 bool PQCScriptsConfig::amIOnWindows() {
 #ifdef Q_OS_WIN
     return true;

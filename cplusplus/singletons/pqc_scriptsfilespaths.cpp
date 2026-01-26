@@ -39,6 +39,9 @@ PQCScriptsFilesPaths::~PQCScriptsFilesPaths() {}
 
 QString PQCScriptsFilesPaths::cleanPath(QString path) {
 
+    if(path.startsWith("http:") || path.startsWith("https:"))
+        return path.trimmed();
+
 #ifdef Q_OS_WIN
     return cleanPath_windows(path);
 #else
@@ -138,7 +141,10 @@ bool PQCScriptsFilesPaths::isFileSupported(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    if(!QFileInfo::exists(path))
+    if(path.startsWith("http:") || path.startsWith("https:"))
+        return true;
+
+    if(!QFileInfo::exists(cleanPath(path)))
         return false;
 
     const QString suffix = QFileInfo(path).suffix().toLower();
