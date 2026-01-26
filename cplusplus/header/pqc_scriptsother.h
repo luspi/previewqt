@@ -44,6 +44,7 @@ public:
     QSize fitSizeInsideSize(int w, int h, int maxw, int maxh);
     int toLcmsFormat(QImage::Format fmt);
     bool applyEmbeddedColorProfile(QImage &img);
+    QString getClipboardContents();
     QString getStartupMessage(){ return m_startupMessage; }
     void setStartupMessage(QString val) { m_startupMessage = val; }
 

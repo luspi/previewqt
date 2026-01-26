@@ -49,6 +49,10 @@ public:
         return PQCScriptsOther::get().fitSizeInsideSize(w, h, maxw, maxh);
     }
 
+    Q_INVOKABLE QString getClipboardContents() {
+        return PQCScriptsOther::get().getClipboardContents();
+    }
+
     Q_INVOKABLE QString getStartupMessage() {
         return PQCScriptsOther::get().getStartupMessage();
     }

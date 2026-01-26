@@ -25,6 +25,8 @@
 #include <QSize>
 #include <QKeySequence>
 #include <QColorSpace>
+#include <QClipboard>
+#include <QApplication>
 
 #ifdef PQMLCMS2
 #include <lcms2.h>
@@ -432,5 +434,12 @@ bool PQCScriptsOther::applyEmbeddedColorProfile(QImage &img) {
 #endif
 
     return true;
+
+}
+
+QString PQCScriptsOther::getClipboardContents() {
+
+    QClipboard *c = qApp->clipboard();
+    return c->text();
 
 }

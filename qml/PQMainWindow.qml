@@ -453,6 +453,20 @@ ApplicationWindow {
 
             PQCNotify.showSubWindow("help")
 
+        } else if(txt === "Ctrl+V") {
+
+            if(PQCConstants.menuIsOpen) {
+                PQCNotify.closeAllMenus()
+                return
+            }
+
+            var clp = PQCScriptsOther.getClipboardContents()
+            console.warn(">>>>> clp =", clp)
+            if(PQCScriptsFilesPaths.isFileSupported(clp))
+                PQCNotify.loadNewFile(clp)
+            else
+                PQCNotify.trayiconShowNotification(qsTr("Unsupported"), qsTr("The pasted content appears to be unsupported by PreviewQt."))
+
         } else if(txt === PQCSettings.defaultAppShortcut) {
 
             if(PQCConstants.menuIsOpen)
