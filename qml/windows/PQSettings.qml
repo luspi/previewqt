@@ -64,6 +64,9 @@ ApplicationWindow {
     property list<string> txtoptions_key: ["Kate", "KWrite", "Gedit", "Sublime", "(custom)"]
     property list<string> txtoptions_val: ["kate", "kwrite", "gedit", "sublime", ""]
 
+    property list<string> urloptions_key: ["Firefox", "chrome", "chromium", "(custom)"]
+    property list<string> urloptions_val: ["firefox", "chrome", "chromium", ""]
+
     onVisibilityChanged: (visibility) => {
         PQCConstants.windowAboutSettingsVisible = (visibility === Window.Hidden ? false : true)
     }
@@ -145,6 +148,9 @@ ApplicationWindow {
 
         var txtindex = Object.values(txtoptions_val).indexOf(PQCSettings.defaultAppText)
         txtcombo.currentIndex = (txtindex===-1 ? txtcombo.currentIndex=txtcombo.model.length-1 : txtindex)
+
+        var urlindex = Object.values(urloptions_val).indexOf(PQCSettings.defaultAppUrl)
+        urlcombo.currentIndex = (urlindex===-1 ? urlcombo.currentIndex=urlcombo.model.length-1 : urlindex)
 
         optionsLoaded = true
 
@@ -852,6 +858,55 @@ ApplicationWindow {
                     }
                 }
 
+                Column {
+
+                    Text {
+                        text: qsTr("External application for URLs:")
+                        color: palette.text
+                    }
+
+                    ComboBox {
+                        id: urlcombo
+                        x: (defaultappsettings.usableWidth-width)/2
+                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                        model: urloptions_key
+                        visible: !PQCScriptsConfig.amIOnWindows()
+                        onCurrentIndexChanged: {
+                            if(!optionsLoaded) return
+                            catchKeyPress.forceActiveFocus()
+                            if(currentIndex < urlcombo.model.length-1) {
+                                PQCSettings.defaultAppUrl = urloptions_val[currentIndex]
+                            } else {
+                                urledit.text = PQCSettings.defaultAppUrl
+                            }
+                        }
+                    }
+
+                    Row {
+                        spacing: 5
+                        visible: urlcombo.currentIndex === urlcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                        TextField {
+                            id: urledit
+                            y: (urlbut.height-height)/2
+                            width: defaultappsettings.usableWidth-urlbut.width-5
+                            text: PQCSettings.defaultAppUrl
+                            onTextChanged: {
+                                if(text !== PQCSettings.defaultAppUrl)
+                                    PQCSettings.defaultAppUrl = text
+                            }
+                        }
+                        Button {
+                            id: urlbut
+                            text: "..."
+                            onClicked: {
+                                selectExe.category = "url"
+                                selectExe.prevexe = urledit.text
+                                selectExe.open()
+                            }
+                        }
+                    }
+                }
+
                 /************************************/
                 Item {
                     width: 1
@@ -922,6 +977,8 @@ ApplicationWindow {
                 bokedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "text")
                 txtedit.text = PQCScriptsFilesPaths.cleanPath(file)
+            else if(category == "url")
+                urledit.text = PQCScriptsFilesPaths.cleanPath(file)
             else
                 console.warn("Unknown category:", category)
 

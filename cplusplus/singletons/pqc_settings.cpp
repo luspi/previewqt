@@ -42,6 +42,7 @@ PQCSettings::PQCSettings() {
 
 #ifndef Q_OS_WIN
     // not on windows we present options
+    // these NEED TO BE DUPLICATED in pqc_settingscpp.h
     opt_img = {"photoqt", "gwenview", "nomacs", "eog", "feh", "gthumb", "mirage", "geeqie"};
     opt_doc = {"okular", "evince", "atril", "photoqt"};
     opt_arc = {"ark", "photoqt"};
@@ -49,6 +50,7 @@ PQCSettings::PQCSettings() {
     opt_bok = {"ebook-viewer", "calibre", "okular"};
     opt_vid = {"vlc", "mplayer", "photoqt"};
     opt_txt = {"kate", "kwrite", "gedit", "sublime"};
+    opt_url = {"firefox", "chrome", "chromium"};
 #else
     // on windows custom tools are needed
     // we need empty entries here to not crash when loading the settings
@@ -59,6 +61,7 @@ PQCSettings::PQCSettings() {
     opt_bok = {""};
     opt_vid = {""};
     opt_txt = {""};
+    opt_url = {""};
 #endif
 
     // do this AFTER setting the above options
@@ -109,6 +112,12 @@ PQCSettings::PQCSettings() {
                 break;
             }
         }
+        for(auto &ele : opt_url) {
+            if(checkToolExistence(ele)) {
+                m_defaultAppUrl = ele;
+                break;
+            }
+        }
 
     }
 #endif
@@ -133,6 +142,7 @@ PQCSettings::PQCSettings() {
     connect(this, &PQCSettings::defaultAppComicBooksChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::defaultAppEBooksChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::defaultAppTextChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppUrlChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::closeAfterDefaultAppChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::filedialogLocationChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::closeWhenLosingFocusChanged, this, [=]() { saveTimer->start(); });
@@ -180,6 +190,7 @@ void PQCSettings::loadSettings() {
     m_defaultAppComicBooks = settings->value("defaultAppComicBooks", opt_com[0]).toString();
     m_defaultAppEBooks = settings->value("defaultAppEBooks", opt_bok[0]).toString();
     m_defaultAppText = settings->value("defaultAppText", opt_txt[0]).toString();
+    m_defaultAppUrl = settings->value("defaultAppUrl", opt_url[0]).toString();
     m_closeAfterDefaultApp = settings->value("closeAfterDefaultApp", true).toBool();
     m_filedialogLocation = settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString();
     m_closeWhenLosingFocus = settings->value("closeWhenLosingFocus", false).toBool();
@@ -205,6 +216,7 @@ void PQCSettings::loadSettings() {
     Q_EMIT defaultAppComicBooksChanged();
     Q_EMIT defaultAppEBooksChanged();
     Q_EMIT defaultAppTextChanged();
+    Q_EMIT defaultAppUrlChanged();
     Q_EMIT closeAfterDefaultAppChanged();
     Q_EMIT filedialogLocationChanged();
     Q_EMIT closeWhenLosingFocusChanged();
@@ -234,6 +246,7 @@ void PQCSettings::saveSettings() {
     settings->setValue("defaultAppComicBooks", m_defaultAppComicBooks);
     settings->setValue("defaultAppEBooks", m_defaultAppEBooks);
     settings->setValue("defaultAppText", m_defaultAppText);
+    settings->setValue("defaultAppUrl", m_defaultAppUrl);
     settings->setValue("closeAfterDefaultApp", m_closeAfterDefaultApp);
     settings->setValue("filedialogLocation", m_filedialogLocation);
     settings->setValue("closeWhenLosingFocus", m_closeWhenLosingFocus);

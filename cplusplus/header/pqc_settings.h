@@ -55,6 +55,7 @@ public:
     Q_PROPERTY(QString defaultAppComicBooks MEMBER m_defaultAppComicBooks NOTIFY defaultAppComicBooksChanged)
     Q_PROPERTY(QString defaultAppEBooks MEMBER m_defaultAppEBooks NOTIFY defaultAppEBooksChanged)
     Q_PROPERTY(QString defaultAppText MEMBER m_defaultAppText NOTIFY defaultAppTextChanged)
+    Q_PROPERTY(QString defaultAppUrl MEMBER m_defaultAppUrl NOTIFY defaultAppUrlChanged)
     Q_PROPERTY(bool closeAfterDefaultApp MEMBER m_closeAfterDefaultApp NOTIFY closeAfterDefaultAppChanged)
     Q_PROPERTY(QString filedialogLocation MEMBER m_filedialogLocation NOTIFY filedialogLocationChanged)
     Q_PROPERTY(bool closeWhenLosingFocus MEMBER m_closeWhenLosingFocus NOTIFY closeWhenLosingFocusChanged)
@@ -83,6 +84,7 @@ private:
     QString m_defaultAppComicBooks;
     QString m_defaultAppEBooks;
     QString m_defaultAppText;
+    QString m_defaultAppUrl;
     bool m_closeAfterDefaultApp;
     QString m_filedialogLocation;
     bool m_closeWhenLosingFocus;
@@ -106,6 +108,7 @@ private:
     QStringList opt_bok;
     QStringList opt_vid;
     QStringList opt_txt;
+    QStringList opt_url;
 
 private Q_SLOTS:
     void saveSettings();
@@ -129,6 +132,7 @@ Q_SIGNALS:
     void defaultAppComicBooksChanged();
     void defaultAppEBooksChanged();
     void defaultAppTextChanged();
+    void defaultAppUrlChanged();
     void closeAfterDefaultAppChanged();
     void filedialogLocationChanged();
     void closeWhenLosingFocusChanged();

@@ -184,85 +184,94 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
     if(path == "")
         return true;
 
-    QFileInfo info(path);
-    const QString suffix = info.suffix().toLower();
-
     QString exe = "";
 
-    // first check for file endings
+    // some things do not go by file ending, check those before anything else
+    if(path.startsWith("http:/") || path.startsWith("https:/")) {
 
-    if(PQCFileFormats::get().getAllFormatsPoppler().contains(suffix)) {
+        exe = PQCSettingsCPP::get().getDefaultAppUrl();
 
-        exe = PQCSettingsCPP::get().getDefaultAppDocuments();
+    } else {
 
-    } else if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suffix) &&
-               (suffix == "cbr" || suffix == "cbt" || suffix == "cbz" || suffix == "cb7")) {
+        QFileInfo info(path);
+        const QString suffix = info.suffix().toLower();
 
-        exe = PQCSettingsCPP::get().getDefaultAppComicBooks();
+        // first check for file endings
 
-    } else if(PQCFileFormats::get().getAllFormatsEBook().contains(suffix)) {
-
-        exe = PQCSettingsCPP::get().getDefaultAppEBooks();
-
-    } else if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suffix)) {
-
-        exe = PQCSettingsCPP::get().getDefaultAppArchives();
-
-    } else if(PQCFileFormats::get().getAllFormatsLibmpv().contains(suffix) || PQCFileFormats::get().getAllFormatsVideo().contains(suffix)) {
-
-        exe = PQCSettingsCPP::get().getDefaultAppVideos();
-
-    } else if(PQCFileFormats::get().getAllFormatsText().contains(suffix)) {
-
-        exe = PQCSettingsCPP::get().getDefaultAppText();
-
-    } else if(PQCFileFormats::get().getAllFormatsQt().contains(suffix) || PQCFileFormats::get().getAllFormatsFreeImage().contains(suffix) ||
-               PQCFileFormats::get().getAllFormatsDevIL().contains(suffix) || PQCFileFormats::get().getAllFormatsLibRaw().contains(suffix) ||
-               PQCFileFormats::get().getAllFormatsLibVips().contains(suffix) || PQCFileFormats::get().getAllFormatsMagick().contains(suffix) ||
-               PQCFileFormats::get().getAllFormatsResvg().contains(suffix) || PQCFileFormats::get().getAllFormatsXCFTools().contains(suffix)) {
-
-        exe = PQCSettingsCPP::get().getDefaultAppImages();
-
-    }
-
-    // if nothing found check mime types
-
-    if(exe == "") {
-
-        QMimeDatabase db;
-        QString mimetype = db.mimeTypeForFile(path).name();
-
-        if(PQCFileFormats::get().getAllMimeTypesPoppler().contains(mimetype)) {
+        if(PQCFileFormats::get().getAllFormatsPoppler().contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppDocuments();
 
-        } else if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype) &&
+        } else if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suffix) &&
                    (suffix == "cbr" || suffix == "cbt" || suffix == "cbz" || suffix == "cb7")) {
 
             exe = PQCSettingsCPP::get().getDefaultAppComicBooks();
 
-        } else if(PQCFileFormats::get().getAllMimeTypesEBook().contains(mimetype)) {
+        } else if(PQCFileFormats::get().getAllFormatsEBook().contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppEBooks();
 
-        } else if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype)) {
+        } else if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppArchives();
 
-        } else if(PQCFileFormats::get().getAllMimeTypesLibmpv().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesVideo().contains(mimetype)) {
+        } else if(PQCFileFormats::get().getAllFormatsLibmpv().contains(suffix) || PQCFileFormats::get().getAllFormatsVideo().contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppVideos();
 
-        } else if(PQCFileFormats::get().getAllMimeTypesText().contains(mimetype)) {
+        } else if(PQCFileFormats::get().getAllFormatsText().contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppText();
 
-        } else if(PQCFileFormats::get().getAllMimeTypesQt().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesFreeImage().contains(mimetype) ||
-                   PQCFileFormats::get().getAllMimeTypesDevIL().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesLibRaw().contains(mimetype) ||
-                   PQCFileFormats::get().getAllMimeTypesLibVips().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesMagick().contains(mimetype) ||
-                   PQCFileFormats::get().getAllMimeTypesResvg().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesXCFTools().contains(mimetype)) {
+        } else if(PQCFileFormats::get().getAllFormatsQt().contains(suffix) || PQCFileFormats::get().getAllFormatsFreeImage().contains(suffix) ||
+                   PQCFileFormats::get().getAllFormatsDevIL().contains(suffix) || PQCFileFormats::get().getAllFormatsLibRaw().contains(suffix) ||
+                   PQCFileFormats::get().getAllFormatsLibVips().contains(suffix) || PQCFileFormats::get().getAllFormatsMagick().contains(suffix) ||
+                   PQCFileFormats::get().getAllFormatsResvg().contains(suffix) || PQCFileFormats::get().getAllFormatsXCFTools().contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppImages();
+
+        }
+
+        // if nothing found check mime types
+
+        if(exe == "") {
+
+            QMimeDatabase db;
+            QString mimetype = db.mimeTypeForFile(path).name();
+
+            if(PQCFileFormats::get().getAllMimeTypesPoppler().contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppDocuments();
+
+            } else if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype) &&
+                       (suffix == "cbr" || suffix == "cbt" || suffix == "cbz" || suffix == "cb7")) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppComicBooks();
+
+            } else if(PQCFileFormats::get().getAllMimeTypesEBook().contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppEBooks();
+
+            } else if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppArchives();
+
+            } else if(PQCFileFormats::get().getAllMimeTypesLibmpv().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesVideo().contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppVideos();
+
+            } else if(PQCFileFormats::get().getAllMimeTypesText().contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppText();
+
+            } else if(PQCFileFormats::get().getAllMimeTypesQt().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesFreeImage().contains(mimetype) ||
+                       PQCFileFormats::get().getAllMimeTypesDevIL().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesLibRaw().contains(mimetype) ||
+                       PQCFileFormats::get().getAllMimeTypesLibVips().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesMagick().contains(mimetype) ||
+                       PQCFileFormats::get().getAllMimeTypesResvg().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesXCFTools().contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppImages();
+
+            }
 
         }
 
@@ -277,9 +286,14 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
 #endif
     }
 
+    path = cleanPath(path);
+
+    qDebug() << "Executing:" << QDir::toNativeSeparators(exe);
+    qDebug() << "Path:" << path;
+
     QProcess proc;
     proc.setProgram(QDir::toNativeSeparators(exe));
-    proc.setArguments({cleanPath(path)});
+    proc.setArguments({path});
     if(!proc.startDetached()) {
         qWarning() << "Could not start process!";
         return false;

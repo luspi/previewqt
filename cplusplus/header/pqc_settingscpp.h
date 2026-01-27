@@ -59,11 +59,35 @@ public:
     QString getDefaultAppComicBooks() { return m_defaultAppComicBooks; }
     QString getDefaultAppEBooks() { return m_defaultAppEBooks; }
     QString getDefaultAppText() { return m_defaultAppText; }
+    QString getDefaultAppUrl() { return m_defaultAppUrl; }
 
     bool getCloseAfterDefaultApp() { return m_closeAfterDefaultApp; }
 
 private:
     PQCSettingsCPP() {
+
+#ifndef Q_OS_WIN
+        // these NEED TO BE DUPLICATED in pqc_settings.h/cpp
+        opt_img = {"photoqt", "gwenview", "nomacs", "eog", "feh", "gthumb", "mirage", "geeqie"};
+        opt_doc = {"okular", "evince", "atril", "photoqt"};
+        opt_arc = {"ark", "photoqt"};
+        opt_com = {"okular", "photoqt"};
+        opt_bok = {"ebook-viewer", "calibre", "okular"};
+        opt_vid = {"vlc", "mplayer", "photoqt"};
+        opt_txt = {"kate", "kwrite", "gedit", "sublime"};
+        opt_url = {"firefox", "chrome", "chromium"};
+#else
+        // on windows custom tools are needed
+        // we need empty entries here to not crash when loading the settings
+        opt_img = {""};
+        opt_doc = {""};
+        opt_arc = {""};
+        opt_com = {""};
+        opt_bok = {""};
+        opt_vid = {""};
+        opt_txt = {""};
+        opt_url = {""};
+#endif
 
         settings = new QSettings(PQCConfigFiles::get().CONFIG_DIR() + "/settings", QSettings::IniFormat);
 
@@ -75,19 +99,29 @@ private:
 
     }
 
+    QStringList opt_img;
+    QStringList opt_doc;
+    QStringList opt_arc;
+    QStringList opt_com;
+    QStringList opt_bok;
+    QStringList opt_vid;
+    QStringList opt_txt;
+    QStringList opt_url;
+
     void readSettings() {
 
         m_language = settings->value("language", "en").toString();
         m_version  = settings->value("version", "").toString();
         m_filedialogLocation = settings->value("filedialogLocation", "").toString();
 
-        m_defaultAppImages = settings->value("defaultAppImages", "").toString();
-        m_defaultAppDocuments = settings->value("defaultAppDocuments", "").toString();
-        m_defaultAppArchives = settings->value("defaultAppArchives", "").toString();
-        m_defaultAppVideos = settings->value("defaultAppVideos", "").toString();
-        m_defaultAppComicBooks = settings->value("defaultAppComicBooks", "").toString();
-        m_defaultAppEBooks = settings->value("defaultAppEBooks", "").toString();
-        m_defaultAppText = settings->value("defaultAppText", "").toString();
+        m_defaultAppImages = settings->value("defaultAppImages", opt_img[0]).toString();
+        m_defaultAppDocuments = settings->value("defaultAppDocuments", opt_doc[0]).toString();
+        m_defaultAppArchives = settings->value("defaultAppArchives", opt_arc[0]).toString();
+        m_defaultAppVideos = settings->value("defaultAppVideos", opt_vid[0]).toString();
+        m_defaultAppComicBooks = settings->value("defaultAppComicBooks", opt_com[0]).toString();
+        m_defaultAppEBooks = settings->value("defaultAppEBooks", opt_bok[0]).toString();
+        m_defaultAppText = settings->value("defaultAppText", opt_txt[0]).toString();
+        m_defaultAppUrl = settings->value("defaultAppUrl", opt_url[0]).toString();
 
         m_closeAfterDefaultApp = settings->value("closeAfterDefaultApp", true).toBool();
 
@@ -107,6 +141,7 @@ private:
     QString m_defaultAppComicBooks;
     QString m_defaultAppEBooks;
     QString m_defaultAppText;
+    QString m_defaultAppUrl;
 
     bool m_closeAfterDefaultApp;
 
