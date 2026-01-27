@@ -57,6 +57,7 @@ public:
 
     bool isStreamVideo(QString url);
     void requestStreamURL(QString url);
+    void requestStreamTitle(QString url);
 
     int getDocumentPageCount(QString path);
     QString extractMotionPhoto(QString path);
@@ -72,12 +73,14 @@ private:
     PQCScriptsImages();
 
     QProcess *m_streamProc;
+    QProcess *m_streamTitleProc;
 
     QMap<QString,QStringList> archiveContents;
     QString generateArchiveId(QString path);
 
 Q_SIGNALS:
     void receivedStreamURL(QString url);
+    void receivedStreamTitle(QString title);
     void receivedStreamError(QString err);
 
 };

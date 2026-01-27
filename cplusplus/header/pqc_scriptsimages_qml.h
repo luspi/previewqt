@@ -40,6 +40,7 @@ class PQCScriptsImagesQML : public QObject {
 public:
     PQCScriptsImagesQML() {
         connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamURL, this, &PQCScriptsImagesQML::receivedStreamURL);
+        connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamTitle, this, &PQCScriptsImagesQML::receivedStreamTitle);
         connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamError, this, &PQCScriptsImagesQML::receivedStreamError);
     }
     ~PQCScriptsImagesQML() {}
@@ -100,6 +101,10 @@ public:
         PQCScriptsImages::get().requestStreamURL(url);
     }
 
+    Q_INVOKABLE void requestStreamTitle(QString url) {
+        PQCScriptsImages::get().requestStreamTitle(url);
+    }
+
     Q_INVOKABLE int getDocumentPageCount(QString path) {
         return PQCScriptsImages::get().getDocumentPageCount(path);
     }
@@ -126,6 +131,7 @@ public:
 
 Q_SIGNALS:
     void receivedStreamURL(QString url);
+    void receivedStreamTitle(QString title);
     void receivedStreamError(QString err);
 
 };

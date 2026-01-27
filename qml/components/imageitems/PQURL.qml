@@ -48,6 +48,7 @@ Item {
         if(PQCScriptsImages.isStreamVideo(PQCConstants.currentSource) &&
                 (PQCScriptsConfig.isQtVideoEnabled() || PQCScriptsConfig.isMPVEnabled())) {
 
+            PQCScriptsImages.requestStreamTitle(PQCConstants.currentSource)
             PQCScriptsImages.requestStreamURL(PQCConstants.currentSource)
 
         } else {
@@ -58,12 +59,20 @@ Item {
 
     }
 
+    Component.onDestruction: {
+        PQCConstants.mainwindowOverrideTitle = ""
+    }
+
     Connections {
 
         target: PQCScriptsImages
 
         function onReceivedStreamURL(url : string) {
             url_top.isVideo = url
+        }
+
+        function onReceivedStreamTitle(title : string) {
+            PQCConstants.mainwindowOverrideTitle = title
         }
 
         function onReceivedStreamError(err : string) {

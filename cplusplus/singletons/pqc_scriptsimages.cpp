@@ -87,13 +87,11 @@
 #include <lcms2.h>
 #endif
 
-PQCScriptsImages::PQCScriptsImages() {
-    m_streamProc = new QProcess;
-
-}
+PQCScriptsImages::PQCScriptsImages() {}
 
 PQCScriptsImages::~PQCScriptsImages() {
-    delete m_streamProc;
+    if(m_streamProc) delete m_streamProc;
+    if(m_streamTitleProc) delete m_streamTitleProc;
 }
 
 QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenameOnly) {
@@ -668,6 +666,33 @@ void PQCScriptsImages::requestStreamURL(QString url) {
             Q_EMIT receivedStreamError("signin_bot");
         else if(err.contains("HTTP Error 403: Forbidden") || err.contains("Failed to download") || err.contains("No video formats found!"))
             Q_EMIT receivedStreamError("plugin_error");
+    });
+
+}
+
+void PQCScriptsImages::requestStreamTitle(QString url) {
+
+    qDebug() << "args: url =" << url;
+
+    if(m_streamTitleProc != nullptr)
+        delete m_streamTitleProc;
+    m_streamTitleProc = new QProcess;
+
+    url = url.split("&list=")[0];
+    url = url.split("&index=")[0];
+
+    QString program = "yt-dlp";
+    QStringList arguments = {"--simulate",
+                             "--print", "%(title)s",
+                             url};
+
+    m_streamTitleProc->start(program, arguments);
+
+    connect(m_streamTitleProc, &QProcess::readyReadStandardOutput, this, [=]() {
+        const QString ret = m_streamTitleProc->readAll().trimmed();
+        qDebug() << "Received standard output:";
+        qDebug() << ret;
+        Q_EMIT receivedStreamTitle(ret);
     });
 
 }
