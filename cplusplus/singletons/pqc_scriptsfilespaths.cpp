@@ -29,6 +29,7 @@
 #ifdef Q_OS_UNIX
 #include <cstdlib>
 #elif defined(Q_OS_WIN)
+#include <windows.h>
 #include <shellapi.h>
 #endif
 
@@ -318,17 +319,19 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
 
     } else {
 
-        qDebug() << "Executing:" << QDir::toNativeSeparators(exe);
+        exe = QDir::toNativeSeparators(exe);
+        path = QDir::toNativeSeparators(path);
+
+        qDebug() << "Executing:" << exe;
         qDebug() << "Path:" << path;
 
         // we cannot use QProcess as even if started detached it keeps a
         // link to the starting process and dies with it (if PreviewQt quits after executing)
 #ifdef Q_OS_UNIX
-        system(QString("%1 \"%2\" &").arg(QDir::toNativeSeparators(exe), path.replace("\"", "\\\"")).toStdString().c_str());
+        system(QString("%1 \"%2\" &").arg(exe, path.replace("\"", "\\\"")).toStdString().c_str());
 #elif defined(Q_OS_WIN)
-        ShellExecuteW(0, L"runas", (wchar_t*)QString("%1 \"%2\" &").arg(QDir::toNativeSeparators(exe), path.replace("\"", "\\\"")).utf16(), 0, 0, SW_NORMAL);
+        ShellExecuteW(nullptr, L"open", (wchar_t*)exe.utf16(), (wchar_t*)QString("\"%1\"").arg(path.replace("\"", "\\\"")).utf16(), nullptr, SW_SHOWNORMAL);
 #endif
-
     }
 
     return true;
