@@ -52,6 +52,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     bool loadselected = false;
     int fileNumInside = 0;
     bool setDebug = false;
+    bool quitRemote = false;
 
     for(int i = 1; i < argc; ++i) {
 
@@ -105,6 +106,10 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         } else if(arg == "--debug") {
 
             setDebug = true;
+
+        } else if(arg == "--quit") {
+
+            quitRemote = true;
 
         } else if(arg.startsWith("-")) {
 
@@ -163,7 +168,9 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     } else
         message = QUrl::toPercentEncoding(filename);
 
-    if(message == "")
+    if(quitRemote)
+        message = "--quit--";
+    else if(message == "")
         message = "-";
 
     if(setDebug)
@@ -247,7 +254,10 @@ void PQCSingleInstance::handleMessage(QString msg) {
 
     qDebug() << "args: msg =" << msg;
 
-    Q_EMIT PQCScriptsOther::get().commandLineArgumentReceived(msg);
+    if(msg == "--quit--")
+        std::exit(0);
+    else
+        Q_EMIT PQCScriptsOther::get().commandLineArgumentReceived(msg);
 
 }
 
