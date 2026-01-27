@@ -43,29 +43,29 @@ ApplicationWindow {
 
     property bool optionsLoaded: false
 
-    property list<string> imgoptions_key: ["PhotoQt", "Eye of Gnome", "Eye of Mate", "Geeqie", "GThumb", "GwenView", "LXImage-Qt", "Nomacs", "Ristretto", "Showfoto", "(custom)"]
-    property list<string> imgoptions_val: ["photoqt", "eog",          "eom",         "geeqie", "gthumb", "gwenview", "lximage-qt", "nomacs", "ristretto", "showfoto", ""]
+    property list<string> imgoptions_key: ["[system default]", "PhotoQt", "Eye of Gnome", "Eye of Mate", "Geeqie", "GThumb", "GwenView", "LXImage-Qt", "Nomacs", "Ristretto", "Showfoto", "(custom)"]
+    property list<string> imgoptions_val: ["_default_", "photoqt", "eog",          "eom",         "geeqie", "gthumb", "gwenview", "lximage-qt", "nomacs", "ristretto", "showfoto", ""]
 
-    property list<string> docoptions_key: ["PhotoQt", "Atril", "Evince", "Okular", "(custom)"]
-    property list<string> docoptions_val: ["photoqt", "atril", "evince", "okular", ""]
+    property list<string> docoptions_key: ["[system default]", "PhotoQt", "Atril", "Evince", "Okular", "(custom)"]
+    property list<string> docoptions_val: ["_default_", "photoqt", "atril", "evince", "okular", ""]
 
-    property list<string> arcoptions_key: ["PhotoQt", "Ark", "Engrampa", "File Roller", "(custom)"]
-    property list<string> arcoptions_val: ["photoqt", "ark", "engrampa", "file-roller", ""]
+    property list<string> arcoptions_key: ["[system default]", "PhotoQt", "Ark", "Engrampa", "File Roller", "(custom)"]
+    property list<string> arcoptions_val: ["_default_", "photoqt", "ark", "engrampa", "file-roller", ""]
 
-    property list<string> comoptions_key: ["PhotoQt", "Calibre", "Evince", "MComix", "Okular", "(custom)"]
-    property list<string> comoptions_val: ["photoqt", "calibre", "evince", "mcomix", "okular", ""]
+    property list<string> comoptions_key: ["[system default]", "PhotoQt", "Calibre", "Evince", "MComix", "Okular", "(custom)"]
+    property list<string> comoptions_val: ["_default_", "photoqt", "calibre", "evince", "mcomix", "okular", ""]
 
-    property list<string> bokoptions_key: ["E-Book viewer", "Calibre", "Evince", "Okular", "(custom)"]
-    property list<string> bokoptions_val: ["ebook-viewer",  "calibre", "evince", "okular", ""]
+    property list<string> bokoptions_key: ["[system default]", "E-Book viewer", "Calibre", "Evince", "Okular", "(custom)"]
+    property list<string> bokoptions_val: ["_default_", "ebook-viewer",  "calibre", "evince", "okular", ""]
 
-    property list<string> vidoptions_key: ["PhotoQt", "Dragon Player", "Parole", "SMPlayer", "Totem", "VLC", "(custom)"]
-    property list<string> vidoptions_val: ["photoqt", "dragon",        "parole", "smplayer", "totem", "vlc", ""]
+    property list<string> vidoptions_key: ["[system default]", "PhotoQt", "Dragon Player", "Parole", "SMPlayer", "Totem", "VLC", "(custom)"]
+    property list<string> vidoptions_val: ["_default_", "photoqt", "dragon",        "parole", "smplayer", "totem", "vlc", ""]
 
-    property list<string> txtoptions_key: ["Kate", "KWrite", "Gedit", "Sublime", "(custom)"]
-    property list<string> txtoptions_val: ["kate", "kwrite", "gedit", "sublime", ""]
+    property list<string> txtoptions_key: ["[system default]", "Kate", "KWrite", "Gedit", "Sublime", "(custom)"]
+    property list<string> txtoptions_val: ["_default_", "kate", "kwrite", "gedit", "sublime", ""]
 
-    property list<string> urloptions_key: ["Firefox", "chrome", "chromium", "(custom)"]
-    property list<string> urloptions_val: ["firefox", "chrome", "chromium", ""]
+    property list<string> urloptions_key: ["[system default]", "Firefox", "chrome", "chromium", "(custom)"]
+    property list<string> urloptions_val: ["_default_", "firefox", "chrome", "chromium", ""]
 
     onVisibilityChanged: (visibility) => {
         PQCConstants.windowAboutSettingsVisible = (visibility === Window.Hidden ? false : true)

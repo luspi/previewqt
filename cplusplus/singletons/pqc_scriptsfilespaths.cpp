@@ -23,6 +23,15 @@
 #include <pqc_fileformats.h>
 #include <pqc_settingscpp.h>
 
+// native api for executing commands
+// we cannot use QProcess as even if started detached it keeps a
+// link to the starting process and dies with it (if PreviewQt quits after executing).
+#ifdef Q_OS_UNIX
+#include <cstdlib>
+#elif defined(Q_OS_WIN)
+#include <shellapi.h>
+#endif
+
 #include <QFileInfo>
 #include <QDir>
 #include <QUrl>
@@ -32,6 +41,7 @@
 #include <thread>
 #include <QApplication>
 #include <QClipboard>
+#include <QDesktopServices>
 
 PQCScriptsFilesPaths::PQCScriptsFilesPaths() {}
 
@@ -286,21 +296,40 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
 #endif
     }
 
-    path = cleanPath(path);
+    if(exe == "_default_") {
 
-    qDebug() << "Executing:" << QDir::toNativeSeparators(exe);
-    qDebug() << "Path:" << path;
+        QUrl def;
 
-    QProcess proc;
-    proc.setProgram(QDir::toNativeSeparators(exe));
-    proc.setArguments({path});
-    if(!proc.startDetached()) {
-        qWarning() << "Could not start process!";
-        return false;
+        if(!path.startsWith("http:/") && !path.startsWith("https:/")) {
+            def = QUrl::fromLocalFile(cleanPath(path));
+        } else {
+            def = QUrl(path);
+        }
+
+        qDebug() << "Opening in system default application:" << def;
+
+        if(!QDesktopServices::openUrl(def))
+            qWarning() << "Failed to open in default application:" << def;
+
+        for(int i = 0; i < 100; ++i) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            qApp->processEvents();
+        }
+
+    } else {
+
+        qDebug() << "Executing:" << QDir::toNativeSeparators(exe);
+        qDebug() << "Path:" << path;
+
+        // we cannot use QProcess as even if started detached it keeps a
+        // link to the starting process and dies with it (if PreviewQt quits after executing)
+#ifdef Q_OS_UNIX
+        system(QString("%1 \"%2\" &").arg(QDir::toNativeSeparators(exe), path.replace("\"", "\\\"")).toStdString().c_str());
+#elif defined(Q_OS_WIN)
+        ShellExecuteW(0, L"runas", (wchar_t*)QString("%1 \"%2\" &").arg(QDir::toNativeSeparators(exe), path.replace("\"", "\\\"")).utf16(), 0, 0, SW_NORMAL);
+#endif
+
     }
-
-    if(PQCSettingsCPP::get().getCloseAfterDefaultApp())
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
     return true;
 

@@ -43,25 +43,25 @@ PQCSettings::PQCSettings() {
 #ifndef Q_OS_WIN
     // not on windows we present options
     // these NEED TO BE DUPLICATED in pqc_settingscpp.h
-    opt_img = {"photoqt", "gwenview", "nomacs", "eog", "feh", "gthumb", "mirage", "geeqie"};
-    opt_doc = {"okular", "evince", "atril", "photoqt"};
-    opt_arc = {"ark", "photoqt"};
-    opt_com = {"okular", "photoqt"};
-    opt_bok = {"ebook-viewer", "calibre", "okular"};
-    opt_vid = {"vlc", "mplayer", "photoqt"};
-    opt_txt = {"kate", "kwrite", "gedit", "sublime"};
-    opt_url = {"firefox", "chrome", "chromium"};
+    opt_img = {"_default_", "photoqt", "gwenview", "nomacs", "eog", "feh", "gthumb", "mirage", "geeqie"};
+    opt_doc = {"_default_", "okular", "evince", "atril", "photoqt"};
+    opt_arc = {"_default_", "ark", "photoqt"};
+    opt_com = {"_default_", "okular", "photoqt"};
+    opt_bok = {"_default_", "ebook-viewer", "calibre", "okular"};
+    opt_vid = {"_default_", "vlc", "mplayer", "photoqt"};
+    opt_txt = {"_default_", "kate", "kwrite", "gedit", "sublime"};
+    opt_url = {"_default_", "firefox", "chrome", "chromium"};
 #else
     // on windows custom tools are needed
     // we need empty entries here to not crash when loading the settings
-    opt_img = {""};
-    opt_doc = {""};
-    opt_arc = {""};
-    opt_com = {""};
-    opt_bok = {""};
-    opt_vid = {""};
-    opt_txt = {""};
-    opt_url = {""};
+    opt_img = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
+    opt_doc = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
+    opt_arc = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
+    opt_com = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
+    opt_bok = {"_default_", ""};
+    opt_vid = {"_default_", ""};
+    opt_txt = {"_default_", ""};
+    opt_url = {"_default_", ""};
 #endif
 
     // do this AFTER setting the above options
@@ -122,6 +122,15 @@ PQCSettings::PQCSettings() {
     }
 #endif
 
+    if(m_defaultAppImages == "") m_defaultAppImages = "_default_";
+    if(m_defaultAppDocuments == "") m_defaultAppDocuments = "_default_";
+    if(m_defaultAppArchives == "") m_defaultAppArchives = "_default_";
+    if(m_defaultAppComicBooks == "") m_defaultAppComicBooks = "_default_";
+    if(m_defaultAppEBooks == "") m_defaultAppEBooks = "_default_";
+    if(m_defaultAppVideos == "") m_defaultAppVideos = "_default_";
+    if(m_defaultAppText == "") m_defaultAppText = "_default_";
+    if(m_defaultAppUrl == "") m_defaultAppUrl = "_default_";
+
     connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::versionChanged, this, [=]() { m_version = PQCSettingsCPP::get().getVersion(); Q_EMIT versionChanged(); });
 
     connect(this, &PQCSettings::versionChanged, this, [=]() { saveTimer->start(); });
@@ -160,6 +169,9 @@ bool PQCSettings::checkToolExistence(QString tool) {
 
     qDebug() << "args: tool =" << tool;
 
+    if(tool == "_default_")
+        return true;
+
     QProcess which;
     which.setStandardOutputFile(QProcess::nullDevice());
     which.start("which", QStringList() << tool);
@@ -183,7 +195,7 @@ void PQCSettings::loadSettings() {
     m_defaultWindowHeight = settings->value("defaultWindowHeight", 400).toInt();
     m_defaultWindowMaximized = settings->value("defaultWindowMaximized", false).toBool();
     m_defaultAppShortcut = settings->value("defaultAppShortcut", "E").toString();
-    m_defaultAppImages = settings->value("defaultAppImages", opt_img[0]).toString();
+    m_defaultAppImages = settings->value("defaultAppImages", opt_img[1]).toString();
     m_defaultAppDocuments = settings->value("defaultAppDocuments", opt_doc[0]).toString();
     m_defaultAppArchives = settings->value("defaultAppArchives", opt_arc[0]).toString();
     m_defaultAppVideos = settings->value("defaultAppVideos", opt_vid[0]).toString();
