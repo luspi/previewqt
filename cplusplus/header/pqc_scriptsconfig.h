@@ -24,6 +24,7 @@
 #include <QObject>
 
 class QTranslator;
+class QQmlEngine;
 
 class PQCScriptsConfig : public QObject {
 
@@ -49,7 +50,9 @@ public:
     bool isUpgrade();
     bool isDebug();
     void setDebug(bool val);
-    void updateTranslation();
+    void updateTranslation(QString code);
+
+    void setQmlEngine(QQmlEngine &engine);
 
 private:
     PQCScriptsConfig();
@@ -57,5 +60,7 @@ private:
     bool m_debug;
     QTranslator *trans;
     QString currentTranslation;
+
+    QQmlEngine *m_qmlEngine;
 
 };

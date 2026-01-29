@@ -65,6 +65,7 @@
 #endif
 
 PQCScriptsConfig::PQCScriptsConfig() {
+    m_qmlEngine = nullptr;
     m_debug = false;
     trans = new QTranslator;
     currentTranslation = "en";
@@ -72,6 +73,10 @@ PQCScriptsConfig::PQCScriptsConfig() {
 
 PQCScriptsConfig::~PQCScriptsConfig() {
     delete trans;
+}
+
+void PQCScriptsConfig::setQmlEngine(QQmlEngine &engine) {
+    m_qmlEngine = &engine;
 }
 
 QString PQCScriptsConfig::getConfigInfo(bool formatHTML) {
@@ -222,11 +227,12 @@ void PQCScriptsConfig::setDebug(bool val) {
     m_debug = val;
 }
 
-void PQCScriptsConfig::updateTranslation() {
+void PQCScriptsConfig::updateTranslation(QString code) {
 
-    qDebug() << "";
+    qDebug() << "args: code =" << code;
 
-    QString code = PQCSettingsCPP::get().getLanguage();
+    if(code == "") code = PQCSettingsCPP::get().getLanguage();
+    qDebug() << "set language:" << code;
     if(code == currentTranslation)
         return;
 
@@ -239,9 +245,10 @@ void PQCScriptsConfig::updateTranslation() {
 
         if(QFile(":/lang/previewqt_" + c + ".qm").exists()) {
 
-            if(trans->load(":/lang/previewqt_" + c))
+            if(trans->load(":/lang/previewqt_" + c)) {
+                qDebug() << "Installing translator for code:" << c;
                 qApp->installTranslator(trans);
-            else
+            } else
                 qWarning() << "Unable to install translator for language code" << c;
 
         } else if(c.contains("_")) {
@@ -250,9 +257,10 @@ void PQCScriptsConfig::updateTranslation() {
 
             if(QFile(":/lang/previewqt_" + cc + ".qm").exists()) {
 
-                if(trans->load(":/lang/previewqt_" + cc))
+                if(trans->load(":/lang/previewqt_" + cc)) {
+                    qDebug() << "Installing translator for code:" << cc;
                     qApp->installTranslator(trans);
-                else
+                } else
                     qWarning() << "Unable to install translator for language code" << cc;
 
             }
@@ -263,9 +271,10 @@ void PQCScriptsConfig::updateTranslation() {
 
             if(QFile(":/lang/previewqt_" + cc + ".qm").exists()) {
 
-                if(trans->load(":/lang/previewqt_" + cc))
+                if(trans->load(":/lang/previewqt_" + cc)) {
+                    qDebug() << "Installing translator for code:" << cc;
                     qApp->installTranslator(trans);
-                else
+                } else
                     qWarning() << "Unable to install translator for language code" << c;
 
             }
@@ -276,6 +285,6 @@ void PQCScriptsConfig::updateTranslation() {
     // store current localization
     currentTranslation = code;
 
-    QQmlEngine::contextForObject(this)->engine()->retranslate();
+    if(m_qmlEngine) m_qmlEngine->retranslate();
 
 }

@@ -254,6 +254,8 @@ int main(int argc, char *argv[]) {
     engine.load("qrc:/PreviewQt/qml/PQMainWindow.qml");
 #endif
 
+    PQCScriptsConfig::get().setQmlEngine(engine);
+
     int ret = app.exec();
 
 #ifdef PQMFREEIMAGE

@@ -66,8 +66,8 @@ public:
         return PQCScriptsConfig::get().amIOnWindows();
     }
 
-    Q_INVOKABLE void updateTranslation() {
-        return PQCScriptsConfig::get().updateTranslation();
+    Q_INVOKABLE void updateTranslation(QString code = "") {
+        return PQCScriptsConfig::get().updateTranslation(code);
     }
 
 };
