@@ -155,36 +155,4 @@ Item {
         }
     }
 
-    Rectangle {
-
-        x: parent.width-width-10
-        y: 10
-        width: height
-        height: 30
-
-        radius: 5
-        visible: url_top.isVideo
-        color: "#88000000"
-        opacity: downmouse.containsMouse ? 1 : 0.4
-        Behavior on opacity { NumberAnimation { duration: 200 } }
-
-        Image {
-            anchors.fill: parent
-            anchors.margins: 5
-            sourceSize: Qt.size(width, height)
-            source: "image://svg/:/download.svg"
-        }
-
-        MouseArea {
-            id: downmouse
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: {
-                console.warn(">>> DOWNLOAD VIDEO:", url_top.isVideo)
-            }
-        }
-
-    }
-
 }

@@ -52,6 +52,7 @@ public:
     void setStartupMessage(QString val) { m_startupMessage = val; }
     void startDownloadOfFile(QString url);
     void cancelDownloadOfFile();
+    QString getDomainOfUrl(QString url);
 
 private:
     PQCScriptsOther();

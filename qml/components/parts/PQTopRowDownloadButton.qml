@@ -27,7 +27,8 @@ import PreviewQt
 
 PQIconButton {
     id: downbut
-    active: ["url"].indexOf(PQCConstants.currentType)>-1 && PQCConstants.currentStreamVideoDirectURL !== ""
+    visible: ["url"].indexOf(PQCConstants.currentType)>-1
+    active: PQCConstants.currentStreamVideoDirectURL !== ""
     y: (parent.height-height)/2
     height: toprow.height-2
     tooltip: qsTr("Download video")

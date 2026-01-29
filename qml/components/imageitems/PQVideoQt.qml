@@ -81,7 +81,6 @@ Video {
     }
 
     onWidthChanged: {
-        console.warn(">>>>>> width =", width)
         PQCConstants.imagePaintedSize.width = width
         if(width > 15 && height > 15) {
             PQCConstants.imageStatus = Image.Ready
@@ -89,7 +88,6 @@ Video {
     }
 
     onHeightChanged: {
-        console.warn(">>>>>> height =", height)
         PQCConstants.imagePaintedSize.height = height
         if(width > 15 && height > 15) {
             PQCConstants.imageStatus = Image.Ready

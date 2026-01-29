@@ -88,6 +88,11 @@ Item {
         interval: 100
         running: true
         onTriggered: {
+            // then this is (likely) an internet stream
+            if(videotop.overrideSource !== "") {
+                video.command(["set", "user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"])
+                video.command(["set", "referrer", PQCScriptsOther.getDomainOfUrl(videotop.overrideSource)]);
+            }
             video.command(["loadfile", (overrideSource==="" ? PQCConstants.currentSource : overrideSource)])
             getProps.restart()
         }

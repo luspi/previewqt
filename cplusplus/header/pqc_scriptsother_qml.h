@@ -73,6 +73,10 @@ public:
         PQCScriptsOther::get().cancelDownloadOfFile();
     }
 
+    Q_INVOKABLE QString getDomainOfUrl(QString url) {
+        return PQCScriptsOther::get().getDomainOfUrl(url);
+    }
+
 Q_SIGNALS:
     // picked up from PQCScriptsImages and passed on to QML
     void commandLineArgumentReceived(QString msg);

@@ -466,7 +466,10 @@ void PQCScriptsOther::startDownloadOfFile(QString url) {
         return;
     }
 
-    const QNetworkRequest& request = QNetworkRequest(url);
+
+    QNetworkRequest request = QNetworkRequest(url);
+    request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+    request.setRawHeader("Referer", getDomainOfUrl(url).toUtf8());
     m_downloadReply = m_downloadManager.get(request);
     Q_EMIT downloadStarted();
 
@@ -489,5 +492,18 @@ void PQCScriptsOther::cancelDownloadOfFile() {
         Q_EMIT downloadCancelled();
         m_downloadReply->abort();
     }
+
+}
+
+QString PQCScriptsOther::getDomainOfUrl(QString url) {
+
+    if((!url.startsWith("http://") && !url.startsWith("https://")) || !url.contains("://"))
+        return "";
+
+    const QStringList parts = url.split("://");
+    const QString protocol = parts[0];
+    const QString base = parts[1].split("/")[0];
+
+    return QString("%1://%2").arg(protocol, base);
 
 }
