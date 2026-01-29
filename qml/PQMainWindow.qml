@@ -237,7 +237,7 @@ ApplicationWindow {
         id: toprow
         active: true
         asynchronous: true
-        source: "components/PQTopRow.qml"
+        sourceComponent: PQTopRow {}
     }
 
     // The tray icon
@@ -245,35 +245,35 @@ ApplicationWindow {
         id: trayicon
         active: true
         asynchronous: true
-        source: "components/PQTrayIcon.qml"
+        sourceComponent: PQTrayIcon {}
     }
 
     // The settings window
     Loader {
         id: settings
         active: false
-        source: "windows/PQSettings.qml"
+        sourceComponent: PQSettings {}
     }
 
     // The about window
     Loader {
         id: about
         active: false
-        source: "windows/PQAbout.qml"
+        sourceComponent: PQAbout {}
     }
 
     // The help window
     Loader {
         id: help
         active: false
-        source: "windows/PQHelp.qml"
+        sourceComponent: PQHelp {}
     }
 
     // The help window
     Loader {
         id: welcome
         active: false
-        source: "windows/PQWelcome.qml"
+        sourceComponent: PQWelcome {}
     }
 
     // The text input for entering path/url
