@@ -144,6 +144,7 @@ ApplicationWindow {
         errormsg.visible = false
         enter_top.show()
         textinput.forceActiveFocus()
+        textinput.selectAll()
     }
 
     Connections {
@@ -156,6 +157,7 @@ ApplicationWindow {
                 errormsg.visible = false
                 enter_top.show()
                 textinput.forceActiveFocus()
+                textinput.selectAll()
             }
 
         }
