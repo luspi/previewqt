@@ -60,9 +60,7 @@ ApplicationWindow {
                 (PQCConstants.mainwindowOverrideTitle+" | ") :
                 (PQCConstants.currentSource=== "" ?
                      "" :
-                     (PQCScriptsFilesPaths.getFilename(PQCConstants.currentSource) + (PQCConstants.mainwindowOverrideTitleSuffix!=="" ?
-                                                                       PQCConstants.mainwindowOverrideTitleSuffix :
-                                                                       "") + " | "))) + "PreviewQt"
+                     (PQCScriptsFilesPaths.getFilename(PQCConstants.currentSource) + PQCConstants.mainwindowOverrideTitleSuffix + " | "))) + "PreviewQt"
 
     // black background with slight transparency
     color: "#dd000000"
