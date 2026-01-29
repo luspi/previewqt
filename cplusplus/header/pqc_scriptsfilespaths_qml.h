@@ -70,10 +70,6 @@ public:
         return PQCScriptsFilesPaths::get().fromPercentEncoding(str);
     }
 
-    Q_INVOKABLE bool doesFileExist(QString path) {
-        return PQCScriptsFilesPaths::get().doesFileExist(path);
-    }
-
     Q_INVOKABLE bool isFileSupported(QString path) {
         return PQCScriptsFilesPaths::get().isFileSupported(path);
     }

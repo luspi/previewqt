@@ -19,6 +19,7 @@ set(previewqt_QML "qml/PQMainWindow.qml"
                   "qml/windows/PQHelp.qml"
                   "qml/windows/PQSettings.qml"
                   "qml/windows/PQWelcome.qml"
+                  "qml/windows/PQEnterPathUrl.qml"
 )
 
 if(WITH_EPUB)

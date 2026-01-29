@@ -52,6 +52,7 @@ public:
         m_windowHelpVisible = false;
         m_windowSettingsVisible = false;
         m_windowWelcomeVisible = false;
+        m_windowEnterPathVisible = false;
 
         m_settingsTabNextTime = -1;
 
@@ -82,6 +83,7 @@ public:
     Q_PROPERTY(bool windowHelpVisible MEMBER m_windowHelpVisible NOTIFY windowHelpVisibleChanged)
     Q_PROPERTY(bool windowSettingsVisible MEMBER m_windowSettingsVisible NOTIFY windowSettingsVisibleChanged)
     Q_PROPERTY(bool windowWelcomeVisible MEMBER m_windowWelcomeVisible NOTIFY windowWelcomeVisibleChanged)
+    Q_PROPERTY(bool windowEnterPathVisible MEMBER m_windowEnterPathVisible NOTIFY windowEnterPathVisibleChanged)
 
     Q_PROPERTY(int settingsTabNextTime MEMBER m_settingsTabNextTime NOTIFY settingsTabNextTimeChanged)
 
@@ -114,6 +116,7 @@ private:
     bool m_windowHelpVisible;
     bool m_windowSettingsVisible;
     bool m_windowWelcomeVisible;
+    bool m_windowEnterPathVisible;
 
     int m_settingsTabNextTime;
 
@@ -148,6 +151,7 @@ Q_SIGNALS:
     void windowHelpVisibleChanged();
     void windowSettingsVisibleChanged();
     void windowWelcomeVisibleChanged();
+    void windowEnterPathVisibleChanged();
     void settingsTabNextTimeChanged();
     void imageStatusChanged();
     void imagePaintedSizeChanged();

@@ -112,7 +112,7 @@ ApplicationWindow {
         if(!PQCSettings.closeWhenLosingFocus) return
         if(!active && !ignoreActiveChanges) {
             if(PQCConstants.windowSettingsVisible || PQCConstants.windowAboutVisible ||
-                    PQCConstants.windowHelpVisible)
+                    PQCConstants.windowHelpVisible || PQCConstants.windowEnterPathVisible)
                 return
             toplevel.close()
         }
@@ -276,6 +276,14 @@ ApplicationWindow {
         id: welcome
         active: false
         source: "windows/PQWelcome.qml"
+    }
+
+    // The text input for entering path/url
+    Loader {
+        id: enterpath
+        active: false
+        sourceComponent:
+            PQEnterPathUrl {}
     }
 
     ParallelAnimation {
@@ -453,6 +461,15 @@ ApplicationWindow {
 
             PQCNotify.showSubWindow("help")
 
+        } else if(txt === "Ctrl+U") {
+
+            if(PQCConstants.menuIsOpen) {
+                PQCNotify.closeAllMenus()
+                return
+            }
+
+            PQCNotify.showSubWindow("enterpath")
+
         } else if(txt === "Ctrl+V") {
 
             if(PQCConstants.menuIsOpen) {
@@ -461,7 +478,6 @@ ApplicationWindow {
             }
 
             var clp = PQCScriptsOther.getClipboardContents()
-            console.warn(">>>>> clp =", clp)
             if(PQCScriptsFilesPaths.isFileSupported(clp))
                 PQCNotify.loadNewFile(clp)
             else
@@ -517,7 +533,7 @@ ApplicationWindow {
                 }
 
                 // check if file exists
-                if(!PQCScriptsFilesPaths.doesFileExist(path)) {
+                if(!PQCScriptsFilesPaths.isFileSupported(path)) {
                     trayicon.item.showMessage(qsTr("File does not exist."), qsTr("The requested file does not exist:") + " %1".arg(path))
                     return
                 }
@@ -699,6 +715,9 @@ ApplicationWindow {
             } else if(wdw === "settings") {
                 if(!settings.active)
                     settings.active = true
+            } else if(wdw === "enterpath") {
+                if(!enterpath.active)
+                    enterpath.active = true
             }
         }
 

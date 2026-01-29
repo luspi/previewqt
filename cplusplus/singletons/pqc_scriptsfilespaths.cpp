@@ -140,14 +140,6 @@ QString PQCScriptsFilesPaths::fromPercentEncoding(QByteArray str) {
     return QUrl::fromPercentEncoding(str);
 }
 
-bool PQCScriptsFilesPaths::doesFileExist(QString path) {
-
-    qDebug() << "args: path =" << path;
-
-    return QFileInfo::exists(path);
-
-}
-
 bool PQCScriptsFilesPaths::isFileSupported(QString path) {
 
     qDebug() << "args: path =" << path;

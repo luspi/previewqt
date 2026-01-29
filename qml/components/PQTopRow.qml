@@ -79,6 +79,18 @@ Rectangle {
             }
         }
 
+        // type in url
+        PQIconButton {
+            id: enterbut
+            y: (parent.height-height)/2
+            height: toprow.height-2
+            source: "image://svg/:/textedit.svg"
+            tooltip: qsTr("Type in a path or URL (Ctrl+U)")
+            onClicked: {
+                PQCNotify.showSubWindow("enterpath")
+            }
+        }
+
         // open settings
         PQIconButton {
             id: settingsbut
@@ -118,7 +130,7 @@ Rectangle {
         // rotate left
         PQIconButton {
             id: rotleftbut
-            active: ["sph", "vid", "mpv", "bok", "txt", "url"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
+            visible: ["doc", "arc", "ani", "svg", "img"].indexOf(PQCConstants.currentType)>-1 && PQCConstants.currentSource!==""
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Rotate image to the left")
@@ -126,18 +138,12 @@ Rectangle {
             onClicked: {
                 PQCNotify.addRotation(-90)
             }
-            MouseArea {
-                enabled: !rotleftbut.active
-                anchors.fill: parent
-                acceptedButtons: Qt.RightButton|Qt.LeftButton
-                onClicked: {}
-            }
         }
 
         // rotate right
         PQIconButton {
             id: rotrightbut
-            active: ["sph", "vid", "mpv", "bok", "txt", "url"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
+            visible: ["doc", "arc", "ani", "svg", "img"].indexOf(PQCConstants.currentType)>-1 && PQCConstants.currentSource!==""
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Rotate image to the right")
@@ -145,15 +151,23 @@ Rectangle {
             onClicked: {
                 PQCNotify.addRotation(90)
             }
-            MouseArea {
-                enabled: !rotrightbut.active
-                anchors.fill: parent
-                acceptedButtons: Qt.RightButton|Qt.LeftButton
-                onClicked: {}
-            }
         }
 
         PQTopRowDownloadButton {}
+
+        // reload website/online video
+        PQIconButton {
+            id: reloadbutton
+            visible: PQCConstants.currentType==="url" && PQCConstants.currentSource!==""
+            y: (parent.height-height)/2
+            height: toprow.height-2
+            tooltip: qsTr("Reload website or online video")
+            source: "image://svg/:/reload.svg"
+            onClicked: {
+                PQCNotify.loadNewFile(PQCConstants.currentSource)
+            }
+        }
+
 
     }
 

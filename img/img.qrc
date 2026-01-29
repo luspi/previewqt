@@ -31,5 +31,7 @@
         <file>download.svg</file>
         <file>checkmark.svg</file>
         <file>redx.svg</file>
+        <file>reload.svg</file>
+        <file>textedit.svg</file>
     </qresource>
 </RCC>

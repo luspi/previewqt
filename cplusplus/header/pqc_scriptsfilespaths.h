@@ -47,7 +47,6 @@ public:
     QString getSuffix(QString path);
     QString toPercentEncoding(QString str);
     QString fromPercentEncoding(QByteArray str);
-    bool doesFileExist(QString path);
     bool isFileSupported(QString path);
     QString toAbsolutePath(QString path);
     QString openNewFile();
