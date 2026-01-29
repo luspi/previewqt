@@ -161,6 +161,7 @@ PQCSettings::PQCSettings() {
     connect(this, &PQCSettings::textFontPointSizeChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::textSearchCaseSensitiveChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::lastDownloadFolderChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::executableYtDlpChanged, this, [=]() { saveTimer->start(); });
 
 }
 
@@ -213,6 +214,11 @@ void PQCSettings::loadSettings() {
     m_textFontPointSize = settings->value("textFontPointSize", 12).toInt();
     m_textSearchCaseSensitive = settings->value("textSearchCaseSensitive", false).toBool();
     m_lastDownloadFolder = settings->value("lastDownloadFolder", QDir::homePath()).toString();
+#ifdef Q_OS_WIN
+    m_executableYtDlp = settings->value("executableYtDlp", "C:/Program Files/ytdlp/ytdlp.exe").toString();
+#else
+    m_executableYtDlp = settings->value("executableYtDlp", "yt-dlp").toString();
+#endif
 
     Q_EMIT versionChanged();
     Q_EMIT languageChanged();
@@ -240,6 +246,7 @@ void PQCSettings::loadSettings() {
     Q_EMIT textFontPointSizeChanged();
     Q_EMIT textSearchCaseSensitiveChanged();
     Q_EMIT lastDownloadFolderChanged();
+    Q_EMIT executableYtDlpChanged();
 
 }
 
@@ -270,5 +277,6 @@ void PQCSettings::saveSettings() {
     settings->setValue("textWordWrap", m_textWordWrap);
     settings->setValue("textFontPointSize", m_textFontPointSize);
     settings->setValue("lastDownloadFolder", m_lastDownloadFolder);
+    settings->setValue("executableYtDlp", m_executableYtDlp);
 
 }

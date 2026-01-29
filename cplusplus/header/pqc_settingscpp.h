@@ -26,6 +26,7 @@
 #include <QSettings>
 #include <QFileSystemWatcher>
 #include <QDir>
+#include <QTimer>
 
 class QSettings;
 class QTimer;
@@ -67,6 +68,8 @@ public:
     QString getLastDownloadFolder() { return m_lastDownloadFolder; }
     void setLastDownloadFolder(QString val) { m_lastDownloadFolder = val; Q_EMIT lastDownloadFolderChanged(); }
 
+    QString getExecutableYtDlp() { return m_executableYtDlp; }
+
 private:
     PQCSettingsCPP() {
 
@@ -99,7 +102,10 @@ private:
 
         watcher = new QFileSystemWatcher;
         watcher->addPath(settings->fileName());
-        connect(watcher, &QFileSystemWatcher::fileChanged, this, [=](QString) { readSettings(); } );
+        connect(watcher, &QFileSystemWatcher::fileChanged, this, [=](QString) {
+            readSettings();
+            QTimer::singleShot(250, [=]() { watcher->removePath(settings->fileName()); watcher->addPath(settings->fileName()); });
+        } );
 
     }
 
@@ -139,6 +145,11 @@ private:
         m_closeAfterDefaultApp = settings->value("closeAfterDefaultApp", true).toBool();
 
         m_lastDownloadFolder = settings->value("lastDownloadFolder", QDir::homePath()).toString();
+#ifdef Q_OS_WIN
+    m_executableYtDlp = settings->value("executableYtDlp", "C:/Program Files/ytdlp/ytdlp.exe").toString();
+#else
+    m_executableYtDlp = settings->value("executableYtDlp", "yt-dlp").toString();
+#endif
 
     }
 
@@ -160,6 +171,7 @@ private:
 
     bool m_closeAfterDefaultApp;
     QString m_lastDownloadFolder;
+    QString m_executableYtDlp;
 
 Q_SIGNALS:
     void versionChanged();

@@ -625,6 +625,17 @@ void PQCScriptsImages::requestIsSupportedStream(QString url) {
 
     qDebug() << "args: url =" << url;
 
+    QProcess which;
+    which.setStandardOutputFile(QProcess::nullDevice());
+    which.start("which", QStringList() << PQCSettingsCPP::get().getExecutableYtDlp());
+    which.waitForFinished();
+
+    if(which.exitCode()) {
+        qWarning() << "yt-dlp executable not found. Is it set up correctly?";
+        Q_EMIT receivedStreamSupported(false);
+        return;
+    }
+
     const QStringList knownMatches = {"://youtube.com", "://www.youtube.com","://youtu.be", "://www.youtu.be",
                                       "://dailymotion.com", "://www.dailymotion.com"};
     for(const QString &m : knownMatches) {

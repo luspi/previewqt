@@ -23,6 +23,7 @@ set(previewqt_QML "qml/PQMainWindow.qml"
 
                   "qml/windows/settings/PQSettingsGeneral.qml"
                   "qml/windows/settings/PQSettingsExternalApplications.qml"
+                  "qml/windows/settings/PQSettingsTools.qml"
 )
 
 if(WITH_EPUB)

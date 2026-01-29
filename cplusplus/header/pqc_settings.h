@@ -63,6 +63,7 @@ public:
     Q_PROPERTY(int textFontPointSize MEMBER m_textFontPointSize NOTIFY textFontPointSizeChanged)
     Q_PROPERTY(bool textSearchCaseSensitive MEMBER m_textSearchCaseSensitive NOTIFY textSearchCaseSensitiveChanged)
     Q_PROPERTY(QString lastDownloadFolder MEMBER m_lastDownloadFolder NOTIFY lastDownloadFolderChanged)
+    Q_PROPERTY(QString executableYtDlp MEMBER m_executableYtDlp NOTIFY executableYtDlpChanged)
 
     Q_INVOKABLE bool getFirstStart() { return firstStart; }
 
@@ -112,6 +113,7 @@ private:
     QStringList opt_url;
 
     QString m_lastDownloadFolder;
+    QString m_executableYtDlp;
 
 private Q_SLOTS:
     void saveSettings();
@@ -143,5 +145,6 @@ Q_SIGNALS:
     void textFontPointSizeChanged();
     void textSearchCaseSensitiveChanged();
     void lastDownloadFolderChanged();
+    void executableYtDlpChanged();
 
 };

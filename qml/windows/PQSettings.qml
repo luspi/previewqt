@@ -116,13 +116,19 @@ ApplicationWindow {
             //: Tab name: general settings
             text: qsTr("General")
             font.bold: tabbar.currentIndex===0
-            width: settings_top.width/2
+            width: settings_top.width/3
         }
         TabButton {
             //: Tab name
             text: qsTr("External applications")
             font.bold: tabbar.currentIndex===1
-            width: settings_top.width/2
+            width: settings_top.width/3
+        }
+        TabButton {
+            //: Tab name
+            text: qsTr("Additional Tools")
+            font.bold: tabbar.currentIndex===2
+            width: settings_top.width/3
         }
     }
 
@@ -160,6 +166,15 @@ ApplicationWindow {
             onResetFocus: {
                 catchKeyPress.forceActiveFocus()
             }
+        }
+
+        /************************************/
+
+        // the general settings
+        PQSettingsTools {
+            id: set_tools
+            width: stack.width
+            height: stack.height
         }
 
         /************************************/
