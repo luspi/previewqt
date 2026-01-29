@@ -5,6 +5,8 @@ set(previewqt_QML "qml/PQMainWindow.qml"
                   "qml/components/PQTopRow.qml"
                   "qml/components/PQTrayIcon.qml"
 
+                  "qml/components/parts/PQTopRowDownloadButton.qml"
+
                   "qml/components/imageitems/PQArchive.qml"
                   "qml/components/imageitems/PQDocument.qml"
                   "qml/components/imageitems/PQImageAnimated.qml"

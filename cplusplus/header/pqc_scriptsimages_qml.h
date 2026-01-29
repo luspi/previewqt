@@ -39,6 +39,7 @@ class PQCScriptsImagesQML : public QObject {
 
 public:
     PQCScriptsImagesQML() {
+        connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamSupported, this, &PQCScriptsImagesQML::receivedStreamSupported);
         connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamURL, this, &PQCScriptsImagesQML::receivedStreamURL);
         connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamTitle, this, &PQCScriptsImagesQML::receivedStreamTitle);
         connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamError, this, &PQCScriptsImagesQML::receivedStreamError);
@@ -93,8 +94,8 @@ public:
         return PQCScriptsImages::get().isURL(url);
     }
 
-    Q_INVOKABLE bool isStreamVideo(QString url) {
-        return PQCScriptsImages::get().isStreamVideo(url);
+    Q_INVOKABLE void requestIsSupportedStream(QString url) {
+        PQCScriptsImages::get().requestIsSupportedStream(url);
     }
 
     Q_INVOKABLE void requestStreamURL(QString url) {
@@ -130,6 +131,7 @@ public:
     }
 
 Q_SIGNALS:
+    void receivedStreamSupported(bool supp);
     void receivedStreamURL(QString url);
     void receivedStreamTitle(QString title);
     void receivedStreamError(QString err);

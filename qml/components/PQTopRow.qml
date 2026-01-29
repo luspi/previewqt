@@ -118,7 +118,7 @@ Rectangle {
         // rotate left
         PQIconButton {
             id: rotleftbut
-            active: ["sph", "vid", "mpv", "bok", "txt"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
+            active: ["sph", "vid", "mpv", "bok", "txt", "url"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Rotate image to the left")
@@ -137,7 +137,7 @@ Rectangle {
         // rotate right
         PQIconButton {
             id: rotrightbut
-            active: ["sph", "vid", "mpv", "bok", "txt"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
+            active: ["sph", "vid", "mpv", "bok", "txt", "url"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Rotate image to the right")
@@ -152,6 +152,8 @@ Rectangle {
                 onClicked: {}
             }
         }
+
+        PQTopRowDownloadButton {}
 
     }
 

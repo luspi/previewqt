@@ -55,7 +55,7 @@ public:
     bool isItAnimated(QString filename);
     bool isURL(QString url);
 
-    bool isStreamVideo(QString url);
+    void requestIsSupportedStream(QString url);
     void requestStreamURL(QString url);
     void requestStreamTitle(QString url);
 
@@ -72,6 +72,7 @@ public:
 private:
     PQCScriptsImages();
 
+    QProcess *m_streamSupportedProc;
     QProcess *m_streamProc;
     QProcess *m_streamTitleProc;
 
@@ -79,6 +80,7 @@ private:
     QString generateArchiveId(QString path);
 
 Q_SIGNALS:
+    void receivedStreamSupported(bool supp);
     void receivedStreamURL(QString url);
     void receivedStreamTitle(QString title);
     void receivedStreamError(QString err);

@@ -23,8 +23,11 @@
 
 #include <QObject>
 #include <QImage>
+#include <QNetworkAccessManager>
 
 class QTranslator;
+class QNetworkReply;
+class QFile;
 
 class PQCScriptsOther : public QObject {
 
@@ -47,13 +50,23 @@ public:
     QString getClipboardContents();
     QString getStartupMessage(){ return m_startupMessage; }
     void setStartupMessage(QString val) { m_startupMessage = val; }
+    void startDownloadOfFile(QString url);
+    void cancelDownloadOfFile();
 
 private:
     PQCScriptsOther();
 
     QString m_startupMessage;
+    QNetworkReply *m_downloadReply;
+    QNetworkAccessManager m_downloadManager;
+    QFile *downloadFile;
 
 Q_SIGNALS:
     void commandLineArgumentReceived(QString msg);
+
+    void downloadStarted();
+    void downloadFinished();
+    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+    void downloadCancelled();
 
 };

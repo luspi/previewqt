@@ -61,6 +61,8 @@ public:
         m_imageRotation = 0;
         m_imageAvailableSize = QSize(0,0);
         m_imageAvailableSizeDelay = QSize(0,0);
+        m_currentStreamVideoDirectURL = "";
+        m_downloadInProgress = false;
 
     }
 
@@ -93,6 +95,8 @@ public:
     Q_PROPERTY(int imageRotation MEMBER m_imageRotation NOTIFY imageRotationChanged)
     Q_PROPERTY(QSize imageAvailableSize MEMBER m_imageAvailableSize NOTIFY imageAvailableSizeChanged)
     Q_PROPERTY(QSize imageAvailableSizeDelay MEMBER m_imageAvailableSizeDelay NOTIFY imageAvailableSizeDelayChanged)
+    Q_PROPERTY(QString currentStreamVideoDirectURL MEMBER m_currentStreamVideoDirectURL NOTIFY currentStreamVideoDirectURLChanged)
+    Q_PROPERTY(bool downloadInProgress MEMBER m_downloadInProgress NOTIFY downloadInProgressChanged)
 
 private:
     QString m_currentSource;
@@ -119,6 +123,8 @@ private:
     int m_imageRotation;
     QSize m_imageAvailableSize;
     QSize m_imageAvailableSizeDelay;
+    QString m_currentStreamVideoDirectURL;
+    bool m_downloadInProgress;
 
     bool m_toprowForceVisible;
     bool m_menuIsOpen;
@@ -149,5 +155,7 @@ Q_SIGNALS:
     void imageRotationChanged();
     void imageAvailableSizeChanged();
     void imageAvailableSizeDelayChanged();
+    void currentStreamVideoDirectURLChanged();
+    void downloadInProgressChanged();
 
 };

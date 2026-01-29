@@ -87,11 +87,16 @@
 #include <lcms2.h>
 #endif
 
-PQCScriptsImages::PQCScriptsImages() {}
+PQCScriptsImages::PQCScriptsImages() {
+    m_streamProc = nullptr;
+    m_streamTitleProc = nullptr;
+    m_streamSupportedProc = nullptr;
+}
 
 PQCScriptsImages::~PQCScriptsImages() {
     if(m_streamProc) delete m_streamProc;
     if(m_streamTitleProc) delete m_streamTitleProc;
+    if(m_streamSupportedProc) delete m_streamSupportedProc;
 }
 
 QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenameOnly) {
@@ -616,9 +621,42 @@ bool PQCScriptsImages::isURL(QString url) {
     return (url.startsWith("http:") || url.startsWith("https:"));
 }
 
-bool PQCScriptsImages::isStreamVideo(QString url) {
-    return (url.contains("youtube.com/") || url.contains("youtu.be/") ||
-            url.contains("dailymotion.com"));
+void PQCScriptsImages::requestIsSupportedStream(QString url) {
+
+    qDebug() << "args: url =" << url;
+
+    const QStringList knownMatches = {"://youtube.com", "://www.youtube.com","://youtu.be", "://www.youtu.be",
+                                      "://dailymotion.com", "://www.dailymotion.com"};
+    for(const QString &m : knownMatches) {
+        if(url.contains(m)) {
+            Q_EMIT receivedStreamSupported(true);
+            return;
+        }
+    }
+
+    if(m_streamSupportedProc != nullptr)
+        delete m_streamSupportedProc;
+    m_streamSupportedProc = new QProcess;
+
+    url = url.split("&list=")[0];
+    url = url.split("&index=")[0];
+
+    QString program = "yt-dlp";
+    QStringList arguments = {"--simulate", url};
+
+    m_streamSupportedProc->start(program, arguments);
+
+    connect(m_streamSupportedProc, &QProcess::readyReadStandardOutput, this, [=]() {
+        const QString ret = m_streamSupportedProc->readAll().trimmed();
+        if(ret.contains("Downloading") && !ret.contains("Downloading webpage"))
+            Q_EMIT receivedStreamSupported(true);
+    });
+    connect(m_streamSupportedProc, &QProcess::readyReadStandardError, this, [=]() {
+        const QString err = m_streamSupportedProc->readAllStandardError().trimmed();
+        if(err.contains("Unsupported URL"))
+            Q_EMIT receivedStreamSupported(false);
+    });
+
 }
 
 void PQCScriptsImages::requestStreamURL(QString url) {
@@ -635,33 +673,27 @@ void PQCScriptsImages::requestStreamURL(QString url) {
     QString program = "yt-dlp";
     QStringList arguments;
 
-    if(url.contains("youtube.com") || url.contains("youtu.be")) {
-        arguments = {"-g",
-                     "-f", "best[protocol^=http]/best",
-                     "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                     "--referer", "https://www.youtube.com/",
-                     url};
-    } else {
-        arguments = {"-g",
-                     "-f", "best[protocol^=http]/best",
-                     "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                     "--referer", "https://www.dailymotion.com/",
-                     url};
-    }
+    arguments << "-g";
+    arguments << "-f" << "best[protocol^=http]/best";
+    arguments << "--user-agent" << "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+    if(url.contains("youtube.com") || url.contains("youtu.be"))
+        arguments << "--referer" << "https://www.youtube.com/";
+    else if(url.contains("dailymotion.com"))
+        arguments << "--referer" << "https://www.dailymotion.com/";
+
+    arguments << url;
+
 
     m_streamProc->start(program, arguments);
 
     connect(m_streamProc, &QProcess::readyReadStandardOutput, this, [=]() {
         const QString ret = m_streamProc->readAll().trimmed();
-        qDebug() << "Received standard output:";
-        qDebug() << ret;
         Q_EMIT receivedStreamURL(ret);
     });
 
     connect(m_streamProc, &QProcess::readyReadStandardError, this, [=]() {
         const QString err = m_streamProc->readAllStandardError().trimmed();
-        qDebug() << "Received standard error:";
-        qDebug() << err;
         if(err.contains("Sign in to confirm you’re not a bot"))
             Q_EMIT receivedStreamError("signin_bot");
         else if(err.contains("HTTP Error 403: Forbidden") || err.contains("Failed to download") || err.contains("No video formats found!"))

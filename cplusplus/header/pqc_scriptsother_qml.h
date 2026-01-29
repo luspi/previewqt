@@ -38,6 +38,14 @@ public:
     explicit PQCScriptsOtherQML() {
         connect(&PQCScriptsOther::get(), &PQCScriptsOther::commandLineArgumentReceived,
                 this, &PQCScriptsOtherQML::commandLineArgumentReceived);
+        connect(&PQCScriptsOther::get(), &PQCScriptsOther::downloadStarted,
+                this, &PQCScriptsOtherQML::downloadStarted);
+        connect(&PQCScriptsOther::get(), &PQCScriptsOther::downloadFinished,
+                this, &PQCScriptsOtherQML::downloadFinished);
+        connect(&PQCScriptsOther::get(), &PQCScriptsOther::downloadProgress,
+                this, &PQCScriptsOtherQML::downloadProgress);
+        connect(&PQCScriptsOther::get(), &PQCScriptsOther::downloadCancelled,
+                this, &PQCScriptsOtherQML::downloadCancelled);
     };
     ~PQCScriptsOtherQML() {}
 
@@ -57,8 +65,20 @@ public:
         return PQCScriptsOther::get().getStartupMessage();
     }
 
+    Q_INVOKABLE void startDownloadOfFile(QString url) {
+        PQCScriptsOther::get().startDownloadOfFile(url);
+    }
+
+    Q_INVOKABLE void cancelDownloadOfFile() {
+        PQCScriptsOther::get().cancelDownloadOfFile();
+    }
+
 Q_SIGNALS:
     // picked up from PQCScriptsImages and passed on to QML
     void commandLineArgumentReceived(QString msg);
+    void downloadStarted();
+    void downloadFinished();
+    void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+    void downloadCancelled();
 
 };

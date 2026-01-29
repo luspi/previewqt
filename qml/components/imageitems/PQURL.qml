@@ -45,29 +45,29 @@ Item {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(width, height) })
         PQCConstants.imageAsynchronous = Qt.binding(function() { return true })
 
-        if(PQCScriptsImages.isStreamVideo(PQCConstants.currentSource) &&
-                (PQCScriptsConfig.isQtVideoEnabled() || PQCScriptsConfig.isMPVEnabled())) {
-
-            PQCScriptsImages.requestStreamTitle(PQCConstants.currentSource)
-            PQCScriptsImages.requestStreamURL(PQCConstants.currentSource)
-
-        } else {
-
-            isWebsite = PQCConstants.currentSource
-
-        }
+        PQCScriptsImages.requestIsSupportedStream(PQCConstants.currentSource)
 
     }
 
     Component.onDestruction: {
         PQCConstants.mainwindowOverrideTitle = ""
+        PQCConstants.currentStreamVideoDirectURL = ""
     }
 
     Connections {
 
         target: PQCScriptsImages
 
+        function onReceivedStreamSupported(supp : bool) {
+            if(supp) {
+                PQCScriptsImages.requestStreamTitle(PQCConstants.currentSource)
+                PQCScriptsImages.requestStreamURL(PQCConstants.currentSource)
+            } else
+                url_top.isWebsite = PQCConstants.currentSource
+        }
+
         function onReceivedStreamURL(url : string) {
+            PQCConstants.currentStreamVideoDirectURL = url
             url_top.isVideo = url
         }
 
@@ -153,6 +153,38 @@ Item {
             }
 
         }
+    }
+
+    Rectangle {
+
+        x: parent.width-width-10
+        y: 10
+        width: height
+        height: 30
+
+        radius: 5
+        visible: url_top.isVideo
+        color: "#88000000"
+        opacity: downmouse.containsMouse ? 1 : 0.4
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+
+        Image {
+            anchors.fill: parent
+            anchors.margins: 5
+            sourceSize: Qt.size(width, height)
+            source: "image://svg/:/download.svg"
+        }
+
+        MouseArea {
+            id: downmouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                console.warn(">>> DOWNLOAD VIDEO:", url_top.isVideo)
+            }
+        }
+
     }
 
 }

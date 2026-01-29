@@ -129,27 +129,35 @@ ApplicationWindow {
         tabbar.currentIndex = 0
 
         var imgindex = Object.values(imgoptions_val).indexOf(PQCSettings.defaultAppImages)
+        custom_img.checked = (imgindex !== 0)
         imgcombo.currentIndex = (imgindex===-1 ? imgcombo.currentIndex=imgcombo.model.length-1 : imgindex)
 
         var docindex = Object.values(docoptions_val).indexOf(PQCSettings.defaultAppDocuments)
+        custom_doc.checked = (docindex !== 0)
         doccombo.currentIndex = (docindex===-1 ? doccombo.currentIndex=doccombo.model.length-1 : docindex)
 
         var vidindex = Object.values(vidoptions_val).indexOf(PQCSettings.defaultAppVideos)
+        custom_vid.checked = (vidindex !== 0)
         vidcombo.currentIndex = (vidindex===-1 ? vidcombo.currentIndex=vidcombo.model.length-1 : vidindex)
 
         var arcindex = Object.values(arcoptions_val).indexOf(PQCSettings.defaultAppArchives)
+        custom_arc.checked = (arcindex !== 0)
         arccombo.currentIndex = (arcindex===-1 ? arccombo.currentIndex=arccombo.model.length-1 : arcindex)
 
         var comindex = Object.values(comoptions_val).indexOf(PQCSettings.defaultAppComicBooks)
+        custom_com.checked = (comindex !== 0)
         comcombo.currentIndex = (comindex===-1 ? comcombo.currentIndex=comcombo.model.length-1 : comindex)
 
         var bokindex = Object.values(bokoptions_val).indexOf(PQCSettings.defaultAppEBooks)
+        custom_bok.checked = (bokindex !== 0)
         bokcombo.currentIndex = (bokindex===-1 ? bokcombo.currentIndex=bokcombo.model.length-1 : bokindex)
 
         var txtindex = Object.values(txtoptions_val).indexOf(PQCSettings.defaultAppText)
+        custom_txt.checked = (txtindex !== 0)
         txtcombo.currentIndex = (txtindex===-1 ? txtcombo.currentIndex=txtcombo.model.length-1 : txtindex)
 
         var urlindex = Object.values(urloptions_val).indexOf(PQCSettings.defaultAppUrl)
+        custom_url.checked = (urlindex !== 0)
         urlcombo.currentIndex = (urlindex===-1 ? urlcombo.currentIndex=urlcombo.model.length-1 : urlindex)
 
         optionsLoaded = true
@@ -496,14 +504,6 @@ ApplicationWindow {
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
 
-                /************************************/
-                Rectangle {
-                    width: defaultappsettings.usableWidth
-                    height: 1
-                    color: "black"
-                }
-                /************************************/
-
                 CheckBox {
                     width: defaultappsettings.usableWidth
                     text: qsTr("Hide window after launching external application")
@@ -515,396 +515,502 @@ ApplicationWindow {
                     }
                 }
 
-                Column {
+                /************************************/
+                Rectangle {
+                    width: defaultappsettings.usableWidth
+                    height: 1
+                    color: "black"
+                }
+                /************************************/
 
-                    Text {
-                        text: qsTr("External application for images:")
-                        color: palette.text
-                    }
-
-                    ComboBox {
-                        id: imgcombo
-                        x: (defaultappsettings.usableWidth-width)/2
-                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: imgoptions_key
-                        visible: !PQCScriptsConfig.amIOnWindows()
-                        onCurrentIndexChanged: {
-                            if(!optionsLoaded) return
-                            catchKeyPress.forceActiveFocus()
-                            if(currentIndex < imgcombo.model.length-1) {
-                                PQCSettings.defaultAppImages = imgoptions_val[currentIndex]
-                            } else {
-                                imgedit.text = PQCSettings.defaultAppImages
-                            }
-                        }
-                    }
-
-                    Row {
-                        spacing: 5
-                        visible: imgcombo.currentIndex === imgcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
-                        TextField {
-                            id: imgedit
-                            y: (imgbut.height-height)/2
-                            width: defaultappsettings.usableWidth-imgbut.width-5
-                            text: PQCSettings.defaultAppImages
-                            onTextChanged: {
-                                if(text !== PQCSettings.defaultAppImages)
-                                    PQCSettings.defaultAppImages = text
-                            }
-                        }
-                        Button {
-                            id: imgbut
-                            text: "..."
-                            onClicked: {
-                                selectExe.category = "images"
-                                selectExe.prevexe = imgedit.text
-                                selectExe.open()
-                            }
-                        }
-                    }
+                Text {
+                    width: defaultappsettings.usableWidth
+                    color: palette.text
+                    text: qsTr("If no custom application is defined, then PreviewQt will use whatever application is set as default on your system.")
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
 
-                Column {
-
-                    Text {
-                        text: qsTr("External application for documents:")
-                        color: palette.text
-                    }
-
-                    ComboBox {
-                        id: doccombo
-                        x: (defaultappsettings.usableWidth-width)/2
-                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: docoptions_key
-                        visible: !PQCScriptsConfig.amIOnWindows()
-                        onCurrentIndexChanged: {
-                            if(!optionsLoaded) return
-                            catchKeyPress.forceActiveFocus()
-                            if(currentIndex < doccombo.model.length-1) {
-                                PQCSettings.defaultAppDocuments = docoptions_val[currentIndex]
-                            } else {
-                                docedit.text = PQCSettings.defaultAppDocuments
-                            }
-                        }
-                    }
-
-                    Row {
-                        spacing: 5
-                        visible: doccombo.currentIndex === doccombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
-                        TextField {
-                            id: docedit
-                            y: (docbut.height-height)/2
-                            width: defaultappsettings.usableWidth-docbut.width-5
-                            text: PQCSettings.defaultAppDocuments
-                            onTextChanged: {
-                                if(text !== PQCSettings.defaultAppDocuments)
-                                    PQCSettings.defaultAppDocuments = text
-                            }
-                        }
-                        Button {
-                            id: docbut
-                            text: "..."
-                            onClicked: {
-                                selectExe.category = "documents"
-                                selectExe.prevexe = docedit.text
-                                selectExe.open()
-                            }
-                        }
-                    }
+                CheckBox {
+                    id: custom_img
+                    text: "Use custom application for images"
                 }
 
-                Column {
+                Item {
 
-                    Text {
-                        text: qsTr("External application for videos:")
-                        color: palette.text
-                    }
+                    width: parent.width
+                    height: custom_img.checked ? imgcol.height : 0
+                    Behavior on height { NumberAnimation { duration: 200 } }
+                    clip: true
 
-                    ComboBox {
-                        id: vidcombo
-                        x: (defaultappsettings.usableWidth-width)/2
-                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: vidoptions_key
-                        visible: !PQCScriptsConfig.amIOnWindows()
-                        onCurrentIndexChanged: {
-                            if(!optionsLoaded) return
-                            catchKeyPress.forceActiveFocus()
-                            if(currentIndex < vidcombo.model.length-1) {
-                                PQCSettings.defaultAppVideos = vidoptions_val[currentIndex]
-                            } else {
-                                videdit.text = PQCSettings.defaultAppVideos
+                    Column {
+
+                        id: imgcol
+
+                        width: parent.width
+
+                        ComboBox {
+                            id: imgcombo
+                            x: (defaultappsettings.usableWidth-width)/2
+                            width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                            model: imgoptions_key
+                            visible: !PQCScriptsConfig.amIOnWindows()
+                            onCurrentIndexChanged: {
+                                if(!optionsLoaded) return
+                                catchKeyPress.forceActiveFocus()
+                                if(currentIndex < imgcombo.model.length-1) {
+                                    PQCSettings.defaultAppImages = imgoptions_val[currentIndex]
+                                } else {
+                                    imgedit.text = PQCSettings.defaultAppImages
+                                }
                             }
                         }
+
+                        Row {
+                            spacing: 5
+                            visible: imgcombo.currentIndex === imgcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                            TextField {
+                                id: imgedit
+                                y: (imgbut.height-height)/2
+                                width: defaultappsettings.usableWidth-imgbut.width-5
+                                text: PQCSettings.defaultAppImages
+                                onTextChanged: {
+                                    if(text !== PQCSettings.defaultAppImages)
+                                        PQCSettings.defaultAppImages = text
+                                }
+                            }
+                            Button {
+                                id: imgbut
+                                text: "..."
+                                onClicked: {
+                                    selectExe.category = "images"
+                                    selectExe.prevexe = imgedit.text
+                                    selectExe.open()
+                                }
+                            }
+                        }
+
                     }
 
-                    Row {
-                        spacing: 5
-                        visible: vidcombo.currentIndex === vidcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
-                        TextField {
-                            id: videdit
-                            y: (vidbut.height-height)/2
-                            width: defaultappsettings.usableWidth-vidbut.width-5
-                            text: PQCSettings.defaultAppVideos
-                            onTextChanged: {
-                                if(text !== PQCSettings.defaultAppVideos)
-                                    PQCSettings.defaultAppVideos = text
-                            }
-                        }
-                        Button {
-                            id: vidbut
-                            text: "..."
-                            onClicked: {
-                                selectExe.category = "videos"
-                                selectExe.prevexe = videdit.text
-                                selectExe.open()
-                            }
-                        }
-                    }
                 }
 
-                Column {
-
-                    Text {
-                        text: qsTr("External application for archives:")
-                        color: palette.text
-                    }
-
-                    ComboBox {
-                        id: arccombo
-                        x: (defaultappsettings.usableWidth-width)/2
-                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: arcoptions_key
-                        visible: !PQCScriptsConfig.amIOnWindows()
-                        onCurrentIndexChanged: {
-                            if(!optionsLoaded) return
-                            catchKeyPress.forceActiveFocus()
-                            if(currentIndex < arccombo.model.length-1) {
-                                PQCSettings.defaultAppArchives = arcoptions_val[currentIndex]
-                            } else {
-                                arcedit.text = PQCSettings.defaultAppArchives
-                            }
-                        }
-                    }
-
-                    Row {
-                        spacing: 5
-                        visible: arccombo.currentIndex === arccombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
-                        TextField {
-                            id: arcedit
-                            y: (arcbut.height-height)/2
-                            width: defaultappsettings.usableWidth-arcbut.width-5
-                            text: PQCSettings.defaultAppArchives
-                            onTextChanged: {
-                                if(text !== PQCSettings.defaultAppArchives)
-                                    PQCSettings.defaultAppArchives = text
-                            }
-                        }
-                        Button {
-                            id: arcbut
-                            text: "..."
-                            onClicked: {
-                                selectExe.category = "archives"
-                                selectExe.prevexe = arcedit.text
-                                selectExe.open()
-                            }
-                        }
-                    }
+                CheckBox {
+                    id: custom_doc
+                    text: "Use custom application for documents"
                 }
 
-                Column {
+                Item {
 
-                    Text {
-                        text: qsTr("External application for comic books:")
-                        color: palette.text
-                    }
+                    width: parent.width
+                    height: custom_doc.checked ? doccol.height : 0
+                    Behavior on height { NumberAnimation { duration: 200 } }
+                    clip: true
 
-                    ComboBox {
-                        id: comcombo
-                        x: (defaultappsettings.usableWidth-width)/2
-                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: comoptions_key
-                        visible: !PQCScriptsConfig.amIOnWindows()
-                        onCurrentIndexChanged: {
-                            if(!optionsLoaded) return
-                            catchKeyPress.forceActiveFocus()
-                            if(currentIndex < comcombo.model.length-1) {
-                                PQCSettings.defaultAppComicBooks = comoptions_val[currentIndex]
-                            } else {
-                                comedit.text = PQCSettings.defaultAppComicBooks
+                    Column {
+
+                        id: doccol
+
+                        ComboBox {
+                            id: doccombo
+                            x: (defaultappsettings.usableWidth-width)/2
+                            width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                            model: docoptions_key
+                            visible: !PQCScriptsConfig.amIOnWindows()
+                            onCurrentIndexChanged: {
+                                if(!optionsLoaded) return
+                                catchKeyPress.forceActiveFocus()
+                                if(currentIndex < doccombo.model.length-1) {
+                                    PQCSettings.defaultAppDocuments = docoptions_val[currentIndex]
+                                } else {
+                                    docedit.text = PQCSettings.defaultAppDocuments
+                                }
+                            }
+                        }
+
+                        Row {
+                            spacing: 5
+                            visible: doccombo.currentIndex === doccombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                            TextField {
+                                id: docedit
+                                y: (docbut.height-height)/2
+                                width: defaultappsettings.usableWidth-docbut.width-5
+                                text: PQCSettings.defaultAppDocuments
+                                onTextChanged: {
+                                    if(text !== PQCSettings.defaultAppDocuments)
+                                        PQCSettings.defaultAppDocuments = text
+                                }
+                            }
+                            Button {
+                                id: docbut
+                                text: "..."
+                                onClicked: {
+                                    selectExe.category = "documents"
+                                    selectExe.prevexe = docedit.text
+                                    selectExe.open()
+                                }
                             }
                         }
                     }
 
-                    Row {
-                        spacing: 5
-                        visible: comcombo.currentIndex === comcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
-                        TextField {
-                            id: comedit
-                            y: (combut.height-height)/2
-                            width: defaultappsettings.usableWidth-combut.width-5
-                            text: PQCSettings.defaultAppComicBooks
-                            onTextChanged: {
-                                if(text !== PQCSettings.defaultAppComicBooks)
-                                    PQCSettings.defaultAppComicBooks = text
-                            }
-                        }
-                        Button {
-                            id: combut
-                            text: "..."
-                            onClicked: {
-                                selectExe.category = "comicbooks"
-                                selectExe.prevexe = comedit.text
-                                selectExe.open()
-                            }
-                        }
-                    }
                 }
 
-                Column {
-
-                    Text {
-                        text: qsTr("External application for E-books:")
-                        color: palette.text
-                    }
-
-                    ComboBox {
-                        id: bokcombo
-                        x: (defaultappsettings.usableWidth-width)/2
-                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: bokoptions_key
-                        visible: !PQCScriptsConfig.amIOnWindows()
-                        onCurrentIndexChanged: {
-                            if(!optionsLoaded) return
-                            catchKeyPress.forceActiveFocus()
-                            if(currentIndex < bokcombo.model.length-1) {
-                                PQCSettings.defaultAppEBooks = bokoptions_val[currentIndex]
-                            } else {
-                                bokedit.text = PQCSettings.defaultAppEBooks
-                            }
-                        }
-                    }
-
-                    Row {
-                        spacing: 5
-                        visible: bokcombo.currentIndex === bokcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
-                        TextField {
-                            id: bokedit
-                            y: (bokbut.height-height)/2
-                            width: defaultappsettings.usableWidth-bokbut.width-5
-                            text: PQCSettings.defaultAppEBooks
-                            onTextChanged: {
-                                if(text !== PQCSettings.defaultAppEBooks)
-                                    PQCSettings.defaultAppEBooks = text
-                            }
-                        }
-                        Button {
-                            id: bokbut
-                            text: "..."
-                            onClicked: {
-                                selectExe.category = "ebooks"
-                                selectExe.prevexe = bokedit.text
-                                selectExe.open()
-                            }
-                        }
-                    }
+                CheckBox {
+                    id: custom_vid
+                    text: "Use custom application for videos"
                 }
 
-                Column {
+                Item {
 
-                    Text {
-                        text: qsTr("External application for text documents:")
-                        color: palette.text
-                    }
+                    width: parent.width
+                    height: custom_vid.checked ? vidcol.height : 0
+                    Behavior on height { NumberAnimation { duration: 200 } }
+                    clip: true
 
-                    ComboBox {
-                        id: txtcombo
-                        x: (defaultappsettings.usableWidth-width)/2
-                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: txtoptions_key
-                        visible: !PQCScriptsConfig.amIOnWindows()
-                        onCurrentIndexChanged: {
-                            if(!optionsLoaded) return
-                            catchKeyPress.forceActiveFocus()
-                            if(currentIndex < txtcombo.model.length-1) {
-                                PQCSettings.defaultAppText = txtoptions_val[currentIndex]
-                            } else {
-                                txtedit.text = PQCSettings.defaultAppText
+                    Column {
+
+                        id: vidcol
+
+                        ComboBox {
+                            id: vidcombo
+                            x: (defaultappsettings.usableWidth-width)/2
+                            width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                            model: vidoptions_key
+                            visible: !PQCScriptsConfig.amIOnWindows()
+                            onCurrentIndexChanged: {
+                                if(!optionsLoaded) return
+                                catchKeyPress.forceActiveFocus()
+                                if(currentIndex < vidcombo.model.length-1) {
+                                    PQCSettings.defaultAppVideos = vidoptions_val[currentIndex]
+                                } else {
+                                    videdit.text = PQCSettings.defaultAppVideos
+                                }
+                            }
+                        }
+
+                        Row {
+                            spacing: 5
+                            visible: vidcombo.currentIndex === vidcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                            TextField {
+                                id: videdit
+                                y: (vidbut.height-height)/2
+                                width: defaultappsettings.usableWidth-vidbut.width-5
+                                text: PQCSettings.defaultAppVideos
+                                onTextChanged: {
+                                    if(text !== PQCSettings.defaultAppVideos)
+                                        PQCSettings.defaultAppVideos = text
+                                }
+                            }
+                            Button {
+                                id: vidbut
+                                text: "..."
+                                onClicked: {
+                                    selectExe.category = "videos"
+                                    selectExe.prevexe = videdit.text
+                                    selectExe.open()
+                                }
                             }
                         }
                     }
 
-                    Row {
-                        spacing: 5
-                        visible: txtcombo.currentIndex === txtcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
-                        TextField {
-                            id: txtedit
-                            y: (txtbut.height-height)/2
-                            width: defaultappsettings.usableWidth-txtbut.width-5
-                            text: PQCSettings.defaultAppText
-                            onTextChanged: {
-                                if(text !== PQCSettings.defaultAppText)
-                                    PQCSettings.defaultAppText = text
-                            }
-                        }
-                        Button {
-                            id: txtbut
-                            text: "..."
-                            onClicked: {
-                                selectExe.category = "text"
-                                selectExe.prevexe = txtedit.text
-                                selectExe.open()
-                            }
-                        }
-                    }
                 }
 
-                Column {
+                CheckBox {
+                    id: custom_arc
+                    text: "Use custom application for archives"
+                }
 
-                    Text {
-                        text: qsTr("External application for URLs:")
-                        color: palette.text
-                    }
+                Item {
 
-                    ComboBox {
-                        id: urlcombo
-                        x: (defaultappsettings.usableWidth-width)/2
-                        width: Math.min(300, defaultappsettings.usableWidth*0.8)
-                        model: urloptions_key
-                        visible: !PQCScriptsConfig.amIOnWindows()
-                        onCurrentIndexChanged: {
-                            if(!optionsLoaded) return
-                            catchKeyPress.forceActiveFocus()
-                            if(currentIndex < urlcombo.model.length-1) {
-                                PQCSettings.defaultAppUrl = urloptions_val[currentIndex]
-                            } else {
-                                urledit.text = PQCSettings.defaultAppUrl
+                    width: parent.width
+                    height: custom_arc.checked ? arccol.height : 0
+                    Behavior on height { NumberAnimation { duration: 200 } }
+                    clip: true
+
+                    Column {
+
+                        id: arccol
+
+                        ComboBox {
+                            id: arccombo
+                            x: (defaultappsettings.usableWidth-width)/2
+                            width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                            model: arcoptions_key
+                            visible: !PQCScriptsConfig.amIOnWindows()
+                            onCurrentIndexChanged: {
+                                if(!optionsLoaded) return
+                                catchKeyPress.forceActiveFocus()
+                                if(currentIndex < arccombo.model.length-1) {
+                                    PQCSettings.defaultAppArchives = arcoptions_val[currentIndex]
+                                } else {
+                                    arcedit.text = PQCSettings.defaultAppArchives
+                                }
+                            }
+                        }
+
+                        Row {
+                            spacing: 5
+                            visible: arccombo.currentIndex === arccombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                            TextField {
+                                id: arcedit
+                                y: (arcbut.height-height)/2
+                                width: defaultappsettings.usableWidth-arcbut.width-5
+                                text: PQCSettings.defaultAppArchives
+                                onTextChanged: {
+                                    if(text !== PQCSettings.defaultAppArchives)
+                                        PQCSettings.defaultAppArchives = text
+                                }
+                            }
+                            Button {
+                                id: arcbut
+                                text: "..."
+                                onClicked: {
+                                    selectExe.category = "archives"
+                                    selectExe.prevexe = arcedit.text
+                                    selectExe.open()
+                                }
                             }
                         }
                     }
 
-                    Row {
-                        spacing: 5
-                        visible: urlcombo.currentIndex === urlcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
-                        TextField {
-                            id: urledit
-                            y: (urlbut.height-height)/2
-                            width: defaultappsettings.usableWidth-urlbut.width-5
-                            text: PQCSettings.defaultAppUrl
-                            onTextChanged: {
-                                if(text !== PQCSettings.defaultAppUrl)
-                                    PQCSettings.defaultAppUrl = text
+                }
+
+                CheckBox {
+                    id: custom_com
+                    text: "Use custom application for comic books"
+                }
+
+                Item {
+
+                    width: parent.width
+                    height: custom_com.checked ? comcol.height : 0
+                    Behavior on height { NumberAnimation { duration: 200 } }
+                    clip: true
+
+                    Column {
+
+                        id: comcol
+
+                        ComboBox {
+                            id: comcombo
+                            x: (defaultappsettings.usableWidth-width)/2
+                            width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                            model: comoptions_key
+                            visible: !PQCScriptsConfig.amIOnWindows()
+                            onCurrentIndexChanged: {
+                                if(!optionsLoaded) return
+                                catchKeyPress.forceActiveFocus()
+                                if(currentIndex < comcombo.model.length-1) {
+                                    PQCSettings.defaultAppComicBooks = comoptions_val[currentIndex]
+                                } else {
+                                    comedit.text = PQCSettings.defaultAppComicBooks
+                                }
                             }
                         }
-                        Button {
-                            id: urlbut
-                            text: "..."
-                            onClicked: {
-                                selectExe.category = "url"
-                                selectExe.prevexe = urledit.text
-                                selectExe.open()
+
+                        Row {
+                            spacing: 5
+                            visible: comcombo.currentIndex === comcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                            TextField {
+                                id: comedit
+                                y: (combut.height-height)/2
+                                width: defaultappsettings.usableWidth-combut.width-5
+                                text: PQCSettings.defaultAppComicBooks
+                                onTextChanged: {
+                                    if(text !== PQCSettings.defaultAppComicBooks)
+                                        PQCSettings.defaultAppComicBooks = text
+                                }
+                            }
+                            Button {
+                                id: combut
+                                text: "..."
+                                onClicked: {
+                                    selectExe.category = "comicbooks"
+                                    selectExe.prevexe = comedit.text
+                                    selectExe.open()
+                                }
                             }
                         }
                     }
+
+                }
+
+                CheckBox {
+                    id: custom_bok
+                    text: "Use custom application for E-books"
+                }
+
+                Item {
+
+                    width: parent.width
+                    height: custom_bok.checked ? bokcol.height : 0
+                    Behavior on height { NumberAnimation { duration: 200 } }
+                    clip: true
+
+                    Column {
+
+                        id: bokcol
+
+                        ComboBox {
+                            id: bokcombo
+                            x: (defaultappsettings.usableWidth-width)/2
+                            width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                            model: bokoptions_key
+                            visible: !PQCScriptsConfig.amIOnWindows()
+                            onCurrentIndexChanged: {
+                                if(!optionsLoaded) return
+                                catchKeyPress.forceActiveFocus()
+                                if(currentIndex < bokcombo.model.length-1) {
+                                    PQCSettings.defaultAppEBooks = bokoptions_val[currentIndex]
+                                } else {
+                                    bokedit.text = PQCSettings.defaultAppEBooks
+                                }
+                            }
+                        }
+
+                        Row {
+                            spacing: 5
+                            visible: bokcombo.currentIndex === bokcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                            TextField {
+                                id: bokedit
+                                y: (bokbut.height-height)/2
+                                width: defaultappsettings.usableWidth-bokbut.width-5
+                                text: PQCSettings.defaultAppEBooks
+                                onTextChanged: {
+                                    if(text !== PQCSettings.defaultAppEBooks)
+                                        PQCSettings.defaultAppEBooks = text
+                                }
+                            }
+                            Button {
+                                id: bokbut
+                                text: "..."
+                                onClicked: {
+                                    selectExe.category = "ebooks"
+                                    selectExe.prevexe = bokedit.text
+                                    selectExe.open()
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                CheckBox {
+                    id: custom_txt
+                    text: "Use custom application for text documents"
+                }
+
+                Item {
+
+                    width: parent.width
+                    height: custom_txt.checked ? txtcol.height : 0
+                    Behavior on height { NumberAnimation { duration: 200 } }
+                    clip: true
+
+                    Column {
+
+                        id: txtcol
+
+                        ComboBox {
+                            id: txtcombo
+                            x: (defaultappsettings.usableWidth-width)/2
+                            width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                            model: txtoptions_key
+                            visible: !PQCScriptsConfig.amIOnWindows()
+                            onCurrentIndexChanged: {
+                                if(!optionsLoaded) return
+                                catchKeyPress.forceActiveFocus()
+                                if(currentIndex < txtcombo.model.length-1) {
+                                    PQCSettings.defaultAppText = txtoptions_val[currentIndex]
+                                } else {
+                                    txtedit.text = PQCSettings.defaultAppText
+                                }
+                            }
+                        }
+
+                        Row {
+                            spacing: 5
+                            visible: txtcombo.currentIndex === txtcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                            TextField {
+                                id: txtedit
+                                y: (txtbut.height-height)/2
+                                width: defaultappsettings.usableWidth-txtbut.width-5
+                                text: PQCSettings.defaultAppText
+                                onTextChanged: {
+                                    if(text !== PQCSettings.defaultAppText)
+                                        PQCSettings.defaultAppText = text
+                                }
+                            }
+                            Button {
+                                id: txtbut
+                                text: "..."
+                                onClicked: {
+                                    selectExe.category = "text"
+                                    selectExe.prevexe = txtedit.text
+                                    selectExe.open()
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                CheckBox {
+                    id: custom_url
+                    text: "Use custom application for URLs"
+                }
+
+                Item {
+
+                    width: parent.width
+                    height: custom_url.checked ? urlcol.height : 0
+                    Behavior on height { NumberAnimation { duration: 200 } }
+                    clip: true
+
+                    Column {
+
+                        id: urlcol
+
+                        ComboBox {
+                            id: urlcombo
+                            x: (defaultappsettings.usableWidth-width)/2
+                            width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                            model: urloptions_key
+                            visible: !PQCScriptsConfig.amIOnWindows()
+                            onCurrentIndexChanged: {
+                                if(!optionsLoaded) return
+                                catchKeyPress.forceActiveFocus()
+                                if(currentIndex < urlcombo.model.length-1) {
+                                    PQCSettings.defaultAppUrl = urloptions_val[currentIndex]
+                                } else {
+                                    urledit.text = PQCSettings.defaultAppUrl
+                                }
+                            }
+                        }
+
+                        Row {
+                            spacing: 5
+                            visible: urlcombo.currentIndex === urlcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                            TextField {
+                                id: urledit
+                                y: (urlbut.height-height)/2
+                                width: defaultappsettings.usableWidth-urlbut.width-5
+                                text: PQCSettings.defaultAppUrl
+                                onTextChanged: {
+                                    if(text !== PQCSettings.defaultAppUrl)
+                                        PQCSettings.defaultAppUrl = text
+                                }
+                            }
+                            Button {
+                                id: urlbut
+                                text: "..."
+                                onClicked: {
+                                    selectExe.category = "url"
+                                    selectExe.prevexe = urledit.text
+                                    selectExe.open()
+                                }
+                            }
+                        }
+                    }
+
                 }
 
                 /************************************/

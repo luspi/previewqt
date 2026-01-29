@@ -27,6 +27,10 @@
 #include <QColorSpace>
 #include <QClipboard>
 #include <QApplication>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QFile>
+#include <QFileDialog>
 
 #ifdef PQMLCMS2
 #include <lcms2.h>
@@ -441,5 +445,49 @@ QString PQCScriptsOther::getClipboardContents() {
 
     QClipboard *c = qApp->clipboard();
     return c->text();
+
+}
+
+void PQCScriptsOther::startDownloadOfFile(QString url) {
+
+    qDebug() << "args: url =" << url;
+
+    QString fname = QFileDialog::getSaveFileName(nullptr, "Save file as", QDir::homePath());
+    if(fname == "") {
+        qDebug() << "No file selected, not downloading file.";
+        return;
+    }
+
+    if(downloadFile != nullptr)
+        delete downloadFile;
+    downloadFile = new QFile(fname);
+    if(!downloadFile->open(QIODevice::WriteOnly)) {
+        qWarning() << "Unable to open file for writing. Not downloading video.";
+        return;
+    }
+
+    const QNetworkRequest& request = QNetworkRequest(url);
+    m_downloadReply = m_downloadManager.get(request);
+    Q_EMIT downloadStarted();
+
+    connect(m_downloadReply, &QNetworkReply::readyRead, this, [=]() {
+        downloadFile->write(m_downloadReply->read(m_downloadReply->bytesAvailable()));
+    });
+
+    connect(m_downloadReply, &QNetworkReply::downloadProgress, this, &PQCScriptsOther::downloadProgress);
+
+    connect(m_downloadReply, &QNetworkReply::finished, this, [=]() {
+        downloadFile->close();
+        Q_EMIT downloadFinished();
+    });
+
+}
+
+void PQCScriptsOther::cancelDownloadOfFile() {
+
+    if(m_downloadReply != nullptr) {
+        Q_EMIT downloadCancelled();
+        m_downloadReply->abort();
+    }
 
 }

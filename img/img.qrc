@@ -28,5 +28,8 @@
         <file>font-plus.svg</file>
         <file>magnifyingglass.svg</file>
         <file>magicwand.svg</file>
+        <file>download.svg</file>
+        <file>checkmark.svg</file>
+        <file>redx.svg</file>
     </qresource>
 </RCC>
