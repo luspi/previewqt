@@ -110,6 +110,9 @@ QString PQCScriptsFilesPaths::getFilename(QString path) {
 
     qDebug() << "args: path =" << path;
 
+    if(path.startsWith("http://") || path.startsWith("https://"))
+        return path;
+
     return QFileInfo(QByteArray::fromPercentEncoding(path.toUtf8())).fileName();
 
 }
