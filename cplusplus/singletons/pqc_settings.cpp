@@ -27,6 +27,7 @@
 #include <QTimer>
 #include <QFileInfo>
 #include <QProcess>
+#include <QDir>
 
 PQCSettings::PQCSettings() {
 
@@ -132,6 +133,7 @@ PQCSettings::PQCSettings() {
     if(m_defaultAppUrl == "") m_defaultAppUrl = "_default_";
 
     connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::versionChanged, this, [=]() { m_version = PQCSettingsCPP::get().getVersion(); Q_EMIT versionChanged(); });
+    connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::lastDownloadFolderChanged, this, [=]() { m_lastDownloadFolder = PQCSettingsCPP::get().getLastDownloadFolder(); Q_EMIT lastDownloadFolderChanged(); });
 
     connect(this, &PQCSettings::versionChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::languageChanged, this, [=]() { saveTimer->start(); });
@@ -158,6 +160,7 @@ PQCSettings::PQCSettings() {
     connect(this, &PQCSettings::textWordWrapChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::textFontPointSizeChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::textSearchCaseSensitiveChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::lastDownloadFolderChanged, this, [=]() { saveTimer->start(); });
 
 }
 
@@ -209,6 +212,7 @@ void PQCSettings::loadSettings() {
     m_textWordWrap = settings->value("textWordWrap", true).toBool();
     m_textFontPointSize = settings->value("textFontPointSize", 12).toInt();
     m_textSearchCaseSensitive = settings->value("textSearchCaseSensitive", false).toBool();
+    m_lastDownloadFolder = settings->value("lastDownloadFolder", QDir::homePath()).toString();
 
     Q_EMIT versionChanged();
     Q_EMIT languageChanged();
@@ -235,6 +239,7 @@ void PQCSettings::loadSettings() {
     Q_EMIT textWordWrapChanged();
     Q_EMIT textFontPointSizeChanged();
     Q_EMIT textSearchCaseSensitiveChanged();
+    Q_EMIT lastDownloadFolderChanged();
 
 }
 
@@ -264,5 +269,6 @@ void PQCSettings::saveSettings() {
     settings->setValue("closeWhenLosingFocus", m_closeWhenLosingFocus);
     settings->setValue("textWordWrap", m_textWordWrap);
     settings->setValue("textFontPointSize", m_textFontPointSize);
+    settings->setValue("lastDownloadFolder", m_lastDownloadFolder);
 
 }

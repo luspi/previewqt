@@ -62,6 +62,7 @@ public:
     Q_PROPERTY(bool textWordWrap MEMBER m_textWordWrap NOTIFY textWordWrapChanged)
     Q_PROPERTY(int textFontPointSize MEMBER m_textFontPointSize NOTIFY textFontPointSizeChanged)
     Q_PROPERTY(bool textSearchCaseSensitive MEMBER m_textSearchCaseSensitive NOTIFY textSearchCaseSensitiveChanged)
+    Q_PROPERTY(QString lastDownloadFolder MEMBER m_lastDownloadFolder NOTIFY lastDownloadFolderChanged)
 
     Q_INVOKABLE bool getFirstStart() { return firstStart; }
 
@@ -110,6 +111,8 @@ private:
     QStringList opt_txt;
     QStringList opt_url;
 
+    QString m_lastDownloadFolder;
+
 private Q_SLOTS:
     void saveSettings();
 
@@ -139,5 +142,6 @@ Q_SIGNALS:
     void textWordWrapChanged();
     void textFontPointSizeChanged();
     void textSearchCaseSensitiveChanged();
+    void lastDownloadFolderChanged();
 
 };

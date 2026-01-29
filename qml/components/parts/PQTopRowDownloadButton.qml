@@ -34,7 +34,7 @@ PQIconButton {
     tooltip: qsTr("Download video")
     source: "image://svg/:/download.svg"
     onClicked: {
-        PQCScriptsOther.startDownloadOfFile(PQCConstants.currentStreamVideoDirectURL)
+        PQCScriptsOther.startDownloadOfFile(PQCConstants.currentStreamVideoDirectURL, PQCConstants.mainwindowOverrideTitle+".mp4")
     }
     MouseArea {
         enabled: !downbut.active && !PQCConstants.downloadInProgress
@@ -114,7 +114,7 @@ PQIconButton {
         }
 
         function onDownloadProgress(bytesReceived : int, bytesTotal : int) {
-            downloadProgress.width = (downbut.width-2)*(bytesReceived/bytesTotal)
+            downloadProgress.width = (downbut.width-1)*(bytesReceived/bytesTotal)
             timeoutChecker.restart()
         }
 

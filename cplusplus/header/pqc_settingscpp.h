@@ -25,6 +25,7 @@
 #include <pqc_configfiles.h>
 #include <QSettings>
 #include <QFileSystemWatcher>
+#include <QDir>
 
 class QSettings;
 class QTimer;
@@ -62,6 +63,9 @@ public:
     QString getDefaultAppUrl() { return m_defaultAppUrl; }
 
     bool getCloseAfterDefaultApp() { return m_closeAfterDefaultApp; }
+
+    QString getLastDownloadFolder() { return m_lastDownloadFolder; }
+    void setLastDownloadFolder(QString val) { m_lastDownloadFolder = val; Q_EMIT lastDownloadFolderChanged(); }
 
 private:
     PQCSettingsCPP() {
@@ -134,6 +138,8 @@ private:
 
         m_closeAfterDefaultApp = settings->value("closeAfterDefaultApp", true).toBool();
 
+        m_lastDownloadFolder = settings->value("lastDownloadFolder", QDir::homePath()).toString();
+
     }
 
     QSettings *settings;
@@ -153,8 +159,10 @@ private:
     QString m_defaultAppUrl;
 
     bool m_closeAfterDefaultApp;
+    QString m_lastDownloadFolder;
 
 Q_SIGNALS:
     void versionChanged();
+    void lastDownloadFolderChanged();
 
 };

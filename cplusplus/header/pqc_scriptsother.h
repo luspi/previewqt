@@ -50,7 +50,7 @@ public:
     QString getClipboardContents();
     QString getStartupMessage(){ return m_startupMessage; }
     void setStartupMessage(QString val) { m_startupMessage = val; }
-    void startDownloadOfFile(QString url);
+    void startDownloadOfFile(QString url, QString filename);
     void cancelDownloadOfFile();
     QString getDomainOfUrl(QString url);
 

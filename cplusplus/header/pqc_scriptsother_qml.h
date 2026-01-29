@@ -65,8 +65,8 @@ public:
         return PQCScriptsOther::get().getStartupMessage();
     }
 
-    Q_INVOKABLE void startDownloadOfFile(QString url) {
-        PQCScriptsOther::get().startDownloadOfFile(url);
+    Q_INVOKABLE void startDownloadOfFile(QString url, QString filename) {
+        PQCScriptsOther::get().startDownloadOfFile(url, filename);
     }
 
     Q_INVOKABLE void cancelDownloadOfFile() {

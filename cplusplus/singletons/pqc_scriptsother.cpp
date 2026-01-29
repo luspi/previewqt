@@ -20,6 +20,7 @@
  **                                                                      **
  **************************************************************************/
 #include <pqc_scriptsother.h>
+#include <pqc_settingscpp.h>
 
 #include <QtDebug>
 #include <QSize>
@@ -448,15 +449,17 @@ QString PQCScriptsOther::getClipboardContents() {
 
 }
 
-void PQCScriptsOther::startDownloadOfFile(QString url) {
+void PQCScriptsOther::startDownloadOfFile(QString url, QString filename) {
 
     qDebug() << "args: url =" << url;
 
-    QString fname = QFileDialog::getSaveFileName(nullptr, "Save file as", QDir::homePath());
+    QString fname = QFileDialog::getSaveFileName(nullptr, "Save file as", PQCSettingsCPP::get().getLastDownloadFolder()+"/"+filename);
     if(fname == "") {
         qDebug() << "No file selected, not downloading file.";
         return;
     }
+
+    PQCSettingsCPP::get().setLastDownloadFolder(QFileInfo(fname).absolutePath());
 
     if(downloadFile != nullptr)
         delete downloadFile;
