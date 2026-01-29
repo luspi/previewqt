@@ -62,15 +62,24 @@ Item {
     property var volumeIcon: ["high", "medium", "low", "mute"]
 
     onWidthChanged: {
-        if(width > 15 && height > 15) {
-            PQCConstants.imageStatus = Image.Ready
+        PQCConstants.imagePaintedSize.width = width
+        if(videotop.width > 15 && videotop.height > 15) {
+            setStatusWithDelay.restart()
         }
     }
 
     onHeightChanged: {
-        if(width > 15 && height > 15) {
-            PQCConstants.imageStatus = Image.Ready
+        PQCConstants.imagePaintedSize.height = height
+        if(videotop.width > 15 && videotop.height > 15) {
+            setStatusWithDelay.restart()
         }
+    }
+
+    // this needs to happen with a DELAY as otherwise BOTH the width AND height of PQCConstants.imagePaintedSize might not be fully set
+    Timer {
+        id: setStatusWithDelay
+        interval: 100
+        onTriggered: PQCConstants.imageStatus = Image.Ready
     }
 
     PQCMPVObject {

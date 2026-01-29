@@ -125,10 +125,6 @@ Item {
 
             overrideSource: url_top.isVideo
 
-            Component.onCompleted: {
-                play()
-            }
-
         }
     }
 
@@ -143,10 +139,6 @@ Item {
             imageParent: url_top.imageParent
 
             overrideSource: url_top.isVideo
-
-            Component.onCompleted: {
-                play()
-            }
 
         }
     }
