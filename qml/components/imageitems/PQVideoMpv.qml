@@ -284,18 +284,15 @@ Item {
 
         function onMainwindowKeyPress(modifiers : int, keycode : int) {
 
-            if(modifiers !== Qt.NoModifier)
-                return
-
-            if(keycode === Qt.Key_Space) {
+            if(keycode === Qt.Key_Space && modifiers === Qt.NoModifier) {
 
                 videoPlaying = !videoPlaying
 
-            } else if(keycode === Qt.Key_Left) {
+            } else if(keycode === Qt.Key_Left && modifiers === Qt.NoModifier) {
 
                 video.command(["seek", Math.max(0, videoPosition-5), "absolute"])
 
-            } else if(keycode === Qt.Key_Right) {
+            } else if(keycode === Qt.Key_Right && modifiers === Qt.NoModifier) {
 
                 video.command(["seek", Math.min(videoDuration, videoPosition+5), "absolute"])
 
@@ -307,11 +304,11 @@ Item {
                     volumeIndex = 0
                 video.setProperty("volume", volumeList[volumeIndex])
 
-            } else if(keycode === Qt.Key_Home) {
+            } else if(keycode === Qt.Key_Home && modifiers === Qt.NoModifier) {
 
                 video.command(["seek", 0, "absolute"])
 
-            } else if(keycode === Qt.Key_End) {
+            } else if(keycode === Qt.Key_End && modifiers === Qt.NoModifier) {
 
                 video.command(["seek", videoDuration, "absolute"])
 

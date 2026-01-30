@@ -285,4 +285,46 @@ Item {
 
     }
 
+    Connections {
+
+        target: PQCNotify
+
+        function onMainwindowKeyPress(modifiers : int, keycode : int) {
+
+            if(keycode === Qt.Key_Space && modifiers === Qt.NoModifier) {
+
+                if(musicPlayer.playbackState === MediaPlayer.PlayingState)
+                    musicPlayer.pause()
+                else
+                    musicPlayer.play()
+
+            } else if(keycode === Qt.Key_Left && modifiers === Qt.NoModifier) {
+
+                musicPlayer.setPosition(musicPlayer.position-5000)
+
+            } else if(keycode === Qt.Key_Right && modifiers === Qt.NoModifier) {
+
+                musicPlayer.setPosition(musicPlayer.position+5000)
+
+            } else if(modifiers === Qt.ControlModifier && keycode === Qt.Key_M) {
+
+                if(volumeIndex != 3)
+                    volumeIndex = 3
+                else
+                    volumeIndex = 0
+
+            } else if(keycode === Qt.Key_Home && modifiers === Qt.NoModifier) {
+
+                musicPlayer.setPosition(0)
+
+            } else if(keycode === Qt.Key_End && modifiers === Qt.NoModifier) {
+
+                musicPlayer.setPosition(musicPlayer.duration)
+
+            }
+
+        }
+
+    }
+
 }

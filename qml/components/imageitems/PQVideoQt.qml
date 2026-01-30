@@ -275,21 +275,18 @@ Video {
 
         function onMainwindowKeyPress(modifiers : int, keycode : int) {
 
-            if(modifiers !== Qt.NoModifier)
-                return
-
-            if(keycode === Qt.Key_Space) {
+            if(keycode === Qt.Key_Space && modifiers === Qt.NoModifier) {
 
                 if(video.playbackState===MediaPlayer.PlayingState)
                     video.pause()
                 else
                     video.play()
 
-            } else if(keycode === Qt.Key_Left) {
+            } else if(keycode === Qt.Key_Left && modifiers === Qt.NoModifier) {
 
                 video.seek(video.position-5000)
 
-            } else if(keycode === Qt.Key_Right) {
+            } else if(keycode === Qt.Key_Right && modifiers === Qt.NoModifier) {
 
                 video.seek(video.position+5000)
 
@@ -300,11 +297,11 @@ Video {
                 else
                     volumeIndex = 0
 
-            } else if(keycode === Qt.Key_Home) {
+            } else if(keycode === Qt.Key_Home && modifiers === Qt.NoModifier) {
 
                 video.seek(0)
 
-            } else if(keycode === Qt.Key_End) {
+            } else if(keycode === Qt.Key_End && modifiers === Qt.NoModifier) {
 
                 video.seek(video.duration)
 
