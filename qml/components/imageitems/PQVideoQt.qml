@@ -207,7 +207,7 @@ Video {
             Text {
                 y: (parent.height-height)/2
                 color: "white"
-                text: Math.round(video.position/1000) + "s"
+                text: PQCScriptsOther.convertSecondsToHumandFriendly(Math.round(video.position/1000), Math.round(video.duration/1000))
             }
 
             Slider {
@@ -227,7 +227,7 @@ Video {
             Text {
                 y: (parent.height-height)/2
                 color: "white"
-                text: Math.round(video.duration/1000) + "s"
+                text: PQCScriptsOther.convertSecondsToHumandFriendly(Math.round(video.duration/1000))
             }
             Image {
                 y: (parent.height-height)/2

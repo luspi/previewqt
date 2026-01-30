@@ -81,6 +81,10 @@ public:
         PQCScriptsOther::get().copyTextToClipboard(txt);
     }
 
+    Q_INVOKABLE QString convertSecondsToHumandFriendly(int secs, int reference = -1) {
+        return PQCScriptsOther::get().convertSecondsToHumandFriendly(secs, reference);
+    }
+
 Q_SIGNALS:
     // picked up from PQCScriptsImages and passed on to QML
     void commandLineArgumentReceived(QString msg);

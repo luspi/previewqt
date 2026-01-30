@@ -199,7 +199,7 @@ Item {
             Text {
                 y: (parent.height-height)/2
                 color: "white"
-                text: videoPosition + "s"
+                text: PQCScriptsOther.convertSecondsToHumandFriendly(videoPosition, videoDuration)
             }
 
             Slider {
@@ -226,7 +226,7 @@ Item {
             Text {
                 y: (parent.height-height)/2
                 color: "white"
-                text: videoDuration + "s"
+                text: PQCScriptsOther.convertSecondsToHumandFriendly(videoDuration)
             }
             Image {
                 y: (parent.height-height)/2

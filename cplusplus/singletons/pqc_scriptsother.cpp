@@ -514,3 +514,17 @@ QString PQCScriptsOther::getDomainOfUrl(QString url) {
 void PQCScriptsOther::copyTextToClipboard(QString txt) {
     qApp->clipboard()->setText(txt, QClipboard::Clipboard);
 }
+
+QString PQCScriptsOther::convertSecondsToHumandFriendly(int secs, int reference) {
+
+    // less than 1 minute
+    if((reference == -1 && secs < 60) || (reference > -1 && reference < 60))
+        return QString("%1").arg(secs);
+
+    // less than 1h
+    else if((reference == -1 && secs < 60*60) || (reference > -1 && reference < 60*60))
+        return QString("%1:%2").arg(secs/60).arg(secs%60, 2, 10, '0');
+
+    return QString("%1:%2:%3").arg(secs/(60*60)).arg((secs%(60*60))/60, 2, 10, 's').arg(secs%60, 2, 10, 's');
+
+}

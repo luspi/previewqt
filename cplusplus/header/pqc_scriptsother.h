@@ -54,6 +54,7 @@ public:
     void cancelDownloadOfFile();
     QString getDomainOfUrl(QString url);
     void copyTextToClipboard(QString txt);
+    QString convertSecondsToHumandFriendly(int secs, int reference = -1);
 
 private:
     PQCScriptsOther();

@@ -234,7 +234,7 @@ Item {
                 id: sliderlefttxt
                 y: (parent.height-height)/2
                 color: "white"
-                text: Math.round(musicPlayer.position/1000) + "s"
+                text: PQCScriptsOther.convertSecondsToHumandFriendly(Math.round(musicPlayer.position/1000), Math.round(musicPlayer.duration/1000))
             }
 
             Slider {
@@ -258,7 +258,7 @@ Item {
                 id: sliderrighttxt
                 y: (parent.height-height)/2
                 color: "white"
-                text: Math.round(musicPlayer.duration/1000) + "s"
+                text: PQCScriptsOther.convertSecondsToHumandFriendly(Math.round(musicPlayer.duration/1000))
             }
             Image {
                 id: volumebutton
