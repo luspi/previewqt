@@ -87,13 +87,14 @@ Item {
 
     Image {
         id: musicImage
-        property int dim: Math.min(Math.min(300, parent.width*(2/3)), Math.min(300, parent.height*(2/3)))
+        property int dim: Math.min(Math.min(200, parent.width*(2/3)), Math.min(200, parent.height*(2/3)))
         x: (parent.width-width)/2
         y: (parent.height-height)/2
         width: dim
         height: dim
         sourceSize: Qt.size(width, height)
         visible: !coverImage.visible
+        opacity: 0.8
         source: "image://svg/:/musicnote.svg"
     }
 
@@ -105,7 +106,7 @@ Item {
         height: width
         sourceSize: Qt.size(width, height)
         property string cover: ""
-        visible: true//cover!==""
+        visible: cover!==""
         source: (cover==="" ? "" : ("file://"+cover))
     }
 
@@ -156,14 +157,15 @@ Item {
 
                 // check for existence of cover file next to file
                 img = PQCScriptsImages.findCoverImageNextToFile(PQCConstants.currentSource)
-                coverImage.source = (img === "" ? "" : ("file://"+img))
+                console.log("found separate cover image:", img)
+                coverImage.cover = img
 
             } else {
 
                 console.log("found embedded cover file, attempting to save and display it")
 
                 var path = PQCScriptsFilesPaths.saveImageToTempFile(img)
-                coverImage.source = (path === "" ? "" : ("file://"+path))
+                coverImage.cover = path
 
             }
 
