@@ -259,6 +259,25 @@ Item {
             video.command(["seek", pos, "absolute"])
     }
 
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            if(video.getProperty("eof-reached")) {
+                video.command(["loadfile", (overrideSource==="" ? PQCConstants.currentSource : overrideSource)])
+                videoPlaying = true
+            } else {
+                videoPlaying = !videoPlaying
+            }
+        }
+        onDoubleClicked: (mouse) => {
+            if(mouse.button === Qt.RightButton) return
+            if(PQCConstants.mainwindowIsFullscreen)
+                PQCNotify.mainwindowShowNormal()
+            else
+                PQCNotify.mainwindowShowFullscreen()
+        }
+    }
+
     Connections {
 
         target: PQCNotify

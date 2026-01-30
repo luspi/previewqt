@@ -510,3 +510,7 @@ QString PQCScriptsOther::getDomainOfUrl(QString url) {
     return QString("%1://%2").arg(protocol, base);
 
 }
+
+void PQCScriptsOther::copyTextToClipboard(QString txt) {
+    qApp->clipboard()->setText(txt, QClipboard::Clipboard);
+}

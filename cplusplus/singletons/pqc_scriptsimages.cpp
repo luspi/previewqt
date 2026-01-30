@@ -621,6 +621,11 @@ bool PQCScriptsImages::isURL(QString url) {
     return (url.startsWith("http:") || url.startsWith("https:"));
 }
 
+bool PQCScriptsImages::isAudio(QString path) {
+    QStringList knownSuffixes = {"mp3", "wav", "flac"};
+    return knownSuffixes.contains(QFileInfo(path).suffix().toLower());
+}
+
 void PQCScriptsImages::requestIsSupportedStream(QString url) {
 
     qDebug() << "args: url =" << url;
@@ -737,6 +742,24 @@ void PQCScriptsImages::requestStreamTitle(QString url) {
         qDebug() << ret;
         Q_EMIT receivedStreamTitle(ret);
     });
+
+}
+
+QString PQCScriptsImages::findCoverImageNextToFile(QString path) {
+
+    QStringList possibleSuffix = {"jpg", "jpeg", "png"};
+
+    QDir dir(QFileInfo(path).absolutePath());
+    const QFileInfoList lst = dir.entryInfoList(QDir::NoDotAndDotDot|QDir::Files);
+    for(const QFileInfo &info : lst) {
+
+        if(info.baseName().toLower() == "cover" && possibleSuffix.contains(info.suffix().toLower())) {
+            return info.absoluteFilePath();
+        }
+
+    }
+
+    return "";
 
 }
 

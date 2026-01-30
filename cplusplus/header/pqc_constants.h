@@ -53,6 +53,7 @@ public:
         m_windowSettingsVisible = false;
         m_windowWelcomeVisible = false;
         m_windowEnterPathVisible = false;
+        m_windowMediaInfoVisible = false;
 
         m_settingsTabNextTime = -1;
 
@@ -64,6 +65,24 @@ public:
         m_imageAvailableSizeDelay = QSize(0,0);
         m_currentStreamVideoDirectURL = "";
         m_downloadInProgress = false;
+
+        m_mediainfoIsAudio = false;
+        m_mediainfoIsVideo = false;
+        m_mediainfoTitle = "";
+        m_mediainfoArtist = "";
+        m_mediainfoAlbum = "";
+
+        m_mediainfoDate = "";
+        m_mediainfoGenre = "";
+        m_mediainfoCopyright = "";
+
+        m_mediainfoAudioTrack = "";
+        m_mediainfoAudioBitRate = "";
+        m_mediainfoAudioCodec = "";
+        m_mediainfoVideoFrameRate = "";
+        m_mediainfoVideoBitRate = "";
+        m_mediainfoVideoCodec = "";
+        m_mediainfoVideoHdr = "";
 
     }
 
@@ -84,6 +103,7 @@ public:
     Q_PROPERTY(bool windowSettingsVisible MEMBER m_windowSettingsVisible NOTIFY windowSettingsVisibleChanged)
     Q_PROPERTY(bool windowWelcomeVisible MEMBER m_windowWelcomeVisible NOTIFY windowWelcomeVisibleChanged)
     Q_PROPERTY(bool windowEnterPathVisible MEMBER m_windowEnterPathVisible NOTIFY windowEnterPathVisibleChanged)
+    Q_PROPERTY(bool windowMediaInfoVisible MEMBER m_windowMediaInfoVisible NOTIFY windowMediaInfoVisibleChanged)
 
     Q_PROPERTY(int settingsTabNextTime MEMBER m_settingsTabNextTime NOTIFY settingsTabNextTimeChanged)
 
@@ -99,6 +119,25 @@ public:
     Q_PROPERTY(QSize imageAvailableSizeDelay MEMBER m_imageAvailableSizeDelay NOTIFY imageAvailableSizeDelayChanged)
     Q_PROPERTY(QString currentStreamVideoDirectURL MEMBER m_currentStreamVideoDirectURL NOTIFY currentStreamVideoDirectURLChanged)
     Q_PROPERTY(bool downloadInProgress MEMBER m_downloadInProgress NOTIFY downloadInProgressChanged)
+
+    Q_PROPERTY(bool mediainfoIsAudio MEMBER m_mediainfoIsAudio NOTIFY mediainfoIsAudioChanged)
+    Q_PROPERTY(bool mediainfoIsVideo MEMBER m_mediainfoIsVideo NOTIFY mediainfoIsVideoChanged)
+
+    Q_PROPERTY(QString mediainfoTitle MEMBER m_mediainfoTitle NOTIFY mediainfoTitleChanged)
+    Q_PROPERTY(QString mediainfoArtist MEMBER m_mediainfoArtist NOTIFY mediainfoArtistChanged)
+    Q_PROPERTY(QString mediainfoAlbum MEMBER m_mediainfoAlbum NOTIFY mediainfoAlbumChanged)
+    Q_PROPERTY(QString mediainfoDate MEMBER m_mediainfoDate NOTIFY mediainfoDateChanged)
+    Q_PROPERTY(QString mediainfoGenre MEMBER m_mediainfoGenre NOTIFY mediainfoGenreChanged)
+    Q_PROPERTY(QString mediainfoCopyright MEMBER m_mediainfoCopyright NOTIFY mediainfoCopyrightChanged)
+
+    Q_PROPERTY(QString mediainfoAudioTrack MEMBER m_mediainfoAudioTrack NOTIFY mediainfoAudioTrackChanged)
+    Q_PROPERTY(QString mediainfoAudioBitRate MEMBER m_mediainfoAudioBitRate NOTIFY mediainfoAudioBitRateChanged)
+    Q_PROPERTY(QString mediainfoAudioCodec MEMBER m_mediainfoAudioCodec NOTIFY mediainfoAudioCodecChanged)
+
+    Q_PROPERTY(QString mediainfoVideoFrameRate MEMBER m_mediainfoVideoFrameRate NOTIFY mediainfoVideoFrameRateChanged)
+    Q_PROPERTY(QString mediainfoVideoBitRate MEMBER m_mediainfoVideoBitRate NOTIFY mediainfoVideoBitRateChanged)
+    Q_PROPERTY(QString mediainfoVideoCodec MEMBER m_mediainfoVideoCodec NOTIFY mediainfoVideoCodecChanged)
+    Q_PROPERTY(QString mediainfoVideoHdr MEMBER m_mediainfoVideoHdr NOTIFY mediainfoVideoHdrChanged)
 
 private:
     QString m_currentSource;
@@ -117,6 +156,7 @@ private:
     bool m_windowSettingsVisible;
     bool m_windowWelcomeVisible;
     bool m_windowEnterPathVisible;
+    bool m_windowMediaInfoVisible;
 
     int m_settingsTabNextTime;
 
@@ -132,6 +172,22 @@ private:
     bool m_toprowForceVisible;
     bool m_menuIsOpen;
     QStringList m_trayiconShowNotificationWhenReady;
+
+    bool m_mediainfoIsAudio;
+    bool m_mediainfoIsVideo;
+    QString m_mediainfoTitle;
+    QString m_mediainfoArtist;
+    QString m_mediainfoAlbum;
+    QString m_mediainfoDate;
+    QString m_mediainfoGenre;
+    QString m_mediainfoCopyright;
+    QString m_mediainfoAudioTrack;
+    QString m_mediainfoAudioBitRate;
+    QString m_mediainfoAudioCodec;
+    QString m_mediainfoVideoFrameRate;
+    QString m_mediainfoVideoBitRate;
+    QString m_mediainfoVideoCodec;
+    QString m_mediainfoVideoHdr;
 
 Q_SIGNALS:
     void currentSourceChanged();
@@ -152,6 +208,7 @@ Q_SIGNALS:
     void windowSettingsVisibleChanged();
     void windowWelcomeVisibleChanged();
     void windowEnterPathVisibleChanged();
+    void windowMediaInfoVisibleChanged();
     void settingsTabNextTimeChanged();
     void imageStatusChanged();
     void imagePaintedSizeChanged();
@@ -161,5 +218,21 @@ Q_SIGNALS:
     void imageAvailableSizeDelayChanged();
     void currentStreamVideoDirectURLChanged();
     void downloadInProgressChanged();
+
+    void mediainfoIsAudioChanged();
+    void mediainfoIsVideoChanged();
+    void mediainfoTitleChanged();
+    void mediainfoArtistChanged();
+    void mediainfoAlbumChanged();
+    void mediainfoDateChanged();
+    void mediainfoGenreChanged();
+    void mediainfoCopyrightChanged();
+    void mediainfoAudioTrackChanged();
+    void mediainfoAudioBitRateChanged();
+    void mediainfoAudioCodecChanged();
+    void mediainfoVideoFrameRateChanged();
+    void mediainfoVideoBitRateChanged();
+    void mediainfoVideoCodecChanged();
+    void mediainfoVideoHdrChanged();
 
 };

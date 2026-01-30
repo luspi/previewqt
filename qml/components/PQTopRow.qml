@@ -168,6 +168,18 @@ Rectangle {
             }
         }
 
+        PQIconButton {
+            id: mediainfobutton
+            visible: PQCConstants.currentType==="aud" || (PQCConstants.currentType === "vid" && PQCScriptsConfig.isQtVideoEnabled())
+            y: (parent.height-height)/2
+            height: toprow.height-2
+            tooltip: qsTr("Show media info")
+            source: "image://svg/:/info.svg"
+            onClicked: {
+                PQCNotify.showSubWindow("mediainfo")
+            }
+        }
+
 
     }
 

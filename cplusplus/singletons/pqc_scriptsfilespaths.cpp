@@ -352,3 +352,12 @@ void PQCScriptsFilesPaths::copyTextToClipboard(QString txt) {
     QApplication::clipboard()->setText(txt, QClipboard::Clipboard);
 
 }
+
+QString PQCScriptsFilesPaths::saveImageToTempFile(QImage &img) {
+    QString path = PQCConfigFiles::get().CACHE_DIR() + "/tmpfile.jpg";
+    if(QFileInfo::exists(path))
+        QFile::remove(path);
+    if(!img.save(path))
+        return "";
+    return path;
+}

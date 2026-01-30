@@ -27,6 +27,7 @@
 #include <QTranslator>
 
 class QProcess;
+class QMediaPlayer;
 
 class PQCScriptsImages : public QObject {
 
@@ -54,10 +55,13 @@ public:
     int isMotionPhoto(QString path);
     bool isItAnimated(QString filename);
     bool isURL(QString url);
+    bool isAudio(QString path);
 
     void requestIsSupportedStream(QString url);
     void requestStreamURL(QString url);
     void requestStreamTitle(QString url);
+
+    QString findCoverImageNextToFile(QString path);
 
     int getDocumentPageCount(QString path);
     QString extractMotionPhoto(QString path);

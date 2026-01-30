@@ -42,6 +42,41 @@ Video {
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(video.width, video.height) })
         PQCConstants.imageAsynchronous = false
+
+        PQCConstants.mediainfoIsAudio = false
+        PQCConstants.mediainfoIsVideo = true
+        PQCConstants.mediainfoTitle = ""
+        PQCConstants.mediainfoArtist = ""
+        PQCConstants.mediainfoAlbum = ""
+        PQCConstants.mediainfoDate = ""
+        PQCConstants.mediainfoGenre = ""
+        PQCConstants.mediainfoCopyright = ""
+        PQCConstants.mediainfoAudioTrack = ""
+        PQCConstants.mediainfoAudioBitRate = ""
+        PQCConstants.mediainfoAudioCodec = ""
+        PQCConstants.mediainfoVideoFrameRate = ""
+        PQCConstants.mediainfoVideoBitRate = ""
+        PQCConstants.mediainfoVideoCodec = ""
+        PQCConstants.mediainfoVideoHdr = ""
+
+    }
+
+    Component.onDestruction: {
+        PQCConstants.mediainfoIsAudio = false
+        PQCConstants.mediainfoIsVideo = false
+        PQCConstants.mediainfoTitle = ""
+        PQCConstants.mediainfoArtist = ""
+        PQCConstants.mediainfoAlbum = ""
+        PQCConstants.mediainfoDate = ""
+        PQCConstants.mediainfoGenre = ""
+        PQCConstants.mediainfoCopyright = ""
+        PQCConstants.mediainfoAudioTrack = ""
+        PQCConstants.mediainfoAudioBitRate = ""
+        PQCConstants.mediainfoAudioCodec = ""
+        PQCConstants.mediainfoVideoFrameRate = ""
+        PQCConstants.mediainfoVideoBitRate = ""
+        PQCConstants.mediainfoVideoCodec = ""
+        PQCConstants.mediainfoVideoHdr = ""
     }
 
     property Item imageParent
@@ -77,6 +112,32 @@ Video {
 
             video.play()
         }
+
+    }
+
+    onMetaDataChanged: {
+
+        PQCConstants.mediainfoTitle = metaData.stringValue(MediaMetaData.Title)
+        if(PQCConstants.mediainfoTitle === "") PQCConstants.mediainfoTitle = PQCScriptsFilesPaths.getBasename(PQCConstants.currentSource)
+
+        PQCConstants.mediainfoArtist = metaData.stringValue(MediaMetaData.AlbumArtist)
+        if(PQCConstants.mediainfoArtist === "") PQCConstants.mediainfoArtist = metaData.stringValue(MediaMetaData.ContributingArtist)
+
+        if(PQCConstants.mediainfoTitle !== "" && PQCConstants.mediainfoArtist !== "")
+            PQCConstants.mainwindowOverrideTitle = PQCConstants.mediainfoTitle + " | " + PQCConstants.mediainfoArtist
+        else if(PQCConstants.mediainfoTitle !== "" || PQCConstants.mediainfoArtist !== "")
+            PQCConstants.mainwindowOverrideTitle = PQCConstants.mediainfoTitle + PQCConstants.mediainfoArtist
+
+        PQCConstants.mediainfoDate = metaData.stringValue(MediaMetaData.Date)
+        PQCConstants.mediainfoAlbum = metaData.stringValue(MediaMetaData.AlbumTitle)
+        PQCConstants.mediainfoAudioTrack = metaData.stringValue(MediaMetaData.TrackNumber)
+        PQCConstants.mediainfoGenre = metaData.stringValue(MediaMetaData.Genre)
+        PQCConstants.mediainfoCopyright = metaData.stringValue(MediaMetaData.Copyright)
+
+        PQCConstants.mediainfoVideoFrameRate = metaData.stringValue(MediaMetaData.VideoFrameRate)
+        PQCConstants.mediainfoVideoBitRate = metaData.stringValue(MediaMetaData.VideoBitRate)
+        PQCConstants.mediainfoVideoCodec = metaData.stringValue(MediaMetaData.VideoCodec)
+        PQCConstants.mediainfoVideoHdr = metaData.stringValue(MediaMetaData.HasHdrContent)
 
     }
 
@@ -189,6 +250,23 @@ Video {
 
         }
 
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            if(video.playbackState===MediaPlayer.PlayingState)
+                video.pause()
+            else
+                video.play()
+        }
+        onDoubleClicked: (mouse) => {
+            if(mouse.button === Qt.RightButton) return
+            if(PQCConstants.mainwindowIsFullscreen)
+                PQCNotify.mainwindowShowNormal()
+            else
+                PQCNotify.mainwindowShowFullscreen()
+        }
     }
 
     Connections {

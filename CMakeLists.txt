@@ -272,7 +272,7 @@ set_target_properties(previewqt PROPERTIES
 target_include_directories(previewqt PRIVATE "cplusplus/header")
 
 # link executable
-target_link_libraries(previewqt PRIVATE Qt6::Quick Qt6::Widgets Qt6::Svg Qt6::Sql Qt6::DBus)
+target_link_libraries(previewqt PRIVATE Qt6::Quick Qt6::Widgets Qt6::Svg Qt6::Sql Qt6::DBus Qt6::Multimedia)
 if(WITH_QTPDF)
     target_link_libraries(previewqt PRIVATE Qt6::Pdf)
 endif()

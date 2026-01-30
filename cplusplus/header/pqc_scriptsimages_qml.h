@@ -94,6 +94,10 @@ public:
         return PQCScriptsImages::get().isURL(url);
     }
 
+    Q_INVOKABLE int isAudio(QString path) {
+        return PQCScriptsImages::get().isAudio(path);
+    }
+
     Q_INVOKABLE void requestIsSupportedStream(QString url) {
         PQCScriptsImages::get().requestIsSupportedStream(url);
     }
@@ -104,6 +108,10 @@ public:
 
     Q_INVOKABLE void requestStreamTitle(QString url) {
         PQCScriptsImages::get().requestStreamTitle(url);
+    }
+
+    Q_INVOKABLE QString findCoverImageNextToFile(QString path) {
+        return PQCScriptsImages::get().findCoverImageNextToFile(path);
     }
 
     Q_INVOKABLE int getDocumentPageCount(QString path) {
@@ -135,5 +143,6 @@ Q_SIGNALS:
     void receivedStreamURL(QString url);
     void receivedStreamTitle(QString title);
     void receivedStreamError(QString err);
+    void foundAudioData(QString what, QString value);
 
 };

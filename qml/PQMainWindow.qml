@@ -110,7 +110,8 @@ ApplicationWindow {
         if(!PQCSettings.closeWhenLosingFocus) return
         if(!active && !ignoreActiveChanges) {
             if(PQCConstants.windowSettingsVisible || PQCConstants.windowAboutVisible ||
-                    PQCConstants.windowHelpVisible || PQCConstants.windowEnterPathVisible)
+                    PQCConstants.windowHelpVisible || PQCConstants.windowEnterPathVisible ||
+                    PQCConstants.windowMediaInfoVisible)
                 return
             toplevel.close()
         }
@@ -282,6 +283,13 @@ ApplicationWindow {
         active: false
         sourceComponent:
             PQEnterPathUrl {}
+    }
+
+    // The media info window
+    Loader {
+        id: mediainfo
+        active: false
+        sourceComponent: PQMediaInfo {}
     }
 
     ParallelAnimation {
@@ -716,6 +724,9 @@ ApplicationWindow {
             } else if(wdw === "enterpath") {
                 if(!enterpath.active)
                     enterpath.active = true
+            } else if(wdw === "mediainfo") {
+                if(!mediainfo.active)
+                    mediainfo.active = true
             }
         }
 

@@ -53,6 +53,7 @@ public:
     void startDownloadOfFile(QString url, QString filename);
     void cancelDownloadOfFile();
     QString getDomainOfUrl(QString url);
+    void copyTextToClipboard(QString txt);
 
 private:
     PQCScriptsOther();

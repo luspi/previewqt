@@ -53,6 +53,7 @@ public:
     void deleteTemporaryFiles();
     bool openInDefault(QString path);
     void copyTextToClipboard(QString txt);
+    QString saveImageToTempFile(QImage &img);
 
 private:
     PQCScriptsFilesPaths();

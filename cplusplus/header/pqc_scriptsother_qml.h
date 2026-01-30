@@ -77,6 +77,10 @@ public:
         return PQCScriptsOther::get().getDomainOfUrl(url);
     }
 
+    Q_INVOKABLE void copyTextToClipboard(QString txt) {
+        PQCScriptsOther::get().copyTextToClipboard(txt);
+    }
+
 Q_SIGNALS:
     // picked up from PQCScriptsImages and passed on to QML
     void commandLineArgumentReceived(QString msg);

@@ -33,5 +33,7 @@
         <file>redx.svg</file>
         <file>reload.svg</file>
         <file>textedit.svg</file>
+        <file>musicnote.svg</file>
+        <file>info.svg</file>
     </qresource>
 </RCC>

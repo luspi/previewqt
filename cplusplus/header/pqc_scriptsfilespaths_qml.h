@@ -24,6 +24,7 @@
 #include <pqc_scriptsfilespaths.h>
 #include <QObject>
 #include <QQmlEngine>
+#include <QImage>
 
 class QTranslator;
 
@@ -88,6 +89,10 @@ public:
 
     Q_INVOKABLE void copyTextToClipboard(QString txt) {
         PQCScriptsFilesPaths::get().copyTextToClipboard(txt);
+    }
+
+    Q_INVOKABLE QString saveImageToTempFile(QImage img) {
+        return PQCScriptsFilesPaths::get().saveImageToTempFile(img);
     }
 
 

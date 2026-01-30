@@ -78,7 +78,7 @@ Item {
 
         function onImageStatusChanged() {
             if(PQCConstants.imageStatus === Image.Ready) {
-                if(imageloader.item != null) {
+                if(imageloader.item != null && PQCConstants.currentType !== "aud") {
                     PQCNotify.updateWindowSize(PQCConstants.imagePaintedSize.width+10, PQCConstants.imagePaintedSize.height+10)
                 }
             }
@@ -195,6 +195,9 @@ Item {
         } else if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource)) {
             PQCConstants.currentType = "txt"
             imageloader.sourceComponent = comp_txt
+        } else if(PQCScriptsImages.isAudio(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "aud"
+            imageloader.sourceComponent = comp_aud
         } else {
             PQCConstants.currentType = "img"
             imageloader.sourceComponent = comp_img
@@ -277,6 +280,13 @@ Item {
     Component {
         id: comp_url
         PQURL {
+            imageParent: image_top
+        }
+    }
+
+    Component {
+        id: comp_aud
+        PQAudio {
             imageParent: image_top
         }
     }
