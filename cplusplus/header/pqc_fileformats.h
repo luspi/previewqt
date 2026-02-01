@@ -222,6 +222,18 @@ public:
         return m_mimetypes_text;
     }
 
+    Q_INVOKABLE int getNumFormatsAudio() {
+        return m_num_audio;
+    }
+
+    Q_INVOKABLE QStringList getAllFormatsAudio() {
+        return m_formats_audio;
+    }
+
+    Q_INVOKABLE QStringList getAllMimeTypesAudio() {
+        return m_mimetypes_audio;
+    }
+
     Q_INVOKABLE QVariantMap getMagick() {
         return magick;
     }
@@ -287,6 +299,9 @@ private:
     int m_num_text;
     QStringList m_formats_text;
     QStringList m_mimetypes_text;
+    int m_num_audio;
+    QStringList m_formats_audio;
+    QStringList m_mimetypes_audio;
 
     QVariantMap magick;
     QVariantMap magick_mimetype;

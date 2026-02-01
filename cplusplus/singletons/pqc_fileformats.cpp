@@ -108,6 +108,7 @@ void PQCFileFormats::readFromDatabase() {
     m_num_libmpv = 0;
     m_num_ebook = 0;
     m_num_text = 0;
+    m_num_audio = 0;
 
     m_formats.clear();
     m_formats_qt.clear();
@@ -124,6 +125,7 @@ void PQCFileFormats::readFromDatabase() {
     m_formats_libmpv.clear();
     m_formats_ebook.clear();
     m_formats_text.clear();
+    m_formats_audio.clear();
 
     m_mimetypes_qt.clear();
     m_mimetypes_resvg.clear();
@@ -139,6 +141,7 @@ void PQCFileFormats::readFromDatabase() {
     m_mimetypes_libmpv.clear();
     m_mimetypes_ebook.clear();
     m_mimetypes_text.clear();
+    m_mimetypes_audio.clear();
 
     const QList<QByteArray> qtSupported = QImageReader::supportedImageFormats();
 
@@ -186,6 +189,7 @@ void PQCFileFormats::readFromDatabase() {
         const int libmpv = query.record().value("libmpv").toInt();
 #endif
         const int text = (cat=="txt" ? 1 : 0);
+        const int audio = (cat=="aud" ? 1 : 0);
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
         const QString im_gm_magick = query.record().value("im_gm_magick").toString();
 #endif
@@ -357,6 +361,14 @@ void PQCFileFormats::readFromDatabase() {
                 m_mimetypes_text << mimetypes.split(",");
         }
 
+        if(audio) {
+            m_num_audio += 1;
+            supportedByAnyLibrary = true;
+            m_formats_audio << endingsParts;
+            if(mimetypes != "")
+                m_mimetypes_audio << mimetypes.split(",");
+        }
+
         if(supportedByAnyLibrary) {
 
             m_num += 1;
@@ -394,6 +406,7 @@ void PQCFileFormats::readFromDatabase() {
     m_formats << m_formats_libmpv;
     m_formats << m_formats_ebook;
     m_formats << m_formats_text;
+    m_formats << m_formats_audio;
 
     m_mimetypes.clear();
     m_mimetypes << m_mimetypes_qt;
@@ -410,6 +423,7 @@ void PQCFileFormats::readFromDatabase() {
     m_mimetypes << m_mimetypes_libmpv;
     m_mimetypes << m_mimetypes_ebook;
     m_mimetypes << m_mimetypes_text;
+    m_mimetypes << m_mimetypes_audio;
 
 }
 

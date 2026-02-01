@@ -45,7 +45,7 @@ Item {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(width, height) })
         PQCConstants.imageAsynchronous = Qt.binding(function() { return true })
 
-        PQCScriptsImages.requestIsSupportedStream(PQCConstants.currentSource)
+        PQCScriptsExternalTools.ytdlpRequestIsSupportedStream(PQCConstants.currentSource)
 
     }
 
@@ -56,26 +56,26 @@ Item {
 
     Connections {
 
-        target: PQCScriptsImages
+        target: PQCScriptsExternalTools
 
-        function onReceivedStreamSupported(supp : bool) {
+        function onYtdlpReceivedStreamSupported(supp : bool) {
             if(supp) {
-                PQCScriptsImages.requestStreamTitle(PQCConstants.currentSource)
-                PQCScriptsImages.requestStreamURL(PQCConstants.currentSource)
+                PQCScriptsExternalTools.ytdlpRequestStreamTitle(PQCConstants.currentSource)
+                PQCScriptsExternalTools.ytdlpRequestStreamURL(PQCConstants.currentSource)
             } else
                 url_top.isWebsite = PQCConstants.currentSource
         }
 
-        function onReceivedStreamURL(url : string) {
+        function onYtdlpReceivedStreamURL(url : string) {
             PQCConstants.currentStreamVideoDirectURL = url
             url_top.isVideo = url
         }
 
-        function onReceivedStreamTitle(title : string) {
+        function onYtdlpReceivedStreamTitle(title : string) {
             PQCConstants.mainwindowOverrideTitle = title
         }
 
-        function onReceivedStreamError(err : string) {
+        function onYtdlpReceivedStreamError(err : string) {
             if(err === "signin_bot")
                 PQCNotify.trayiconShowNotification(qsTr("Stream error"), qsTr("You need to sign in to YouTube. Are you connected to a VPN? Showing normal website."))
             else if(err === "plugin_error")

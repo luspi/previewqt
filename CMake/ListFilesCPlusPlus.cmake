@@ -10,6 +10,7 @@ SET(previewqt_SRC "cplusplus/main.cpp"
                   "cplusplus/singletons/pqc_scriptsfilespaths.cpp"
                   "cplusplus/singletons/pqc_scriptsimages.cpp"
                   "cplusplus/singletons/pqc_scriptsother.cpp"
+                  "cplusplus/singletons/pqc_scriptsexternaltools.cpp"
 
                   "cplusplus/files/pqc_loadfile.cpp"
                   "cplusplus/files/pqc_providerfull.cpp"
@@ -56,6 +57,8 @@ SET(previewqt_SRC "cplusplus/main.cpp"
                   "cplusplus/header/pqc_scriptsimages_qml.h"
                   "cplusplus/header/pqc_scriptsother.h"
                   "cplusplus/header/pqc_scriptsother_qml.h"
+                  "cplusplus/header/pqc_scriptsexternaltools.h"
+                  "cplusplus/header/pqc_scriptsexternaltools_qml.h"
 )
 
 if(WITH_VIDEO_MPV)

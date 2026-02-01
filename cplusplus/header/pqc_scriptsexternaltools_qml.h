@@ -21,58 +21,47 @@
  **************************************************************************/
 #pragma once
 
+#include <pqc_scriptsexternaltools.h>
 #include <QObject>
-#include <QMap>
-#include <QImage>
-#include <QTranslator>
+#include <QQmlEngine>
 
-class QProcess;
-class QMediaPlayer;
-
-class PQCScriptsImages : public QObject {
+class PQCScriptsExternalToolsQML : public QObject {
 
     Q_OBJECT
+    QML_ELEMENT
+    QML_SINGLETON
+    QML_NAMED_ELEMENT(PQCScriptsExternalTools)
 
 public:
-    static PQCScriptsImages& get() {
-        static PQCScriptsImages instance;
-        return instance;
+    explicit PQCScriptsExternalToolsQML() {
+        connect(&PQCScriptsExternalTools::get(), &PQCScriptsExternalTools::ytdlpReceivedStreamSupported,
+                this, &PQCScriptsExternalToolsQML::ytdlpReceivedStreamSupported);
+        connect(&PQCScriptsExternalTools::get(), &PQCScriptsExternalTools::ytdlpReceivedStreamURL,
+                this, &PQCScriptsExternalToolsQML::ytdlpReceivedStreamURL);
+        connect(&PQCScriptsExternalTools::get(), &PQCScriptsExternalTools::ytdlpReceivedStreamTitle,
+                this, &PQCScriptsExternalToolsQML::ytdlpReceivedStreamTitle);
+        connect(&PQCScriptsExternalTools::get(), &PQCScriptsExternalTools::ytdlpReceivedStreamError,
+                this, &PQCScriptsExternalToolsQML::ytdlpReceivedStreamError);
+    };
+    ~PQCScriptsExternalToolsQML() {}
+
+    Q_INVOKABLE void ytdlpRequestIsSupportedStream(QString url) {
+        PQCScriptsExternalTools::get().ytdlpRequestIsSupportedStream(url);
     }
-    ~PQCScriptsImages();
 
-    PQCScriptsImages(PQCScriptsImages const&)     = delete;
-    void operator=(PQCScriptsImages const&) = delete;
+    Q_INVOKABLE void ytdlpRequestStreamURL(QString url) {
+        PQCScriptsExternalTools::get().ytdlpRequestStreamURL(url);
+    }
 
-    bool isArchive(QString path);
-    bool isComicBook(QString path);
-    bool isEpub(QString path);
-    bool isTextDocument(QString path);
-    bool isMpvVideo(QString path);
-    bool isQtVideo(QString path);
-    bool isPDFDocument(QString path);
-    bool isSVG(QString path);
-    bool isPhotoSphere(QString path);
-    int isMotionPhoto(QString path);
-    bool isItAnimated(QString filename);
-    bool isURL(QString url);
-    bool isAudio(QString path);
+    Q_INVOKABLE void ytdlpRequestStreamTitle(QString url) {
+        PQCScriptsExternalTools::get().ytdlpRequestStreamTitle(url);
+    }
 
-    QString findCoverImageNextToFile(QString path);
 
-    int getDocumentPageCount(QString path);
-    QString extractMotionPhoto(QString path);
-    int getExifOrientation(QString path);
-    QString getTextFileContents(QString path);
-
-    QStringList getArchiveContent(QString path, bool insideFilenameOnly = false);
-
-    QVariantList loadEPUB(QString path);
-    void analyzeEpubMetaData(QString subfolder, QString txt, QString &title, QString &coverId, QMap<QString, QString> &outFileList, QStringList &outIdOrder);
-
-private:
-    PQCScriptsImages();
-
-    QMap<QString,QStringList> archiveContents;
-    QString generateArchiveId(QString path);
+Q_SIGNALS:
+    void ytdlpReceivedStreamSupported(bool supp);
+    void ytdlpReceivedStreamURL(QString url);
+    void ytdlpReceivedStreamTitle(QString title);
+    void ytdlpReceivedStreamError(QString err);
 
 };

@@ -39,10 +39,6 @@ class PQCScriptsImagesQML : public QObject {
 
 public:
     PQCScriptsImagesQML() {
-        connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamSupported, this, &PQCScriptsImagesQML::receivedStreamSupported);
-        connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamURL, this, &PQCScriptsImagesQML::receivedStreamURL);
-        connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamTitle, this, &PQCScriptsImagesQML::receivedStreamTitle);
-        connect(&PQCScriptsImages::get(), &PQCScriptsImages::receivedStreamError, this, &PQCScriptsImagesQML::receivedStreamError);
     }
     ~PQCScriptsImagesQML() {}
 
@@ -96,18 +92,6 @@ public:
 
     Q_INVOKABLE int isAudio(QString path) {
         return PQCScriptsImages::get().isAudio(path);
-    }
-
-    Q_INVOKABLE void requestIsSupportedStream(QString url) {
-        PQCScriptsImages::get().requestIsSupportedStream(url);
-    }
-
-    Q_INVOKABLE void requestStreamURL(QString url) {
-        PQCScriptsImages::get().requestStreamURL(url);
-    }
-
-    Q_INVOKABLE void requestStreamTitle(QString url) {
-        PQCScriptsImages::get().requestStreamTitle(url);
     }
 
     Q_INVOKABLE QString findCoverImageNextToFile(QString path) {

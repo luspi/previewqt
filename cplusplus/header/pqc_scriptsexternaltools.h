@@ -22,57 +22,39 @@
 #pragma once
 
 #include <QObject>
-#include <QMap>
-#include <QImage>
-#include <QTranslator>
 
 class QProcess;
-class QMediaPlayer;
 
-class PQCScriptsImages : public QObject {
+class PQCScriptsExternalTools : public QObject {
 
     Q_OBJECT
 
 public:
-    static PQCScriptsImages& get() {
-        static PQCScriptsImages instance;
+    static PQCScriptsExternalTools& get() {
+        static PQCScriptsExternalTools instance;
         return instance;
     }
-    ~PQCScriptsImages();
+    ~PQCScriptsExternalTools();
 
-    PQCScriptsImages(PQCScriptsImages const&)     = delete;
-    void operator=(PQCScriptsImages const&) = delete;
+    PQCScriptsExternalTools(PQCScriptsExternalTools const&) = delete;
+    void operator=(PQCScriptsExternalTools const&) = delete;
 
-    bool isArchive(QString path);
-    bool isComicBook(QString path);
-    bool isEpub(QString path);
-    bool isTextDocument(QString path);
-    bool isMpvVideo(QString path);
-    bool isQtVideo(QString path);
-    bool isPDFDocument(QString path);
-    bool isSVG(QString path);
-    bool isPhotoSphere(QString path);
-    int isMotionPhoto(QString path);
-    bool isItAnimated(QString filename);
-    bool isURL(QString url);
-    bool isAudio(QString path);
+    void ytdlpRequestIsSupportedStream(QString url);
+    void ytdlpRequestStreamURL(QString url);
+    void ytdlpRequestStreamTitle(QString url);
 
-    QString findCoverImageNextToFile(QString path);
-
-    int getDocumentPageCount(QString path);
-    QString extractMotionPhoto(QString path);
-    int getExifOrientation(QString path);
-    QString getTextFileContents(QString path);
-
-    QStringList getArchiveContent(QString path, bool insideFilenameOnly = false);
-
-    QVariantList loadEPUB(QString path);
-    void analyzeEpubMetaData(QString subfolder, QString txt, QString &title, QString &coverId, QMap<QString, QString> &outFileList, QStringList &outIdOrder);
 
 private:
-    PQCScriptsImages();
+    PQCScriptsExternalTools();
 
-    QMap<QString,QStringList> archiveContents;
-    QString generateArchiveId(QString path);
+    QProcess *m_ytdlpStreamSupportedProc;
+    QProcess *m_ytdlpStreamProc;
+    QProcess *m_ytdlpStreamTitleProc;
+
+Q_SIGNALS:
+    void ytdlpReceivedStreamSupported(bool supp);
+    void ytdlpReceivedStreamURL(QString url);
+    void ytdlpReceivedStreamTitle(QString title);
+    void ytdlpReceivedStreamError(QString err);
 
 };
