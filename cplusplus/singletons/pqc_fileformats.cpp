@@ -182,14 +182,16 @@ void PQCFileFormats::readFromDatabase() {
 #ifdef PQMLIBARCHIVE
         const int archive = query.record().value("archive").toInt();
 #endif
-#ifdef PQMVIDEOQT
+#ifdef PQMQTMULTIMEDIA
         const int video = query.record().value("video").toInt();
 #endif
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
         const int libmpv = query.record().value("libmpv").toInt();
 #endif
         const int text = (cat=="txt" ? 1 : 0);
+#ifdef PQMQTMULTIMEDIA
         const int audio = (cat=="aud" ? 1 : 0);
+#endif
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
         const QString im_gm_magick = query.record().value("im_gm_magick").toString();
 #endif
@@ -334,7 +336,7 @@ void PQCFileFormats::readFromDatabase() {
             }
         }
 #endif
-#ifdef PQMVIDEOQT
+#ifdef PQMQTMULTIMEDIA
         if(video) {
             m_num_video += 1;
             supportedByAnyLibrary = true;
@@ -343,7 +345,7 @@ void PQCFileFormats::readFromDatabase() {
                 m_mimetypes_video << mimetypes.split(",");
         }
 #endif
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
         if(libmpv) {
             m_num_libmpv += 1;
             supportedByAnyLibrary = true;
@@ -361,6 +363,7 @@ void PQCFileFormats::readFromDatabase() {
                 m_mimetypes_text << mimetypes.split(",");
         }
 
+#if defined(PQMQTMULTIMEDIA) || defined(PQMLIBMPV)
         if(audio) {
             m_num_audio += 1;
             supportedByAnyLibrary = true;
@@ -368,6 +371,7 @@ void PQCFileFormats::readFromDatabase() {
             if(mimetypes != "")
                 m_mimetypes_audio << mimetypes.split(",");
         }
+#endif
 
         if(supportedByAnyLibrary) {
 

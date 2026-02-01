@@ -22,7 +22,7 @@
  **************************************************************************/
 #pragma once
 
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
 
 #include <mpv/client.h>
 

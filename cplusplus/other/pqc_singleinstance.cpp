@@ -76,7 +76,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
         } else if(arg == "--show-info") {
 
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
             // Qt sets the locale in the QGuiApplication constructor, but libmpv
             // requires the LC_NUMERIC category to be set to "C", so change it back.
             std::setlocale(LC_NUMERIC, "C");

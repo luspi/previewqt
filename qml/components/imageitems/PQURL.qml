@@ -22,7 +22,6 @@
 
 import QtQuick
 import QtQuick.Controls
-import QtWebEngine
 import PreviewQt
 
 Item {
@@ -94,7 +93,7 @@ Item {
         active: url_top.isWebsite!==""
 
         sourceComponent:
-        WebEngineView {
+        PQWebsiteView {
 
             anchors.fill: parent
 
@@ -116,7 +115,7 @@ Item {
     Loader {
 
         anchors.fill: parent
-        active: url_top.isVideo!=="" && PQCScriptsConfig.isQtVideoEnabled()
+        active: url_top.isVideo!=="" && PQCScriptsConfig.isQtMultimediaEnabled()
 
         sourceComponent:
         PQVideoQt {

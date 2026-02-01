@@ -170,7 +170,7 @@ Rectangle {
 
         PQIconButton {
             id: mediainfobutton
-            visible: PQCConstants.currentType==="aud" || (PQCConstants.currentType === "vid" && PQCScriptsConfig.isQtVideoEnabled())
+            visible: PQCConstants.currentType==="aud" || (PQCConstants.currentType === "vid" && PQCScriptsConfig.isQtMultimediaEnabled())
             y: (parent.height-height)/2
             height: toprow.height-2
             tooltip: qsTr("Show media info")

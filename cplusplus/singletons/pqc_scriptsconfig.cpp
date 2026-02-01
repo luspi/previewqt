@@ -56,7 +56,7 @@
 #include <FreeImage.h>
 #endif
 
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
 #include <pqc_mpvobject.h>
 #endif
 
@@ -148,11 +148,11 @@ QString PQCScriptsConfig::getConfigInfo(bool formatHTML) {
     txt += QString(" - %1E-books (epub)%2%3").arg(bold1, bold2, nl);
 #endif
 
-#ifdef PQMVIDEOQT
-    txt += QString(" - %1Video%2 through Qt%3").arg(bold1, bold2, nl);
+#ifdef PQMQTMULTIMEDIA
+    txt += QString(" - %1Multimedia%2 through Qt%3").arg(bold1, bold2, nl);
 #endif
 
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
     mpv_handle *mpv = mpv_create();
     if(mpv_initialize(mpv) < 0)
         throw std::runtime_error("could not initialize mpv context");
@@ -193,14 +193,14 @@ bool PQCScriptsConfig::isMotionPhotoSupportEnabled() {
 }
 
 bool PQCScriptsConfig::isMPVEnabled() {
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
     return true;
 #endif
     return false;
 }
 
-bool PQCScriptsConfig::isQtVideoEnabled() {
-#ifdef PQMVIDEOQT
+bool PQCScriptsConfig::isQtMultimediaEnabled() {
+#ifdef PQMQTMULTIMEDIA
     return true;
 #endif
     return false;

@@ -75,7 +75,7 @@
 #include <FreeImage.h>
 #endif
 
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
 #include <pqc_mpvobject.h>
 #endif
 
@@ -537,7 +537,7 @@ bool PQCScriptsImages::isMpvVideo(QString path) {
 
     bool supported = false;
 
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
 
     QString suf = QFileInfo(path).suffix().toLower();
     if(PQCFileFormats::get().getAllFormatsLibmpv().contains(suf)) {
@@ -565,7 +565,7 @@ bool PQCScriptsImages::isQtVideo(QString path) {
 
     bool supported = false;
 
-#ifdef PQMVIDEOQT
+#ifdef PQMQTMULTIMEDIA
 
     QString suf = QFileInfo(path).suffix().toLower();
     if(PQCFileFormats::get().getAllFormatsVideo().contains(suf)) {

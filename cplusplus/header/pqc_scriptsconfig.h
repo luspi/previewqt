@@ -45,7 +45,7 @@ public:
     bool isQtAtLeast6_5();
     bool isMotionPhotoSupportEnabled();
     bool isMPVEnabled();
-    bool isQtVideoEnabled();
+    bool isQtMultimediaEnabled();
     bool amIOnWindows();
     bool isUpgrade();
     bool isDebug();
