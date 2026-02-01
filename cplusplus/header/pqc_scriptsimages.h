@@ -55,6 +55,7 @@ public:
     int isMotionPhoto(QString path);
     bool isItAnimated(QString filename);
     bool isURL(QString url);
+    bool isLocalURL(QString url);
     bool isAudio(QString path);
 
     QString findCoverImageNextToFile(QString path);

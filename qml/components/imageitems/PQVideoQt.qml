@@ -39,6 +39,11 @@ Video {
         video.play()
     }
 
+    property bool checkedForAudioVideo: false
+    signal iHaveAudioAndVideo()
+    signal iHaveVideo()
+    signal iHaveAudio()
+
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(video.width, video.height) })
         PQCConstants.imageAsynchronous = false
@@ -111,6 +116,16 @@ Video {
                 video.source = "file://" + PQCConstants.currentSource
 
             video.play()
+
+        } else if(playbackState === MediaPlayer.PlayingState) {
+
+            if(video.checkedForAudioVideo) return
+
+            video.checkedForAudioVideo = true
+            if(video.hasAudio && video.hasVideo) video.iHaveAudioAndVideo()
+            else if(video.hasVideo) video.iHaveVideo()
+            else if(video.hasAudio) video.iHaveAudio()
+
         }
 
     }

@@ -61,7 +61,7 @@ SET(previewqt_SRC "cplusplus/main.cpp"
                   "cplusplus/header/pqc_scriptsexternaltools_qml.h"
 )
 
-if(WITH_VIDEO_MPV)
+if(WITH_LIBMPV)
     set(previewqt_SRC ${previewqt_SRC} "cplusplus/header/pqc_mpvobject.h"
                                        "cplusplus/other/pqc_mpvobject.cpp")
 endif()

@@ -25,4 +25,7 @@ import QtQuick
 Item {
     property Item imageParent
     property string overrideSource
+    signal iHaveAudioAndVideo()
+    signal iHaveAudio()
+    signal iHaveVideo()
 }

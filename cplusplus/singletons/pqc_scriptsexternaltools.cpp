@@ -116,7 +116,10 @@ void PQCScriptsExternalTools::ytdlpRequestStreamURL(QString url) {
 
     connect(m_ytdlpStreamProc, &QProcess::readyReadStandardOutput, this, [=]() {
         const QString ret = m_ytdlpStreamProc->readAll().trimmed();
-        Q_EMIT ytdlpReceivedStreamURL(ret);
+        if(ret == "")
+            Q_EMIT ytdlpReceivedStreamError("no_stream_found");
+        else
+            Q_EMIT ytdlpReceivedStreamURL(ret);
     });
 
     connect(m_ytdlpStreamProc, &QProcess::readyReadStandardError, this, [=]() {
@@ -126,6 +129,8 @@ void PQCScriptsExternalTools::ytdlpRequestStreamURL(QString url) {
         else if(err.contains("HTTP Error 403: Forbidden") || err.contains("Failed to download") || err.contains("No video formats found!"))
             Q_EMIT ytdlpReceivedStreamError("plugin_error");
     });
+
+    connect(m_ytdlpStreamProc, &QProcess::finished, this, [=]() { Q_EMIT ytdlpFinished(); });
 
 }
 

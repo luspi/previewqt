@@ -610,7 +610,12 @@ bool PQCScriptsImages::isPDFDocument(QString path) {
 }
 
 bool PQCScriptsImages::isURL(QString url) {
-    return (url.startsWith("http:") || url.startsWith("https:"));
+    return (url.startsWith("http:") || url.startsWith("https:") || isLocalURL(url));
+}
+
+bool PQCScriptsImages::isLocalURL(QString url) {
+    return ((url.endsWith(".html") || url.endsWith(".xhtml") || url.endsWith(".htm")) &&
+           (url.startsWith("file:/") || (!url.startsWith("http:/") && !url.startsWith("https:/"))));
 }
 
 bool PQCScriptsImages::isAudio(QString path) {

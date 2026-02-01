@@ -44,7 +44,10 @@ Item {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(width, height) })
         PQCConstants.imageAsynchronous = Qt.binding(function() { return true })
 
-        PQCScriptsExternalTools.ytdlpRequestIsSupportedStream(PQCConstants.currentSource)
+        if(PQCScriptsImages.isLocalURL(PQCConstants.currentSource)) {
+            url_top.isWebsite = "file://"+ PQCConstants.currentSource
+        } else
+            PQCScriptsExternalTools.ytdlpRequestIsSupportedStream(PQCConstants.currentSource)
 
     }
 
@@ -75,7 +78,9 @@ Item {
         }
 
         function onYtdlpReceivedStreamError(err : string) {
-            if(err === "signin_bot")
+            if(err === "no_stream_found")
+                PQCNotify.trayiconShowNotification(qsTr("Stream error"), qsTr("No stream at that URL was found, showing normal website."))
+            else if(err === "signin_bot")
                 PQCNotify.trayiconShowNotification(qsTr("Stream error"), qsTr("You need to sign in to YouTube. Are you connected to a VPN? Showing normal website."))
             else if(err === "plugin_error")
                 PQCNotify.trayiconShowNotification(qsTr("Stream error"), qsTr("The relevant yt-dlp plugin seems to have some issues, showing normal website."))
@@ -85,6 +90,21 @@ Item {
                 url_top.isWebsite = PQCConstants.currentSource
         }
 
+        function onYtdlpFinished() {
+            giveTimeToReactToFinished.restart()
+        }
+
+    }
+
+    Timer {
+        id: giveTimeToReactToFinished
+        interval: 500
+        onTriggered: {
+            if(url_top.isVideo === "" && url_top.isWebsite === "") {
+                PQCNotify.trayiconShowNotification(qsTr("No stream found"), qsTr("No stream at that URL was found, showing normal website."))
+                url_top.isWebsite = PQCConstants.currentSource
+            }
+        }
     }
 
     Loader {
@@ -112,6 +132,19 @@ Item {
         visible: url_top.isVideo==="" && url_top.isWebsite===""
     }
 
+    Image {
+        id: musicImage
+        property int dim: Math.min(Math.min(200, parent.width*(2/3)), Math.min(200, parent.height*(2/3)))
+        x: (parent.width-width)/2
+        y: (parent.height-height)/2
+        width: dim
+        height: dim
+        sourceSize: Qt.size(width, height)
+        visible: false
+        opacity: 0.8
+        source: "image://svg/:/musicnote.svg"
+    }
+
     Loader {
 
         anchors.fill: parent
@@ -123,6 +156,11 @@ Item {
             imageParent: url_top.imageParent
 
             overrideSource: url_top.isVideo
+
+            // only audio is present
+            onIHaveAudio: {
+                musicImage.visible = true
+            }
 
         }
     }
@@ -138,6 +176,11 @@ Item {
             imageParent: url_top.imageParent
 
             overrideSource: url_top.isVideo
+
+            // only audio is present
+            onIHaveAudio: {
+                musicImage.visible = true
+            }
 
         }
     }

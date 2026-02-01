@@ -189,7 +189,7 @@ void PQCFileFormats::readFromDatabase() {
         const int libmpv = query.record().value("libmpv").toInt();
 #endif
         const int text = (cat=="txt" ? 1 : 0);
-#ifdef PQMQTMULTIMEDIA
+#if defined(PQMQTMULTIMEDIA) || defined(PQMLIBMPV)
         const int audio = (cat=="aud" ? 1 : 0);
 #endif
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)

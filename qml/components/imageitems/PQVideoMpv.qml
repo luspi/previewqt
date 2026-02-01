@@ -48,6 +48,11 @@ Item {
     property int videoPosition: 0
     property bool videoPlaying: false
 
+    property bool checkedForAudioVideo: false
+    signal iHaveAudioAndVideo()
+    signal iHaveVideo()
+    signal iHaveAudio()
+
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(video.width, video.height) })
         PQCConstants.imageAsynchronous = false
@@ -112,16 +117,28 @@ Item {
         interval: 100
         repeat: false
         running: false
+        property int counter: 0
         onTriggered: {
             // check whether the file has fully loaded yet
             // depending on the Qt version there will be a comma at the end of the error message string
-            var tmp = video.getProperty("width")+""
-            if(tmp == "QVariant(mpv::qt::ErrorReturn)" || tmp == "QVariant(mpv::qt::ErrorReturn, )") {
+            var tmp = video.getProperty("track-list")
+            if(tmp.length === 0 && counter < 100) {
+                counter += 1
                 getProps.restart()
                 return
             }
-            videotop.width = video.getProperty("width")
-            videotop.height = video.getProperty("height")
+            var haveVideo = video.getProperty("video")
+            var haveAudio = video.getProperty("audio")
+            if(haveAudio && haveVideo)
+                videotop.iHaveAudioAndVideo()
+            else if(haveAudio)
+                videotop.iHaveAudio()
+            else if(haveVideo)
+                videotop.iHaveVideo()
+            if(haveVideo) {
+                videotop.width = video.getProperty("width")
+                videotop.height = video.getProperty("height")
+            }
             videoDuration = video.getProperty("duration")
             video.setProperty("volume", volumeList[volumeIndex])
             getPosition.restart()

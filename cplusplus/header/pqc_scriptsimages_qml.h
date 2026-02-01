@@ -90,6 +90,10 @@ public:
         return PQCScriptsImages::get().isURL(url);
     }
 
+    Q_INVOKABLE bool isLocalURL(QString url) {
+        return PQCScriptsImages::get().isLocalURL(url);
+    }
+
     Q_INVOKABLE int isAudio(QString path) {
         return PQCScriptsImages::get().isAudio(path);
     }

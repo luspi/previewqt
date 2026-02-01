@@ -56,5 +56,6 @@ Q_SIGNALS:
     void ytdlpReceivedStreamURL(QString url);
     void ytdlpReceivedStreamTitle(QString title);
     void ytdlpReceivedStreamError(QString err);
+    void ytdlpFinished();
 
 };

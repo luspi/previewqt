@@ -42,6 +42,8 @@ public:
                 this, &PQCScriptsExternalToolsQML::ytdlpReceivedStreamTitle);
         connect(&PQCScriptsExternalTools::get(), &PQCScriptsExternalTools::ytdlpReceivedStreamError,
                 this, &PQCScriptsExternalToolsQML::ytdlpReceivedStreamError);
+        connect(&PQCScriptsExternalTools::get(), &PQCScriptsExternalTools::ytdlpFinished,
+                this, &PQCScriptsExternalToolsQML::ytdlpFinished);
     };
     ~PQCScriptsExternalToolsQML() {}
 
@@ -63,5 +65,6 @@ Q_SIGNALS:
     void ytdlpReceivedStreamURL(QString url);
     void ytdlpReceivedStreamTitle(QString title);
     void ytdlpReceivedStreamError(QString err);
+    void ytdlpFinished();
 
 };
