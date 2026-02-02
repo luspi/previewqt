@@ -224,8 +224,6 @@ int main(int argc, char *argv[]) {
     VIPS_INIT(argv[0]);
 #endif
 
-    PQCFileFormats::get().validate();
-
     // Check for upgrade to PreviewQt
     if(PQCScriptsConfig::get().isUpgrade()) {
 
