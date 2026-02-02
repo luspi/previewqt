@@ -131,6 +131,8 @@ Item {
             var src = PQCScriptsFilesPaths.cleanPath(drop.text)
             if(PQCScriptsFilesPaths.isFileSupported(src))
                 image_top.loadImage(src)
+            else
+                PQCNotify.trayiconShowNotification(qsTr("Content not supported"), qsTr("The dropped file/content is currently not supported by PreviewQt"))
         }
     }
 
@@ -147,6 +149,8 @@ Item {
     // load a new image
     function loadImage(path : string) {
 
+        console.log("args: path =", path)
+
         PQCConstants.mainwindowManuallyResized = false
         imageloader.active = false
         setRotation = 0
@@ -154,8 +158,9 @@ Item {
         PQCConstants.mainwindowOverrideTitleSuffix = ""
 
         if(path === "") {
+            console.log("empty path received")
             PQCConstants.currentSource = ""
-            imageloader.source = ""
+            imageloader.sourceComponent = comp_empty
             PQCConstants.imageStatus = Image.Null
             return
         }
@@ -202,9 +207,15 @@ Item {
             PQCConstants.currentType = "img"
             imageloader.sourceComponent = comp_img
         }
+        console.log("detected type:", PQCConstants.currentType)
 
         imageloader.active = true
 
+    }
+
+    Component {
+        id: comp_empty
+        Item{}
     }
 
     Component {

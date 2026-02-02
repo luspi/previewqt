@@ -147,14 +147,34 @@ bool PQCScriptsFilesPaths::isFileSupported(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    if(path.startsWith("http:") || path.startsWith("https:"))
+    if(path.startsWith("http:") || path.startsWith("https:")) {
+        qDebug() << "Remote URL detected: supported.";
         return true;
+    }
 
-    if(!QFileInfo::exists(cleanPath(path)))
+    if(!QFileInfo::exists(cleanPath(path))) {
+        qDebug() << "File does not exist: not supported.";
         return false;
+    }
 
     const QString suffix = QFileInfo(path).suffix().toLower();
-    return PQCFileFormats::get().getAllFormats().contains(suffix);
+    if(PQCFileFormats::get().getAllFormats().contains(suffix)) {
+        qDebug() << "Supported suffix detected.";
+        return true;
+    } else
+        qDebug() << "Unknown suffix:" << suffix;
+
+    QMimeDatabase db;
+    const QString mimetype = db.mimeTypeForFile(path).name();
+    if(PQCFileFormats::get().getAllMimeTypes().contains(mimetype)) {
+        qDebug() << "Supported mime-type detected.";
+        return true;
+    } else
+        qDebug() << "Unknown mime-type:" << mimetype;
+
+    qDebug() << "File is not supported by PreviewQt. Not yet.";
+
+    return false;
 
 }
 
