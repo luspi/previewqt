@@ -160,6 +160,9 @@ bool PQCScriptsFilesPaths::isFileSupported(QString path) {
 
 QString PQCScriptsFilesPaths::toAbsolutePath(QString path) {
 
+    if(path.startsWith("http:/") || path.startsWith("https:/"))
+        return path;
+
     return QFileInfo(path).absoluteFilePath();
 
 }

@@ -127,9 +127,13 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     }
 
     // only process and provide generic way to access rendered file
-    if(processonly && QFileInfo::exists(PQCScriptsFilesPaths::get().cleanPath(file))) {
+    if(processonly) {
 
-        PQCSpecialActions::processOnly(file, fileNumInside);
+        if(QFileInfo::exists(PQCScriptsFilesPaths::get().cleanPath(file)))
+            PQCSpecialActions::processOnly(file, fileNumInside);
+        else
+            std::cout << std::endl << "Not sure how to process this file... exiting." << std::endl << std::endl;
+
         std::exit(0);
         return;
 
@@ -152,26 +156,26 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
     QString filename = PQCScriptsFilesPaths::get().toAbsolutePath(PQCScriptsFilesPaths::cleanPath(file));
 
-    QByteArray message = "";
+    QByteArray filenameToSend = "";
     if(fileNumInside > 0) {
         if(PQCScriptsImages::get().isPDFDocument(filename)) {
-            message = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename).arg(fileNumInside));
+            filenameToSend = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename).arg(fileNumInside));
         } else if(PQCScriptsImages::get().isArchive(filename)) {
             QStringList cont = PQCScriptsImages::get().getArchiveContent(filename, true);
             if(fileNumInside < cont.length())
-                message = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename, cont[fileNumInside]));
+                filenameToSend = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename, cont[fileNumInside]));
             else
-                message = QUrl::toPercentEncoding(filename);
+                filenameToSend = QUrl::toPercentEncoding(filename);
         } else
-            message = QUrl::toPercentEncoding(filename);
+            filenameToSend = QUrl::toPercentEncoding(filename);
 
     } else
-        message = QUrl::toPercentEncoding(filename);
+        filenameToSend = QUrl::toPercentEncoding(filename);
 
     if(quitRemote)
-        message = "--quit--";
-    else if(message == "")
-        message = "-";
+        filenameToSend = "--quit--";
+    else if(filenameToSend == "")
+        filenameToSend = "-";
 
     if(setDebug)
         PQCScriptsConfig::get().setDebug(true);
@@ -193,8 +197,20 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     // If this is successfull, then an instance is already running
     if(socket->waitForConnected(100)) {
 
+        QList<QByteArray> writeMessage;
+
+        if(qApp->platformName() == "wayland") {
+
+            QString token = qgetenv("XDG_ACTIVATION_TOKEN");
+            if(!token.isEmpty())
+                writeMessage.append(QStringLiteral("_T_O_K_E_N_%1\n").arg(token).toUtf8());
+
+        }
+
+        writeMessage.append(filenameToSend);
+
         // Send composed message string
-        socket->write(message);
+        socket->write(writeMessage.join('\n'));
         socket->flush();
 
         // Inform user
@@ -213,7 +229,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         server->listen(server_str);
         connect(server, &QLocalServer::newConnection, this, &PQCSingleInstance::newConnection);
 
-        PQCScriptsOther::get().setStartupMessage(message);
+        PQCScriptsOther::get().setStartupMessage(filenameToSend);
 
     }
 
@@ -244,21 +260,25 @@ void PQCSingleInstance::showHelpMessage() {
 
 void PQCSingleInstance::newConnection() {
     QLocalSocket *socket = server->nextPendingConnection();
-    if(socket->waitForReadyRead(2000))
-        handleMessage(socket->readAll());
+    if(socket->waitForReadyRead(2000)) {
+
+        const QList<QByteArray> reply = socket->readAll().split('\n');
+
+        for(const QByteArray &rep : reply) {
+            if(rep.startsWith("_T_O_K_E_N_")) {
+                qputenv("XDG_ACTIVATION_TOKEN", rep.last(rep.length()-11));
+            } else {
+                if(rep == "--quit--")
+                    std::exit(0);
+                else
+                    Q_EMIT PQCScriptsOther::get().commandLineArgumentReceived(rep);
+            }
+
+        }
+
+    }
     socket->close();
     delete socket;
-}
-
-void PQCSingleInstance::handleMessage(QString msg) {
-
-    qDebug() << "args: msg =" << msg;
-
-    if(msg == "--quit--")
-        std::exit(0);
-    else
-        Q_EMIT PQCScriptsOther::get().commandLineArgumentReceived(msg);
-
 }
 
 PQCSingleInstance::~PQCSingleInstance() {
