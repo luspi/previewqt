@@ -46,8 +46,12 @@ Item {
 
         if(PQCScriptsImages.isLocalURL(PQCConstants.currentSource)) {
             url_top.isWebsite = "file://"+ PQCConstants.currentSource
-        } else
-            PQCScriptsExternalTools.ytdlpRequestIsSupportedStream(PQCConstants.currentSource)
+        } else {
+            if(PQCSettings.processUrlWithYtdlp)
+                PQCScriptsExternalTools.ytdlpRequestIsSupportedStream(PQCConstants.currentSource)
+            else
+                url_top.isWebsite = PQCConstants.currentSource
+        }
 
     }
 
@@ -61,23 +65,30 @@ Item {
         target: PQCScriptsExternalTools
 
         function onYtdlpReceivedStreamSupported(supp : bool) {
+            console.log("args: supp =", supp)
             if(supp) {
                 PQCScriptsExternalTools.ytdlpRequestStreamTitle(PQCConstants.currentSource)
                 PQCScriptsExternalTools.ytdlpRequestStreamURL(PQCConstants.currentSource)
-            } else
+            } else {
+                url_top.isVideo = ""
                 url_top.isWebsite = PQCConstants.currentSource
+            }
         }
 
         function onYtdlpReceivedStreamURL(url : string) {
+            console.log("args: url =", url)
             PQCConstants.currentStreamVideoDirectURL = url
             url_top.isVideo = url
+            url_top.isWebsite = ""
         }
 
         function onYtdlpReceivedStreamTitle(title : string) {
+            console.log("args: title =", title)
             PQCConstants.mainwindowOverrideTitle = title
         }
 
         function onYtdlpReceivedStreamError(err : string) {
+            console.log("args: err =", err)
             if(err === "no_stream_found")
                 PQCNotify.trayiconShowNotification(qsTr("Stream error"), qsTr("No stream at that URL was found, showing normal website."))
             else if(err === "signin_bot")
@@ -86,11 +97,14 @@ Item {
                 PQCNotify.trayiconShowNotification(qsTr("Stream error"), qsTr("The relevant yt-dlp plugin seems to have some issues, showing normal website."))
             else
                 PQCNotify.trayiconShowNotification(qsTr("Stream error"), qsTr("The video stream could not be determined, showing normal website."))
-            if(err !== "")
+            if(err !== "") {
+                url_top.isVideo = ""
                 url_top.isWebsite = PQCConstants.currentSource
+            }
         }
 
         function onYtdlpFinished() {
+            console.log("")
             giveTimeToReactToFinished.restart()
         }
 
@@ -102,6 +116,7 @@ Item {
         onTriggered: {
             if(url_top.isVideo === "" && url_top.isWebsite === "") {
                 PQCNotify.trayiconShowNotification(qsTr("No stream found"), qsTr("No stream at that URL was found, showing normal website."))
+                url_top.isVideo = ""
                 url_top.isWebsite = PQCConstants.currentSource
             }
         }

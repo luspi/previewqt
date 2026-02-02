@@ -74,12 +74,12 @@ void PQCScriptsExternalTools::ytdlpRequestIsSupportedStream(QString url) {
     m_ytdlpStreamSupportedProc->start(program, arguments);
 
     connect(m_ytdlpStreamSupportedProc, &QProcess::readyReadStandardOutput, this, [=]() {
-        const QString ret = m_ytdlpStreamSupportedProc->readAll().trimmed();
+        const QString ret = QString::fromLocal8Bit(m_ytdlpStreamSupportedProc->readAll().trimmed());
         if(ret.contains("Downloading") && !ret.contains("Downloading webpage"))
             Q_EMIT ytdlpReceivedStreamSupported(true);
     });
     connect(m_ytdlpStreamSupportedProc, &QProcess::readyReadStandardError, this, [=]() {
-        const QString err = m_ytdlpStreamSupportedProc->readAllStandardError().trimmed();
+        const QString err = QString::fromLocal8Bit(m_ytdlpStreamSupportedProc->readAllStandardError().trimmed());
         if(err.contains("Unsupported URL"))
             Q_EMIT ytdlpReceivedStreamSupported(false);
     });

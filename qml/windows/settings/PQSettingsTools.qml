@@ -70,12 +70,20 @@ Flickable {
 
         /************************************/
 
-        Text {
-            text: "Handle video streams:" + " <b>yt-dlp</b>"
+        CheckBox {
+            id: processYtdlp
+            text: qsTr("Process URLs with yt-dlp.")
+            checked: PQCSettings.processUrlWithYtdlp
+            onCheckedChanged: {
+                catchKeyPress.forceActiveFocus()
+                if(PQCSettings.processUrlWithYtdlp !== checked)
+                    PQCSettings.processUrlWithYtdlp = checked
+            }
         }
 
         Row {
             spacing: 5
+            enabled: processYtdlp.checked
             TextField {
                 id: ytdlpedit
                 y: (ytdlpbut.height-height)/2

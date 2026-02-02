@@ -538,7 +538,7 @@ ApplicationWindow {
                     fileInside = msg.split(":/:/:")[1]
                 }
 
-                // check if file exists
+                // check if file is supported
                 if(!PQCScriptsFilesPaths.isFileSupported(path)) {
                     trayicon.item.showMessage(qsTr("File does not exist."), qsTr("The requested file does not exist:") + " %1".arg(path))
                     return

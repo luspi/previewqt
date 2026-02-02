@@ -64,6 +64,7 @@ public:
     Q_PROPERTY(bool textSearchCaseSensitive MEMBER m_textSearchCaseSensitive NOTIFY textSearchCaseSensitiveChanged)
     Q_PROPERTY(QString lastDownloadFolder MEMBER m_lastDownloadFolder NOTIFY lastDownloadFolderChanged)
     Q_PROPERTY(QString executableYtDlp MEMBER m_executableYtDlp NOTIFY executableYtDlpChanged)
+    Q_PROPERTY(bool processUrlWithYtdlp MEMBER m_processUrlWithYtdlp NOTIFY processUrlWithYtdlpChanged)
 
     Q_INVOKABLE bool getFirstStart() { return firstStart; }
 
@@ -93,6 +94,7 @@ private:
     bool m_textWordWrap;
     int m_textFontPointSize;
     bool m_textSearchCaseSensitive;
+    bool m_processUrlWithYtdlp;
 
     QSettings *settings;
     QTimer *saveTimer;
@@ -146,5 +148,6 @@ Q_SIGNALS:
     void textSearchCaseSensitiveChanged();
     void lastDownloadFolderChanged();
     void executableYtDlpChanged();
+    void processUrlWithYtdlpChanged();
 
 };

@@ -162,6 +162,7 @@ PQCSettings::PQCSettings() {
     connect(this, &PQCSettings::textSearchCaseSensitiveChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::lastDownloadFolderChanged, this, [=]() { saveTimer->start(); });
     connect(this, &PQCSettings::executableYtDlpChanged, this, [=]() { saveTimer->start(); });
+    connect(this, &PQCSettings::processUrlWithYtdlpChanged, this, [=]() { saveTimer->start(); });
 
 }
 
@@ -219,6 +220,7 @@ void PQCSettings::loadSettings() {
 #else
     m_executableYtDlp = settings->value("executableYtDlp", "yt-dlp").toString();
 #endif
+    m_processUrlWithYtdlp = settings->value("processUrlWithYtdlp", true).toBool();
 
     Q_EMIT versionChanged();
     Q_EMIT languageChanged();
@@ -247,6 +249,7 @@ void PQCSettings::loadSettings() {
     Q_EMIT textSearchCaseSensitiveChanged();
     Q_EMIT lastDownloadFolderChanged();
     Q_EMIT executableYtDlpChanged();
+    Q_EMIT processUrlWithYtdlpChanged();
 
 }
 
@@ -278,5 +281,6 @@ void PQCSettings::saveSettings() {
     settings->setValue("textFontPointSize", m_textFontPointSize);
     settings->setValue("lastDownloadFolder", m_lastDownloadFolder);
     settings->setValue("executableYtDlp", m_executableYtDlp);
+    settings->setValue("processUrlWithYtdlp", m_processUrlWithYtdlp);
 
 }
