@@ -212,7 +212,7 @@ void PQCSettings::loadSettings() {
     m_filedialogLocation = settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString();
     m_closeWhenLosingFocus = settings->value("closeWhenLosingFocus", false).toBool();
     m_textWordWrap = settings->value("textWordWrap", true).toBool();
-    m_textFontPointSize = settings->value("textFontPointSize", 12).toInt();
+    m_textFontPointSize = settings->value("textFontPointSize", 10).toInt();
     m_textSearchCaseSensitive = settings->value("textSearchCaseSensitive", false).toBool();
     m_lastDownloadFolder = settings->value("lastDownloadFolder", QDir::homePath()).toString();
 #ifdef Q_OS_WIN

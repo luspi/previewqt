@@ -122,7 +122,7 @@ private:
 
         m_language = settings->value("language", "en").toString();
         m_version  = settings->value("version", "").toString();
-        m_filedialogLocation = settings->value("filedialogLocation", "").toString();
+        m_filedialogLocation = settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString();
 
         m_defaultAppImages = settings->value("defaultAppImages", opt_img[1]).toString();
         m_defaultAppDocuments = settings->value("defaultAppDocuments", opt_doc[0]).toString();
