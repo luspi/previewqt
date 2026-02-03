@@ -1,6 +1,6 @@
 ##########################################################################
 ##                                                                      ##
-## Copyright (C) 2011-2025 Lukas Spies                                  ##
+## Copyright (C) 2024-2026 Lukas Spies                                  ##
 ## Contact: https://previewqt.org                                       ##
 ##                                                                      ##
 ## This file is part of PreviewQt.                                      ##
