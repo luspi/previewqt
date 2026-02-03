@@ -1,5 +1,29 @@
- Changelog PreviewQt - Copyright (C) 2025, Lukas Spies (Lukas@previewqt.org), License: GPLv2 (or later)
+ Changelog PreviewQt - Copyright (C) 2026, Lukas Spies (Lukas@previewqt.org), License: GPLv2 (or later)
 ----------------------------------------------------------------------------------------------------------
+
+ Release 5.0 - 2026-02-06
+----------------------------
+- add: process URLs with yt-dlp and stream found media, show website otherwise
+- add: support for audio files, including cover image (if available/found)
+- add: support for local HTML files
+- add: react to pasted content (files/urls)
+- add: line edit to enter URL or file paths manually
+- add: option to download media streamed with the help of yt-dlp
+- add: 'default system app' as option for categories
+- add: command line flag to quit PreviewQt
+- add: support for XDG_ACTIVATION_TOKEN on Wayland
+- improve: hide-to-systemtray now optional (opt-out)
+- improve: 'start hidden' results in once-off notification next time
+- improve: faster spead of loading image/file display items
+- improve: simpler displaying of text content
+- improve: better CMake setup and options handling
+- improve: portable settings handling
+- fix/improve: checking whether opened/pasted/dropped content is supported
+- fix: obtain currently selected file from dolphin
+- fix: colors of interface
+- fix: retranslating interface
+- fix: default opening location
+
 
  Release 4.0 - 2025-03-06
 ----------------------------

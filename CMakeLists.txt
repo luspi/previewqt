@@ -9,7 +9,7 @@ project(previewqt LANGUAGES CXX)
 ####  GLOBAL VERSION STRING FOR ALL FILES (INCLUDING CPP/QML) ####
 ##################################################################
 
-SET(APPVERSION "dev")
+SET(APPVERSION "5.0")
 
 ###################################
 ####  ENSURE BUILD TYPE IS SET ####
