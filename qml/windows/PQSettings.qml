@@ -126,6 +126,7 @@ Window {
                 text: qsTr("General")
                 color: palette.text
                 opacity: tabbar.currentIndex==0 ? 1 : 0.7
+                font.bold: tabbar.currentIndex==0
             }
             MouseArea {
                 anchors.fill: parent
@@ -150,6 +151,7 @@ Window {
                 text: qsTr("External applications")
                 color: palette.text
                 opacity: tabbar.currentIndex==1 ? 1 : 0.7
+                font.bold: tabbar.currentIndex==1
             }
             MouseArea {
                 anchors.fill: parent
@@ -174,6 +176,7 @@ Window {
                 text: qsTr("Additional tools")
                 color: palette.text
                 opacity: tabbar.currentIndex==2 ? 1 : 0.7
+                font.bold: tabbar.currentIndex==2
             }
             MouseArea {
                 anchors.fill: parent
