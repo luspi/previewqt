@@ -120,12 +120,14 @@ ApplicationWindow {
     Menu {
         id: maincontextmenu
         MenuItem {
-            icon.source: "image://svg/:/open.svg"
             text: qsTr("Open file")
             onTriggered: PQCNotify.requestNewFile()
         }
         MenuItem {
-            icon.source: "image://svg/:/settings.svg"
+            text: qsTr("Type in a path or URL")
+            onTriggered: PQCNotify.showSubWindow("enterpath")
+        }
+        MenuItem {
             text: qsTr("Settings")
             onTriggered: {
                 PQCNotify.showSubWindow("settings")
@@ -133,7 +135,6 @@ ApplicationWindow {
         }
         MenuSeparator {}
         MenuItem {
-            icon.source: "image://svg/:/external.svg"
             enabled: PQCConstants.currentSource!==""
             text: qsTr("Open externally")
             onTriggered: {
@@ -146,38 +147,47 @@ ApplicationWindow {
             }
         }
         MenuItem {
-            icon.source: "image://svg/:/rotateleft.svg"
-            enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
+            enabled: ["doc", "arc", "ani", "svg", "img"].indexOf(PQCConstants.currentType)>-1 && PQCConstants.currentSource!==""
             text: qsTr("Rotate left")
             onTriggered: {
                 PQCNotify.addRotation(-90)
             }
         }
         MenuItem {
-            icon.source: "image://svg/:/rotateright.svg"
-            enabled: ["sph", "vid", "mpv", "bok", "txt"].indexOf(PQCConstants.currentType)==-1 && PQCConstants.currentSource!==""
+            enabled: ["doc", "arc", "ani", "svg", "img"].indexOf(PQCConstants.currentType)>-1 && PQCConstants.currentSource!==""
             text: qsTr("Rotate right")
             onTriggered: {
                 PQCNotify.addRotation(90)
             }
         }
+        MenuItem {
+            enabled: PQCConstants.currentType==="url" && PQCConstants.currentSource!==""
+            text: qsTr("Reload")
+            onTriggered: {
+                PQCNotify.loadNewFile(PQCConstants.currentSource)
+            }
+        }
+        MenuItem {
+            enabled: PQCConstants.currentType==="aud" || (PQCConstants.currentType === "vid" && PQCScriptsConfig.isQtMultimediaEnabled())
+            text: qsTr("Show media info")
+            onTriggered: {
+                PQCNotify.showSubWindow("mediainfo")
+            }
+        }
         MenuSeparator {}
         MenuItem {
-            icon.source: "image://svg/:/about.svg"
             text: qsTr("About")
             onTriggered: {
                 PQCNotify.showSubWindow("about")
             }
         }
         MenuItem {
-            icon.source: "image://svg/:/help.svg"
             text: qsTr("Help")
             onTriggered: {
                 PQCNotify.showSubWindow("help")
             }
         }
         MenuItem {
-            icon.source: "image://svg/:/exit.svg"
             text: qsTr("Quit")
             onTriggered: {
                 Qt.quit()
