@@ -64,7 +64,9 @@ appimage:
     - ./linuxdeploy-x86_64.AppImage --appimage-extract
     - rm ./linuxdeploy-plugin-qt-x86_64.AppImage
     - cp /usr/bin/qmake6 /usr/bin/qmake # This file is needed for the next run to succeed
-    - QML_SOURCES_PATHS=./qml ./squashfs-root/AppRun --appdir ./appdir/ --plugin=qt --output appimage
+    - export EXTRA_PLATFORM_PLUGINS=libqwayland-generic.so
+    - export EXTRA_QT_MODULES="waylandcompositor;svg"
+    - LD_LIBRARY_PATH=appdir/usr/lib QML_SOURCES_PATHS=./qml ./squashfs-root/AppRun --appdir ./appdir/ --plugin=qt --output appimage
     - mv ./PreviewQt*.AppImage PreviewQt-nightly.AppImage
 
   artifacts:
@@ -105,7 +107,9 @@ releaseappimage:
     - ./linuxdeploy-x86_64.AppImage --appimage-extract
     - rm ./linuxdeploy-plugin-qt-x86_64.AppImage
     - cp /usr/bin/qmake6 /usr/bin/qmake # This file is needed for the next run to succeed
-    - QML_SOURCES_PATHS=./qml ./squashfs-root/AppRun --appdir ./appdir/ --plugin=qt --output appimage
+    - export EXTRA_PLATFORM_PLUGINS=libqwayland-generic.so
+    - export EXTRA_QT_MODULES="waylandcompositor;svg"
+    - LD_LIBRARY_PATH=appdir/usr/lib QML_SOURCES_PATHS=./qml ./squashfs-root/AppRun --appdir ./appdir/ --plugin=qt --output appimage
     - mv ./PreviewQt*.AppImage PreviewQt-latesttag.AppImage
 
   artifacts:
