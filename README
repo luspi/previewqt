@@ -13,12 +13,13 @@
  Supported file formats include:
 
  - More than 140 IMAGE FORMATS - A list of all possibly supported image formats can be found on the website for PhotoQt: https://photoqt.org/formats
- - All of the common VIDEO FORMATS
+ - All of the common VIDEO and AUDIO FORMATS
  - PHOTO SPHERES and 360 DEGREE PANORAMAS (that use equirectangular prohections)
  - MOTION PHOTOS, MICRO VIDEOS, and APPLE LIVE PHOTOS
  - PDF DOCUMENTS including page navigation
  - ARCHIVES (zip, tar.gz, rar, 7-zip) with the ability to explore its content
  - COMIC BOOKS (cbz, cbt, cbr, cb7) including page navigation
+ - WEBSITES, including pre-processing with YT-DLP for directly streaming media
 
  It is also possible to set up an external application for the categories of files. With a shortcut or button it is possible to pass a previewed file on to the provided external application for further processing.
 

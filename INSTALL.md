@@ -20,13 +20,13 @@ Dependencies that are needed by default, but can be disabled via CMake:
 - [Poppler](https://poppler.freedesktop.org) (can be replaced by QtPDF)
 - [FreeImage](https://freeimage.sourceforge.io)
 - [DevIL](http://openil.sourceforge.net)
-- [libmpv](https://mpv.io/)
 - [KSyntaxHighlighting](https://invent.kde.org/frameworks/syntax-highlighting)
 
 Dependencies that are disabled by default, but can be enabled via CMake:
 
 - [LibVips](https://www.libvips.org/)
 - [resvg](https://github.com/RazrFalcon/resvg)
+- [libmpv](https://mpv.io/) (requires switching off QtMultimedia)
 
 
 Please note that you probably want to have as many of these enabled as possible as they greatly enhance the experience of PreviewQt.

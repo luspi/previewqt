@@ -11,12 +11,13 @@ PreviewQt is a very simple application for **previewing a wide range of files**.
 Supported file formats include:
 
 - More than **140 image formats** - A list of all possibly supported image formats [can be found on the website for PhotoQt](https://photoqt.org/formats)
-- All of the common **video formats**
+- All of the common **video** and **audio formats**
 - **Photo spheres** and **360 degree panoramas** (that use equirectangular prohections)
 - **Motion photos**, **Micro videos**, and **Apple live photos**
 - **PDF documents** including page navigation
 - **Archives** (zip, tar.gz, rar, 7-zip) with the ability to explore its content
 - **Comic Books** (cbz, cbt, cbr, cb7) including page navigation
+- **Websites**, including pre-processing with **yt-dlp** for directly streaming media
 
 It is also possible to set up an external application for the categories of files. With a shortcut or button it is possible to pass a previewed file on to the provided external application for further processing.
 
