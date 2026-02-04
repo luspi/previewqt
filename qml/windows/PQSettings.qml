@@ -26,7 +26,7 @@ import QtQuick.Controls
 
 import PreviewQt
 
-ApplicationWindow {
+Window {
 
     id: settings_top
 
@@ -108,28 +108,87 @@ ApplicationWindow {
 
     }
 
-    // the top bars
-    TabBar {
+    Item {
+
         id: tabbar
+
         width: parent.width
-        TabButton {
-            //: Tab name: general settings
-            text: qsTr("General")
-            font.bold: tabbar.currentIndex===0
-            width: settings_top.width/3
+        height: 40
+        property int currentIndex: 0
+
+        Rectangle {
+            x: 0
+            width: parent.width/3
+            height: parent.height
+            color: tabbar.currentIndex==0 ? palette.base : palette.disabled.base
+            Text {
+                anchors.centerIn: parent
+                text: qsTr("General")
+                color: palette.text
+                opacity: tabbar.currentIndex==0 ? 1 : 0.7
+            }
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: tabbar.currentIndex = 0
+            }
+            Rectangle {
+                x: parent.width-width
+                width: 1
+                height: parent.height
+                color: palette.text
+            }
         }
-        TabButton {
-            //: Tab name
-            text: qsTr("External applications")
-            font.bold: tabbar.currentIndex===1
-            width: settings_top.width/3
+
+        Rectangle {
+            x: parent.width/3
+            width: parent.width/3
+            height: parent.height
+            color: tabbar.currentIndex==1 ? palette.base : palette.disabled.base
+            Text {
+                anchors.centerIn: parent
+                text: qsTr("External applications")
+                color: palette.text
+                opacity: tabbar.currentIndex==1 ? 1 : 0.7
+            }
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: tabbar.currentIndex = 1
+            }
+            Rectangle {
+                x: parent.width-width
+                width: 1
+                height: parent.height
+                color: palette.text
+            }
         }
-        TabButton {
-            //: Tab name
-            text: qsTr("Additional Tools")
-            font.bold: tabbar.currentIndex===2
-            width: settings_top.width/3
+
+        Rectangle {
+            x: 2*parent.width/3
+            width: parent.width/3
+            height: parent.height
+            color: tabbar.currentIndex==2 ? palette.base : palette.disabled.base
+            Text {
+                anchors.centerIn: parent
+                text: qsTr("Additional tools")
+                color: palette.text
+                opacity: tabbar.currentIndex==2 ? 1 : 0.7
+            }
+            MouseArea {
+                anchors.fill: parent
+                hoverEnabled: true
+                onClicked: tabbar.currentIndex = 2
+            }
         }
+
+        Rectangle {
+            width: parent.width
+            height: 1
+            y: parent.height-height
+            color: palette.text
+        }
+
     }
 
     StackLayout {
@@ -153,6 +212,7 @@ ApplicationWindow {
             id: set_general
             width: stack.width
             height: stack.height
+            optionsLoaded: settings_top.optionsLoaded
         }
 
         /************************************/

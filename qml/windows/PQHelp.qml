@@ -24,7 +24,7 @@ import QtQuick
 import QtQuick.Controls
 import PreviewQt
 
-ApplicationWindow {
+Window {
 
     id: help_top
 
@@ -36,6 +36,8 @@ ApplicationWindow {
     modality: Qt.ApplicationModal
     width: 500
     height: 500
+
+    color: palette.base
 
     onVisibilityChanged: (visibility) => {
         PQCConstants.windowHelpVisible = (visibility === Window.Hidden ? false : true)

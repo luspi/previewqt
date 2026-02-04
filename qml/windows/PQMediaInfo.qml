@@ -24,7 +24,7 @@ import QtQuick
 import QtQuick.Controls
 import PreviewQt
 
-ApplicationWindow {
+Window {
 
     id: mediainfo_top
 
@@ -36,6 +36,8 @@ ApplicationWindow {
     modality: Qt.ApplicationModal
     width: 400
     height: 300
+
+    color: palette.base
 
     onVisibilityChanged: (visibility) => {
         PQCConstants.windowMediaInfoVisible = (visibility === Window.Hidden ? false : true)

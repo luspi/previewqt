@@ -24,7 +24,7 @@ import QtQuick
 import QtQuick.Controls
 import PreviewQt
 
-ApplicationWindow {
+Window {
 
     id: enter_top
 
@@ -67,6 +67,7 @@ ApplicationWindow {
             font.pointSize: 12
             text: "Enter a path or URL"
             font.bold: true
+            color: palette.text
             x: 10
             width: parent.width-20
             horizontalAlignment: Text.AlignHCenter

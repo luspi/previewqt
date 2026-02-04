@@ -34,6 +34,8 @@ Flickable {
 
     ScrollBar.vertical: ScrollBar { id: scrollbargeneral }
 
+    property bool optionsLoaded: false
+
     property int usableWidth: width-20 - (scrollbargeneral.visible ? scrollbargeneral.width : 0)
 
     clip: true
@@ -86,6 +88,7 @@ Flickable {
                         "Deutsch"]
                 currentIndex: codes.indexOf(PQCSettings.language)
                 onCurrentIndexChanged: {
+                    if(!generalsettings.optionsLoaded) return
                     catchKeyPress.forceActiveFocus()
                     PQCSettings.language = codes[currentIndex]
                     PQCScriptsConfig.updateTranslation(PQCSettings.language)
@@ -107,6 +110,7 @@ Flickable {
             width: generalsettings.usableWidth
             checked: !PQCSettings.topBarAutoHide
             onCheckedChanged: {
+                if(!generalsettings.optionsLoaded) return
                 catchKeyPress.forceActiveFocus()
                 if(PQCSettings.topBarAutoHide === checked)
                     PQCSettings.topBarAutoHide = !checked
@@ -118,6 +122,7 @@ Flickable {
             text: qsTr("Hide to system tray when closing window")
             checked: PQCSettings.hideToSystemTray
             onCheckedChanged: {
+                if(!generalsettings.optionsLoaded) return
                 catchKeyPress.forceActiveFocus()
                 if(PQCSettings.hideToSystemTray !== checked)
                     PQCSettings.hideToSystemTray = checked
@@ -131,6 +136,7 @@ Flickable {
             checked: PQCSettings.launchHiddenToSystemTray
             enabled: hideToTray.checked
             onCheckedChanged: {
+                if(!generalsettings.optionsLoaded) return
                 catchKeyPress.forceActiveFocus()
                 if(PQCSettings.launchHiddenToSystemTray !== checked) {
                     PQCSettings.launchHiddenToSystemTray = checked
@@ -144,6 +150,7 @@ Flickable {
             width: generalsettings.usableWidth
             checked: PQCSettings.closeWhenLosingFocus
             onCheckedChanged: {
+                if(!generalsettings.optionsLoaded) return
                 catchKeyPress.forceActiveFocus()
                 if(PQCSettings.closeWhenLosingFocus !== checked)
                     PQCSettings.closeWhenLosingFocus = checked
@@ -163,6 +170,7 @@ Flickable {
             width: generalsettings.usableWidth
             checked: PQCSettings.defaultWindowMaximized
             onCheckedChanged: {
+                if(!generalsettings.optionsLoaded) return
                 catchKeyPress.forceActiveFocus()
                 if(PQCSettings.defaultWindowMaximized !== checked)
                     PQCSettings.defaultWindowMaximized = checked
@@ -193,6 +201,7 @@ Flickable {
                 to: 99999
                 value: PQCSettings.defaultWindowWidth
                 onValueChanged: {
+                    if(!generalsettings.optionsLoaded) return
                     if(value !== PQCSettings.defaultWindowWidth)
                         PQCSettings.defaultWindowWidth = value
                 }
@@ -212,6 +221,7 @@ Flickable {
                 to: 99999
                 value: PQCSettings.defaultWindowHeight
                 onValueChanged: {
+                    if(!generalsettings.optionsLoaded) return
                     if(value !== PQCSettings.defaultWindowHeight)
                         PQCSettings.defaultWindowHeight = value
                 }
@@ -233,6 +243,7 @@ Flickable {
             text: qsTr("Resize window to content")
             checked: PQCSettings.maximizeImageSizeAndAdjustWindow
             onCheckedChanged: {
+                if(!generalsettings.optionsLoaded) return
                 catchKeyPress.forceActiveFocus()
                 if(PQCSettings.maximizeImageSizeAndAdjustWindow !== checked)
                     PQCSettings.maximizeImageSizeAndAdjustWindow = checked

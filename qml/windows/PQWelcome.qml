@@ -25,7 +25,7 @@ import QtQuick
 import QtQuick.Controls
 import PreviewQt
 
-ApplicationWindow {
+Window {
 
     id: welcome_top
 
