@@ -220,7 +220,7 @@ void PQCSettings::loadSettings() {
 #else
     m_executableYtDlp = settings->value("executableYtDlp", "yt-dlp").toString();
 #endif
-    m_processUrlWithYtdlp = settings->value("processUrlWithYtdlp", true).toBool();
+    m_processUrlWithYtdlp = settings->value("processUrlWithYtdlp", false).toBool();
 
     Q_EMIT versionChanged();
     Q_EMIT languageChanged();
