@@ -120,6 +120,10 @@ PQCSettings::PQCSettings() {
             }
         }
 
+        // we need to write the settings file on first start as otherwise the file is not created
+        // and if the file does not exist then PreviewQt assumes it is a first start.
+        saveTimer->start();
+
     }
 #endif
 
