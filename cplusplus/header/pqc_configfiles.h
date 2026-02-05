@@ -46,14 +46,14 @@ public:
     }
 
     const QString FILEFORMATS_DB() {
-        return QString("%1/fileformats.db").arg(m_CONFIG_DIR);
+        return m_FILEFORMATS_DB;
     }
 
     // This is the old filename for all supported formats.
     // It should not be used anywhere anymore.
     // Instead, the fileformats.db above should be used.
     const QString IMAGEFORMATS_DB() {
-        return QString("%1/imageformats.db").arg(m_CONFIG_DIR);
+        return m_IMAGEFORMATS_DB;
     }
 
 private:
@@ -69,11 +69,13 @@ private:
 #endif
 
         m_IMAGEFORMATS_DB = QString("%1/imageformats.db").arg(m_CONFIG_DIR);
+        m_FILEFORMATS_DB = QString("%1/fileformats.db").arg(m_CONFIG_DIR);
 
     }
 
     QString m_CONFIG_DIR;
     QString m_CACHE_DIR;
     QString m_IMAGEFORMATS_DB;
+    QString m_FILEFORMATS_DB;
 
 };

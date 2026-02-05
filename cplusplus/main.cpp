@@ -121,8 +121,11 @@ int main(int argc, char *argv[]) {
     QString portablefolder = QString("%1/PreviewQtData").arg(argc > 1 ? argv[1] : QCoreApplication::applicationDirPath());
     QDir dir;
     dir.mkdir(portablefolder);
+    QFile filedir(portablefolder);
+    filedir.setPermissions(filedir.permissions()|QFileDevice::WriteOwner);
 #endif
     qputenv("PREVIEWQT_PORTABLE_DATA_LOCATION", portablefolder.toLocal8Bit());
+    qDebug() << "Setting portable folder to:" << portablefolder;
 #endif
 
 #ifdef PQMEPUB

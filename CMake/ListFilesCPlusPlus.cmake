@@ -48,6 +48,7 @@ SET(previewqt_SRC "cplusplus/main.cpp"
                   "cplusplus/header/pqc_singleinstance.h"
                   "cplusplus/header/pqc_specialactions.h"
                   "cplusplus/header/pqc_textprocessing.h"
+                  "cplusplus/header/pqc_configfiles.h"
 
                   "cplusplus/header/pqc_scriptsconfig.h"
                   "cplusplus/header/pqc_scriptsconfig_qml.h"
