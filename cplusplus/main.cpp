@@ -118,7 +118,7 @@ int main(int argc, char *argv[]) {
         newdir.mkdir(portablefolder);
     }
 #else
-    QString portablefolder = QString("%1/.PreviewQtData").arg(argc > 1 ? argv[1] : QCoreApplication::applicationDirPath());
+    QString portablefolder = QString("%1/PreviewQtData").arg(argc > 1 ? argv[1] : QCoreApplication::applicationDirPath());
     QDir dir;
     dir.mkdir(portablefolder);
 #endif
@@ -176,15 +176,6 @@ int main(int argc, char *argv[]) {
             }
         }
     }
-
-#ifdef PQMPORTABLETWEAKS
-    if(argc > 1) {
-        for(int i = 2; i < argc; ++i) {
-            argv[i-1] = argv[i];
-        }
-        argc -= 1;
-    }
-#endif
 
     PQCSingleInstance app(argc, argv);
 

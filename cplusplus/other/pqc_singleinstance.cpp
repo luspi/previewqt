@@ -54,7 +54,14 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     bool setDebug = false;
     bool quitRemote = false;
 
-    for(int i = 1; i < argc; ++i) {
+#ifdef PQMPORTABLETWEAKS
+    // the first entry is the config dir that needs to be ignored
+    const int startLoop = 2;
+#else
+    const int startLoop = 1;
+#endif
+
+    for(int i = startLoop; i < argc; ++i) {
 
         QString arg = argv[i];
 
