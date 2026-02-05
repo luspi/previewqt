@@ -58,7 +58,7 @@ Unicode True
 ;include the Uninstall log header
 !include AdvUninstLog2.nsh
 
-!define PREVIEWQT_VERSION "3.0"
+!define PREVIEWQT_VERSION "xxx"
 
 ; name of project and installer filename
 Name "PreviewQt"
@@ -1226,6 +1226,7 @@ Section "Uninstall"
     !insertmacro UNINSTALL.NEW_UNINSTALL "$OUTDIR"
     
     DeleteRegKey ${INSTDIR_REG_ROOT} "${INSTDIR_REG_KEY}"
+    DeleteRegKey HKCU "Software\PreviewQt"
 
     System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)'
 
