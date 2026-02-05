@@ -18,7 +18,7 @@
             <li>Comic Books (cbz, cbt, cbr, cb7) including page navigation</li>
             <li>E-Books (epub) including navigation and font scaling</li>
             <li>Text files including syntax highlighting and search feature</li>
-            <li>Support for loading URLs, including pre-processing with yt-dlp for directly streaming media</li>
+            <li>Support for loading Websites (both local and remote), including pre-processing with yt-dlp for directly streaming contained media</li>
         </ul>
         <p>If you are using Dolphin file manager, PreviewQt can be invoked by shortcut to load whichever file is currently highlighted to allow for previewing any file easily without having to se PreviewQt as default application. You can pass files to PreviewQt by means of a remote application (small square) wth any file dropped on it passed on to PreviewQt. If you are running KDE Plasma 6, there is also a plasmoid that integrates nicely with your desktop.</p>
         <p>If you like the overall concept of PreviewQt but would like to have more features, check out the fully featured image viewer PhotoQt.</p>
@@ -108,7 +108,7 @@
     <releases>
         <release version="5.0" date="2026-02-06">
             <description>
-                TODO
+                <p>It has been a little while since the last release of PreviewQt, so it is time for some updates. This release fixes a few smaller bugs, improves a couple things based on feedback I received, and adds support for even more files and content.</p>
             </description>
             <url>
                 https://previewqt.org/news/previewqt-5.0
