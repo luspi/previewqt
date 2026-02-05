@@ -71,54 +71,22 @@ PQCSettings::PQCSettings() {
 #ifndef Q_OS_WIN
     if(firstStart) {
 
-        for(auto &ele : opt_img) {
+        // since PreviewQt might be registered for image types we set the default application to the first tool present on this system
+        for(auto &ele : opt_img.mid(1)) {
             if(checkToolExistence(ele)) {
                 m_defaultAppImages = ele;
                 break;
             }
         }
-        for(auto &ele : opt_doc) {
-            if(checkToolExistence(ele)) {
-                m_defaultAppDocuments = ele;
-                break;
-            }
-        }
-        for(auto &ele : opt_arc) {
-            if(checkToolExistence(ele)) {
-                m_defaultAppArchives = ele;
-                break;
-            }
-        }
-        for(auto &ele : opt_com) {
-            if(checkToolExistence(ele)) {
-                m_defaultAppComicBooks = ele;
-                break;
-            }
-        }
-        for(auto &ele : opt_bok) {
-            if(checkToolExistence(ele)) {
-                m_defaultAppEBooks = ele;
-                break;
-            }
-        }
-        for(auto &ele : opt_vid) {
-            if(checkToolExistence(ele)) {
-                m_defaultAppVideos = ele;
-                break;
-            }
-        }
-        for(auto &ele : opt_txt) {
-            if(checkToolExistence(ele)) {
-                m_defaultAppText = ele;
-                break;
-            }
-        }
-        for(auto &ele : opt_url) {
-            if(checkToolExistence(ele)) {
-                m_defaultAppUrl = ele;
-                break;
-            }
-        }
+
+        // all other types default to the default application
+        m_defaultAppDocuments = "_default_";
+        m_defaultAppArchives = "_default_";
+        m_defaultAppComicBooks = "_default_";
+        m_defaultAppEBooks = "_default_";
+        m_defaultAppVideos = "_default_";
+        m_defaultAppText = "_default_";
+        m_defaultAppUrl = "_default_";
 
         // we need to write the settings file on first start as otherwise the file is not created
         // and if the file does not exist then PreviewQt assumes it is a first start.
