@@ -14,7 +14,7 @@ localization:
     - /usr/lib/qt6/bin/lupdate -no-obsolete ../qml/ ../cplusplus/ -ts previewqt.ts
     - git add previewqt.ts
     - git diff-index --quiet HEAD || git commit -m "updating translation source files from CI - Qt6 version"
-    - git push
+    - git push origin main
 
 appimage:
 
@@ -39,13 +39,6 @@ appimage:
     - cd ..
     - export QT_SELECT=qt6
     - rm -rf lang/
-    - eval `ssh-agent -s`
-    - echo "${SSH_PRIVATE_KEY}" | tr -d '\r' | ssh-add - > /dev/null # add ssh key
-    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
-    - echo "${SSH_PUBLIC_KEY}" >> ~/.ssh/id_rsa.pub
-    - echo "StrictHostKeyChecking no" > ~/.ssh/config
-    - git config --global user.email "${CI_EMAIL}"
-    - git config --global user.name "${CI_USERNAME}"
     - git clone -b l10n_main git@gitlab.com:lspies/previewqt-lang
     - mv previewqt-lang/localized lang
     - mkdir -p build && cd build/
