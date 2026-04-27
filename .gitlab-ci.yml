@@ -39,7 +39,7 @@ appimage:
     - cd ..
     - export QT_SELECT=qt6
     - rm -rf lang/
-    - git clone -b l10n_main git@gitlab.com:lspies/previewqt-lang
+    - git clone -b l10n_main https://gitlab.com/lspies/previewqt-lang
     - mv previewqt-lang/localized lang
     - mkdir -p build && cd build/
     - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_QTMULTIMEDIA=ON -DWITH_LIBMPV=OFF -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=ON -DWITH_LCMS2=ON -DWITH_FREEIMAGE=OFF -DWITH_KF6SYNTAXHIGHLIGHT=ON
