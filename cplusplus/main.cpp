@@ -39,9 +39,8 @@
 
 #include <pqc_messagehandler.h>
 #include <pqc_scriptsconfig.h>
-#include <pqc_fileformats.h>
-#include <pqc_providerfull.h>
-#include <pqc_providersvg.h>
+#include <pqc_imageproviderfull.h>
+#include <pqc_imageprovidersvg.h>
 #include <pqc_settingscpp.h>
 #include <pqc_singleinstance.h>
 #include <pqc_configfiles.h>
@@ -159,27 +158,6 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // make sure the fileformats database exists
-    // if only the old database exist, attempt to copy it over (this change happened for v4.0)
-    if(!QFileInfo::exists(PQCConfigFiles::get().FILEFORMATS_DB())) {
-        bool copyNewDB = true;
-        if(QFileInfo::exists(PQCConfigFiles::get().IMAGEFORMATS_DB())) {
-            if(!QFile::copy(PQCConfigFiles::get().IMAGEFORMATS_DB(), PQCConfigFiles::get().FILEFORMATS_DB()))
-                qWarning() << "Unable to copy imageformats.db to fileformats.db. Attempting to create new database file";
-            else
-                copyNewDB = false;
-        }
-        if(copyNewDB) {
-            if(!QFile::copy(":/fileformats.db", PQCConfigFiles::get().FILEFORMATS_DB())) {
-                qCritical() << "Unable to create default fileformats database!";
-                std::exit(1);
-            } else {
-                QFile file(PQCConfigFiles::get().FILEFORMATS_DB());
-                file.setPermissions(file.permissions()|QFileDevice::WriteOwner);
-            }
-        }
-    }
-
     PQCSingleInstance app(argc, argv);
 
 #ifdef PQMLIBMPV
@@ -221,9 +199,6 @@ int main(int argc, char *argv[]) {
     // Check for upgrade to PreviewQt
     if(PQCScriptsConfig::get().isUpgrade()) {
 
-        // Validate image formats database
-        PQCFileFormats::get().validate();
-
         // Update stored version number
         PQCSettingsCPP::get().setVersion(PQMVERSION);
 
@@ -232,10 +207,8 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &app, []() { QApplication::exit(-1); }, Qt::QueuedConnection);
 
-    qmlRegisterSingletonInstance("PQCFileFormats", 1, 0, "PQCFileFormats", &PQCFileFormats::get());
-
-    engine.addImageProvider("full", new PQCProviderFull);
-    engine.addImageProvider("svg", new PQCProviderSVG);
+    engine.addImageProvider("full", new PQCImageProviderFull);
+    engine.addImageProvider("svg", new PQCImageProviderSVG);
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
     engine.loadFromModule("PreviewQt", "PQMainWindow");

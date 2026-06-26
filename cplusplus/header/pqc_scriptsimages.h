@@ -63,6 +63,7 @@ public:
     int getDocumentPageCount(QString path);
     QString extractMotionPhoto(QString path);
     int getExifOrientation(QString path);
+    void applyExifOrientation(const QString filename, QImage &img);
     QString getTextFileContents(QString path);
 
     QStringList getArchiveContent(QString path, bool insideFilenameOnly = false);

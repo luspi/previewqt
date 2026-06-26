@@ -40,8 +40,6 @@
 #include <pqc_scriptsconfig.h>
 #include <pqc_scriptsfilespaths.h>
 #include <pqc_scriptsother.h>
-#include <pqc_loadfile.h>
-#include <pqc_fileformats.h>
 #include <pqc_specialactions.h>
 
 PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(argc, argv) {

@@ -21,9 +21,9 @@
  **************************************************************************/
 
 #include <pqc_scriptsimages.h>
-#include <pqc_fileformats.h>
 #include <pqc_configfiles.h>
 #include <pqc_settingscpp.h>
+#include <pqc_filehandler.h>
 
 #ifdef WIN32
 #include <WinSock2.h>
@@ -144,13 +144,13 @@ QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenam
 
             if(insideFilenameOnly) {
                 for(const QString &f : std::as_const(allfiles)) {
-                    if(PQCFileFormats::get().getAllFormats().contains(QFileInfo(f).suffix()))
+                    if(PQCFileHandler::get().getSuffixes().contains(QFileInfo(f).suffix()))
                         ret.append(f);
                 }
                 listInsideOnly = ret;
             } else {
                 for(const QString &f : std::as_const(allfiles)) {
-                    if(PQCFileFormats::get().getAllFormats().contains(QFileInfo(f).suffix())) {
+                    if(PQCFileHandler::get().getSuffixes().contains(QFileInfo(f).suffix())) {
                         ret.append(QString("%1::ARC::%2").arg(f, path));
                         listInsideOnly.append(f);
                     }
@@ -194,7 +194,7 @@ QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenam
             QString filenameinside = QString::fromWCharArray(archive_entry_pathname_w(entry));
 
             // If supported file format, append to temporary list
-            if((PQCFileFormats::get().getAllFormats().contains(QFileInfo(filenameinside).suffix().toLower())))
+            if((PQCFileHandler::get().getSuffixes().contains(QFileInfo(filenameinside).suffix().toLower())))
                 listInsideOnly.append(filenameinside);
 
         }
@@ -466,6 +466,75 @@ int PQCScriptsImages::getExifOrientation(QString path) {
 
 }
 
+void PQCScriptsImages::applyExifOrientation(const QString filename, QImage &img) {
+
+    const int orientation = getExifOrientation(filename);
+
+    QTransform transform;
+
+    switch(orientation) {
+
+    case 1:
+        // no rotation, no mirror
+        break;
+    case 2:
+        // no rotation, horizontal mirror
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+        img = img.flipped(Qt::Horizontal);
+#else
+        img = img.mirrored(true, false);
+#endif
+        break;
+    case 3:
+        // 180 degree rotation, no mirror
+        transform.rotate(180);
+        img = img.transformed(transform);
+        break;
+    case 4:
+        // 180 degree rotation, horizontal mirror
+        transform.rotate(180);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+        img = img.flipped(Qt::Horizontal).transformed(transform);
+#else
+        img = img.mirrored(true, false).transformed(transform);
+#endif
+        break;
+    case 5:
+        // 90 degree rotation, horizontal mirror
+        transform.rotate(90);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+        img = img.flipped(Qt::Horizontal).transformed(transform);
+#else
+        img = img.mirrored(true, false).transformed(transform);
+#endif
+        break;
+    case 6:
+        // 90 degree rotation, no mirror
+        transform.rotate(90);
+        img = img.transformed(transform);
+        break;
+    case 7:
+        // 270 degree rotation, horizontal mirror
+        transform.rotate(270);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+        img = img.flipped(Qt::Horizontal).transformed(transform);
+#else
+        img = img.mirrored(true, false).transformed(transform);
+#endif
+        break;
+    case 8:
+        // 270 degree rotation, no mirror
+        transform.rotate(270);
+        img = img.transformed(transform);
+        break;
+    default:
+        qWarning() << "Unexpected orientation value received:" << orientation;
+        break;
+
+    }
+
+}
+
 bool PQCScriptsImages::isPhotoSphere(QString path) {
 
     qDebug() << "args: path =" << path;
@@ -540,7 +609,7 @@ bool PQCScriptsImages::isMpvVideo(QString path) {
 #ifdef PQMLIBMPV
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCFileFormats::get().getAllFormatsLibmpv().contains(suf)) {
+    if(PQCFileHandler::get().getSuffixes("libmpv").contains(suf)) {
 
         supported = true;
 
@@ -548,7 +617,7 @@ bool PQCScriptsImages::isMpvVideo(QString path) {
 
         QMimeDatabase db;
         QString mimetype = db.mimeTypeForFile(path).name();
-        if(PQCFileFormats::get().getAllMimeTypesLibmpv().contains(mimetype))
+        if(PQCFileHandler::get().getMimetypes("libmpv").contains(mimetype))
             supported = true;
 
     }
@@ -568,7 +637,7 @@ bool PQCScriptsImages::isQtVideo(QString path) {
 #ifdef PQMQTMULTIMEDIA
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCFileFormats::get().getAllFormatsVideo().contains(suf)) {
+    if(PQCFileHandler::get().getSuffixes("video").contains(suf)) {
 
         supported = true;
 
@@ -576,7 +645,7 @@ bool PQCScriptsImages::isQtVideo(QString path) {
 
         QMimeDatabase db;
         QString mimetype = db.mimeTypeForFile(path).name();
-        if(PQCFileFormats::get().getAllMimeTypesVideo().contains(mimetype))
+        if(PQCFileHandler::get().getMimetypes("video").contains(mimetype))
             supported = true;
 
     }
@@ -597,12 +666,12 @@ bool PQCScriptsImages::isPDFDocument(QString path) {
     qDebug() << "args: path =" << path;
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCFileFormats::get().getAllFormatsPoppler().contains(suf))
+    if(PQCFileHandler::get().getSuffixes("pdf").contains(suf))
         return true;
 
     QMimeDatabase db;
     QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCFileFormats::get().getAllMimeTypesPoppler().contains(mimetype))
+    if(PQCFileHandler::get().getMimetypes("pdf").contains(mimetype))
         return true;
 
     return false;
@@ -621,12 +690,12 @@ bool PQCScriptsImages::isLocalURL(QString url) {
 bool PQCScriptsImages::isAudio(QString path) {
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCFileFormats::get().getAllFormatsAudio().contains(suf))
+    if(PQCFileHandler::get().getSuffixes("audio").contains(suf))
         return true;
 
     QMimeDatabase db;
     QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCFileFormats::get().getAllMimeTypesAudio().contains(mimetype))
+    if(PQCFileHandler::get().getMimetypes("audio").contains(mimetype))
         return true;
 
     return false;
@@ -694,12 +763,12 @@ bool PQCScriptsImages::isArchive(QString path) {
 #ifdef PQMLIBARCHIVE
 
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suf))
+    if(PQCFileHandler::get().getSuffixes("libarchive").contains(suf))
         return true;
 
     QMimeDatabase db;
     QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype))
+    if(PQCFileHandler::get().getMimetypes("libarchive").contains(mimetype))
         return true;
 
 #endif
@@ -1054,13 +1123,13 @@ bool PQCScriptsImages::isTextDocument(QString path) {
     qDebug() << "args: path =" << path;
 
     const QString suffix = QFileInfo(path).suffix();
-    if(PQCFileFormats::get().getAllFormatsText().contains(suffix.toLower()))
+    if(PQCFileHandler::get().getSuffixes("text").contains(suffix.toLower()))
         return true;
 
     QMimeDatabase db;
     QString mimetype = db.mimeTypeForFile(path).name();
     qDebug() << "detected mime type:" << mimetype;
-    if(mimetype.startsWith("text/") || PQCFileFormats::get().getAllMimeTypesText().contains(mimetype))
+    if(mimetype.startsWith("text/") || PQCFileHandler::get().getMimetypes("text").contains(mimetype))
         return true;
 
     return false;

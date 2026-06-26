@@ -1,0 +1,239 @@
+/**************************************************************************
+ **                                                                      **
+ ** Copyright (C) 2011-2026 Lukas Spies                                  **
+ ** Contact: https://photoqt.org                                         **
+ **                                                                      **
+ ** This file is part of PhotoQt.                                        **
+ **                                                                      **
+ ** PhotoQt is free software: you can redistribute it and/or modify      **
+ ** it under the terms of the GNU General Public License as published by **
+ ** the Free Software Foundation, either version 2 of the License, or    **
+ ** (at your option) any later version.                                  **
+ **                                                                      **
+ ** PhotoQt is distributed in the hope that it will be useful,           **
+ ** but WITHOUT ANY WARRANTY; without even the implied warranty of       **
+ ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        **
+ ** GNU General Public License for more details.                         **
+ **                                                                      **
+ ** You should have received a copy of the GNU General Public License    **
+ ** along with PhotoQt. If not, see <http://www.gnu.org/licenses/>.      **
+ **                                                                      **
+ **************************************************************************/
+
+#include <fileplugins/pqc_fileplugin_devil.h>
+#include <pqc_settingscpp.h>
+#include <pqc_scriptsother.h>
+#include <pqc_scriptsimages.h>
+#include <pqc_helper.h>
+
+#include <QFile>
+#include <QtDebug>
+
+#ifdef PQMDEVIL
+#include <IL/il.h>
+#endif
+
+PQCFilePluginDevIL::PQCFilePluginDevIL() {
+
+#ifdef PQMDEVIL
+    setData({
+        {26486,
+             {{"Adobe PhotoShop"}, {"psd","psb","psdt"}, {"image/vnd.adobe.photoshop"}}},
+        {55462,
+             {{"Alias/Wavefront RLE image format"}, {"pix","als","alias"}, {}}},
+        {45621,
+             {{"BMP: Microsoft Windows bitmap"}, {"bmp","dib"}, {"image/bmp","image/x-ms-bmp"}}},
+        {58156,
+             {{"CUR: Microsoft Windows cursor format"}, {"cur"}, {"image/x-win-bitmap"}}},
+        {44562,
+             {{"Digital Imaging and Communications in Medicine (DICOM) image"}, {"dic","dcm"}, {"application/dicom","image/dicom-rle"}}},
+        {74447,
+             {{"DirectDraw Surface"}, {"dds"}, {}}},
+        {13444,
+             {{"Dr. Halo"}, {"cut","pal"}, {}}},
+        {12444,
+             {{"FITS: Flexible Image Transport System"}, {"fits","fit","fts"}, {"image/fits"}}},
+        {52412,
+             {{"GIF: Graphics Interchange Format"}, {"gif"}, {"image/gif"}}},
+        {11113,
+             {{"HDR: Radiance RGBE image format"}, {"rgbe","hdr","rad"}, {}}},
+        {19991,
+             {{"Heavy Metal: FAKK 2"}, {"ftx"}, {}}},
+        {28882,
+             {{"Interchange File Format"}, {"iff"}, {}}},
+        {37773,
+             {{"Interlaced Bitmap"}, {"lbm"}, {}}},
+        {11485,
+             {{"JPEG: Joint Photographic Experts Group JFIF format"}, {"jpeg","jpg","jpe","jif"}, {"image/jpeg"}}},
+        {66646,
+             {{"Microsoft Windows icon format"}, {"ico"}, {"image/vnd.microsoft.icon","image/x-icon"}}},
+        {16685,
+             {{"PBM: Portable bitmap format (black and white)"}, {"pbm"}, {"image/x-portable-anymap"}}},
+        {85444,
+             {{"PGM: Portable graymap format (gray scale)"}, {"pgm"}, {"image/x-portable-greymap","image/x-portable-anymap"}}},
+        {46215,
+             {{"PNG: Portable Network Graphics"}, {"png"}, {"image/png"}}},
+        {77521,
+             {{"PPM: Portable pixmap format (color)"}, {"ppm","pnm"}, {"image/x-portable-pixmap","image/x-portable-anymap"}}},
+        {56231,
+             {{"Photo CD"}, {"pcd","pcds"}, {}}},
+        {33352,
+             {{"SGI images"}, {"rgba","rgb","sgi","bw"}, {"image/sgi"}}},
+        {85621,
+             {{"TGA: Truevision Targa image"}, {"tga","icb","vda","vst"}, {"image/x-targa","image/x-tga"}}},
+        {44462,
+             {{"TIFF: Tagged Image File Format"}, {"tiff","tif"}, {"image/tiff","image/tiff-fx"}}},
+        {46664,
+             {{"Valve Texture Format"}, {"vtf"}, {}}}});
+#endif
+
+}
+
+const QSize PQCFilePluginDevIL::loadSize(QString path) {
+
+#ifdef PQMDEVIL
+
+    QString errormsg = "";
+
+    // Create an image id and make current
+    ILuint imageID;
+    ilGenImages(1, &imageID);
+    ilBindImage(imageID);
+
+    errormsg = checkForError();
+    if(!errormsg.isEmpty()) {
+        qWarning() << errormsg;
+        return QSize();
+    }
+
+// load the passed on image file
+#ifdef WIN32
+    ilLoadImage(path.toStdWString().c_str());
+#else
+    ilLoadImage(path.toStdString().c_str());
+#endif
+
+    errormsg = checkForError();
+    if(!errormsg.isEmpty()) {
+        qWarning() << errormsg;
+        return QSize();
+    }
+
+    // get the width/height
+    const int width  = ilGetInteger(IL_IMAGE_WIDTH);
+    const int height = ilGetInteger(IL_IMAGE_HEIGHT);
+    return QSize(width, height);
+
+#endif
+
+    return QSize();
+
+}
+
+const QImage PQCFilePluginDevIL::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
+
+    qDebug() << "args: path = " << path;
+    qDebug() << "args: requestedSize = " << requestedSize;
+
+    QString errormsg = "";
+
+#ifdef PQMDEVIL
+
+    // Create an image id and make current
+    ILuint imageID;
+    ilGenImages(1, &imageID);
+    ilBindImage(imageID);
+
+    errormsg = checkForError();
+    if(!errormsg.isEmpty()) {
+        error += errormsg % "\n";
+        qWarning() << errormsg;
+        return QImage();
+    }
+
+// load the passed on image file
+#ifdef WIN32
+    if(!ilLoadImage(path.toStdWString().c_str())) {
+#else
+    if(!ilLoadImage(path.toStdString().c_str())) {
+#endif
+        ilDeleteImages(1, &imageID);
+        const QString err = "Failed to load image with DevIL";
+        error += err % "\n";
+        qWarning() << err;
+        return QImage();
+    }
+
+    // convert to a predictable format Qt understands
+    if(!ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE)) {
+        ilDeleteImages(1, &imageID);
+        const QString err = "Failed to convert image with DevIL";
+        qWarning() << err;
+        error += err % "\n";
+        return QImage();
+    }
+
+    errormsg = checkForError();
+    if(!errormsg.isEmpty()) {
+        error += errormsg % "\n";
+        qWarning() << errormsg;
+        return QImage();
+    }
+
+    // get the width/height
+    const int width  = ilGetInteger(IL_IMAGE_WIDTH);
+    const int height = ilGetInteger(IL_IMAGE_HEIGHT);
+    origSize = QSize(width, height);
+
+    errormsg = checkForError();
+    if(!errormsg.isEmpty()) {
+        error += errormsg % "\n";
+        qWarning() << errormsg;
+        return QImage();
+    }
+
+    uchar* data = ilGetData();
+
+    // DevIL owns the memory, so copy before deleting image
+    QImage img = QImage(data, width, height, QImage::Format_RGBA8888).copy();
+
+    if(img.isNull()) {
+        const QString msg = "Failed to create QImage with DevIL (unknown error)!";
+        error += msg % "\n";
+        qWarning() << msg;
+        return QImage();
+    }
+
+    bool imageIsScaled = false;
+
+    if(!requestedSize.isEmpty()) {
+        imageIsScaled = true;
+        img = img.scaled(requestedSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
+
+    if(!img.isNull()) {
+        // apply transformations if any
+        PQCScriptsImages::get().applyExifOrientation(path, img);
+    }
+
+    return img;
+
+#endif
+
+    return QImage();
+
+}
+
+#ifdef PQMDEVIL
+QString PQCFilePluginDevIL::checkForError() {
+    ILenum err_enum = ilGetError();
+    QString errormsg = "";
+    while(err_enum != IL_NO_ERROR) {
+        if(errormsg.isEmpty()) errormsg = "Error: ";
+        else errormsg += ", ";
+        errormsg += QString::number(err_enum);
+        err_enum = ilGetError();
+    }
+    return errormsg;
+}
+#endif

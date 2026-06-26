@@ -20,7 +20,7 @@
  **                                                                      **
  **************************************************************************/
 #include <pqc_scriptsfilespaths.h>
-#include <pqc_fileformats.h>
+#include <pqc_filehandler.h>
 #include <pqc_settingscpp.h>
 
 // native api for executing commands
@@ -158,7 +158,7 @@ bool PQCScriptsFilesPaths::isFileSupported(QString path) {
     }
 
     const QString suffix = QFileInfo(path).suffix().toLower();
-    if(PQCFileFormats::get().getAllFormats().contains(suffix)) {
+    if(PQCFileHandler::get().getSuffixes().contains(suffix)) {
         qDebug() << "Supported suffix detected.";
         return true;
     } else
@@ -166,7 +166,7 @@ bool PQCScriptsFilesPaths::isFileSupported(QString path) {
 
     QMimeDatabase db;
     const QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCFileFormats::get().getAllMimeTypes().contains(mimetype)) {
+    if(PQCFileHandler::get().getMimetypes().contains(mimetype)) {
         qDebug() << "Supported mime-type detected.";
         return true;
     } else
@@ -227,35 +227,32 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
 
         // first check for file endings
 
-        if(PQCFileFormats::get().getAllFormatsPoppler().contains(suffix)) {
+        if(PQCFileHandler::get().getSuffixes("pdf").contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppDocuments();
 
-        } else if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suffix) &&
+        } else if(PQCFileHandler::get().getSuffixes("libarchive").contains(suffix) &&
                    (suffix == "cbr" || suffix == "cbt" || suffix == "cbz" || suffix == "cb7")) {
 
             exe = PQCSettingsCPP::get().getDefaultAppComicBooks();
 
-        } else if(PQCFileFormats::get().getAllFormatsEBook().contains(suffix)) {
+        } else if(PQCFileHandler::get().getSuffixes("ebook").contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppEBooks();
 
-        } else if(PQCFileFormats::get().getAllFormatsLibArchive().contains(suffix)) {
+        } else if(PQCFileHandler::get().getSuffixes("libarchive").contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppArchives();
 
-        } else if(PQCFileFormats::get().getAllFormatsLibmpv().contains(suffix) || PQCFileFormats::get().getAllFormatsVideo().contains(suffix)) {
+        } else if(PQCFileHandler::get().getSuffixes("libmpv").contains(suffix) || PQCFileHandler::get().getSuffixes("video").contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppVideos();
 
-        } else if(PQCFileFormats::get().getAllFormatsText().contains(suffix)) {
+        } else if(PQCFileHandler::get().getSuffixes("text").contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppText();
 
-        } else if(PQCFileFormats::get().getAllFormatsQt().contains(suffix) || PQCFileFormats::get().getAllFormatsFreeImage().contains(suffix) ||
-                   PQCFileFormats::get().getAllFormatsDevIL().contains(suffix) || PQCFileFormats::get().getAllFormatsLibRaw().contains(suffix) ||
-                   PQCFileFormats::get().getAllFormatsLibVips().contains(suffix) || PQCFileFormats::get().getAllFormatsMagick().contains(suffix) ||
-                   PQCFileFormats::get().getAllFormatsResvg().contains(suffix) || PQCFileFormats::get().getAllFormatsXCFTools().contains(suffix)) {
+        } else if(PQCFileHandler::get().getSuffixes().contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppImages();
 
@@ -268,35 +265,32 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
             QMimeDatabase db;
             QString mimetype = db.mimeTypeForFile(path).name();
 
-            if(PQCFileFormats::get().getAllMimeTypesPoppler().contains(mimetype)) {
+            if(PQCFileHandler::get().getMimetypes("pdf").contains(mimetype)) {
 
                 exe = PQCSettingsCPP::get().getDefaultAppDocuments();
 
-            } else if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype) &&
+            } else if(PQCFileHandler::get().getMimetypes("libarchive").contains(mimetype) &&
                        (suffix == "cbr" || suffix == "cbt" || suffix == "cbz" || suffix == "cb7")) {
 
                 exe = PQCSettingsCPP::get().getDefaultAppComicBooks();
 
-            } else if(PQCFileFormats::get().getAllMimeTypesEBook().contains(mimetype)) {
+            } else if(PQCFileHandler::get().getMimetypes("ebook").contains(mimetype)) {
 
                 exe = PQCSettingsCPP::get().getDefaultAppEBooks();
 
-            } else if(PQCFileFormats::get().getAllMimeTypesLibArchive().contains(mimetype)) {
+            } else if(PQCFileHandler::get().getMimetypes("libarchive").contains(mimetype)) {
 
                 exe = PQCSettingsCPP::get().getDefaultAppArchives();
 
-            } else if(PQCFileFormats::get().getAllMimeTypesLibmpv().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesVideo().contains(mimetype)) {
+            } else if(PQCFileHandler::get().getMimetypes("libmpv").contains(mimetype) || PQCFileHandler::get().getMimetypes("video").contains(mimetype)) {
 
                 exe = PQCSettingsCPP::get().getDefaultAppVideos();
 
-            } else if(PQCFileFormats::get().getAllMimeTypesText().contains(mimetype)) {
+            } else if(PQCFileHandler::get().getMimetypes("text").contains(mimetype)) {
 
                 exe = PQCSettingsCPP::get().getDefaultAppText();
 
-            } else if(PQCFileFormats::get().getAllMimeTypesQt().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesFreeImage().contains(mimetype) ||
-                       PQCFileFormats::get().getAllMimeTypesDevIL().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesLibRaw().contains(mimetype) ||
-                       PQCFileFormats::get().getAllMimeTypesLibVips().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesMagick().contains(mimetype) ||
-                       PQCFileFormats::get().getAllMimeTypesResvg().contains(mimetype) || PQCFileFormats::get().getAllMimeTypesXCFTools().contains(mimetype)) {
+            } else if(PQCFileHandler::get().getMimetypes().contains(mimetype)) {
 
                 exe = PQCSettingsCPP::get().getDefaultAppImages();
 
