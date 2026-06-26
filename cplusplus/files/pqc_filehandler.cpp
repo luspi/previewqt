@@ -72,10 +72,10 @@ PQCFileHandler::PQCFileHandler() {
 #ifdef PQMDEVIL
         << "devil"
 #endif
-#ifdef PQMVIDEOQT
+#ifdef PQMQTMULTIMEDIA
            << "video"
 #endif
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
            << "libmpv"
 #endif
     ;
@@ -109,10 +109,10 @@ PQCFileHandler::PQCFileHandler() {
 #ifdef PQMLIBSAI
     m_plugins.insert("libsai", new PQCFilePluginLibsai);
 #endif
-#ifdef PQMVIDEOQT
+#ifdef PQMQTMULTIMEDIA
     m_plugins.insert("video", new PQCFilePluginVideo(false));
 #endif
-#ifdef PQMVIDEOMPV
+#ifdef PQMLIBMPV
     m_plugins.insert("libmpv", new PQCFilePluginVideo(true));
 #endif
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
