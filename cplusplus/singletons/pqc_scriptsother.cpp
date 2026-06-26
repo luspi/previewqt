@@ -476,13 +476,21 @@ void PQCScriptsOther::startDownloadOfFile(QString url, QString filename) {
     m_downloadReply = m_downloadManager.get(request);
     Q_EMIT downloadStarted();
 
+#if __cplusplus >= 202002L
+    connect(m_downloadReply, &QNetworkReply::readyRead, this, [=,this]() {
+#else
     connect(m_downloadReply, &QNetworkReply::readyRead, this, [=]() {
+#endif
         downloadFile->write(m_downloadReply->read(m_downloadReply->bytesAvailable()));
     });
 
     connect(m_downloadReply, &QNetworkReply::downloadProgress, this, &PQCScriptsOther::downloadProgress);
 
+#if __cplusplus >= 202002L
+    connect(m_downloadReply, &QNetworkReply::finished, this, [=,this]() {
+#else
     connect(m_downloadReply, &QNetworkReply::finished, this, [=]() {
+#endif
         downloadFile->close();
         Q_EMIT downloadFinished();
     });

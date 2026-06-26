@@ -73,12 +73,20 @@ void PQCScriptsExternalTools::ytdlpRequestIsSupportedStream(QString url) {
 
     m_ytdlpStreamSupportedProc->start(program, arguments);
 
+#if __cplusplus >= 202002L
+    connect(m_ytdlpStreamSupportedProc, &QProcess::readyReadStandardOutput, this, [=,this]() {
+#else
     connect(m_ytdlpStreamSupportedProc, &QProcess::readyReadStandardOutput, this, [=]() {
+#endif
         const QString ret = QString::fromLocal8Bit(m_ytdlpStreamSupportedProc->readAll().trimmed());
         if(ret.contains("Downloading") && !ret.contains("Downloading webpage"))
             Q_EMIT ytdlpReceivedStreamSupported(true);
     });
+#if __cplusplus >= 202002L
+    connect(m_ytdlpStreamSupportedProc, &QProcess::readyReadStandardError, this, [=,this]() {
+#else
     connect(m_ytdlpStreamSupportedProc, &QProcess::readyReadStandardError, this, [=]() {
+#endif
         const QString err = QString::fromLocal8Bit(m_ytdlpStreamSupportedProc->readAllStandardError().trimmed());
         if(err.contains("Unsupported URL"))
             Q_EMIT ytdlpReceivedStreamSupported(false);
@@ -114,7 +122,11 @@ void PQCScriptsExternalTools::ytdlpRequestStreamURL(QString url) {
 
     m_ytdlpStreamProc->start(program, arguments);
 
+#if __cplusplus >= 202002L
+    connect(m_ytdlpStreamProc, &QProcess::readyReadStandardOutput, this, [=,this]() {
+#else
     connect(m_ytdlpStreamProc, &QProcess::readyReadStandardOutput, this, [=]() {
+#endif
         const QString ret = m_ytdlpStreamProc->readAll().trimmed();
         if(ret == "")
             Q_EMIT ytdlpReceivedStreamError("no_stream_found");
@@ -122,7 +134,11 @@ void PQCScriptsExternalTools::ytdlpRequestStreamURL(QString url) {
             Q_EMIT ytdlpReceivedStreamURL(ret);
     });
 
+#if __cplusplus >= 202002L
+    connect(m_ytdlpStreamProc, &QProcess::readyReadStandardError, this, [=,this]() {
+#else
     connect(m_ytdlpStreamProc, &QProcess::readyReadStandardError, this, [=]() {
+#endif
         const QString err = m_ytdlpStreamProc->readAllStandardError().trimmed();
         if(err.contains("Sign in to confirm you’re not a bot"))
             Q_EMIT ytdlpReceivedStreamError("signin_bot");
@@ -130,7 +146,11 @@ void PQCScriptsExternalTools::ytdlpRequestStreamURL(QString url) {
             Q_EMIT ytdlpReceivedStreamError("plugin_error");
     });
 
+#if __cplusplus >= 202002L
+    connect(m_ytdlpStreamProc, &QProcess::finished, this, [=,this]() { Q_EMIT ytdlpFinished(); });
+#else
     connect(m_ytdlpStreamProc, &QProcess::finished, this, [=]() { Q_EMIT ytdlpFinished(); });
+#endif
 
 }
 
@@ -152,7 +172,11 @@ void PQCScriptsExternalTools::ytdlpRequestStreamTitle(QString url) {
 
     m_ytdlpStreamTitleProc->start(program, arguments);
 
+#if __cplusplus >= 202002L
+    connect(m_ytdlpStreamTitleProc, &QProcess::readyReadStandardOutput, this, [=,this]() {
+#else
     connect(m_ytdlpStreamTitleProc, &QProcess::readyReadStandardOutput, this, [=]() {
+#endif
         const QString ret = m_ytdlpStreamTitleProc->readAll().trimmed();
         qDebug() << "Received standard output:";
         qDebug() << ret;

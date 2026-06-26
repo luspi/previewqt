@@ -68,7 +68,7 @@ public:
     // the format for a suffix
     const int getFormat(QString suffix) { return m_suffix2id.value(suffix, -1); }
     const int getFormatFromDescription(QString desc) { return m_desc2id.value(desc, -1); }
-    const QString getDescription(int id) { return m_id2data.value(id, {{""}})[0][0]; }
+    const QString getDescription(int id) { const QList<QStringList> tmp = m_id2data.value(id, {{""}}); return tmp[0][0]; }
 
     /****************************************************/
     /****************************************************/

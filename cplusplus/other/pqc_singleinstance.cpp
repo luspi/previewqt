@@ -32,7 +32,6 @@
 #include <QStandardPaths>
 #include <QMimeDatabase>
 #include <QImageReader>
-#include <QtDBus/QtDBus>
 #include <QClipboard>
 
 #include <pqc_singleinstance.h>
