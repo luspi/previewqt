@@ -28,6 +28,7 @@
 #include <QFile>
 #include <QtDebug>
 #include <QPainter>
+#include <QBitmap>
 
 PQCFilePluginLibsai::PQCFilePluginLibsai() {
 
@@ -115,8 +116,6 @@ const QImage PQCFilePluginLibsai::loadImage(QString path, QSize requestedSize, Q
     QList<QImage> allImageLayers;
 
     saidoc.IterateLayerFiles([&](sai::VirtualFileEntry& LayerFile) {
-
-        if(PQCNotifyCPP::get().isPhotoQtShuttingDown()) return true;
 
         QImage curImage(w, h, QImage::Format_ARGB32_Premultiplied);
         curImage.fill(Qt::transparent);
@@ -207,8 +206,6 @@ const QImage PQCFilePluginLibsai::loadImage(QString path, QSize requestedSize, Q
         return true;
     });
 
-    if(PQCNotifyCPP::get().isPhotoQtShuttingDown()) return QImage();
-
     // compose final image
     QImage img(w, h, QImage::Format_ARGB32_Premultiplied);
     img.fill(Qt::white);
@@ -217,10 +214,6 @@ const QImage PQCFilePluginLibsai::loadImage(QString path, QSize requestedSize, Q
         composedPainter.drawImage(QPoint(0,0), img);
     }
     composedPainter.end();
-
-    // if successful then we cache the image
-    if(!img.isNull())
-        PQCImageCache::get().saveImageToCache(path, "", img);
 
     // make sure we fit the requested size
     if(requestedSize.width() != -1) {
@@ -242,7 +235,7 @@ const QImage PQCFilePluginLibsai::loadImage(QString path, QSize requestedSize, Q
 /*********************************************************************/
 // This function is based on ReadRasterLayer() function found in:
 // https://github.com/Wunkolo/libsai/blob/main/samples/Document.cpp
-std::vector<std::uint32_t> PQCImagePluginLibsai::ReadRasterLayer(const sai::LayerHeader& layerHeader, sai::VirtualFileEntry& layerFile) {
+std::vector<std::uint32_t> PQCFilePluginLibsai::ReadRasterLayer(const sai::LayerHeader& layerHeader, sai::VirtualFileEntry& layerFile) {
 
     const std::size_t tileSize   = 32u;
     const std::size_t tilePixels = tileSize * tileSize;
@@ -335,7 +328,7 @@ std::vector<std::uint32_t> PQCImagePluginLibsai::ReadRasterLayer(const sai::Laye
 /*********************************************************************/
 // This function is based on RLEDecompressStride() function found in:
 // https://github.com/Wunkolo/libsai/blob/main/samples/Document.cpp
-void PQCImagePluginLibsai::RLEDecompressStride(std::byte* destination, const std::byte* source, std::size_t stride, std::size_t strideCount, std::size_t channel) {
+void PQCFilePluginLibsai::RLEDecompressStride(std::byte* destination, const std::byte* source, std::size_t stride, std::size_t strideCount, std::size_t channel) {
 
     destination += channel;
     std::size_t writeCount = 0;
