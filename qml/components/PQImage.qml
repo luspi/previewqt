@@ -174,10 +174,10 @@ Item {
         } else if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
             PQCConstants.currentType = "doc"
             imageloader.sourceComponent = comp_doc
-        } else if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
+        } else */if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
             PQCConstants.currentType = "bok"
             imageloader.sourceComponent = comp_bok
-        } else */if(PQCScriptsImages.isArchive(PQCConstants.currentSource)) {
+        } else if(PQCScriptsImages.isArchive(PQCConstants.currentSource)) {
             PQCConstants.currentType = "arc"
             imageloader.sourceComponent = comp_arc
         } else if(PQCScriptsImages.isMpvVideo(PQCConstants.currentSource)) {
@@ -240,12 +240,10 @@ Item {
     //     }
     // }
 
-    // Component {
-    //     id: comp_bok
-    //     PQEPUB {
-    //         imageParent: image_top
-    //     }
-    // }
+    Component {
+        id: comp_bok
+        PQEPUB {}
+    }
 
     Component {
         id: comp_arc

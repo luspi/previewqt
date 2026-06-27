@@ -35,8 +35,6 @@ Item {
     width: view.width
     height: view.height
 
-    property Item imageParent
-
     // during a short startup period we ignore any changes to the document/window
     property bool startup: true
     Timer {
