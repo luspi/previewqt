@@ -500,7 +500,7 @@ if which == 'all' or which == 'formatsdb':
         vid = row[12]
         mpv = row[13]
 
-        sqltxt += f"INSERT INTO imageformats (`endings`,`description`,`qt`,`imagemagick`,`graphicsmagick`,`libraw`,`poppler`,`xcftools`,`devil`,`freeimage`,`archive`,`video`,`libmpv`,`text`) VALUES ('{end}', '{des}', {qt}, {im}, {gm}, {raw}, {pop}, {xcf}, {dev}, {fre}, {arc}, {vid}, {mpv}, {1 if cat=='txt' else 0});\n"
+        sqltxt += f"INSERT INTO imageformats (`endings`,`description`,`qt`,`imagemagick`,`graphicsmagick`,`libraw`,`poppler`,`xcftools`,`devil`,`freeimage`,`archive`,`video`,`audio`,`libmpv`,`text`) VALUES ('{end}', '{des}', {qt}, {im}, {gm}, {raw}, {pop}, {xcf}, {dev}, {fre}, {arc}, {vid}, {1 if cat=='aud' else 0}, {mpv}, {1 if cat=='txt' else 0});\n"
 
     f = open("output/imageformats_website.sql", "w")
     f.write(sqltxt)
