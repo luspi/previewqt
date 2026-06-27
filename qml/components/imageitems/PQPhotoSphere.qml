@@ -109,6 +109,14 @@ Item {
                 startEl = sphere_top.elevation
             }
 
+            onDoubleClicked: (mouse) => {
+                if(mouse.button === Qt.RightButton) return
+                if(PQCConstants.mainwindowIsFullscreen)
+                    PQCNotify.mainwindowShowNormal()
+                else
+                    PQCNotify.mainwindowShowFullscreen()
+            }
+
             onPositionChanged: mouse => {
                 sphere_top.azimuth = startAz + (mouse.x - startPos.x) * 0.1
                 sphere_top.elevation = Math.max(-90, Math.min(90, startEl + (mouse.y - startPos.y) * 0.1))

@@ -207,8 +207,25 @@ Item {
         }
         console.log("detected type:", PQCConstants.currentType)
 
-        imageloader.active = true
+        // we wait to activate a sphere UNTIL the texture limit has been detected
+        // if this functionality is not enabled, then the texture limit is set to 0 and this check is skipped
+        if(PQCConstants.currentType === "sph" && PQCScriptsImages.getMaxTextureLimit() < 0)
+            sphereWaitForTextureLimit.restart()
+        else
+            imageloader.active = true
 
+    }
+
+    Timer {
+        id: sphereWaitForTextureLimit
+        interval: 10
+        onTriggered: {
+            if(PQCScriptsImages.getMaxTextureLimit() < 0) {
+                sphereWaitForTextureLimit.restart()
+                return
+            }
+            imageloader.active = true
+        }
     }
 
     Component {

@@ -88,7 +88,14 @@
 #include <lcms2.h>
 #endif
 
-PQCScriptsImages::PQCScriptsImages() {}
+PQCScriptsImages::PQCScriptsImages() {
+#ifdef PQMPHOTOSPHEREQRHI
+    // a value of -1 makes a photo sphere wait until value is ready
+    m_maxTextureLimit = -1;
+#else
+    m_maxTextureLimit = 0;
+#endif
+}
 
 PQCScriptsImages::~PQCScriptsImages() {}
 

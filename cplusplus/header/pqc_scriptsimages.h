@@ -71,6 +71,10 @@ public:
     QVariantList loadEPUB(QString path);
     void analyzeEpubMetaData(QString subfolder, QString txt, QString &title, QString &coverId, QMap<QString, QString> &outFileList, QStringList &outIdOrder);
 
+    // other methods
+    void setMaxTextureLimit(int lmt) { m_maxTextureLimit = lmt; }
+    int getMaxTextureLimit() { return m_maxTextureLimit; }
+
 private:
     PQCScriptsImages();
 

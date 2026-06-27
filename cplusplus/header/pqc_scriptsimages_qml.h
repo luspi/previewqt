@@ -130,6 +130,10 @@ public:
         return PQCScriptsImages::get().loadEPUB(path);
     }
 
+    Q_INVOKABLE int getMaxTextureLimit() {
+        return PQCScriptsImages::get().getMaxTextureLimit();
+    }
+
 Q_SIGNALS:
     void receivedStreamSupported(bool supp);
     void receivedStreamURL(QString url);

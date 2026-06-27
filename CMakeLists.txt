@@ -130,6 +130,11 @@ include(CMake/ListFilesQML.cmake)
 
 find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Widgets Sql Core Svg Concurrent PrintSupport DBus LinguistTools)
 
+if(_WITH_PHOTOSPHERE_QRHI)
+    # this module is needed for getting the maximum texture size possible using QRhi
+    find_package(Qt6 COMPONENTS GuiPrivate)
+endif()
+
 if(_WITH_QTMULTIMEDIA)
     find_package(Qt6 6.4 REQUIRED COMPONENTS Multimedia)
 endif()
