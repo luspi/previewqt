@@ -29,8 +29,6 @@ Video {
 
     id: video
 
-    parent: imageParent
-
     // earlier versions of Qt6 seem to struggle if only one slash is used
     source: overrideSource==="" ?
                 (PQCConstants.currentSource!=="" ? ((PQCScriptsConfig.isQtAtLeast6_5() ? "file:/" : "file://") + PQCConstants.currentSource) : "") :
@@ -82,8 +80,6 @@ Video {
         PQCConstants.mediainfoVideoCodec = ""
         PQCConstants.mediainfoVideoHdr = ""
     }
-
-    property Item imageParent
 
     property string overrideSource: ""
 
@@ -173,9 +169,17 @@ Video {
     onVideoPositionChanged:
         video.position = videoPosition*1000
 
-    Rectangle {
+    property bool hideControlsCompletely: false
 
-        parent: video.imageParent
+    Timer {
+        id: setHideControlsCompletely
+        interval: 1000
+        running: true
+        onTriggered:
+            video.hideControlsCompletely = true
+    }
+
+    Rectangle {
 
         x: (parent.width-width)/2
         y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)
@@ -185,7 +189,7 @@ Video {
         z: 1
 
         color: "#88000000"
-        opacity: controlsmouse.containsMouse||playpausemouse.containsMouse||slider.hovered||volumemouse.containsMouse ? 1 : 0.4
+        opacity: controlsmouse.containsMouse||playpausemouse.containsMouse||slider.hovered||volumemouse.containsMouse ? 1 : (!hideControlsCompletely||video.playbackState===MediaPlayer.PausedState ? 0.4 : 0)
         Behavior on opacity { NumberAnimation { duration: 200 } }
 
         MouseArea {
@@ -268,6 +272,7 @@ Video {
 
     MouseArea {
         anchors.fill: parent
+        hoverEnabled: true
         onClicked: {
             if(video.playbackState===MediaPlayer.PlayingState)
                 video.pause()
@@ -280,6 +285,11 @@ Video {
                 PQCNotify.mainwindowShowNormal()
             else
                 PQCNotify.mainwindowShowFullscreen()
+        }
+        onPositionChanged: {
+            setHideControlsCompletely.stop()
+            video.hideControlsCompletely = false
+            setHideControlsCompletely.restart()
         }
     }
 

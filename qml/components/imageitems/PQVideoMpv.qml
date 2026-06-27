@@ -40,8 +40,6 @@ Item {
     width: 10
     height: 10
 
-    property Item imageParent
-
     property string overrideSource: ""
 
     property int videoDuration: 0
@@ -147,12 +145,12 @@ Item {
 
     Timer {
         id: getPosition
-        interval: videoPlaying ? 250 : 500
+        interval: videotop.videoPlaying ? 250 : 500
         repeat: true
         running: false
         property bool restarting: false
         onTriggered: {
-            videoPlaying = !video.getProperty("core-idle")
+            videotop.videoPlaying = !video.getProperty("core-idle")
             if(video.getProperty("eof-reached")) {
                 if(!restarting) {
                     video.command(["loadfile", (overrideSource==="" ? PQCConstants.currentSource : overrideSource)])
@@ -166,18 +164,27 @@ Item {
         }
     }
 
-    Rectangle {
+    property bool hideControlsCompletely: false
 
-        parent: videotop.imageParent
+    Timer {
+        id: setHideControlsCompletely
+        interval: 1000
+        running: true
+        onTriggered:
+            videotop.hideControlsCompletely = true
+    }
+
+    Rectangle {
 
         x: (parent.width-width)/2
         y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)
+        z: 1
         width: controlrow.width+10
         height: 30
         radius: 5
 
         color: "#88000000"
-        opacity: controlsmouse.containsMouse||playpausemouse.containsMouse||slider.hovered/*||volumemouse.containsMouse*/ ? 1 : 0.4
+        opacity: controlsmouse.containsMouse||playpausemouse.containsMouse||slider.hovered||volumemouse.containsMouse ? 1 : (!hideControlsCompletely||!videotop.videoPlaying ? 0.4 : 0)
         Behavior on opacity { NumberAnimation { duration: 200 } }
 
         MouseArea {
@@ -205,9 +212,9 @@ Item {
                     onClicked: {
                         if(video.getProperty("eof-reached")) {
                             video.command(["loadfile", (overrideSource==="" ? PQCConstants.currentSource : overrideSource)])
-                            videoPlaying = true
+                            videotop.videoPlaying = true
                         } else {
-                            videoPlaying = !videoPlaying
+                            videotop.videoPlaying = !videotop.videoPlaying
                         }
                     }
                 }
@@ -230,7 +237,7 @@ Item {
                     if(pressed) {
                         if(video.getProperty("eof-reached")) {
                             video.command(["loadfile", (overrideSource==="" ? PQCConstants.currentSource : overrideSource)])
-                            videoPlaying = false
+                            videotop.videoPlaying = false
                             setPosTimeout.pos = value
                             setPosTimeout.restart()
                         } else
@@ -277,12 +284,13 @@ Item {
 
     MouseArea {
         anchors.fill: parent
+        hoverEnabled: true
         onClicked: {
             if(video.getProperty("eof-reached")) {
                 video.command(["loadfile", (overrideSource==="" ? PQCConstants.currentSource : overrideSource)])
-                videoPlaying = true
+                videotop.videoPlaying = true
             } else {
-                videoPlaying = !videoPlaying
+                videotop.videoPlaying = !videotop.videoPlaying
             }
         }
         onDoubleClicked: (mouse) => {
@@ -291,6 +299,11 @@ Item {
                 PQCNotify.mainwindowShowNormal()
             else
                 PQCNotify.mainwindowShowFullscreen()
+        }
+        onPositionChanged: {
+            setHideControlsCompletely.stop()
+            videotop.hideControlsCompletely = false
+            setHideControlsCompletely.restart()
         }
     }
 
@@ -302,7 +315,7 @@ Item {
 
             if(keycode === Qt.Key_Space && modifiers === Qt.NoModifier) {
 
-                videoPlaying = !videoPlaying
+                videotop.videoPlaying = !videotop.videoPlaying
 
             } else if(keycode === Qt.Key_Left && modifiers === Qt.NoModifier) {
 

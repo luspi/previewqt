@@ -180,16 +180,16 @@ Item {
         } else if(PQCScriptsImages.isArchive(PQCConstants.currentSource)) {
             PQCConstants.currentType = "arc"
             imageloader.sourceComponent = comp_arc
-        } else if(PQCScriptsImages.isMpvVideo(PQCConstants.currentSource)) {
+        } else */if(PQCScriptsImages.isMpvVideo(PQCConstants.currentSource)) {
             PQCConstants.currentType = "mpv"
             imageloader.sourceComponent = comp_mpv
         } else if(PQCScriptsImages.isQtVideo(PQCConstants.currentSource)) {
             PQCConstants.currentType = "vid"
             imageloader.sourceComponent = comp_vid
-        } else if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource)) {
-            PQCConstants.currentType = "ani"
-            imageloader.sourceComponent = comp_ani
-        } else */if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource)) {
+        // } else if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource)) {
+        //     PQCConstants.currentType = "ani"
+        //     imageloader.sourceComponent = comp_ani
+        } else if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource)) {
             PQCConstants.currentType = "sph"
             imageloader.sourceComponent = comp_sph
         // } else if(PQCScriptsImages.isSVG(PQCConstants.currentSource)) {
@@ -254,19 +254,15 @@ Item {
     //     }
     // }
 
-    // Component {
-    //     id: comp_mpv
-    //     PQVideoMpv {
-    //         imageParent: image_top
-    //     }
-    // }
+    Component {
+        id: comp_mpv
+        PQVideoMpv {}
+    }
 
-    // Component {
-    //     id: comp_vid
-    //     PQVideoQt {
-    //         imageParent: image_top
-    //     }
-    // }
+    Component {
+        id: comp_vid
+        PQVideoQt {}
+    }
 
     // Component {
     //     id: comp_ani
@@ -277,9 +273,7 @@ Item {
 
     Component {
         id: comp_sph
-        PQPhotoSphere {
-            // imageParent: image_top
-        }
+        PQPhotoSphere {}
     }
 
     // Component {
@@ -298,9 +292,7 @@ Item {
 
     Component {
         id: comp_img
-        PQImageNormal {
-            // imageParent: image_top
-        }
+        PQImageNormal {}
     }
 
     // Component {
