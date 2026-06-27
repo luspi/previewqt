@@ -192,9 +192,9 @@ Item {
         } else if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource)) {
             PQCConstants.currentType = "sph"
             imageloader.sourceComponent = comp_sph
-        // } else if(PQCScriptsImages.isSVG(PQCConstants.currentSource)) {
-        //     PQCConstants.currentType = "svg"
-        //     imageloader.sourceComponent = comp_svg
+        } else if(PQCScriptsImages.isSVG(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "svg"
+            imageloader.sourceComponent = comp_svg
         // } else if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource)) {
         //     PQCConstants.currentType = "txt"
         //     imageloader.sourceComponent = comp_txt
@@ -274,12 +274,10 @@ Item {
         PQPhotoSphere {}
     }
 
-    // Component {
-    //     id: comp_svg
-    //     PQSVG {
-    //         imageParent: image_top
-    //     }
-    // }
+    Component {
+        id: comp_svg
+        PQSVG {}
+    }
 
     // Component {
     //     id: comp_txt

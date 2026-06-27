@@ -32,8 +32,6 @@ Item {
     width: imageitem.width
     height: imageitem.height
 
-    property Item imageParent
-
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(imageitem.paintedWidth, imageitem.paintedHeight) })
     }
@@ -48,7 +46,7 @@ Item {
 
         fillMode: Image.PreserveAspectFit
 
-        smooth: false
+        smooth: true
         mipmap: false
 
         rotation: PQCConstants.imageRotation
@@ -63,13 +61,25 @@ Item {
             PQCConstants.imageStatus = status
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
+            else if(status == Image.Ready)
+                imageitem.asynchronous = false
         }
 
     }
 
-    Connections {
+    MouseArea {
 
-        target: PQCNotify
+        anchors.fill: parent
+        hoverEnabled: true
+
+        acceptedButtons: Qt.LeftButton
+
+        onDoubleClicked: (mouse) => {
+            if(PQCConstants.mainwindowIsFullscreen)
+                PQCNotify.mainwindowShowNormal()
+            else
+                PQCNotify.mainwindowShowFullscreen()
+        }
 
     }
 

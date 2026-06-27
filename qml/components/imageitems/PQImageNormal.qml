@@ -51,7 +51,7 @@ Item {
 
         fillMode: Image.PreserveAspectFit
 
-        smooth: false
+        smooth: true
         mipmap: false
 
         rotation: PQCConstants.imageRotation

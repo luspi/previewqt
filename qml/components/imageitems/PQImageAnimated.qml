@@ -60,6 +60,8 @@ Item {
             PQCConstants.imageStatus = status
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
+            else if(status == Image.Ready)
+                imageitem.asynchronous = false
         }
 
         onPlayingChanged: {
