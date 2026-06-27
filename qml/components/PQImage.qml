@@ -186,9 +186,9 @@ Item {
         } else if(PQCScriptsImages.isQtVideo(PQCConstants.currentSource)) {
             PQCConstants.currentType = "vid"
             imageloader.sourceComponent = comp_vid
-        // } else if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource)) {
-        //     PQCConstants.currentType = "ani"
-        //     imageloader.sourceComponent = comp_ani
+        } else if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "ani"
+            imageloader.sourceComponent = comp_ani
         } else if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource)) {
             PQCConstants.currentType = "sph"
             imageloader.sourceComponent = comp_sph
@@ -264,12 +264,10 @@ Item {
         PQVideoQt {}
     }
 
-    // Component {
-    //     id: comp_ani
-    //     PQImageAnimated {
-    //         imageParent: image_top
-    //     }
-    // }
+    Component {
+        id: comp_ani
+        PQImageAnimated {}
+    }
 
     Component {
         id: comp_sph

@@ -34,8 +34,6 @@ Item {
     width: imageitem.width
     height: imageitem.height
 
-    property Item imageParent
-
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(imageitem.paintedWidth, imageitem.paintedHeight) })
     }
@@ -51,7 +49,7 @@ Item {
         fillMode: Image.PreserveAspectFit
 
         smooth: Math.abs(sourceSize.width-width) > 100
-        mipmap: smooth
+        mipmap: false
 
         rotation: PQCConstants.imageRotation
 
@@ -64,20 +62,62 @@ Item {
                 source = "image://svg/:/errorimage.svg"
         }
 
+        onPlayingChanged: {
+            if(playing) {
+                ani_top.hideControlsCompletely = false
+                setHideControlsCompletely.restart()
+            } else {
+                setHideControlsCompletely.stop()
+                ani_top.hideControlsCompletely = false
+            }
+        }
+
+    }
+
+    property bool hideControlsCompletely: false
+    Timer {
+        id: setHideControlsCompletely
+        interval: 1000
+        running: true
+        onTriggered:
+            ani_top.hideControlsCompletely = true
+    }
+
+    MouseArea {
+
+        anchors.fill: parent
+        hoverEnabled: true
+
+        acceptedButtons: Qt.LeftButton
+
+        onClicked: {
+            imageitem.playing = !imageitem.playing
+        }
+        onDoubleClicked: (mouse) => {
+            if(PQCConstants.mainwindowIsFullscreen)
+                PQCNotify.mainwindowShowNormal()
+            else
+                PQCNotify.mainwindowShowFullscreen()
+        }
+
+        onPositionChanged: {
+            setHideControlsCompletely.stop()
+            ani_top.hideControlsCompletely = false
+            setHideControlsCompletely.restart()
+        }
     }
 
     Rectangle {
 
-        parent: ani_top.imageParent
-
         x: (parent.width-width)/2
         y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)
+        z: 1
         width: controlrow.width+10
         height: 30
         radius: 5
 
         color: "#88000000"
-        opacity: controlsmouse.containsMouse||playpausemouse.containsMouse||slider.hovered ? 1 : 0.4
+        opacity: controlsmouse.containsMouse||playpausemouse.containsMouse||slider.hovered ? 1 : (hideControlsCompletely&&imageitem.playing ? 0 : 0.4)
         Behavior on opacity { NumberAnimation { duration: 200 } }
 
         MouseArea {
