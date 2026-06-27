@@ -34,8 +34,6 @@ Item {
     width: PQCConstants.imageAvailableSize.width
     height: PQCConstants.imageAvailableSize.height
 
-    property Item imageParent
-
     property string isWebsite: ""
     property string isVideo: ""
 
@@ -167,7 +165,7 @@ Item {
         sourceComponent:
         PQVideoQt {
 
-            imageParent: url_top.imageParent
+            z: 1
 
             overrideSource: url_top.isVideo
 
@@ -187,7 +185,7 @@ Item {
         sourceComponent:
         PQVideoMpv {
 
-            imageParent: url_top.imageParent
+            z: 1
 
             overrideSource: url_top.isVideo
 

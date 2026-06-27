@@ -41,8 +41,6 @@ Rectangle {
     width: flickme.width
     height: flickme.height
 
-    property Item imageParent
-
     Rectangle {
         x: parent.width-width
         width: vBar.width

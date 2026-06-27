@@ -168,10 +168,10 @@ Item {
 
         PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(PQCConstants.currentSource)
 
-        /*if(PQCScriptsImages.isURL(PQCConstants.currentSource)) {
+        if(PQCScriptsImages.isURL(PQCConstants.currentSource)) {
             PQCConstants.currentType = "url"
             imageloader.sourceComponent = comp_url
-        } else */if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
+        } else if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
             PQCConstants.currentType = "doc"
             imageloader.sourceComponent = comp_doc
         } else if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
@@ -195,9 +195,9 @@ Item {
         } else if(PQCScriptsImages.isSVG(PQCConstants.currentSource)) {
             PQCConstants.currentType = "svg"
             imageloader.sourceComponent = comp_svg
-        // } else if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource)) {
-        //     PQCConstants.currentType = "txt"
-        //     imageloader.sourceComponent = comp_txt
+        } else if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "txt"
+            imageloader.sourceComponent = comp_txt
         // } else if(PQCScriptsImages.isAudio(PQCConstants.currentSource)) {
         //     PQCConstants.currentType = "aud"
         //     imageloader.sourceComponent = comp_aud
@@ -273,24 +273,20 @@ Item {
         PQSVG {}
     }
 
-    // Component {
-    //     id: comp_txt
-    //     PQTxt {
-    //         imageParent: image_top
-    //     }
-    // }
+    Component {
+        id: comp_txt
+        PQTxt {}
+    }
 
     Component {
         id: comp_img
         PQImageNormal {}
     }
 
-    // Component {
-    //     id: comp_url
-    //     PQURL {
-    //         imageParent: image_top
-    //     }
-    // }
+    Component {
+        id: comp_url
+        PQURL {}
+    }
 
     // Component {
     //     id: comp_aud
