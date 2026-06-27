@@ -45,6 +45,10 @@ PQCFilePluginPDF::PQCFilePluginPDF() {
 
 const QSize PQCFilePluginPDF::loadSize(QString path) {
 
+    QSize sze;
+    if(loadSizeFromCache(path, sze))
+        return sze;
+
     // extract page and totalpage value from path (prepended to path (after filepath))
     int page = 0;
     const int idx = path.indexOf("::PDF::");
@@ -97,6 +101,10 @@ const QImage PQCFilePluginPDF::loadImage(QString path, QSize requestedSize, QSiz
     qDebug() << "args: path =" << path;
     qDebug() << "args: requestedSize =" << requestedSize;
 
+    QImage cch;
+    if(loadImageFromCache(path, cch, requestedSize))
+        return cch;
+
 #if defined(PQMPOPPLER) || defined(PQMQTPDF)
     // extract page and totalpage value from path (prepended to path (after filepath))
     int page = 0;
@@ -138,6 +146,9 @@ const QImage PQCFilePluginPDF::loadImage(QString path, QSize requestedSize, QSiz
     }
 
     QImage img = p->renderToImage(useQuality, useQuality);
+
+    if(requestedSize.isEmpty())
+        saveImageToCache(path, img);
 
     origSize = p->pageSize()*(quality/72.0);
 
@@ -187,6 +198,9 @@ const QImage PQCFilePluginPDF::loadImage(QString path, QSize requestedSize, QSiz
     QPainter paint(&img);
     paint.drawImage(0, 0, p);
     paint.end();
+
+    if(requestedSize.isEmpty())
+        saveImageToCache(path, img);
 
     return img;
 

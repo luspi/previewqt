@@ -315,6 +315,10 @@ const QSize PQCFilePluginMagick::loadSize(QString path) {
 
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
 
+    QSize sze;
+    if(loadSizeFromCache(path, sze))
+        return sze;
+
     QString suf = QFileInfo(path).suffix().toUpper();
     Magick::Image image;
 
@@ -367,13 +371,15 @@ const QImage PQCFilePluginMagick::loadImage(QString path, QSize requestedSize, Q
 
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
 
+    QImage img;
+    if(loadImageFromCache(path, img, requestedSize))
+        return img;
+
     QSize finalSize;
 
     const QString suf = QFileInfo(path).suffix().toUpper();
     int howOftenFailed = 0;
     bool imageIsScaled = false;
-
-    QImage img;
 
     try {
 
@@ -457,8 +463,10 @@ const QImage PQCFilePluginMagick::loadImage(QString path, QSize requestedSize, Q
         PQCScriptsImages::get().applyExifOrientation(path, img);
     }
 
-    if(!img.isNull() && !imageIsScaled)
+    if(!img.isNull() && !imageIsScaled) {
         PQCScriptsOther::get().applyEmbeddedColorProfile(img);
+        saveImageToCache(path, img);
+    }
 
     // And we're done!
     return img;

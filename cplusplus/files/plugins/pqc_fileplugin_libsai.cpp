@@ -42,6 +42,10 @@ const QSize PQCFilePluginLibsai::loadSize(QString path) {
 
 #ifdef PQMLIBSAI
 
+    QSize sze;
+    if(loadSizeFromCache(path, sze))
+        return sze;
+
     sai::Document saidoc(path.toStdString().c_str());
 
     if(!saidoc.IsOpen()) {
@@ -66,6 +70,10 @@ const QImage PQCFilePluginLibsai::loadImage(QString path, QSize requestedSize, Q
     qDebug() << "args: requestedSize = " << requestedSize;
 
 #ifdef PQMLIBSAI
+
+    QImage cch;
+    if(loadImageFromCache(path, cch, requestedSize))
+        return cch;
 
     sai::Document saidoc(path.toStdString().c_str());
 
@@ -214,6 +222,8 @@ const QImage PQCFilePluginLibsai::loadImage(QString path, QSize requestedSize, Q
         composedPainter.drawImage(QPoint(0,0), img);
     }
     composedPainter.end();
+
+    saveImageToCache(path, img);
 
     // make sure we fit the requested size
     if(requestedSize.width() != -1) {

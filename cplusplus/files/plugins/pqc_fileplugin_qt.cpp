@@ -130,6 +130,10 @@ PQCFilePluginQt::PQCFilePluginQt() {
 
 const QSize PQCFilePluginQt::loadSize(QString path) {
 
+    QSize sze;
+    if(loadSizeFromCache(path, sze))
+        return sze;
+
     // Suffix, for easier access later-on
     QString suffix = QFileInfo(path).suffix().toLower();
 
@@ -195,10 +199,12 @@ const QImage PQCFilePluginQt::loadImage(QString path, QSize requestedSize, QSize
     qDebug() << "args: path =" << path;
     qDebug() << "args: requestedSize =" << requestedSize;
 
+    QImage img;
+    if(loadImageFromCache(path, img, requestedSize))
+        return img;
+
     // Suffix, for easier access later-on
     QString suffix = QFileInfo(path).suffix().toLower();
-
-    QImage img;
 
     if(suffix == "svg" || suffix == "svgz") {
 
@@ -263,6 +269,7 @@ const QImage PQCFilePluginQt::loadImage(QString path, QSize requestedSize, QSize
             if(!img.isNull()) {
                 colorProfileAlreadyApplied = true;
                 PQCScriptsOther::get().applyEmbeddedColorProfile(img);
+                saveImageToCache(path, img);
             }
         }
 
@@ -285,6 +292,7 @@ const QImage PQCFilePluginQt::loadImage(QString path, QSize requestedSize, QSize
                 error = "";
                 colorProfileAlreadyApplied = true;
                 PQCScriptsOther::get().applyEmbeddedColorProfile(img);
+                saveImageToCache(path, img);
             }
         }
 
@@ -308,6 +316,7 @@ const QImage PQCFilePluginQt::loadImage(QString path, QSize requestedSize, QSize
             if(!img.isNull() && !imageIsScaled) {
                 colorProfileAlreadyApplied = true;
                 PQCScriptsOther::get().applyEmbeddedColorProfile(img);
+                saveImageToCache(path, img);
             }
         }
 

@@ -23,6 +23,7 @@
 
 #include <fileplugins/pqc_fileplugin.h>
 #include <QSet>
+#include <QImage>
 
 #ifdef PQMLIBSAI
 #if __has_include(<sai.hpp>)

@@ -73,6 +73,10 @@ const QSize PQCFilePluginLibVips::loadSize(QString path) {
 
 #ifdef PQMLIBVIPS
 
+    QSize sze;
+    if(loadSizeFromCache(path, sze))
+        return sze;
+
     // we only need the metadata here, never the full image
     VipsImage *in = vips_image_new_from_file(path.toStdString().c_str(),
                                              "access", VIPS_ACCESS_RANDOM,
@@ -103,6 +107,10 @@ const QImage PQCFilePluginLibVips::loadImage(QString path, QSize requestedSize, 
     qDebug() << "args: requestedSize = " << requestedSize;
 
 #ifdef PQMLIBVIPS
+
+    QImage cch;
+    if(loadImageFromCache(path, cch, requestedSize))
+        return cch;
 
     // we use the C API as the equivalent C++ API calls led to crash on subsequent call
 
@@ -156,6 +164,8 @@ const QImage PQCFilePluginLibVips::loadImage(QString path, QSize requestedSize, 
 
     // clean up memory
     g_object_unref(vimg);
+
+    saveImageToCache(path, img);
 
     // scale image if necessary
     if(!requestedSize.isEmpty()) {

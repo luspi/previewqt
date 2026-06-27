@@ -103,6 +103,10 @@ const QSize PQCFilePluginLibraw::loadSize(QString path) {
 
 #ifdef PQMRAW
 
+    QSize sze;
+    if(loadSizeFromCache(path, sze))
+        return sze;
+
     LibRaw raw;
 
     // Open the RAW image
@@ -127,6 +131,10 @@ const QImage PQCFilePluginLibraw::loadImage(QString path, QSize requestedSize, Q
     qDebug() << "args: requestedSize =" << requestedSize;
 
 #ifdef PQMRAW
+
+    QImage cch;
+    if(loadImageFromCache(path, cch, requestedSize))
+        return cch;
 
     bool useThumb = false;
     bool useHalf = false;
@@ -359,6 +367,7 @@ const QImage PQCFilePluginLibraw::loadImage(QString path, QSize requestedSize, Q
         if(!img.isNull()) {
 
             PQCScriptsOther::get().applyEmbeddedColorProfile(img);
+            saveImageToCache(path, img);
 
             // Scale image if necessary
             if(requestedSize.isValid() && !requestedSize.isNull()) {

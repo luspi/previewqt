@@ -25,6 +25,8 @@
 #include <pqc_helper.h>
 #include <QObject>
 #include <QSet>
+#include <QImage>
+#include <QFileInfo>
 
 class QTimer;
 
@@ -97,6 +99,34 @@ public:
     /****************************************************/
     /****************************************************/
 
+    bool loadImageFromCache(QString path, QImage &img, QSize requestedSize) {
+        const QString curCacheId = QString("%1%2").arg(path).arg(QFileInfo(path).lastModified().toMSecsSinceEpoch());
+        if(m_cacheId == curCacheId) {
+            if(!requestedSize.isEmpty()) {
+                img = m_cacheImg.scaled(m_cacheImg.size().scaled(requestedSize, Qt::KeepAspectRatio),
+                                         Qt::IgnoreAspectRatio,
+                                         Qt::SmoothTransformation);
+            } else
+                img = m_cacheImg.copy();
+            return true;
+        }
+        return false;
+    }
+
+    bool loadSizeFromCache(QString path, QSize &sze) {
+        const QString curCacheId = QString("%1%2").arg(path).arg(QFileInfo(path).lastModified().toMSecsSinceEpoch());
+        if(m_cacheId == curCacheId) {
+            sze = m_cacheImg.size();
+            return true;
+        }
+        return false;
+    }
+
+    void saveImageToCache(QString path, QImage &img) {
+        m_cacheId = QString("%1%2").arg(path).arg(QFileInfo(path).lastModified().toMSecsSinceEpoch());
+        m_cacheImg = img.copy();
+    }
+
 private:
     QHash<int, QList<QStringList> > m_id2data;
     QHash<QString,int> m_suffix2id;
@@ -106,5 +136,8 @@ private:
     QSet<int> m_enabledIds;
     QSet<QString> m_enabledSuffixes;
     QSet<QString> m_enabledMimetypes;
+
+    QString m_cacheId;
+    QImage m_cacheImg;
 
 };
