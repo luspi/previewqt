@@ -123,7 +123,7 @@ public:
     }
 
     Q_INVOKABLE QStringList getArchiveContent(QString path, bool insideFilenameOnly = false) {
-        return PQCScriptsImages::get().getArchiveContent(path);
+        return PQCScriptsImages::get().getArchiveContent(path, insideFilenameOnly);
     }
 
     Q_INVOKABLE QVariantList loadEPUB(QString path) {

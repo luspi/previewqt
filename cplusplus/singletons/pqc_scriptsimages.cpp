@@ -102,6 +102,7 @@ PQCScriptsImages::~PQCScriptsImages() {}
 QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenameOnly) {
 
     qDebug() << "args: path =" << path;
+    qDebug() << "args: insideFilenameOnly =" << insideFilenameOnly;
 
     if(path.contains("::ARC::"))
         path = path.split("::ARC::")[1];

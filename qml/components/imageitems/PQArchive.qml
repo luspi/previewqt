@@ -34,8 +34,6 @@ Item {
     width: imageitem.width
     height: imageitem.height
 
-    property Item imageParent
-
     property bool thisIsAComicBook: PQCScriptsImages.isComicBook(PQCConstants.currentSource)
     property list<string> fileList: []
     property int currentFile: 0
@@ -56,9 +54,9 @@ Item {
                 return
             }
             if(PQCConstants.currentSource.includes("::ARC::") || arc_top.fileCount == 0)
-                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding(PQCConstants.currentSource)
+                source = "image://full/" + PQCConstants.currentSource
             else
-                source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::ARC::%2".arg(arc_top.fileList[arc_top.currentFile]).arg(PQCConstants.currentSource))
+                source = "image://full/" + "%1::ARC::%2".arg(arc_top.fileList[arc_top.currentFile]).arg(PQCConstants.currentSource)
         }
 
         asynchronous: true
@@ -84,7 +82,7 @@ Item {
             PQCConstants.imageStatus = status
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
-            else if(status == Image.Ready)
+            else if(status == Image.Ready && source !== "")
                 asynchronous = false
         }
 
@@ -117,21 +115,20 @@ Item {
         imageitem.asynchronous = false
         if(currentFile == -1 || currentFile >= fileList.length) return
         if(PQCConstants.currentSource.includes("::ARC::")) {
-            imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(PQCConstants.currentSource.split("::ARC::")[1]))
+            imageitem.source = "image://full/" + "%1::ARC::%2".arg(fileList[currentFile]).arg(PQCConstants.currentSource.split("::ARC::")[1])
         } else {
-            imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding("%1::ARC::%2".arg(fileList[currentFile]).arg(PQCConstants.currentSource))
+            imageitem.source = "image://full/" + "%1::ARC::%2".arg(fileList[currentFile]).arg(PQCConstants.currentSource)
         }
         imageitem.asynchronous = true
     }
 
     Rectangle {
 
-        parent: arc_top.imageParent
-
         id: archivelisting
 
         x: (parent.width-width)/2
         y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)
+        z: 1
         width: listing_combo.width+20
         height: 40
         radius: 5
@@ -160,10 +157,22 @@ Item {
             y: 5
             width: 200
             height: parent.height-10
-            model: arc_top.fileList
+            property int maxEntryCount: 200
+            property list<string> comboFileList: {
+                if(arc_top.fileList.length < maxEntryCount)
+                    return arc_top.fileList
+                var tmp = arc_top.fileList.slice(0,maxEntryCount)
+                tmp.push("...")
+                return tmp;
+            }
+
+            model: comboFileList
+
             currentIndex: arc_top.currentFile
             onCurrentIndexChanged: {
                 PQCNotify.resetFocus()
+                if(currentIndex === comboFileList.length-1 && arc_top.fileList.length >= maxEntryCount)
+                    return
                 if(currentIndex !== arc_top.currentFile)
                     arc_top.currentFile = currentIndex
             }
@@ -173,12 +182,11 @@ Item {
 
     Rectangle {
 
-        parent: arc_top.imageParent
-
         id: controlitem
 
         x: (parent.width-width)/2
         y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)
+        z: 1
         width: controlrow.width+20
         height: 40
         radius: 5
