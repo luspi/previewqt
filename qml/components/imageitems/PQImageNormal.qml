@@ -34,7 +34,8 @@ Item {
     width: imageitem.width
     height: imageitem.height
 
-    property Item imageParent
+    signal toggleMotionPhotoVideo()
+    property bool motionPhotoVideoIsPlaying: false
 
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(imageitem.paintedWidth, imageitem.paintedHeight) })
@@ -161,11 +162,7 @@ Item {
                         }
 
                         videoloader.active = false
-                        // earlier versions of Qt6 seem to struggle if only one slash is used
-                        if(PQCScriptsConfigQML.isQtAtLeast6_5())
-                            videoloader.mediaSrc = "file:/" + src
-                        else
-                            videoloader.mediaSrc = "file://" + src
+                        videoloader.mediaSrc = src
                         videoloader.active = true
                         return
                     }
@@ -179,6 +176,7 @@ Item {
 
     }
 
+
     // we hide the video element behind a loader so that we don't even have to set it up if no video is found
 
     Loader {
@@ -191,75 +189,117 @@ Item {
         property bool forceMirror: false
 
         asynchronous: true
-        sourceComponent: motionphoto
+        sourceComponent: (PQCScriptsConfig.isMPVEnabled())
+                         ? motionphoto_mpv
+                         : (PQCScriptsConfig.isQtMultimediaEnabled() ? motionphoto_qt : motionphoto_dummy)
+    }
+
+    Rectangle {
+
+        x: parent.width-width-10
+        y: parent.height-height-10
+
+        width: 30
+        height: 30
+        color: "#88000000"
+        radius: 5
+        visible: videoloader.active
+
+        opacity: playpausemouse.containsMouse ? 1 : 0.2
+        Behavior on opacity { NumberAnimation { duration: 200 } }
+
+        Image {
+            anchors.fill: parent
+            anchors.margins: 5
+            sourceSize: Qt.size(width, height)
+            source: img_top.motionPhotoVideoIsPlaying ? "image://svg/:/pause.svg" : "image://svg/:/play.svg"
+        }
+
+        MouseArea {
+            id: playpausemouse
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                img_top.toggleMotionPhotoVideo()
+            }
+        }
+
     }
 
     Component {
 
-        id: motionphoto
+        id: motionphoto_qt
 
-        Item {
+        PQMotionPhotoQt {
 
-            width: imageitem.width
-            height: imageitem.height
+            id: motionphoto_img
+
+
+            x: (forceRotation%180==0 ? 0 : -(img_top.height-img_top.width)/2)
+            y: (forceRotation%180==0 ? 0 : -(img_top.height-img_top.width)/2)
+            width: img_top.width + (forceRotation%180==0 ? 0 : -2*x)
+            height: img_top.height + (forceRotation%180==0 ? 0 : -2*y)
+
+            sourceCache: (PQCScriptsConfigQML.isQtAtLeast6_5() ? "file:/" : "file://") + videoloader.mediaSrc
+            forceRotation: videoloader.forceRotation
+
+            onVideoIsPlayingChanged:
+                img_top.motionPhotoVideoIsPlaying = videoIsPlaying
+
+            Connections {
+                target: img_top
+                function onToggleMotionPhotoVideo() {
+                    motionphoto_img.togglePlayback()
+                }
+            }
+
+        }
+
+    }
+
+    Component {
+
+        id: motionphoto_mpv
+
+        PQMotionPhotoMpv {
+
+            id: motionphoto_img
+
+            x: (forceRotation%180==0 ? 0 : -(img_top.height-img_top.width)/2)
+            y: (forceRotation%180==0 ? 0 : -(img_top.height-img_top.width)/2)
+            width: img_top.width + (forceRotation%180==0 ? 0 : -2*x)
+            height: img_top.height + (forceRotation%180==0 ? 0 : -2*y)
+
+            sourceCache: videoloader.mediaSrc
+            forceRotation: videoloader.forceRotation
+
             transform:
                 Rotation {
-                    origin.x: width / 2
+                    origin.x: motionphoto_img.width / 2
                     axis { x: 0; y: 1; z: 0 }
                     angle: videoloader.forceMirror ? 180 : 0
                 }
 
-            Video {
-                id: mediaplayer
-                rotation: videoloader.forceRotation
-                anchors.fill: parent
-                anchors.margins: rotation%180==0 ? 0 : -(imageitem.height-imageitem.width)/2
-                source: videoloader.mediaSrc
-                Component.onCompleted: {
-                    play()
+            onVideoIsPlayingChanged:
+                img_top.motionPhotoVideoIsPlaying = videoIsPlaying
+
+            Connections {
+                target: img_top
+                function onToggleMotionPhotoVideo() {
+                    motionphoto_img.togglePlayback()
                 }
-            }
-
-            Rectangle {
-
-                parent: img_top.imageParent
-
-                x: parent.width-width-10
-                y: parent.height-height-10
-
-                width: 30
-                height: 30
-                color: "#88000000"
-                radius: 5
-
-                visible: mediaplayer.hasVideo
-
-                opacity: playpausemouse.containsMouse ? 1 : 0.2
-                Behavior on opacity { NumberAnimation { duration: 200 } }
-
-                Image {
-                    anchors.fill: parent
-                    anchors.margins: 5
-                    sourceSize: Qt.size(width, height)
-                    source: mediaplayer.playbackState == MediaPlayer.PlayingState ? "image://svg/:/pause.svg" : "image://svg/:/play.svg"
-                }
-
-                MouseArea {
-                    id: playpausemouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        if(mediaplayer.playbackState == MediaPlayer.PlayingState)
-                            mediaplayer.pause()
-                        else
-                            mediaplayer.play()
-                    }
-                }
-
             }
 
         }
+
+    }
+
+    Component {
+
+        id: motionphoto_dummy
+
+        Item {}
 
     }
 
@@ -267,8 +307,17 @@ Item {
 
         target: PQCNotify
 
-        function onSetImageAsync(async : bool) {
-            imageitem.asynchronous = async
+        function onMainwindowKeyPress(modifiers : int, keycode : int) {
+
+            if(modifiers !== Qt.NoModifier)
+                return
+
+            if(keycode === Qt.Key_Space) {
+
+                img_top.toggleMotionPhotoVideo()
+
+            }
+
         }
 
     }

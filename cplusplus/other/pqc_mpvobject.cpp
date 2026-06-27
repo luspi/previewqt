@@ -125,9 +125,12 @@ PQCMPVObject::PQCMPVObject(QQuickItem * parent) : QQuickFramebufferObject(parent
         throw std::runtime_error("could not create mpv context");
 
     mpv_set_option_string(mpv, "terminal", "yes");
-    mpv_set_option_string(mpv, "msg-level", "all=v");
+    mpv_set_option_string(mpv, "force-window", "no");
+    mpv_set_option_string(mpv, "msg-level", "all=error");
+    mpv_set_option_string(mpv, "background-color", "#00000000");
+    mpv_set_option_string(mpv, "hwdec", "auto");
 
-    if (mpv_initialize(mpv) < 0)
+    if(mpv_initialize(mpv) < 0)
         throw std::runtime_error("could not initialize mpv context");
 
     connect(this, &PQCMPVObject::onUpdate, this, &PQCMPVObject::doUpdate,

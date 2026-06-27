@@ -1,59 +1,63 @@
-set(previewqt_QML "qml/PQMainWindow.qml"
+set(previewqt_QML qml/PQMainWindow.qml
 
-                  "qml/components/PQIconButton.qml"
-                  "qml/components/PQImage.qml"
-                  "qml/components/PQTopRow.qml"
-                  "qml/components/PQTrayIcon.qml"
+                  qml/components/PQIconButton.qml
+                  qml/components/PQImage.qml
+                  qml/components/PQTopRow.qml
+                  qml/components/PQTrayIcon.qml
 
-                  "qml/components/parts/PQTopRowDownloadButton.qml"
+                  qml/components/parts/PQTopRowDownloadButton.qml
 
-                  "qml/components/imageitems/PQArchive.qml"
-                  "qml/components/imageitems/PQAudio.qml"
-                  "qml/components/imageitems/PQDocument.qml"
-                  "qml/components/imageitems/PQImageAnimated.qml"
-                  "qml/components/imageitems/PQImageNormal.qml"
-                  "qml/components/imageitems/PQSVG.qml"
-                  "qml/components/imageitems/PQTxt.qml"
-                  "qml/components/imageitems/PQURL.qml"
+                  qml/components/imageitems/PQArchive.qml
+                  qml/components/imageitems/PQAudio.qml
+                  qml/components/imageitems/PQDocument.qml
+                  qml/components/imageitems/PQImageAnimated.qml
+                  qml/components/imageitems/PQImageNormal.qml
+                  qml/components/imageitems/PQSVG.qml
+                  qml/components/imageitems/PQTxt.qml
+                  qml/components/imageitems/PQURL.qml
 
-                  "qml/windows/PQAbout.qml"
-                  "qml/windows/PQHelp.qml"
-                  "qml/windows/PQSettings.qml"
-                  "qml/windows/PQWelcome.qml"
-                  "qml/windows/PQEnterPathUrl.qml"
-                  "qml/windows/PQMediaInfo.qml"
+                  qml/windows/PQAbout.qml
+                  qml/windows/PQHelp.qml
+                  qml/windows/PQSettings.qml
+                  qml/windows/PQWelcome.qml
+                  qml/windows/PQEnterPathUrl.qml
+                  qml/windows/PQMediaInfo.qml
 
-                  "qml/windows/settings/PQSettingsGeneral.qml"
-                  "qml/windows/settings/PQSettingsExternalApplications.qml"
-                  "qml/windows/settings/PQSettingsTools.qml"
+                  qml/windows/settings/PQSettingsGeneral.qml
+                  qml/windows/settings/PQSettingsExternalApplications.qml
+                  qml/windows/settings/PQSettingsTools.qml
 )
 
 if(WITH_EPUB)
-    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQEPUB.qml")
+    set(previewqt_QML ${previewqt_QML} qml/components/imageitems/PQEPUB.qml)
 else()
-    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/dummy/PQEPUB.qml")
+    set(previewqt_QML ${previewqt_QML} qml/components/imageitems/dummy/PQEPUB.qml)
 endif()
 
 if(WITH_PHOTOSPHERE)
-    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQPhotoSphere.qml")
+    set(previewqt_QML ${previewqt_QML} qml/components/imageitems/PQPhotoSphere.qml)
 else()
-    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/dummy/PQPhotoSphere.qml")
+    set(previewqt_QML ${previewqt_QML} qml/components/imageitems/dummy/PQPhotoSphere.qml)
 endif()
 
 if(WITH_QTMULTIMEDIA)
-    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQVideoQt.qml")
+    set(previewqt_QML ${previewqt_QML} qml/components/imageitems/PQVideoQt.qml
+                                       qml/components/imageitems/components/PQMotionPhotoQt.qml)
 else()
-    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/dummy/PQVideoQt.qml")
+    set(previewqt_QML ${previewqt_QML} qml/components/imageitems/dummy/PQVideoQt.qml
+                                       qml/components/imageitems/dummy/PQMotionPhotoQt.qml)
 endif()
 
 if(WITH_LIBMPV)
-    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/PQVideoMpv.qml")
+    set(previewqt_QML ${previewqt_QML} qml/components/imageitems/PQVideoMpv.qml
+                                       qml/components/imageitems/components/PQMotionPhotoMpv.qml)
 else()
-    set(previewqt_QML ${previewqt_QML} "qml/components/imageitems/dummy/PQVideoMpv.qml")
+    set(previewqt_QML ${previewqt_QML} qml/components/imageitems/dummy/PQVideoMpv.qml
+                                       qml/components/imageitems/dummy/PQMotionPhotoMpv.qml)
 endif()
 
 if(WITH_WEBENGINE OR WITH_EPUB)
-    set(previewqt_QML ${previewqt_QML} "qml/components/parts/PQWebsiteView.qml")
+    set(previewqt_QML ${previewqt_QML} qml/components/parts/PQWebsiteView.qml)
 else()
-    set(previewqt_QML ${previewqt_QML} "qml/components/parts/dummy/PQWebsiteView.qml")
+    set(previewqt_QML ${previewqt_QML} qml/components/parts/dummy/PQWebsiteView.qml)
 endif()

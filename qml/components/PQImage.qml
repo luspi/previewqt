@@ -43,8 +43,6 @@ Item {
         id: updateWindowSize
         interval: 500
         onTriggered: {
-            if(imageloader.item != null)
-                PQCNotify.setImageAsync(false)
             PQCConstants.imageAvailableSizeDelay = PQCConstants.imageAvailableSize
         }
     }
@@ -170,7 +168,7 @@ Item {
 
         PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(PQCConstants.currentSource)
 
-        if(PQCScriptsImages.isURL(PQCConstants.currentSource)) {
+        /*if(PQCScriptsImages.isURL(PQCConstants.currentSource)) {
             PQCConstants.currentType = "url"
             imageloader.sourceComponent = comp_url
         } else if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
@@ -191,18 +189,18 @@ Item {
         } else if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource)) {
             PQCConstants.currentType = "ani"
             imageloader.sourceComponent = comp_ani
-        } else if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource)) {
+        } else */if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource)) {
             PQCConstants.currentType = "sph"
             imageloader.sourceComponent = comp_sph
-        } else if(PQCScriptsImages.isSVG(PQCConstants.currentSource)) {
-            PQCConstants.currentType = "svg"
-            imageloader.sourceComponent = comp_svg
-        } else if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource)) {
-            PQCConstants.currentType = "txt"
-            imageloader.sourceComponent = comp_txt
-        } else if(PQCScriptsImages.isAudio(PQCConstants.currentSource)) {
-            PQCConstants.currentType = "aud"
-            imageloader.sourceComponent = comp_aud
+        // } else if(PQCScriptsImages.isSVG(PQCConstants.currentSource)) {
+        //     PQCConstants.currentType = "svg"
+        //     imageloader.sourceComponent = comp_svg
+        // } else if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource)) {
+        //     PQCConstants.currentType = "txt"
+        //     imageloader.sourceComponent = comp_txt
+        // } else if(PQCScriptsImages.isAudio(PQCConstants.currentSource)) {
+        //     PQCConstants.currentType = "aud"
+        //     imageloader.sourceComponent = comp_aud
         } else {
             PQCConstants.currentType = "img"
             imageloader.sourceComponent = comp_img
@@ -218,88 +216,88 @@ Item {
         Item{}
     }
 
-    Component {
-        id: comp_doc
-        PQDocument {
-            imageParent: image_top
-        }
-    }
+    // Component {
+    //     id: comp_doc
+    //     PQDocument {
+    //         imageParent: image_top
+    //     }
+    // }
 
-    Component {
-        id: comp_bok
-        PQEPUB {
-            imageParent: image_top
-        }
-    }
+    // Component {
+    //     id: comp_bok
+    //     PQEPUB {
+    //         imageParent: image_top
+    //     }
+    // }
 
-    Component {
-        id: comp_arc
-        PQArchive {
-            imageParent: image_top
-        }
-    }
+    // Component {
+    //     id: comp_arc
+    //     PQArchive {
+    //         imageParent: image_top
+    //     }
+    // }
 
-    Component {
-        id: comp_mpv
-        PQVideoMpv {
-            imageParent: image_top
-        }
-    }
+    // Component {
+    //     id: comp_mpv
+    //     PQVideoMpv {
+    //         imageParent: image_top
+    //     }
+    // }
 
-    Component {
-        id: comp_vid
-        PQVideoQt {
-            imageParent: image_top
-        }
-    }
+    // Component {
+    //     id: comp_vid
+    //     PQVideoQt {
+    //         imageParent: image_top
+    //     }
+    // }
 
-    Component {
-        id: comp_ani
-        PQImageAnimated {
-            imageParent: image_top
-        }
-    }
+    // Component {
+    //     id: comp_ani
+    //     PQImageAnimated {
+    //         imageParent: image_top
+    //     }
+    // }
 
     Component {
         id: comp_sph
         PQPhotoSphere {
-            imageParent: image_top
+            // imageParent: image_top
         }
     }
 
-    Component {
-        id: comp_svg
-        PQSVG {
-            imageParent: image_top
-        }
-    }
+    // Component {
+    //     id: comp_svg
+    //     PQSVG {
+    //         imageParent: image_top
+    //     }
+    // }
 
-    Component {
-        id: comp_txt
-        PQTxt {
-            imageParent: image_top
-        }
-    }
+    // Component {
+    //     id: comp_txt
+    //     PQTxt {
+    //         imageParent: image_top
+    //     }
+    // }
 
     Component {
         id: comp_img
         PQImageNormal {
-            imageParent: image_top
+            // imageParent: image_top
         }
     }
 
-    Component {
-        id: comp_url
-        PQURL {
-            imageParent: image_top
-        }
-    }
+    // Component {
+    //     id: comp_url
+    //     PQURL {
+    //         imageParent: image_top
+    //     }
+    // }
 
-    Component {
-        id: comp_aud
-        PQAudio {
-            imageParent: image_top
-        }
-    }
+    // Component {
+    //     id: comp_aud
+    //     PQAudio {
+    //         imageParent: image_top
+    //     }
+    // }
 
 }
