@@ -45,7 +45,7 @@ SetCompressor ZLIB
 !define PREVIEWQT_VERSION "xxx"
 
 Icon "icon_portable.ico"
-OutFile "photoqt-portable-${PREVIEWQT_VERSION}.exe"
+OutFile "previewqt-portable-${PREVIEWQT_VERSION}.exe"
 
 ; only one (invisible) page
 Page instfiles
