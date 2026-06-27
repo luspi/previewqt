@@ -30,9 +30,6 @@ SET(previewqt_SRC cplusplus/main.cpp
                   cplusplus/files/pqc_imageproviderfull.cpp
                   cplusplus/files/pqc_imageprovidersvg.cpp
 
-                  cplusplus/other/pqc_photosphere.cpp
-                  cplusplus/other/pqc_photosphereitem.cpp
-                  cplusplus/other/pqc_photosphererenderer.cpp
                   cplusplus/other/pqc_singleinstance.cpp
                   cplusplus/other/pqc_specialactions.cpp
                   cplusplus/other/pqc_helper.cpp
@@ -41,9 +38,6 @@ SET(previewqt_SRC cplusplus/main.cpp
                   cplusplus/header/pqc_constants.h
                   cplusplus/header/pqc_messagehandler.h
                   cplusplus/header/pqc_notify.h
-                  cplusplus/header/pqc_photosphere.h
-                  cplusplus/header/pqc_photosphereitem.h
-                  cplusplus/header/pqc_photosphererenderer.h
                   cplusplus/header/pqc_settings.h
                   cplusplus/header/pqc_settingscpp.h
                   cplusplus/header/pqc_singleinstance.h

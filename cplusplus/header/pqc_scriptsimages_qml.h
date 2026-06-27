@@ -118,6 +118,10 @@ public:
         return PQCScriptsImages::get().getTextFileContents(path);
     }
 
+    Q_INVOKABLE QString prepareSphereFile(QString path) {
+        return PQCScriptsImages::get().prepareSphereFile(path);
+    }
+
     Q_INVOKABLE QStringList getArchiveContent(QString path, bool insideFilenameOnly = false) {
         return PQCScriptsImages::get().getArchiveContent(path);
     }

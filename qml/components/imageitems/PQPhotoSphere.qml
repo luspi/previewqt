@@ -1,199 +1,179 @@
-/**************************************************************************
- **                                                                      **
- ** Copyright (C) 2026 Lukas Spies                                       **
- ** Contact: https://previewqt.org                                       **
- **                                                                      **
- ** This file is part of PreviewQt.                                      **
- **                                                                      **
- ** PreviewQt is free software: you can redistribute it and/or modify    **
- ** it under the terms of the GNU General Public License as published by **
- ** the Free Software Foundation, either version 2 of the License, or    **
- ** (at your option) any later version.                                  **
- **                                                                      **
- ** PreviewQt is distributed in the hope that it will be useful,         **
- ** but WITHOUT ANY WARRANTY; without even the implied warranty of       **
- ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        **
- ** GNU General Public License for more details.                         **
- **                                                                      **
- ** You should have received a copy of the GNU General Public License    **
- ** along with PreviewQt. If not, see <http://www.gnu.org/licenses/>.    **
- **                                                                      **
- **************************************************************************/
-
 import QtQuick
+import QtQuick3D
 import PreviewQt
 
 Item {
 
     id: sphere_top
 
-    parent: imageParent
-    anchors.fill: parent
-    anchors.margins: -5
+    /*******************************************/
 
-    property Item imageParent
+    property real azimuth: 180
+    property real elevation: 0
+    property real fieldOfView: 90
 
-    Component.onCompleted: {
-        PQCConstants.imagePaintedSize = Qt.binding(function() {
-            return Qt.size(PQCSettings.defaultWindowWidth - 10,
-                           PQCSettings.defaultWindowHeight - (PQCSettings.topBarAutoHide ? 1 : toprow.height) - 10)
-        })
-        PQCConstants.imageAsynchronous = false
+    width: PQCConstants.imageAvailableSize.width
+    height: PQCConstants.imageAvailableSize.height
+
+    // these need to have a small duration as otherwise touchpad handling is awkward
+    // key events are handled with their own animations below
+    Behavior on fieldOfView {
+        NumberAnimation {
+            id: behavior_fov
+            duration: sphere_top.aniDuration
+        }
+    }
+    Behavior on azimuth {
+        NumberAnimation {
+            id: behavior_az
+            duration: sphere_top.aniDuration
+        }
+    }
+    Behavior on elevation {
+        NumberAnimation {
+            id: behavior_ele
+            duration: sphere_top.aniDuration
+        }
     }
 
-    PQCPhotoSphere {
+    property int aniDuration: 0
+    property int aniSpeed: 30
+    property bool animationRunning: false
+    property int aniDirection: -1
 
-        id: thesphere
+    View3D {
+
         anchors.fill: parent
 
-        source: PQCConstants.currentSource!=="" ? PQCScriptsFilesPaths.toPercentEncoding(PQCConstants.currentSource) : ""
-        onSourceChanged: {
-            azimuth = 180
-            elevation = 0
-            fieldOfView = 90
+        environment: SceneEnvironment {
+            backgroundMode: SceneEnvironment.Color
+            clearColor: "black"
         }
 
-        // these need to have a small duration as otherwise touchpad handling is awkward
-        // key events are handled with their own animations below
-        Behavior on fieldOfView { NumberAnimation { id: behavior_fov; duration: 50 } }
-        Behavior on azimuth { NumberAnimation { id: behavior_az; duration: 50 } }
-        Behavior on elevation { NumberAnimation { id: behavior_ele; duration: 50 } }
+        Node {
+            id: cameraRig
 
-        PinchArea {
+            eulerRotation.x: sphere_top.elevation
+            eulerRotation.y: sphere_top.azimuth
 
-            id: pincharea
+            PerspectiveCamera {
+                id: camera
+                position: Qt.vector3d(0, 0, 0)
+                fieldOfView: sphere_top.fieldOfView
+            }
+        }
+
+        Model {
+
+            source: "#Sphere"
+
+            scale: Qt.vector3d(-100, 100, 100)
+
+            materials: PrincipledMaterial {
+                lighting: PrincipledMaterial.NoLighting
+                cullMode: Material.NoCulling
+
+                baseColorMap: Texture {
+                    source: "file:/" + PQCScriptsImages.prepareSphereFile(PQCConstants.currentSource)
+                }
+            }
+        }
+
+    }
+
+    PinchArea {
+
+        anchors.fill: parent
+
+        property real startFov
+
+        onPinchStarted: startFov = sphere_top.fieldOfView
+
+        onPinchUpdated: pinch => {
+            sphere_top.fieldOfView = Math.max(3, Math.min(150, startFov / pinch.scale))
+        }
+
+        MouseArea {
+
+            id: mousearea
 
             anchors.fill: parent
 
-            property real storeFieldOfView
+            property point startPos
+            property real startAz
+            property real startEl
 
-            onPinchStarted: {
-                leftrightani.stop()
-                storeFieldOfView = thesphere.fieldOfView
+            onPressed: mouse => {
+                startPos = Qt.point(mouse.x, mouse.y)
+                startAz = sphere_top.azimuth
+                startEl = sphere_top.elevation
             }
 
-            onPinchUpdated: (pinch) => {
-                // compute the rate of change initiated by this pinch
-                var startLength = Math.sqrt(Math.pow(pinch.startPoint1.x-pinch.startPoint2.x, 2) + Math.pow(pinch.startPoint1.y-pinch.startPoint2.y, 2))
-                var curLength = Math.sqrt(Math.pow(pinch.point1.x-pinch.point2.x, 2) + Math.pow(pinch.point1.y-pinch.point2.y, 2))
-                thesphere.fieldOfView = storeFieldOfView * (startLength / curLength)
+            onPositionChanged: mouse => {
+                sphere_top.azimuth = startAz + (mouse.x - startPos.x) * 0.1
+                sphere_top.elevation = Math.max(-90, Math.min(90, startEl + (mouse.y - startPos.y) * 0.1))
             }
 
-            MouseArea {
-
-                id: mousearea
-
-                anchors.fill: parent
-
-                property point clickedPos
-                property var clickedAzimuth
-                property var clickedElevation
-
-                onPressed: (mouse) => {
-                    leftrightani.stop()
-                    behavior_fov.duration = 0
-                    behavior_az.duration = 0
-                    behavior_ele.duration = 0
-                    clickedPos = Qt.point(mouse.x, mouse.y)
-                    clickedAzimuth = thesphere.azimuth
-                    clickedElevation = thesphere.elevation
-                }
-                onPositionChanged: (mouse) => {
-                    var posDiff = Qt.point(mouse.x-mousearea.clickedPos.x , mouse.y-mousearea.clickedPos.y)
-                    var curTan = Math.tan(thesphere.fieldOfView * ((0.5*Math.PI)/180));
-                    thesphere.azimuth = clickedAzimuth - (((3*256)/PQCConstants.imageAvailableSize.height) * posDiff.x/6) * curTan
-                    thesphere.elevation = clickedElevation + (((3*256)/PQCConstants.imageAvailableSize.height) * posDiff.y/6) * curTan
-                }
-                onReleased: {
-                    behavior_fov.duration = 50
-                    behavior_az.duration = 50
-                    behavior_ele.duration = 50
-                }
-
-                onWheel: (wheel) => {
-                    if(wheel.modifiers & Qt.ControlModifier) {
-                        thesphere.azimuth +=  wheel.angleDelta.x*0.1
-                        thesphere.elevation -=  wheel.angleDelta.y*0.05
-                    } else
-                        thesphere.fieldOfView -=  wheel.angleDelta.y*0.05
-                }
-
-                onDoubleClicked: {
-                    if(PQCConstants.mainwindowIsFullscreen)
-                        PQCNotify.mainwindowShowNormal()
-                    else
-                        PQCNotify.mainwindowShowFullscreen()
-                }
+            onWheel: (wheel) => {
+                if(wheel.angleDelta.y < 0)
+                    sphere_top.zoom("out")
+                else
+                    sphere_top.zoom("in")
             }
+
         }
 
+    }
+
+    onVisibleChanged: {
+
+        if(!panOnCompleted.running)
+            panOnCompleted.start()
+
+    }
+
+
+    Component.onCompleted: {
+
+        sphere_top.aniDuration = 50
+
+        if(!panOnCompleted.running)
+            panOnCompleted.start()
+
+        PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(sphere_top.width, sphere_top.height) })
+        PQCConstants.imageStatus = Image.Ready
     }
 
     // these are not handled with the behavior above because key events are handled smoother than mouse events
     NumberAnimation {
         id: animatedAzimuth
-        target: thesphere
+        target: sphere_top
         property: "azimuth"
         duration: 200
+        onRunningChanged: {
+            if(!running) {
+                animatedAzimuth.easing.type = Easing.Linear
+                animatedAzimuth.duration = 200
+            }
+        }
     }
     NumberAnimation {
         id: animatedElevation
-        target: thesphere
+        target: sphere_top
         property: "elevation"
         duration: 200
+        onRunningChanged: {
+            if(!running) {
+                animatedElevation.easing.type = Easing.Linear
+                animatedElevation.duration = 200
+            }
+        }
     }
     NumberAnimation {
         id: animatedFieldOfView
-        target: thesphere
+        target: sphere_top
         property: "fieldOfView"
         duration: 200
-    }
-
-    // we set the status after a short timeout
-    // if we set it immediately, then the loader item might get reported as being null still
-    Timer {
-        interval: 50
-        running: true
-        onTriggered: {
-            PQCConstants.imageStatus = Image.Ready
-            startPanAfterWindowResize.restart()
-        }
-    }
-
-    // we perform a pan after a short delay to allow for enough time to adjust the size of the window
-    Timer {
-        id: startPanAfterWindowResize
-        interval: 200
-        onTriggered:
-            leftrightani.restart()
-    }
-
-    // This is a short animation to the right and back
-    // This is used when a photo sphere has been entered to inform the user that there is more to the image than what they can see
-    SequentialAnimation {
-
-        id: leftrightani
-
-        loops: 1
-
-        NumberAnimation {
-            target: thesphere
-            property: "azimuth"
-            from: 180
-            to: 190
-            duration: 500
-            easing.type: Easing.OutCirc
-        }
-
-        NumberAnimation {
-            target: thesphere
-            property: "azimuth"
-            from: 190
-            to: 180
-            duration: 500
-            easing.type: Easing.OutBack
-        }
-
     }
 
     Connections {
@@ -202,28 +182,22 @@ Item {
 
         function onMainwindowKeyPress(modifiers : int, keycode : int) {
 
-            if(keycode === Qt.Key_Left)
-                sphere_top.moveView("left")
+            if((modifiers === Qt.ControlModifier && keycode === Qt.Key_0) ||
+                    keycode === Qt.Key_0) {
 
-            else if(keycode === Qt.Key_Right)
-                sphere_top.moveView("right")
-
-            else if(keycode === Qt.Key_Up)
-                sphere_top.moveView("up")
-
-            else if(keycode === Qt.Key_Down)
-                sphere_top.moveView("down")
-
-            else if(keycode === Qt.Key_Plus)
-                sphere_top.zoom("in")
-
-            else if(keycode === Qt.Key_Minus)
-                sphere_top.zoom("out")
-
-            else if(keycode === Qt.Key_0) {
-
-                sphere_top.moveView("reset")
                 sphere_top.zoom("reset")
+                sphere_top.moveView("reset")
+
+            } else if(modifiers === Qt.NoModifier) {
+
+                if(keycode === Qt.Key_Left)
+                    sphere_top.moveView("left")
+                else if(keycode === Qt.Key_Right)
+                    sphere_top.moveView("right")
+                else if(keycode === Qt.Key_Up)
+                    sphere_top.moveView("up")
+                else if(keycode === Qt.Key_Down)
+                    sphere_top.moveView("down")
 
             }
 
@@ -239,13 +213,13 @@ Item {
         animatedFieldOfView.stop()
 
         if(dir === "in") {
-            animatedFieldOfView.from = thesphere.fieldOfView
-            animatedFieldOfView.to = thesphere.fieldOfView-10
+            animatedFieldOfView.from = sphere_top.fieldOfView
+            animatedFieldOfView.to = Math.max(3, Math.min(150, sphere_top.fieldOfView-20))
         } else if(dir === "out") {
-            animatedFieldOfView.from = thesphere.fieldOfView
-            animatedFieldOfView.to = thesphere.fieldOfView+10
+            animatedFieldOfView.from = sphere_top.fieldOfView
+            animatedFieldOfView.to = Math.max(3, Math.min(150, sphere_top.fieldOfView+20))
         } else if(dir === "reset") {
-            animatedFieldOfView.from = thesphere.fieldOfView
+            animatedFieldOfView.from = sphere_top.fieldOfView
             animatedFieldOfView.to = 90
         }
 
@@ -264,22 +238,26 @@ Item {
             animatedAzimuth.stop()
 
         if(dir === "up") {
-            animatedElevation.from = thesphere.elevation
-            animatedElevation.to = thesphere.elevation + thesphere.fieldOfView/5
+            animatedElevation.from = sphere_top.elevation
+            animatedElevation.to = Math.max(-90, Math.min(90, sphere_top.elevation + sphere_top.fieldOfView/5))
         } else if(dir === "down") {
-            animatedElevation.from = thesphere.elevation
-            animatedElevation.to = thesphere.elevation - thesphere.fieldOfView/5
+            animatedElevation.from = sphere_top.elevation
+            animatedElevation.to = Math.max(-90, Math.min(90, sphere_top.elevation - sphere_top.fieldOfView/5))
         } else if(dir === "left") {
-            animatedAzimuth.from = thesphere.azimuth
-            animatedAzimuth.to = thesphere.azimuth - thesphere.fieldOfView/3
+            animatedAzimuth.from = sphere_top.azimuth
+            animatedAzimuth.to = sphere_top.azimuth + sphere_top.fieldOfView/3
         } else if(dir === "right") {
-            animatedAzimuth.from = thesphere.azimuth
-            animatedAzimuth.to = thesphere.azimuth + thesphere.fieldOfView/3
+            animatedAzimuth.from = sphere_top.azimuth
+            animatedAzimuth.to = sphere_top.azimuth - sphere_top.fieldOfView/3
         } else if(dir === "reset") {
-            animatedElevation.from = thesphere.elevation
+            animatedElevation.from = sphere_top.elevation
             animatedElevation.to = 0
-            animatedAzimuth.from = thesphere.azimuth
+            animatedElevation.easing.type = Easing.OutBack
+            animatedElevation.duration = 500
+            animatedAzimuth.from = sphere_top.azimuth
             animatedAzimuth.to = 180
+            animatedAzimuth.easing.type = Easing.OutBack
+            animatedAzimuth.duration = 500
         }
 
         if(dir === "up" || dir === "down" || dir === "reset")
@@ -289,5 +267,117 @@ Item {
 
     }
 
+    // Animation: to left
+    SequentialAnimation {
+
+        id: kb_left
+
+        loops: Animation.Infinite
+        running: sphere_top.animationRunning
+
+        // animate from middle to the left
+        NumberAnimation {
+            target: sphere_top
+            property: "azimuth"
+            from: 180
+            to: 0
+            duration: Math.abs(from-to)*sphere_top.aniSpeed
+        }
+
+        // animate to the right
+        NumberAnimation {
+            target: sphere_top
+            property: "azimuth"
+            from: 0
+            to: 360
+            duration: Math.abs(from-to)*sphere_top.aniSpeed
+        }
+
+        // animate to the middle
+        NumberAnimation {
+            target: sphere_top
+            property: "azimuth"
+            from: 360
+            to: 180
+            duration: Math.abs(from-to)*sphere_top.aniSpeed
+        }
+
+    }
+
+    // Animation: to right
+    SequentialAnimation {
+
+        id: kb_right
+
+        loops: Animation.Infinite
+        running: false
+
+        // animate from middle to the right
+        NumberAnimation {
+            target: sphere_top
+            property: "azimuth"
+            from: 180
+            to: 360
+            duration: Math.abs(from-to)*sphere_top.aniSpeed
+        }
+
+        // animate to the left
+        NumberAnimation {
+            target: sphere_top
+            property: "azimuth"
+            from: 360
+            to: 0
+            duration: Math.abs(from-to)*sphere_top.aniSpeed
+        }
+
+        // animate to the middle
+        NumberAnimation {
+            target: sphere_top
+            property: "azimuth"
+            from: 0
+            to: 180
+            duration: Math.abs(from-to)*sphere_top.aniSpeed
+        }
+
+    }
+
+    // This is a short animation to the right and back
+    // This is used when a photo sphere has been entered to inform the user that there is more to the image than what they can see
+    // The timer below is called from Component.onCompleted above
+
+    SequentialAnimation {
+
+        id: leftrightani
+
+        loops: 1
+
+        NumberAnimation {
+            target: sphere_top
+            property: "azimuth"
+            from: 180
+            to: 190
+            duration: 500
+            easing.type: Easing.OutCirc
+        }
+
+        NumberAnimation {
+            target: sphere_top
+            property: "azimuth"
+            from: 190
+            to: 180
+            duration: 500
+            easing.type: Easing.OutBack
+        }
+
+    }
+
+    Timer {
+        id: panOnCompleted
+        interval: 0
+        onTriggered: {
+            if(!mousearea.pressed)
+                leftrightani.start()
+        }
+    }
 
 }

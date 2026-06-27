@@ -65,7 +65,7 @@ public:
     int getExifOrientation(QString path);
     void applyExifOrientation(const QString filename, QImage &img);
     QString getTextFileContents(QString path);
-
+    QString prepareSphereFile(QString path);
     QStringList getArchiveContent(QString path, bool insideFilenameOnly = false);
 
     QVariantList loadEPUB(QString path);
@@ -76,5 +76,7 @@ private:
 
     QMap<QString,QStringList> archiveContents;
     QString generateArchiveId(QString path);
+
+    int m_maxTextureLimit;
 
 };
