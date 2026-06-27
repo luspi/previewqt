@@ -46,8 +46,6 @@ Item {
     property string musicTrack: ""
 
     Component.onCompleted: {
-        PQCConstants.imageAsynchronous = true
-
         PQCConstants.mediainfoIsAudio = false
         PQCConstants.mediainfoIsVideo = false
         PQCConstants.mediainfoTitle = ""

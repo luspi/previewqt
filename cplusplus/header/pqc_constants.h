@@ -59,7 +59,6 @@ public:
 
         m_imageStatus = 0;
         m_imagePaintedSize = QSize(0,0);
-        m_imageAsynchronous = false;
         m_imageRotation = 0;
         m_imageAvailableSize = QSize(0,0);
         m_imageAvailableSizeDelay = QSize(0,0);
@@ -113,7 +112,6 @@ public:
 
     Q_PROPERTY(int imageStatus MEMBER m_imageStatus NOTIFY imageStatusChanged)
     Q_PROPERTY(QSize imagePaintedSize MEMBER m_imagePaintedSize NOTIFY imagePaintedSizeChanged)
-    Q_PROPERTY(bool imageAsynchronous MEMBER m_imageAsynchronous NOTIFY imageAsynchronousChanged)
     Q_PROPERTY(int imageRotation MEMBER m_imageRotation NOTIFY imageRotationChanged)
     Q_PROPERTY(QSize imageAvailableSize MEMBER m_imageAvailableSize NOTIFY imageAvailableSizeChanged)
     Q_PROPERTY(QSize imageAvailableSizeDelay MEMBER m_imageAvailableSizeDelay NOTIFY imageAvailableSizeDelayChanged)
@@ -162,7 +160,6 @@ private:
 
     int m_imageStatus;
     QSize m_imagePaintedSize;
-    bool m_imageAsynchronous;
     int m_imageRotation;
     QSize m_imageAvailableSize;
     QSize m_imageAvailableSizeDelay;
@@ -212,7 +209,6 @@ Q_SIGNALS:
     void settingsTabNextTimeChanged();
     void imageStatusChanged();
     void imagePaintedSizeChanged();
-    void imageAsynchronousChanged();
     void imageRotationChanged();
     void imageAvailableSizeChanged();
     void imageAvailableSizeDelayChanged();

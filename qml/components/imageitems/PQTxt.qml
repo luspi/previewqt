@@ -862,7 +862,6 @@ Rectangle {
     Component.onCompleted: {
 
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(flickme.width, flickme.height) })
-        PQCConstants.imageAsynchronous = false
 
         /*1on_PQMKF6*/
         // set current file type

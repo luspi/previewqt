@@ -42,7 +42,6 @@ Item {
     Component.onCompleted: {
 
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(width, height) })
-        PQCConstants.imageAsynchronous = Qt.binding(function() { return true })
 
         if(PQCScriptsImages.isLocalURL(PQCConstants.currentSource)) {
             url_top.isWebsite = "file://"+ PQCConstants.currentSource

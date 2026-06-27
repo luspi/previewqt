@@ -46,7 +46,6 @@ Video {
 
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(video.width, video.height) })
-        PQCConstants.imageAsynchronous = false
 
         PQCConstants.mediainfoIsAudio = false
         PQCConstants.mediainfoIsVideo = true

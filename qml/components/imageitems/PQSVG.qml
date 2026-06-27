@@ -36,7 +36,6 @@ Item {
 
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(imageitem.paintedWidth, imageitem.paintedHeight) })
-        PQCConstants.imageAsynchronous = Qt.binding(function() { return imageitem.asynchronous })
     }
 
     Image {

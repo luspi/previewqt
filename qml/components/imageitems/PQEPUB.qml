@@ -77,7 +77,6 @@ Item {
             return Qt.size(Math.max(view.contentsSize.width, (coverimage.source!=="" ? coverimage.paintedWidth : width)),
                            Math.max(view.contentsSize.height, (coverimage.source!=="" ? coverimage.paintedHeight : height)))
         })
-        PQCConstants.imageAsynchronous = false
 
         // load book
         book = PQCScriptsImages.loadEPUB(PQCConstants.currentSource)
