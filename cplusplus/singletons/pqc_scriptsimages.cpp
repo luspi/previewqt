@@ -72,10 +72,6 @@
 #include <IL/il.h>
 #endif
 
-#ifdef PQMFREEIMAGE
-#include <FreeImage.h>
-#endif
-
 #ifdef PQMLIBMPV
 #include <pqc_mpvobject.h>
 #endif

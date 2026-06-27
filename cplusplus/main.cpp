@@ -66,10 +66,6 @@
 #include <vips/vips.h>
 #endif
 
-#ifdef PQMFREEIMAGE
-#include <FreeImage.h>
-#endif
-
 #ifdef PQMEPUB
 #include <QtWebEngineQuick/QtWebEngineQuick>
 #endif
@@ -194,10 +190,6 @@ int main(int argc, char *argv[]) {
     ilInit();
 #endif
 
-#ifdef PQMFREEIMAGE
-    FreeImage_Initialise();
-#endif
-
 #ifdef PQMLIBVIPS
     VIPS_INIT(argv[0]);
 #endif
@@ -288,10 +280,6 @@ int main(int argc, char *argv[]) {
     PQCScriptsConfig::get().setQmlEngine(engine);
 
     int ret = app.exec();
-
-#ifdef PQMFREEIMAGE
-    FreeImage_DeInitialise();
-#endif
 
 #ifdef PQMLIBVIPS
     vips_shutdown();
