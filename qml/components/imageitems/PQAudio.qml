@@ -33,8 +33,6 @@ Item {
     width: PQCConstants.imageAvailableSize.width
     height: PQCConstants.imageAvailableSize.height
 
-    property Item imageParent
-
     property var volumeList: [100, 80, 45, 0]
     property int volumeIndex: 0
     property var volumeIcon: ["high", "medium", "low", "mute"]

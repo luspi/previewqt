@@ -198,9 +198,9 @@ Item {
         } else if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource)) {
             PQCConstants.currentType = "txt"
             imageloader.sourceComponent = comp_txt
-        // } else if(PQCScriptsImages.isAudio(PQCConstants.currentSource)) {
-        //     PQCConstants.currentType = "aud"
-        //     imageloader.sourceComponent = comp_aud
+        } else if(PQCScriptsImages.isAudio(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "aud"
+            imageloader.sourceComponent = comp_aud
         } else {
             PQCConstants.currentType = "img"
             imageloader.sourceComponent = comp_img
@@ -288,11 +288,9 @@ Item {
         PQURL {}
     }
 
-    // Component {
-    //     id: comp_aud
-    //     PQAudio {
-    //         imageParent: image_top
-    //     }
-    // }
+    Component {
+        id: comp_aud
+        PQAudio {}
+    }
 
 }
