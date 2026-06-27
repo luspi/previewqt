@@ -43,9 +43,17 @@ QImage PQCImageProviderSVG::requestImage(const QString &url, QSize *origSize, co
 #ifdef PQMRESVG
 
     QString error = "";
-    QImage ret = PQCImageHandler::get().getImageWithPlugin("resvg", url, requestedSize, *origSize, error);
 
+#ifndef PQMRESVG_QT
+    // resources can only be loaded with the qt interface
+    if(!url.startsWith(":/")) {
+        QImage ret = PQCFileHandler::get().getImageWithPlugin("resvg", url, requestedSize, *origSize, error);
+        if(!ret.isNull()) return ret;
+    }
+#else
+    QImage ret = PQCFileHandler::get().getImageWithPlugin("resvg", url, requestedSize, *origSize, error);
     if(!ret.isNull()) return ret;
+#endif
 
 #endif
 
