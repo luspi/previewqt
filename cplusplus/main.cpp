@@ -223,19 +223,22 @@ int main(int argc, char *argv[]) {
 
         // no root objects -> something went wrong!
         if(engine.rootObjects().isEmpty()) {
+            qWarning() << "no root object found";
             PQCScriptsImages::get().setMaxTextureLimit(0);
             return;
         }
 
         // find the top level window
         QQuickWindow *window = nullptr;
-        for(QObject *obj : engine.rootObjects()) {
+        const QList<QObject*> lst = engine.rootObjects();
+        for(QObject *obj : lst) {
             window = qobject_cast<QQuickWindow *>(obj);
             if(window) break;
         }
 
         // no window found -> something went wrong!
         if(!window) {
+            qWarning() << "no window found";
             PQCScriptsImages::get().setMaxTextureLimit(0);
             return;
         }
