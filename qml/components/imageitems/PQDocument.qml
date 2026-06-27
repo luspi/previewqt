@@ -34,8 +34,6 @@ Item {
     width: imageitem.width
     height: imageitem.height
 
-    property Item imageParent
-
     Component.onCompleted: {
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(imageitem.paintedWidth, imageitem.paintedHeight) })
     }
@@ -82,6 +80,8 @@ Item {
             PQCConstants.imageStatus = status
             if(status == Image.Error)
                 source = "image://svg/:/errorimage.svg"
+            else if(status == Image.Ready && source !== "")
+                asynchronous = false
         }
 
     }
@@ -107,12 +107,11 @@ Item {
 
     Rectangle {
 
-        parent: doc_top.imageParent
-
         id: controlitem
 
         x: (parent.width-width)/2
         y: Math.max(Math.min(0.9*parent.height, parent.height-height-10), parent.height-100)
+        z: 1
         width: controlrow.width+20
         height: 40
         radius: 5

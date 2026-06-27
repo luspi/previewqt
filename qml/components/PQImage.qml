@@ -171,10 +171,10 @@ Item {
         /*if(PQCScriptsImages.isURL(PQCConstants.currentSource)) {
             PQCConstants.currentType = "url"
             imageloader.sourceComponent = comp_url
-        } else if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
+        } else */if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
             PQCConstants.currentType = "doc"
             imageloader.sourceComponent = comp_doc
-        } else */if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
+        } else if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
             PQCConstants.currentType = "bok"
             imageloader.sourceComponent = comp_bok
         } else if(PQCScriptsImages.isArchive(PQCConstants.currentSource)) {
@@ -233,12 +233,10 @@ Item {
         Item{}
     }
 
-    // Component {
-    //     id: comp_doc
-    //     PQDocument {
-    //         imageParent: image_top
-    //     }
-    // }
+    Component {
+        id: comp_doc
+        PQDocument {}
+    }
 
     Component {
         id: comp_bok
