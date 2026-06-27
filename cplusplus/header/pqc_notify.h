@@ -54,6 +54,5 @@ Q_SIGNALS:
     void resetFocus();
 
     void addRotation(int rot);
-    void setImageAsync(bool async);
 
 };

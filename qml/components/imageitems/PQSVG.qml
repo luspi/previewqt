@@ -72,10 +72,6 @@ Item {
 
         target: PQCNotify
 
-        function onSetImageAsync(async : bool) {
-            imageitem.asynchronous = async
-        }
-
     }
 
 }

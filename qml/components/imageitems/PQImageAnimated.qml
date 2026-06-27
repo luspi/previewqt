@@ -161,10 +161,6 @@ Item {
 
         }
 
-        function onSetImageAsync(async : bool) {
-            imageitem.asynchronous = async
-        }
-
     }
 
 }
