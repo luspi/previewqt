@@ -52,10 +52,6 @@
 #include <IL/il.h>
 #endif
 
-#ifdef PQMFREEIMAGE
-#include <FreeImage.h>
-#endif
-
 #ifdef PQMLIBMPV
 #include <pqc_mpvobject.h>
 #endif
@@ -67,13 +63,10 @@
 PQCScriptsConfig::PQCScriptsConfig() {
     m_qmlEngine = nullptr;
     m_debug = false;
-    trans = new QTranslator;
     currentTranslation = "en";
 }
 
-PQCScriptsConfig::~PQCScriptsConfig() {
-    delete trans;
-}
+PQCScriptsConfig::~PQCScriptsConfig() {}
 
 void PQCScriptsConfig::setQmlEngine(QQmlEngine &engine) {
     m_qmlEngine = &engine;
@@ -96,75 +89,71 @@ QString PQCScriptsConfig::getConfigInfo(bool formatHTML) {
 
     QString txt = "";
 
-    txt += QString(" - Compiled with %1Qt %2%3, running with %4Qt %5%6%7").arg(bold1, QT_VERSION_STR, bold2, bold1, qVersion(), bold2, nl);
+    txt += " - Compiled with " % bold1 % "Qt " % QT_VERSION_STR % bold2 % ", running with " % bold1 % "Qt " % qVersion() % bold2 % nl;
 
-    txt += QString(" - Total of %1%2%3 supported file formats%4").arg(bold1).arg(PQCFileHandler::get().getNumFormats()).arg(bold2, nl);
+    txt += " - Total of " % bold1 % QString::number(PQCFileHandler::get().getNumFormats()) % bold2 % " supported file formats" % nl;
 
 #ifdef PQMEXIV2
-    txt += QString(" - %1Exiv2%2: %3%4").arg(bold1, bold2, Exiv2::version(), nl);
+    txt += " - " % bold1 % "Exiv2" % bold2 % ": " % Exiv2::version() % nl;
 #endif
 
 #ifdef PQMRAW
-    txt += QString(" - %1LibRaw%2: %3%4").arg(bold1, bold2, LibRaw::version(), nl);
+    txt += " - " % bold1 % "LibRaw" % bold2 % ": " % LibRaw::version() % nl;
 #endif
 
 #ifdef PQMPOPPLER
-    txt += QString(" - %1Poppler%2: %3%4").arg(bold1, bold2, POPPLER_VERSION, nl);
+    txt += " - " % bold1 % "Poppler" % bold2 % ": " % POPPLER_VERSION % nl;
 #endif
 
 #ifdef PQMQTPDF
-    txt += QString(" - %1QtPDF%2%3").arg(bold1, bold2, nl);
+    txt += " - " % bold1 % "QtPDF" % bold2 % nl;
 #endif
 
 #ifdef PQMLIBARCHIVE
-    txt += QString(" - %1LibArchive%2: %3%4").arg(bold1, bold2, ARCHIVE_VERSION_ONLY_STRING, nl);
+    txt += " - " % bold1 % "LibArchive" % bold2 % ": " % ARCHIVE_VERSION_ONLY_STRING % nl;
 #endif
 
 #ifdef PQMIMAGEMAGICK
-    txt += QString(" - %1ImageMagick%2: %3%4").arg(bold1, bold2, MagickLibVersionText, nl);
+    txt += " - " % bold1 % "ImageMagick" % bold2 % ": " % MagickLibVersionText % nl;
 #endif
 
 #ifdef PQMGRAPHICSMAGICK
-    txt += QString(" - %1GraphicsMagick%2: %3%4").arg(bold1, bold2, MagickLibVersionText, nl);
-#endif
-
-#ifdef PQMFREEIMAGE
-    txt += QString(" - %1FreeImage%2: %3.%4%5").arg(bold1, bold2).arg(FREEIMAGE_MAJOR_VERSION).arg(FREEIMAGE_MINOR_VERSION).arg(nl);
+    txt += " - " % bold1 % "GraphicsMagick" % bold2 % ": " % MagickLibVersionText % nl;
 #endif
 
 #ifdef PQMDEVIL
-    txt += QString(" - %1DevIL%2: %3%4").arg(bold1, bold2).arg(IL_VERSION).arg(nl);
+    txt += " - " % bold1 % "DevIL" % bold2 % ": " % QString::number(IL_VERSION) % nl;
 #endif
 
 #ifdef PQMMOTIONPHOTO
-    txt += QString(" - %1Motion Photo%2%3").arg(bold1, bold2, nl);
+    txt += " - " % bold1 % "Motion Photo" % bold2 % nl;
 #endif
 
 #ifdef PQMPHOTOSPHERE
-    txt += QString(" - %1Photosphere%2%3").arg(bold1, bold2, nl);
+    txt += " - " % bold1 % "Photosphere" % bold2 % nl;
 #endif
 
 #ifdef PQMEPUB
-    txt += QString(" - %1E-books (epub)%2%3").arg(bold1, bold2, nl);
+    txt += " - " % bold1 % "E-books (epub)" % bold2 % nl;
 #endif
 
 #ifdef PQMQTMULTIMEDIA
-    txt += QString(" - %1Multimedia%2 through Qt%3").arg(bold1, bold2, nl);
+    txt += " - " % bold1 % "Multimedia" % bold2 % " through Qt" % nl;
 #endif
 
 #ifdef PQMLIBMPV
     mpv_handle *mpv = mpv_create();
     if(mpv_initialize(mpv) < 0)
         throw std::runtime_error("could not initialize mpv context");
-    txt += QString(" - %1libmpv%2: %3 (ffmpeg: %4)%5").arg(bold1, bold2, mpv::qt::get_property(mpv, "mpv-version").toString(), mpv::qt::get_property(mpv, "ffmpeg-version").toString(), nl);
+    txt += " - " % bold1 % "libmpv" % bold2 % ": " % mpv::qt::get_property(mpv, "mpv-version").toString() % " (ffmpeg: " % mpv::qt::get_property(mpv, "ffmpeg-version").toString() % ")" % nl;
 #endif
 
-    txt += QString(" - %1Qt%2 image formats available:%3%4").arg(bold1, bold2, nl, spacing);
+    txt += " - " % bold1 % "Qt" % bold2 % " image formats available:" % nl % spacing;
     QImageReader reader;
     auto formats = reader.supportedImageFormats();
     for(int i = 0; i < formats.length(); ++i) {
         if(i != 0 && i%10 == 0)
-            txt += QString("%1%2").arg(nl, spacing);
+            txt += nl % spacing;
         txt += QString("%1, ").arg(QString(formats[i]), 5);
     }
 
@@ -233,58 +222,34 @@ void PQCScriptsConfig::updateTranslation(QString code) {
 
     if(code == "") code = PQCSettingsCPP::get().getLanguage();
     qDebug() << "set language:" << code;
+
     if(code == currentTranslation)
         return;
 
-    if(!trans->isEmpty())
-        qApp->removeTranslator(trans);
+    static QTranslator trans;
+    qApp->removeTranslator(&trans);
 
     const QStringList allcodes = code.split("/");
 
+    // we use this to detect whether a translation was found for the above language code
+    currentTranslation = "";
     for(const QString &c : allcodes) {
 
-        if(QFile(":/lang/previewqt_" + c + ".qm").exists()) {
-
-            if(trans->load(":/lang/previewqt_" + c)) {
-                qDebug() << "Installing translator for code:" << c;
-                qApp->installTranslator(trans);
-            } else
-                qWarning() << "Unable to install translator for language code" << c;
-
-        } else if(c.contains("_")) {
-
-            const QString cc = c.split("_").at(0);
-
-            if(QFile(":/lang/previewqt_" + cc + ".qm").exists()) {
-
-                if(trans->load(":/lang/previewqt_" + cc)) {
-                    qDebug() << "Installing translator for code:" << cc;
-                    qApp->installTranslator(trans);
-                } else
-                    qWarning() << "Unable to install translator for language code" << cc;
-
-            }
-
-        } else {
-
-            const QString cc = QString("%1_%2").arg(c, c.toUpper());
-
-            if(QFile(":/lang/previewqt_" + cc + ".qm").exists()) {
-
-                if(trans->load(":/lang/previewqt_" + cc)) {
-                    qDebug() << "Installing translator for code:" << cc;
-                    qApp->installTranslator(trans);
-                } else
-                    qWarning() << "Unable to install translator for language code" << c;
-
-            }
-        }
+        // the load() function will try various filename combinations
+        if(trans.load(":/lang/previewqt_" % c % ".qm")) {
+            currentTranslation = c;
+            qApp->installTranslator(&trans);
+            break;
+        } else
+            qWarning() << "Unable to install translator for language code" << c;
 
     }
 
-    // store current localization
-    currentTranslation = code;
+    // no translation found -> store selected code
+    if(currentTranslation.isEmpty())
+        currentTranslation = code;
 
-    if(m_qmlEngine) m_qmlEngine->retranslate();
+    if(m_qmlEngine != nullptr)
+        m_qmlEngine->retranslate();
 
 }
