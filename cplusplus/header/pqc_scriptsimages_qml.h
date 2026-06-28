@@ -42,8 +42,8 @@ public:
     }
     ~PQCScriptsImagesQML() {}
 
-    Q_INVOKABLE bool isArchive(QString path) {
-        return PQCScriptsImages::get().isArchive(path);
+    Q_INVOKABLE bool isArchive(QString path, bool insideArchive = false) {
+        return PQCScriptsImages::get().isArchive(path, insideArchive);
     }
 
     Q_INVOKABLE bool isComicBook(QString path) {

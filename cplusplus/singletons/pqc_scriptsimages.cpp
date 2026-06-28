@@ -100,8 +100,7 @@ QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenam
     qDebug() << "args: path =" << path;
     qDebug() << "args: insideFilenameOnly =" << insideFilenameOnly;
 
-    if(path.contains("::ARC::"))
-        path = path.split("::ARC::")[1];
+    path = PQCHelper::extractInsideARCFilename(path);
 
     QStringList ret;
 
@@ -114,7 +113,7 @@ QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenam
 
         const QStringList cached = archiveContents[theid];
         for(const QString &f : cached)
-            ret.append(QString("%1::ARC::%2").arg(f, path));
+            ret.append(f % "::ARC::" % path);
         return ret;
 
     }
@@ -125,41 +124,49 @@ QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenam
 
 #ifndef Q_OS_WIN
 
-    QProcess which;
-    which.setStandardOutputFile(QProcess::nullDevice());
-    which.start("which", QStringList() << "unrar");
-    which.waitForFinished();
+    const QString suffix = info.suffix();
 
-    if(!which.exitCode()) {
+    const QSet<QString> supportedSuffixes = PQCFileHandler::get().getSuffixes();
+
+    if(suffix == "cbr" || suffix == "rar") {
 
         QProcess p;
+        p.setProcessChannelMode(QProcess::MergedChannels);
         p.start("unrar", QStringList() << "lb" << info.absoluteFilePath());
 
         if(p.waitForStarted()) {
 
-            QByteArray outdata = "";
+            if(p.waitForFinished()) {
 
-            while(p.waitForReadyRead())
-                outdata.append(p.readAll());
+                if(p.exitStatus() == QProcess::NormalExit && p.exitCode() == 0) {
 
-            auto toUtf16 = QStringDecoder(QStringDecoder::Utf8);
-            QStringList allfiles = QString(toUtf16(outdata)).split('\n', Qt::SkipEmptyParts);
+                    QStringList allfiles = QString::fromLocal8Bit(p.readAllStandardOutput()).split('\n', Qt::SkipEmptyParts);
 
-            allfiles.sort();
+                    // remove archives and unsupported files
+                    ret.erase(std::remove_if(ret.begin(), ret.end(), [&](const QString &f) {
+                                  QFileInfo info(f);
+                                  return (isArchive(f) || (!supportedSuffixes.contains(info.suffix().toLower()) && !supportedSuffixes.contains(info.completeSuffix().toLower())));
+                              }), ret.end());
 
-            if(insideFilenameOnly) {
-                for(const QString &f : std::as_const(allfiles)) {
-                    if(PQCFileHandler::get().getSuffixes().contains(QFileInfo(f).suffix()))
-                        ret.append(f);
-                }
-                listInsideOnly = ret;
-            } else {
-                for(const QString &f : std::as_const(allfiles)) {
-                    if(PQCFileHandler::get().getSuffixes().contains(QFileInfo(f).suffix())) {
-                        ret.append(QString("%1::ARC::%2").arg(f, path));
-                        listInsideOnly.append(f);
+                    allfiles.sort();
+
+                    if(insideFilenameOnly) {
+                        for(const QString &f : std::as_const(allfiles)) {
+                            if(supportedSuffixes.contains(QFileInfo(f).suffix()))
+                                ret.append(f);
+                        }
+                        listInsideOnly = ret;
+                    } else {
+                        for(const QString &f : std::as_const(allfiles)) {
+                            if(supportedSuffixes.contains(QFileInfo(f).suffix())) {
+                                ret.append(f % "::ARC::" % path);
+                                listInsideOnly.append(f);
+                            }
+                        }
                     }
+
                 }
+
             }
 
         }
@@ -182,11 +189,18 @@ QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenam
         archive_read_support_format_all(a);
 
         // Read file
-        int r = archive_read_open_filename(a, info.absoluteFilePath().toLocal8Bit().data(), 10240);
+#ifdef Q_OS_WIN
+        int r = archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(info.absoluteFilePath().utf16()), 10240);
+#else
+        QByteArray tmpPath = QFile::encodeName(info.absoluteFilePath());
+        int r = archive_read_open_filename(a, tmpPath.constData(), 10240);
+#endif
 
         // If something went wrong, output error message and stop here
         if(r != ARCHIVE_OK) {
             qWarning() << "ERROR: archive_read_open_filename() returned code of" << r;
+            qWarning() << "Archive:" << info.absoluteFilePath();
+            archive_read_free(a);
             return ret;
         }
 
@@ -196,10 +210,15 @@ QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenam
 
             // Read the current file entry
             // We use the '_w' variant here, as otherwise on Windows this call causes a segfault when a file in an archive contains non-latin characters
-            QString filenameinside = QString::fromWCharArray(archive_entry_pathname_w(entry));
+            // Also, if the archives is malformed or there is an encoding issue then it is possible that this may return a nullptr
+            // and PhotoQt might crash if not handled properly -> check before converting to QString
+            const wchar_t *wpath = archive_entry_pathname_w(entry);
+            if(!wpath) continue;
+            QString filenameinside = QString::fromWCharArray(wpath);
 
             // If supported file format, append to temporary list
-            if((PQCFileHandler::get().getSuffixes().contains(QFileInfo(filenameinside).suffix().toLower())))
+            QFileInfo info(filenameinside);
+            if(!isArchive(filenameinside, true) && (supportedSuffixes.contains(info.suffix().toLower()) || supportedSuffixes.contains(info.completeSuffix().toLower())))
                 listInsideOnly.append(filenameinside);
 
         }
@@ -211,7 +230,7 @@ QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenam
             ret = listInsideOnly;
         } else {
             for(const QString &f : std::as_const(listInsideOnly))
-                ret.append(QString("%1::ARC::%2").arg(f, path));
+                ret.append(f % "::ARC::" % path);
         }
 
         // Close archive
@@ -226,12 +245,13 @@ QStringList PQCScriptsImages::getArchiveContent(QString path, bool insideFilenam
 #endif
 
     QCollator collator;
+    collator.setLocale(QLocale::system());
     collator.setCaseSensitivity(Qt::CaseInsensitive);
     collator.setIgnorePunctuation(true);
     collator.setNumericMode(true);
 
-    std::sort(ret.begin(), ret.end(), collator);
-    std::sort(listInsideOnly.begin(), listInsideOnly.end(), collator);
+    std::sort(ret.begin(), ret.end(), [&collator](const QString &file1, const QString &file2) { return collator.compare(file1, file2) < 0; });
+    std::sort(listInsideOnly.begin(), listInsideOnly.end(), [&collator](const QString &file1, const QString &file2) { return collator.compare(file1, file2) < 0; });
 
     archiveContents[theid] = listInsideOnly;
 
@@ -259,13 +279,13 @@ int PQCScriptsImages::isMotionPhoto(QString path) {
         /***********************************/
         // check for Apply Live Photos
 
-        QString videopath = QString("%1/%2.mov").arg(info.absolutePath(), info.baseName());
+        const QString videopath = info.absolutePath() % "/" % info.baseName();
         QFileInfo videoinfo(videopath);
         if(videoinfo.exists())
             return 1;
 
-            /***********************************/
-            // Access EXIV2 data
+        /***********************************/
+        // Access EXIV2 data
 
 #if defined(PQMEXIV2) && defined(PQMEXIV2_ENABLE_BMFF)
 
@@ -342,79 +362,121 @@ QString PQCScriptsImages::extractMotionPhoto(QString path) {
     qDebug() << "args: path =" << path;
 
     // at this point we assume that the check for google motion photo has already been done
-    // and we wont need to check again
-
-    // the approach taken in this function is inspired by the analysis found at:
-    // https://linuxreviews.org/Google_Pixel_%22Motion_Photo%22
+    // and we won't need to check again
 
     QFileInfo info(path);
     if(!info.exists())
         return "";
 
-    const QString videofilename = QString("%1/motionphotos/%2.mp4").arg(PQCConfigFiles::get().CACHE_DIR(), info.baseName());
+    const QString videofilename = PQCConfigFiles::get().CACHE_DIR() % "/motionphotos/" % QString::number(qHash(info.baseName())) % ".mp4";
     if(QFileInfo::exists(videofilename)) {
         return videofilename;
     }
 
-    // we assume header for type==2
-    QStringList headerbytes = {"00000018667479706d703432",
-                               "0000001c6674797069736f6d"};
-
-    char *data = new char[info.size()];
-
     QFile file(path);
     if(!file.open(QIODevice::ReadOnly)) {
         qWarning() << "Unable to open file for reading";
-        delete[] data;
         return "";
     }
 
-    QDataStream in(&file);
-    in.readRawData(data, info.size());
+    const qint64 fileSize = file.size();
 
-    // we look for the offset of the header of size 12
-    // it looks like this: 00000018667479706d703432
-    for(int i = 0; i < info.size()-12; ++i) {
+    if(fileSize < 16) {
+        qWarning() << "File too small to contain embedded video";
+        return "";
+    }
 
-        // we inspect the current 3
-        QByteArray firstthree(&data[i], 3);
+    uchar *data = file.map(0, fileSize);
 
-        if(firstthree.toHex() == "000000") {
+    if(!data) {
+        qWarning() << "Failed to memory-map file";
+        return "";
+    }
 
-            // read the full 12 bytes
-            QByteArray array(&data[i], 12);
+    // some common MP4 tags found in motion photos
+    static const QList<QByteArray> validTags = {"mp42", "mp41", "isom", "iso2", "avc1", "M4V "};
 
-            // if it matches we found the video
-            if(headerbytes.contains(array.toHex())) {
+    qint64 videoOffset = -1;
 
-                // get the video data
-                QByteArray videodata(&data[i], info.size()-i);
+    // scan for MP4 ftyp atom
+    for(qint64 i = 0; i < fileSize - 12; ++i) {
 
-                // make sure cache folder exists
-                QDir dir;
-                dir.mkpath(QFileInfo(videofilename).absolutePath());
+        // we are checking for:
+        // [size:4]["ftyp":4][tag:4]
 
-                // write video to temporary file
-                QFile outfile(videofilename);
-                if(!outfile.open(QIODevice::WriteOnly)) {
-                    qWarning() << "ERROR: Unable to write video to file";
-                    return "";
-                }
-                QDataStream out(&outfile);
-                out.writeRawData(videodata, info.size()-i);
-                outfile.close();
+        // this is much faster than converting the four characters to a single string and comparing that
+        if(data[i + 4] == 'f' && data[i + 5] == 't' &&
+            data[i + 6] == 'y' && data[i + 7] == 'p') {
 
-                delete[] data;
+            // read atom size (big endian)
+            quint32 atomSize = (quint32(data[i]) << 24) | (quint32(data[i + 1]) << 16) |
+                               (quint32(data[i + 2]) << 8) | quint32(data[i + 3]);
 
-                return outfile.fileName();
+            // some basic validation
+            if(atomSize < 8 || atomSize > (fileSize - i))
+                continue;
 
-            }
+            QByteArray tag(reinterpret_cast<const char*>(data + i + 8), 4);
+
+            if(!validTags.contains(tag))
+                continue;
+
+            videoOffset = i;
+
+            break;
         }
     }
 
-    delete[] data;
+    file.unmap(data);
 
-    return "";
+    if(videoOffset < 0) {
+        qWarning() << "no embedded MP4 video found";
+        return "";
+    }
+
+    // Ensure output directory exists
+    QDir dir;
+    dir.mkpath(QFileInfo(videofilename).absolutePath());
+
+    if(!file.seek(videoOffset)) {
+        qWarning() << "failed to seek to video offset";
+        return "";
+    }
+
+    QFile outFile(videofilename);
+
+    if(!outFile.open(QIODevice::WriteOnly)) {
+        qWarning() << "failed to create output video file:" << videofilename;
+        return "";
+    }
+
+    // use a buffer of 1MB
+    constexpr qint64 bufferSize = 1024 * 1024;
+
+    while(!file.atEnd()) {
+
+        QByteArray chunk = file.read(bufferSize);
+
+        if(chunk.isEmpty() && file.error() != QFile::NoError) {
+            qWarning() << "error reading input file";
+            outFile.close();
+            outFile.remove();
+            return "";
+        }
+
+        if(outFile.write(chunk) != chunk.size()) {
+            qWarning() << "error writing output file";
+            outFile.close();
+            outFile.remove();
+            return "";
+        }
+    }
+
+    outFile.close();
+
+    qDebug() << "extracted motion video to:" << videofilename;
+
+    return outFile.fileName();
 
 }
 
@@ -613,16 +675,16 @@ bool PQCScriptsImages::isMpvVideo(QString path) {
 
 #ifdef PQMLIBMPV
 
-    QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCFileHandler::get().getSuffixes("libmpv").contains(suf)) {
+    QFileInfo info(path);
+    const QSet<QString> suffixes = PQCFileHandler::get().getSuffixes("libmpv");
+    if(suffixes.contains(info.suffix().toLower()) || suffixes.contains(info.completeSuffix().toLower())) {
 
         supported = true;
 
     } else {
 
         QMimeDatabase db;
-        QString mimetype = db.mimeTypeForFile(path).name();
-        if(PQCFileHandler::get().getMimetypes("libmpv").contains(mimetype))
+        if(PQCFileHandler::get().getMimetypes("libmpv").contains(db.mimeTypeForFile(path).name()))
             supported = true;
 
     }
@@ -641,16 +703,16 @@ bool PQCScriptsImages::isQtVideo(QString path) {
 
 #ifdef PQMQTMULTIMEDIA
 
-    QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCFileHandler::get().getSuffixes("video").contains(suf)) {
+    QFileInfo info = QFileInfo(path);
+    const QSet<QString> suffixes = PQCFileHandler::get().getSuffixes("video");
+    if(suffixes.contains(info.suffix().toLower()) || suffixes.contains(info.completeSuffix().toLower())) {
 
         supported = true;
 
     } else {
 
         QMimeDatabase db;
-        QString mimetype = db.mimeTypeForFile(path).name();
-        if(PQCFileHandler::get().getMimetypes("video").contains(mimetype))
+        if(PQCFileHandler::get().getMimetypes("video").contains(db.mimeTypeForFile(path).name()))
             supported = true;
 
     }
@@ -670,14 +732,18 @@ bool PQCScriptsImages::isPDFDocument(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCFileHandler::get().getSuffixes("pdf").contains(suf))
+#if defined(PQMPOPPLER) || defined(PQMQTPDF)
+
+    const QSet<QString> suffixes = PQCFileHandler::get().getSuffixes("pdf");
+    QFileInfo info(path);
+    if(suffixes.contains(info.suffix().toLower()) || suffixes.contains(info.completeSuffix().toLower()))
         return true;
 
     QMimeDatabase db;
-    QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCFileHandler::get().getMimetypes("pdf").contains(mimetype))
+    if(PQCFileHandler::get().getMimetypes("pdf").contains(db.mimeTypeForFile(path).name()))
         return true;
+
+#endif
 
     return false;
 
@@ -694,13 +760,13 @@ bool PQCScriptsImages::isLocalURL(QString url) {
 
 bool PQCScriptsImages::isAudio(QString path) {
 
-    QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCFileHandler::get().getSuffixes("audio").contains(suf))
+    const QSet<QString> suffixes = PQCFileHandler::get().getSuffixes("audio");
+    QFileInfo info(path);
+    if(suffixes.contains(info.suffix().toLower()) || suffixes.contains(info.completeSuffix().toLower()))
         return true;
 
     QMimeDatabase db;
-    QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCFileHandler::get().getMimetypes("audio").contains(mimetype))
+    if(PQCFileHandler::get().getMimetypes("audio").contains(db.mimeTypeForFile(path).name()))
         return true;
 
     return false;
@@ -729,17 +795,14 @@ int PQCScriptsImages::getDocumentPageCount(QString path) {
 
     qDebug() << "args: path =" << path;
 
+    path = PQCHelper::extractInsidePDFFilename(path);
+
 #ifdef PQMQTPDF
 
-    if(path.contains("::PDF::"))
-        path = path.split("::PDF::").at(1);
-
     QPdfDocument doc;
-    doc.load(path);
 
-    QPdfDocument::Error err = doc.error();
-    if(err != QPdfDocument::Error::None) {
-        qWarning() << "Error occured loading PDF";
+    if(doc.load(path) != QPdfDocument::Error::None) {
+        qWarning() << "Error occurred loading PDF";
         return 0;
     }
 
@@ -761,20 +824,25 @@ int PQCScriptsImages::getDocumentPageCount(QString path) {
 
 }
 
-bool PQCScriptsImages::isArchive(QString path) {
+bool PQCScriptsImages::isArchive(QString path, bool insideArchive) {
 
     qDebug() << "args: path =" << path;
 
 #ifdef PQMLIBARCHIVE
 
+    QFileInfo info(path);
     QString suf = QFileInfo(path).suffix().toLower();
-    if(PQCFileHandler::get().getSuffixes("libarchive").contains(suf))
+    const QSet<QString> supportedSuffixes = PQCFileHandler::get().getSuffixes("libarchive");
+    if(supportedSuffixes.contains(info.suffix().toLower()) ||
+       supportedSuffixes.contains(info.completeSuffix().toLower()))
         return true;
 
-    QMimeDatabase db;
-    QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCFileHandler::get().getMimetypes("libarchive").contains(mimetype))
-        return true;
+    if(!insideArchive) {
+        QMimeDatabase db;
+        QString mimetype = db.mimeTypeForFile(path).name();
+        if(PQCFileHandler::get().getMimetypes("libarchive").contains(mimetype))
+            return true;
+    }
 
 #endif
 
@@ -790,7 +858,10 @@ bool PQCScriptsImages::isComicBook(QString path) {
 
     const QString suffix = QFileInfo(path).suffix().toLower();
 
-    return (suffix=="cbt" || suffix=="cbr" || suffix=="cbz" || suffix=="cb7");
+    return (suffix.compare("cbt", Qt::CaseInsensitive) == 0 ||
+            suffix.compare("cbr", Qt::CaseInsensitive) == 0 ||
+            suffix.compare("cbz", Qt::CaseInsensitive) == 0 ||
+            suffix.compare("cb7", Qt::CaseInsensitive) == 0);
 
 #endif
 
@@ -804,9 +875,7 @@ bool PQCScriptsImages::isEpub(QString path) {
 
 #ifdef PQMEPUB
 
-    const QString suf = QFileInfo(path).suffix().toLower();
-
-    return (suf=="epub");
+    return (QFileInfo(path).suffix().toLower() == "epub");
 
 #endif
 
@@ -817,7 +886,7 @@ bool PQCScriptsImages::isEpub(QString path) {
 QString PQCScriptsImages::generateArchiveId(QString path) {
 
     QFileInfo info(path);
-    return QString("%1_%2").arg(info.lastModified().toMSecsSinceEpoch()).arg(info.absoluteFilePath());
+    return  QString("%1_%2").arg(info.lastModified().toMSecsSinceEpoch()).arg(info.absoluteFilePath());
 
 }
 
@@ -826,7 +895,7 @@ bool PQCScriptsImages::isSVG(QString path) {
     qDebug() << "args: path =" << path;
 
     const QString suffix = QFileInfo(path).suffix().toLower();
-    return (suffix == "svg" || suffix == "svgz");
+    return (suffix.compare("svg", Qt::CaseInsensitive) == 0 || suffix.compare("svgz", Qt::CaseInsensitive) == 0);
 
 }
 
@@ -838,8 +907,10 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
 
 #ifdef PQMEPUB
 
+    using ArchivePtr = std::unique_ptr<archive, decltype(&archive_read_free)>;
+
     // clean up all old files
-    QDir olddir(PQCConfigFiles::get().CACHE_DIR() + "/epub/");
+    QDir olddir(PQCConfigFiles::get().CACHE_DIR() % "/epub/");
     olddir.removeRecursively();
 
     const QFileInfo info(path);
@@ -852,12 +923,19 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
     archive_read_support_format_all(a);
 
     // Read file
-    int r = archive_read_open_filename(a, info.absoluteFilePath().toLocal8Bit().data(), 10240);
+#ifdef Q_OS_WIN
+    int r = archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(info.absoluteFilePath().utf16()), 10240);
+#else
+    QByteArray tmpPath = QFile::encodeName(info.absoluteFilePath());
+    int r = archive_read_open_filename(a, tmpPath.constData(), 10240);
+#endif
 
     // If something went wrong, output error message and stop here
     if(r != ARCHIVE_OK) {
         qWarning() << "ERROR: archive_read_open_filename() returned code of" << r;
-        return ret;
+        qWarning() << "Archive:" << info.absoluteFilePath();
+        archive_read_free(a);
+        return {};
     }
 
     // we keep a list of all images found so that in case no cover image is explicitely specified we simply use the first image in that list for this purpose
@@ -871,61 +949,183 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
     // the file id for the cover image (if present)
     QString coverid = "";
 
-    // Loop over entries in archive
+    QString packageDocumentFilename = "";
+
+    // FIRST we need to find the filename of the OPF package document
+    // an epub might contain more than one, but the root one is listed in the 'META-INF/container.xml' file
     struct archive_entry *entry;
     while(archive_read_next_header(a, &entry) == ARCHIVE_OK) {
 
         // Read the current file entry
         // We use the '_w' variant here, as otherwise on Windows this call causes a segfault when a file in an archive contains non-latin characters
-        QString filenameinside = QString::fromWCharArray(archive_entry_pathname_w(entry));
+        // Also, if the archives is malformed or there is an encoding issue then it is possible that this may return a nullptr
+        // and PhotoQt might crash if not handled properly -> check before converting to QString
+        const wchar_t *wpath = archive_entry_pathname_w(entry);
+        if(!wpath) continue;
+        QString filenameinside = QString::fromWCharArray(wpath);
+
+        if(filenameinside == "META-INF/container.xml") {
+
+            qDebug() << "found container.xml";
+
+            // Find out the size of the data
+            int64_t size = archive_entry_size(entry);
+
+            // empty file? ignore
+            // size > max int size (limit for QByteArray)? ignore
+            if(size <= 0 || size > std::numeric_limits<int>::max()) {
+                qWarning() << "invalid container.xml found";
+                break;
+            }
+
+            // Create a buffer of that size to hold the data
+            QByteArray data;
+            data.resize(size);
+
+            // And finally read the file into the buffer in chunks
+            char* ptr = data.data();
+            qint64 total = 0;
+            while (total < size) {
+                la_ssize_t chunk = archive_read_data(a, ptr + total, size - total);
+                if(chunk < 0) {
+                    qWarning() << QString("Invalid chunk read: %1").arg(archive_error_string(a));
+                    break;
+                }
+
+                if(chunk == 0) {
+                    break;
+                }
+
+                total += chunk;
+            }
+
+            if(total != size) {
+                qWarning() << QString("Failed to read image data, read size (%1) doesn't match expected size (%2)...").arg(total).arg(size);
+                break;
+            }
+
+            // find the package document filename (usually something like metadata.opf)
+            QXmlStreamReader xml(data);
+            while(!xml.atEnd()) {
+                xml.readNext();
+                if(xml.isStartElement() && xml.name() == "rootfile") {
+                    packageDocumentFilename = xml.attributes().value("full-path").toString();
+                    break;
+                }
+            }
+
+        }
+
+    }
+
+    // re-open the archive as we're currently at EOF
+    if(archive_read_close(a) != ARCHIVE_OK)
+        qWarning() << "ERROR: archive_read_close() failed" << archive_error_string(a);
+    if(archive_read_free(a) != ARCHIVE_OK)
+        qWarning() << "ERROR: archive_read_free() failed:" << archive_error_string(a);
+
+    a = archive_read_new();
+    archive_read_support_filter_all(a);
+    archive_read_support_format_all(a);
+
+#ifdef Q_OS_WIN
+    r = archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(info.absoluteFilePath().utf16()), 10240);
+#else
+    r = archive_read_open_filename(a, tmpPath.constData(), 10240);
+#endif
+
+    // If something went wrong, output error message and stop here
+    if(r != ARCHIVE_OK) {
+        qWarning() << "ERROR: archive_read_open_filename() returned code of" << r;
+        qWarning() << "Archive:" << info.absoluteFilePath();
+        archive_read_free(a);
+        return {};
+    }
+
+    // Loop over entries in archive
+    while(archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+
+        // Read the current file entry
+        // We use the '_w' variant here, as otherwise on Windows this call causes a segfault when a file in an archive contains non-latin characters
+        // Also, if the archives is malformed or there is an encoding issue then it is possible that this may return a nullptr
+        // and PhotoQt might crash if not handled properly -> check before converting to QString
+        const wchar_t *wpath = archive_entry_pathname_w(entry);
+        if(!wpath) continue;
+        QString filenameinside = QString::fromWCharArray(wpath);
+
+        // we already read that file and don't need it anymore
+        if(filenameinside.startsWith("META-INF"))
+            continue;
 
         QFileInfo insideinfo(filenameinside);
         const QString suffix = insideinfo.suffix().toLower();
 
-        // Find out the size of the data
-        int64_t size = archive_entry_size(entry);
-
-        // empty file? ignore
-        if(size == 0)
-            continue;
-
-        // Create a uchar buffer of that size to hold the image data
-        uchar *buff = new uchar[size];
-
-        // And finally read the file into the buffer
-        la_ssize_t r = archive_read_data(a, (void*)buff, size);
-
-        // Something went wrong reading file
-        if(r != size) {
-            qWarning() << "Unable to read file:" << filenameinside;
-            qWarning() << "EPUB cannot be displayed!";
-            return ret;
-        }
+        // no suffix most likely means directory
+        // in any case, we likely don't need this here
+        // directories themselves are handled below already
+        if(suffix == "") continue;
 
         // we extract it to a temp location from where we can load it then
-        const QString temppath = PQCConfigFiles::get().CACHE_DIR() + "/epub/" + filenameinside;
+        // we check to make sure we never write outside of the cache subfolder
+        const QString tempRoot = PQCConfigFiles::get().CACHE_DIR() % "/epub/";
 
-        // file handles
-        QFile file(temppath);
-        QFileInfo info(file);
+        // we create
+        QDir dirTempRoot(tempRoot);
+        if(!dirTempRoot.mkpath(tempRoot)) {
+            qWarning() << "FAILED to create temporary directory:" << tempRoot;
+            qWarning() << "Not sure what to do here...";
+            return {};
+        }
 
-        // remove it if it exists, there is no way to know if it's the same file or not
-        // This should never happen as we remove the directory at the start, but better safe than sorry
-        if(file.exists()) file.remove();
+        const QString tempTarget = dirTempRoot.absoluteFilePath(filenameinside);
+        if(!tempTarget.startsWith(tempRoot))
+            continue;
+
+        QFileInfo info(tempTarget);
 
         // make sure the path exists
         QDir dir(info.absolutePath());
-        if(!dir.exists())
-            dir.mkpath(info.absolutePath());
+        if(!dir.exists()) {
+            if(!dir.mkpath(info.absolutePath())) {
+                qWarning() << "FAILED to create temporary directory:" << info.absolutePath();
+                qWarning() << "Not sure what to do here...";
+                return {};
+            }
+        }
+
+        // file handles
+        QFile file(tempTarget);
 
         // write buffer to file
         if(!file.open(QIODevice::ReadWrite)) {
-            qWarning() << "ERROR: Unable to write buffer to file:" << temppath;
+            qWarning() << "ERROR: Unable to write buffer to file:" << tempTarget;
             continue;
         }
-        QDataStream out(&file);   // we will serialize the data into the file
-        out.writeRawData((const char*) buff,size);
-        delete[] buff;
+
+        const void *buff;
+        size_t size;
+        la_int64_t offset;
+
+        while(true) {
+
+            int r = archive_read_data_block(a, &buff, &size, &offset);
+
+            // finished!
+            if(r == ARCHIVE_EOF)
+                break;
+
+            // error
+            if(r != ARCHIVE_OK) {
+                qWarning() << "FAILED reading next block of file in archive:" << archive_error_string(a);
+                break;
+            }
+
+            // write chunk
+            if(file.write(static_cast<const char*>(buff), size) != qint64(size)) {
+                qWarning() << "FAILED to write next chunk";
+                break;
+            }
+        }
 
         // check if this file is located in a subfolder
         // if it is, then we need to take that into account for paths listed inside
@@ -933,7 +1133,7 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
         QString mp = mi.path();
 
         // this is the metadata
-        if(suffix == "opf" && (idToFile.size() == 0 || mp == "" || mp == ".")) {
+        if((!packageDocumentFilename.isEmpty() && filenameinside == packageDocumentFilename) || (packageDocumentFilename.isEmpty() && suffix == "opf" && (idToFile.size() == 0 || mp.isEmpty() || mp == "."))) {
 
             if(mp == ".")
                 mp = "";
@@ -945,14 +1145,14 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
             idOrder.clear();
             analyzeEpubMetaData(mp, in.readAll(), title, coverid, idToFile, idOrder);
 
-            // this is an image, possibly a cover image
+        // this is an image, possibly a cover image
         } else if(suffix == "jpg" || suffix == "jpeg") {
 
             // Any image file with one of these basenames is given preferential treatment if no cover image is explicitely specified
             const QStringList coveroptions = {"cover", "_cover_", "coverimage", "cover_image", "_cover_image_", "_coverimage_", "coverimg", "_coverimg_"};
 
             if(coveroptions.contains(info.baseName().toLower()))
-                imageFiles.append(temppath);
+                imageFiles.append(tempTarget);
 
         }
 
@@ -979,36 +1179,44 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
         // if this is the image cover then read file and store as base64 string
         if(id == coverid) {
 
-            if(!QFileInfo::exists(PQCConfigFiles::get().CACHE_DIR() + "/epub/" + fn))
+            if(!QFileInfo::exists(PQCConfigFiles::get().CACHE_DIR() % "/epub/" % fn))
                 continue;
 
-            QImage img(PQCConfigFiles::get().CACHE_DIR() + "/epub/" + fn);
+            QImage img(PQCConfigFiles::get().CACHE_DIR() % "/epub/" % fn);
             QBuffer buf;
             buf.open(QIODevice::WriteOnly);
-            img.save(&buf, "JPEG");
-            buf.close();
-            // the image is stored in the second position
-            ret.insert(1, buf.buffer().toBase64());
-            addedcover = true;
+            if(!img.save(&buf, "JPEG")) {
+                qWarning() << "ERROR saving image";
+                buf.close();
+            } else {
+                buf.close();
+                // the image is stored in the second position
+                ret.insert(1, buf.buffer().toBase64());
+                addedcover = true;
+            }
 
-            // normal book file
+        // normal book file
         } else
 
-        ret.append(QDir::cleanPath(PQCConfigFiles::get().CACHE_DIR() + "/epub/" + fn));
+        ret.append(QDir::cleanPath(PQCConfigFiles::get().CACHE_DIR() % "/epub/" % fn));
     }
 
     // If no cover was explicitely specified
     if(!addedcover) {
 
         // Take the first image file for this purpose (if any)
-        if(imageFiles.length() > 0 && QFileInfo::exists(imageFiles[0])) {
+        if(!imageFiles.isEmpty() && QFileInfo::exists(imageFiles[0])) {
             QImage img(imageFiles[0]);
             QBuffer buf;
             buf.open(QIODevice::WriteOnly);
-            img.save(&buf, "JPEG");
-            buf.close();
-            // the image is stored in the second position
-            ret.insert(1, buf.buffer().toBase64());
+            if(!img.save(&buf, "JPEG")) {
+                qWarning() << "ERROR saving image";
+                buf.close();
+            } else {
+                buf.close();
+                // the image is stored in the second position
+                ret.insert(1, buf.buffer().toBase64());
+            }
 
             // oh well, no cover image
         } else
@@ -1016,9 +1224,10 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
     }
 
     // Close archive
-    r = archive_read_free(a);
-    if(r != ARCHIVE_OK)
-        qWarning() << "ERROR: archive_read_free() returned code of" << r;
+    if(archive_read_close(a) != ARCHIVE_OK)
+        qWarning() << "ERROR: archive_read_close() failed" << archive_error_string(a);
+    if(archive_read_free(a) != ARCHIVE_OK)
+        qWarning() << "ERROR: archive_read_free() failed:" << archive_error_string(a);
 
 #endif
 
@@ -1027,10 +1236,13 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
 }
 
 void PQCScriptsImages::analyzeEpubMetaData(QString subfolder, QString txt,
-                                     QString &title, QString &coverId,
-                                     QMap<QString, QString> &outFileList, QStringList &outIdOrder) {
+                                           QString &title, QString &coverId,
+                                           QMap<QString, QString> &outFileList, QStringList &outIdOrder) {
 
-    QStringList foundtitle;
+    QPair<QString,QString> foundtitle = {"",""};
+
+    const QSet<QString> coveroptions = {"cover", "_cover_", "coverimage", "cover_image", "_cover_image_", "_coverimage_", "coverimg", "_coverimg_"};
+    const QSet<QString> titleopts = {"cover", "coverpage", "cover_page", "title", "titlepage", "title_page"};
 
     QXmlStreamReader reader(txt);
     while(!reader.atEnd()) {
@@ -1044,20 +1256,18 @@ void PQCScriptsImages::analyzeEpubMetaData(QString subfolder, QString txt,
             // Store the title in the return map directly
             if(name == "title") {
 
-                reader.readNext();
-                title = reader.text().toString();
+                title = reader.readElementText();
 
-                // some file
+            // some file
             } else if(name == "item") {
 
                 const QString id = reader.attributes().value("id").toString();
                 const QString href = reader.attributes().value("href").toString();
-                const QString suffix = QFileInfo(href).suffix().toLower();
-                const QString basename = QFileInfo(href).baseName().toLower();
+                QFileInfo hrefInfo(href);
+                const QString suffix = hrefInfo.suffix().toLower();
+                const QString basename = hrefInfo.baseName().toLower();
 
-                if(coverId == "" && suffix == "jpeg" || suffix == "jpg") {
-
-                    const QStringList coveroptions = {"cover", "_cover_", "coverimage", "cover_image", "_cover_image_", "_coverimage_", "coverimg", "_coverimg_"};
+                if(coverId.isEmpty() && (suffix == "jpeg" || suffix == "jpg")) {
 
                     if(coveroptions.contains(basename))
                         coverId = id;
@@ -1070,40 +1280,43 @@ void PQCScriptsImages::analyzeEpubMetaData(QString subfolder, QString txt,
                 // we ignore the title page IF we found the cover image
                 // a title page typically also includes only the cover image
                 // but we have more control over it when shown as normal image
-                if(foundtitle.length() == 0) {
+                if(foundtitle.first.isEmpty()) {
 
-                    const QStringList titleopts = {"cover", "coverpage", "cover_page", "title", "titlepage", "title_page"};
                     for(const QString &t : titleopts) {
                         if(basename.endsWith(t)) {
-                            foundtitle.append(id);
-                            foundtitle.append(href);
+                            foundtitle.first = id;
+                            foundtitle.second = href;
                             break;
                         }
                     }
 
-                    if(foundtitle.length() > 0)
+                    if(!foundtitle.first.isEmpty())
                         continue;
 
                 }
 
-                if(subfolder == "")
+                if(subfolder.isEmpty())
                     outFileList.insert(id, href);
                 else
                     outFileList.insert(id, QString("%1/%2").arg(subfolder, href));
 
-                // the current file (read in order)
+            // the current file (read in order)
             } else if(name == "itemref") {
 
                 outIdOrder.append(reader.attributes().value("idref").toString());
 
-                // the reference file we want to ignore
+            // the reference file we wantto ignore
             } else if(name == "reference") {
 
                 const QString referencefile = reader.attributes().value("href").toString();
-                if(outIdOrder.contains(referencefile))
-                    outIdOrder.remove(outIdOrder.indexOf(referencefile));
+                const QString idForFile = outFileList.key(referencefile, "");
+                if(!idForFile.isEmpty()) {
+                    const int index = outIdOrder.indexOf(idForFile);
+                    if(index > -1)
+                        outIdOrder.remove(index);
+                }
 
-                // this might contain some information about the cover image
+            // this might contain some information about the cover image
             } else if(name == "meta") {
 
                 if(reader.attributes().value("name").toString() == "cover") {
@@ -1117,8 +1330,12 @@ void PQCScriptsImages::analyzeEpubMetaData(QString subfolder, QString txt,
         }
     }
 
-    if(coverId == "") {
-        outFileList.insert(foundtitle[0], foundtitle[1]);
+    if(reader.hasError()) {
+        qWarning() << "ERROR parsing epub metadata:" << reader.errorString();
+    }
+
+    if(coverId.isEmpty() && !foundtitle.first.isEmpty()) {
+        outFileList.insert(foundtitle.first, foundtitle.second);
     }
 
 }
@@ -1127,12 +1344,13 @@ bool PQCScriptsImages::isTextDocument(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    const QString suffix = QFileInfo(path).suffix();
-    if(PQCFileHandler::get().getSuffixes("text").contains(suffix.toLower()))
+    const QSet<QString> suffixes = PQCFileHandler::get().getSuffixes("text");
+    QFileInfo info(path);
+    if(suffixes.contains(info.suffix().toLower()) || suffixes.contains(info.completeSuffix().toLower()))
         return true;
 
     QMimeDatabase db;
-    QString mimetype = db.mimeTypeForFile(path).name();
+    const QString mimetype = db.mimeTypeForFile(path).name();
     qDebug() << "detected mime type:" << mimetype;
     if(mimetype.startsWith("text/") || PQCFileHandler::get().getMimetypes("text").contains(mimetype))
         return true;

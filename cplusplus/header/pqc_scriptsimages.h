@@ -43,7 +43,7 @@ public:
     PQCScriptsImages(PQCScriptsImages const&)     = delete;
     void operator=(PQCScriptsImages const&) = delete;
 
-    bool isArchive(QString path);
+    bool isArchive(QString path, bool insideArchive = false);
     bool isComicBook(QString path);
     bool isEpub(QString path);
     bool isTextDocument(QString path);
