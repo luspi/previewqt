@@ -102,17 +102,10 @@ private:
 
         watcher = new QFileSystemWatcher;
         watcher->addPath(settings->fileName());
-#if __cplusplus >= 202002L
-        connect(watcher, &QFileSystemWatcher::fileChanged, this, [=, this](QString) {
+        connect(watcher, &QFileSystemWatcher::fileChanged, this, [this](QString) {
             readSettings();
-            QTimer::singleShot(250, this, [=,this]() { watcher->removePath(settings->fileName()); watcher->addPath(settings->fileName()); });
+            QTimer::singleShot(250, this, [this]() { watcher->removePath(settings->fileName()); watcher->addPath(settings->fileName()); });
         });
-#else
-        connect(watcher, &QFileSystemWatcher::fileChanged, this, [=](QString) {
-            readSettings();
-            QTimer::singleShot(250, [=]() { watcher->removePath(settings->fileName()); watcher->addPath(settings->fileName()); });
-        });
-#endif
 
     }
 
