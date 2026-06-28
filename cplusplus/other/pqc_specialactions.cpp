@@ -19,7 +19,7 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
 
     QString filename = PQCScriptsFilesPaths::get().toAbsolutePath(PQCScriptsFilesPaths::cleanPath(path));
 
-    QString tmpfile = QString("%1/tmpfile.jpg").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+    QString tmpfile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) % "/tmpfile.jpg";
     if(QFileInfo::exists(tmpfile))
         QFile::remove(tmpfile);
 
@@ -32,10 +32,13 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
     QMimeDatabase db;
 
     // the suffix for convenience
-    QString suffix = QFileInfo(filename).suffix().toLower();
+    QFileInfo info(filename);
+    const QString suffix1 = info.suffix().toLower();
+    const QString suffix2 = info.completeSuffix().toLower();
 
     // is this a video?
-    if(PQCFileHandler::get().getSuffixes("video").contains(suffix)) {
+    const QSet<QString> videoSuffixes = PQCFileHandler::get().getSuffixes("video");
+    if(videoSuffixes.contains(suffix1) || videoSuffixes.contains(suffix2)) {
 
         QString mime = db.mimeTypeForFile(filename).name();
         std::cout << "display mime: " << mime.toStdString() << std::endl
@@ -49,7 +52,8 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
     }
 
     // is this format supported by Qt?
-    if(PQCFileHandler::get().getSuffixes("qt").contains(suffix)) {
+    const QSet<QString> qtSuffixes = PQCFileHandler::get().getSuffixes("qt");
+    if(qtSuffixes.contains(suffix1) || qtSuffixes.contains(suffix2)) {
 
         QString mime = db.mimeTypeForFile(filename).name();
         std::cout << "display mime: " << mime.toStdString() << std::endl
@@ -69,14 +73,16 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
     bool isARC = PQCScriptsImages::get().isArchive(filename);
 
     QStringList archiveContent;
-    if(isARC)
+    if(isARC) {
         archiveContent = PQCScriptsImages::get().getArchiveContent(filename, true);
-    \
-        QString filenameToLoad = filename;
-    if(isPDF)
+    }
+
+    QString filenameToLoad = filename;
+    if(isPDF) {
         filenameToLoad = QString("%1::PDF::%2").arg(fileNumInside).arg(filename);
-    else if(isARC && fileNumInside < archiveContent.length())
+    } else if(isARC && fileNumInside < archiveContent.length()) {
         filenameToLoad = QString("%1::ARC::%2").arg(archiveContent[fileNumInside], filename);
+    }
 
     // process file
     QSize tmp;
@@ -87,16 +93,16 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
     // display information
     std::cout << "display mime: image/jpeg" << std::endl
               << "source mime: " << db.mimeTypeForFile(filename).name().toStdString() << std::endl
-              << "tmp path: " << QString("%1/tmpfile.jpg").arg(QStandardPaths::writableLocation(QStandardPaths::CacheLocation)).toStdString() << std::endl
+              << "tmp path: " << QString(QStandardPaths::writableLocation(QStandardPaths::CacheLocation) % "/tmpfile.jpg").toStdString() << std::endl
               << "file name: " << PQCScriptsFilesPaths::get().getFilename(filename).toStdString() << std::endl;
 
     if(isPDF) {
-        std::cout << "file number: " << fileNumInside << std::endl;
-        std::cout << "file count: " << PQCScriptsImages::get().getDocumentPageCount(filename) << std::endl;
+        std::cout << "file number: " << fileNumInside << std::endl
+                  << "file count: " << PQCScriptsImages::get().getDocumentPageCount(filename) << std::endl;
     } else if(isARC) {
-        std::cout << "file number: " << fileNumInside << std::endl;
-        std::cout << "file name (inside): " << archiveContent[fileNumInside].toStdString() << std::endl;
-        std::cout << "file count: " << archiveContent.length() << std::endl;
+        std::cout << "file number: " << fileNumInside << std::endl
+                  << "file name (inside): " << archiveContent[fileNumInside].toStdString() << std::endl
+                  << "file count: " << archiveContent.length() << std::endl;
     }
 
     return;
@@ -144,7 +150,7 @@ QString PQCSpecialActions::getSelectedFile_dolphin() {
     }
 
     // if not dolphin target is active -> stop
-    if(activeDolphinTarget == "")
+    if(activeDolphinTarget.isEmpty())
             return "";
 
     /******************************************************************/
