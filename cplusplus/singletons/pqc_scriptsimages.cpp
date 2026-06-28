@@ -831,7 +831,6 @@ bool PQCScriptsImages::isArchive(QString path, bool insideArchive) {
 #ifdef PQMLIBARCHIVE
 
     QFileInfo info(path);
-    QString suf = QFileInfo(path).suffix().toLower();
     const QSet<QString> supportedSuffixes = PQCFileHandler::get().getSuffixes("libarchive");
     if(supportedSuffixes.contains(info.suffix().toLower()) ||
        supportedSuffixes.contains(info.completeSuffix().toLower()))
