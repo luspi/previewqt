@@ -163,11 +163,11 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     QByteArray filenameToSend = "";
     if(fileNumInside > 0) {
         if(PQCScriptsImages::get().isPDFDocument(filename)) {
-            filenameToSend = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename).arg(fileNumInside));
+            filenameToSend = QUrl::toPercentEncoding(filename % ":/:/:" % QString::number(fileNumInside));
         } else if(PQCScriptsImages::get().isArchive(filename)) {
             QStringList cont = PQCScriptsImages::get().getArchiveContent(filename, true);
             if(fileNumInside < cont.length())
-                filenameToSend = QUrl::toPercentEncoding(QString("%1:/:/:%2").arg(filename, cont[fileNumInside]));
+                filenameToSend = QUrl::toPercentEncoding(filename % ":/:/:" % cont[fileNumInside]);
             else
                 filenameToSend = QUrl::toPercentEncoding(filename);
         } else
@@ -178,7 +178,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
     if(quitRemote)
         filenameToSend = "--quit--";
-    else if(filenameToSend == "")
+    else if(filenameToSend.isEmpty())
         filenameToSend = "-";
 
     if(setDebug)
@@ -248,6 +248,7 @@ void PQCSingleInstance::showHelpMessage() {
     std::cout << "Options:" << std::endl;
     std::cout << std::setw(15) << std::right << "  -h, --help" << "   " << "Displays help on commandline options." << std::endl;
     std::cout << std::setw(15) << std::right << "  -v, --version" << "   " << "Displays version information." << std::endl;
+    std::cout << std::setw(15) << std::right << "  --quit" << "   " << "Quit any running instance." << std::endl;
     std::cout << std::setw(15) << std::right << "  --show-info" << "   " << "Show configuration overview." << std::endl;
     std::cout << std::setw(15) << std::right << "  --debug" << "   " << "Show debug messages." << std::endl;
     std::cout << std::setw(15) << std::right << "  --process-only" << "   " << "Process file, provide path to processed file, and print some information." << std::endl;
