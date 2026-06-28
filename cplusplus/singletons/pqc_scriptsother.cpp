@@ -39,6 +39,7 @@
 
 PQCScriptsOther::PQCScriptsOther() {
     m_startupMessage = "";
+    m_amDownloading = false;
 }
 
 PQCScriptsOther::~PQCScriptsOther() {}
@@ -336,21 +337,8 @@ bool PQCScriptsOther::applyEmbeddedColorProfile(QImage &img) {
     int lcms2SourceFormat = toLcmsFormat(img.format());
 
     QImage::Format targetFormat = img.format();
-    // this format causes problems with lcms2
-    // no error is caused but the resulting image is fully transparent
-    // removing the alpha channel seems to fix this
-    if(img.format() == QImage::Format_ARGB32)
-        targetFormat = QImage::Format_RGB32;
 
     int lcms2targetFormat = toLcmsFormat(img.format());
-
-    // Outputting an RGBA64 image with LCMS2 results in a blank rectangle.
-    // Reading it seems to work just fine, however.
-    // Thus we make sure to output the image in a working format here.
-    if(img.format() == QImage::Format_RGBA64) {
-        targetFormat = QImage::Format_RGB32;
-        lcms2targetFormat = toLcmsFormat(QImage::Format_RGB32);
-    }
 
     if(lcms2SourceFormat == 0 || lcms2targetFormat == 0) {
         qWarning() << "Unknown image format. Attempting to convert image to format known to LCMS2.";
@@ -396,9 +384,11 @@ bool PQCScriptsOther::applyEmbeddedColorProfile(QImage &img) {
 
         // check if image is all black -> transform failed
         bool allblack = true;
-        for(int x = 0; x < img.width(); ++x) {
-            for(int y = 0; y < img.height(); ++y) {
-                if(ret.pixelColor(x,y).black() < 255) {
+        for(int y = 0; y < img.height(); ++y) {
+            const QRgb *line = reinterpret_cast<const QRgb*>(img.constScanLine(y));
+            for (int x = 0; x < img.width(); ++x) {
+                const QRgb &rgb = line[x];
+                if(qRed(rgb) != 0 || qGreen(rgb) != 0 || qBlue(rgb) != 0) {
                     allblack = false;
                     break;
                 }
@@ -411,7 +401,7 @@ bool PQCScriptsOther::applyEmbeddedColorProfile(QImage &img) {
             return false;
         }
 
-        const int bufSize = 100;
+        const int bufSize = 256;
         char buf[bufSize];
 
 #if LCMS_VERSION >= 2160
@@ -453,7 +443,12 @@ void PQCScriptsOther::startDownloadOfFile(QString url, QString filename) {
 
     qDebug() << "args: url =" << url;
 
-    QString fname = QFileDialog::getSaveFileName(nullptr, "Save file as", PQCSettingsCPP::get().getLastDownloadFolder()+"/"+filename);
+    if(m_amDownloading) {
+        qWarning() << "download in progress, you need to wait";
+        return;
+    }
+
+    QString fname = QFileDialog::getSaveFileName(nullptr, "Save file as", PQCSettingsCPP::get().getLastDownloadFolder() % "/" % filename);
     if(fname == "") {
         qDebug() << "No file selected, not downloading file.";
         return;
@@ -461,48 +456,60 @@ void PQCScriptsOther::startDownloadOfFile(QString url, QString filename) {
 
     PQCSettingsCPP::get().setLastDownloadFolder(QFileInfo(fname).absolutePath());
 
-    if(downloadFile != nullptr)
-        delete downloadFile;
     downloadFile = new QFile(fname);
     if(!downloadFile->open(QIODevice::WriteOnly)) {
         qWarning() << "Unable to open file for writing. Not downloading video.";
+        downloadFile->deleteLater();
+        downloadFile = nullptr;
         return;
     }
 
+    m_amDownloading = true;
 
-    QNetworkRequest request = QNetworkRequest(url);
+    QNetworkRequest request(QUrl::fromUserInput(url));
     request.setRawHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
     request.setRawHeader("Referer", getDomainOfUrl(url).toUtf8());
     m_downloadReply = m_downloadManager.get(request);
     Q_EMIT downloadStarted();
 
-#if __cplusplus >= 202002L
-    connect(m_downloadReply, &QNetworkReply::readyRead, this, [=,this]() {
-#else
-    connect(m_downloadReply, &QNetworkReply::readyRead, this, [=]() {
-#endif
-        downloadFile->write(m_downloadReply->read(m_downloadReply->bytesAvailable()));
+    connect(m_downloadReply, &QNetworkReply::readyRead, this, [this]() {
+        downloadFile->write(m_downloadReply->readAll());
     });
 
     connect(m_downloadReply, &QNetworkReply::downloadProgress, this, &PQCScriptsOther::downloadProgress);
 
-#if __cplusplus >= 202002L
-    connect(m_downloadReply, &QNetworkReply::finished, this, [=,this]() {
-#else
-    connect(m_downloadReply, &QNetworkReply::finished, this, [=]() {
-#endif
-        downloadFile->close();
-        Q_EMIT downloadFinished();
+    connect(m_downloadReply, &QNetworkReply::finished, this, [this]() {
+
+        qDebug() << "download finished";
+
+        if(m_downloadReply->error() != QNetworkReply::NoError) {
+            qWarning() << m_downloadReply->errorString();
+            if(m_downloadReply->error() != QNetworkReply::OperationCanceledError)
+                Q_EMIT downloadFailed();
+            downloadFile->close();
+            downloadFile->remove();
+        } else {
+            Q_EMIT downloadFinished();
+        }
+
+        m_downloadReply->deleteLater();
+        downloadFile->deleteLater();
+        m_downloadReply = nullptr;
+        downloadFile = nullptr;
+        m_amDownloading = false;
+
     });
 
 }
 
 void PQCScriptsOther::cancelDownloadOfFile() {
 
-    if(m_downloadReply != nullptr) {
-        Q_EMIT downloadCancelled();
+    qDebug() << "cancelling download";
+
+    Q_EMIT downloadCancelled();
+
+    if(m_downloadReply)
         m_downloadReply->abort();
-    }
 
 }
 
@@ -515,7 +522,7 @@ QString PQCScriptsOther::getDomainOfUrl(QString url) {
     const QString protocol = parts[0];
     const QString base = parts[1].split("/")[0];
 
-    return QString("%1://%2").arg(protocol, base);
+    return protocol % "://" % base;
 
 }
 
@@ -527,7 +534,7 @@ QString PQCScriptsOther::convertSecondsToHumandFriendly(int secs, int reference)
 
     // less than 1 minute
     if((reference == -1 && secs < 60) || (reference > -1 && reference < 60))
-        return QString("%1").arg(secs);
+        return QString::number(secs);
 
     // less than 1h
     else if((reference == -1 && secs < 60*60) || (reference > -1 && reference < 60*60))

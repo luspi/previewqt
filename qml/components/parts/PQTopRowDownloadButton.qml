@@ -50,6 +50,7 @@ PQIconButton {
         color: "#8800ff00"
         property bool downloadCancelled: false
         property bool showCheckmark: false
+        property bool showError: false
         opacity: 0
         Behavior on opacity { NumberAnimation { duration: 200 } }
         Image {
@@ -62,7 +63,7 @@ PQIconButton {
         }
         Image {
             parent: downbut
-            visible: cancelmouse.containsMouse
+            visible: cancelmouse.containsMouse||downloadProgress.showError
             anchors.fill: parent
             anchors.margins: 8
             sourceSize: Qt.size(width, height)
@@ -100,6 +101,7 @@ PQIconButton {
             PQCConstants.downloadInProgress = true
             downloadProgress.width = 0
             downloadProgress.showCheckmark = false
+            downloadProgress.showError = false
             downloadProgress.downloadCancelled = false
             downloadProgress.opacity = 1
             timeoutChecker.restart()
@@ -109,6 +111,13 @@ PQIconButton {
             timeoutChecker.stop()
             PQCConstants.downloadInProgress = false
             downloadProgress.showCheckmark = true
+            resetStatus.restart()
+        }
+
+        function onDownloadFailed() {
+            timeoutChecker.stop()
+            PQCConstants.downloadInProgress = false
+            downloadProgress.showError = true
             resetStatus.restart()
         }
 

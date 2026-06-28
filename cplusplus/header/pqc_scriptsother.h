@@ -64,11 +64,15 @@ private:
     QNetworkAccessManager m_downloadManager;
     QFile *downloadFile;
 
+    // somehow checking isRunning/isFinished does not seem reliable
+    bool m_amDownloading;
+
 Q_SIGNALS:
     void commandLineArgumentReceived(QString msg);
 
     void downloadStarted();
     void downloadFinished();
+    void downloadFailed();
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
     void downloadCancelled();
 

@@ -42,6 +42,8 @@ public:
                 this, &PQCScriptsOtherQML::downloadStarted);
         connect(&PQCScriptsOther::get(), &PQCScriptsOther::downloadFinished,
                 this, &PQCScriptsOtherQML::downloadFinished);
+        connect(&PQCScriptsOther::get(), &PQCScriptsOther::downloadFailed,
+                this, &PQCScriptsOtherQML::downloadFailed);
         connect(&PQCScriptsOther::get(), &PQCScriptsOther::downloadProgress,
                 this, &PQCScriptsOtherQML::downloadProgress);
         connect(&PQCScriptsOther::get(), &PQCScriptsOther::downloadCancelled,
@@ -90,6 +92,7 @@ Q_SIGNALS:
     void commandLineArgumentReceived(QString msg);
     void downloadStarted();
     void downloadFinished();
+    void downloadFailed();
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
     void downloadCancelled();
 
