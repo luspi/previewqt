@@ -26,52 +26,13 @@
 #include <QtDebug>
 
 PQCScriptsExternalTools::PQCScriptsExternalTools() {
-    m_ytdlpStreamProc = nullptr;
-    m_ytdlpStreamTitleProc = nullptr;
-    m_ytdlpStreamSupportedProc = nullptr;
-}
 
-PQCScriptsExternalTools::~PQCScriptsExternalTools() {
-    if(m_ytdlpStreamProc) delete m_ytdlpStreamProc;
-    if(m_ytdlpStreamTitleProc) delete m_ytdlpStreamTitleProc;
-    if(m_ytdlpStreamSupportedProc) delete m_ytdlpStreamSupportedProc;
-}
-
-void PQCScriptsExternalTools::ytdlpRequestIsSupportedStream(QString url) {
-
-    qDebug() << "args: url =" << url;
-
-    QProcess which;
-    which.setStandardOutputFile(QProcess::nullDevice());
-    which.start("which", QStringList() << PQCSettingsCPP::get().getExecutableYtDlp());
-    which.waitForFinished();
-
-    if(which.exitCode()) {
-        qWarning() << "yt-dlp executable not found. Is it set up correctly?";
-        Q_EMIT ytdlpReceivedStreamSupported(false);
-        return;
-    }
-
-    const QStringList knownMatches = {"://youtube.com", "://www.youtube.com","://youtu.be", "://www.youtu.be",
-                                      "://dailymotion.com", "://www.dailymotion.com"};
-    for(const QString &m : knownMatches) {
-        if(url.contains(m)) {
-            Q_EMIT ytdlpReceivedStreamSupported(true);
-            return;
-        }
-    }
-
-    if(m_ytdlpStreamSupportedProc != nullptr)
-        delete m_ytdlpStreamSupportedProc;
+    m_ytdlpStreamProc = new QProcess;
+    m_ytdlpStreamTitleProc = new QProcess;
     m_ytdlpStreamSupportedProc = new QProcess;
 
-    url = url.split("&list=")[0];
-    url = url.split("&index=")[0];
-
-    QString program = "yt-dlp";
-    QStringList arguments = {"--simulate", url};
-
-    m_ytdlpStreamSupportedProc->start(program, arguments);
+    /************************************************************/
+    /************************************************************/
 
 #if __cplusplus >= 202002L
     connect(m_ytdlpStreamSupportedProc, &QProcess::readyReadStandardOutput, this, [=,this]() {
@@ -92,35 +53,8 @@ void PQCScriptsExternalTools::ytdlpRequestIsSupportedStream(QString url) {
             Q_EMIT ytdlpReceivedStreamSupported(false);
     });
 
-}
-
-void PQCScriptsExternalTools::ytdlpRequestStreamURL(QString url) {
-
-    qDebug() << "args: url =" << url;
-
-    if(m_ytdlpStreamProc != nullptr)
-        delete m_ytdlpStreamProc;
-    m_ytdlpStreamProc = new QProcess;
-
-    url = url.split("&list=")[0];
-    url = url.split("&index=")[0];
-
-    QString program = "yt-dlp";
-    QStringList arguments;
-
-    arguments << "-g";
-    arguments << "-f" << "best[protocol^=http]/best";
-    arguments << "--user-agent" << "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-
-    if(url.contains("youtube.com") || url.contains("youtu.be"))
-        arguments << "--referer" << "https://www.youtube.com/";
-    else if(url.contains("dailymotion.com"))
-        arguments << "--referer" << "https://www.dailymotion.com/";
-
-    arguments << url;
-
-
-    m_ytdlpStreamProc->start(program, arguments);
+    /************************************************************/
+    /************************************************************/
 
 #if __cplusplus >= 202002L
     connect(m_ytdlpStreamProc, &QProcess::readyReadStandardOutput, this, [=,this]() {
@@ -152,25 +86,8 @@ void PQCScriptsExternalTools::ytdlpRequestStreamURL(QString url) {
     connect(m_ytdlpStreamProc, &QProcess::finished, this, [=]() { Q_EMIT ytdlpFinished(); });
 #endif
 
-}
-
-void PQCScriptsExternalTools::ytdlpRequestStreamTitle(QString url) {
-
-    qDebug() << "args: url =" << url;
-
-    if(m_ytdlpStreamTitleProc != nullptr)
-        delete m_ytdlpStreamTitleProc;
-    m_ytdlpStreamTitleProc = new QProcess;
-
-    url = url.split("&list=")[0];
-    url = url.split("&index=")[0];
-
-    QString program = "yt-dlp";
-    QStringList arguments = {"--simulate",
-                             "--print", "%(title)s",
-                             url};
-
-    m_ytdlpStreamTitleProc->start(program, arguments);
+    /************************************************************/
+    /************************************************************/
 
 #if __cplusplus >= 202002L
     connect(m_ytdlpStreamTitleProc, &QProcess::readyReadStandardOutput, this, [=,this]() {
@@ -182,5 +99,90 @@ void PQCScriptsExternalTools::ytdlpRequestStreamTitle(QString url) {
         qDebug() << ret;
         Q_EMIT ytdlpReceivedStreamTitle(ret);
     });
+
+    /************************************************************/
+    /************************************************************/
+
+}
+
+PQCScriptsExternalTools::~PQCScriptsExternalTools() {
+    delete m_ytdlpStreamProc;
+    delete m_ytdlpStreamTitleProc;
+    delete m_ytdlpStreamSupportedProc;
+}
+
+void PQCScriptsExternalTools::ytdlpRequestIsSupportedStream(QString url) {
+
+    qDebug() << "args: url =" << url;
+
+    QProcess which;
+    which.setStandardOutputFile(QProcess::nullDevice());
+    which.start(PQCSettingsCPP::get().getExecutableYtDlp(), {"--help"});
+    if(!which.waitForStarted()) {
+        qWarning() << "yt-dlp executable not found. Is it set up correctly?";
+        Q_EMIT ytdlpReceivedStreamSupported(false);
+        return;
+    }
+
+    const QStringList knownMatches = {"://youtube.com", "://www.youtube.com","://youtu.be", "://www.youtu.be",
+                                      "://dailymotion.com", "://www.dailymotion.com"};
+    for(const QString &m : knownMatches) {
+        if(url.contains(m)) {
+            Q_EMIT ytdlpReceivedStreamSupported(true);
+            return;
+        }
+    }
+
+    // reset process
+    m_ytdlpStreamSupportedProc->kill();
+    m_ytdlpStreamSupportedProc->waitForFinished();
+
+    url = url.split("&list=")[0];
+    url = url.split("&index=")[0];
+
+    m_ytdlpStreamSupportedProc->start(PQCSettingsCPP::get().getExecutableYtDlp(), {"--simulate", url});
+
+}
+
+void PQCScriptsExternalTools::ytdlpRequestStreamURL(QString url) {
+
+    qDebug() << "args: url =" << url;
+
+    // reset process
+    m_ytdlpStreamProc->kill();
+    m_ytdlpStreamProc->waitForFinished();
+
+    url = url.split("&list=")[0];
+    url = url.split("&index=")[0];
+
+    QStringList arguments;
+
+    arguments << "-g";
+    arguments << "-f" << "best[protocol^=http]/best";
+    arguments << "--user-agent" << "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
+    if(url.contains("youtube.com") || url.contains("youtu.be"))
+        arguments << "--referer" << "https://www.youtube.com/";
+    else if(url.contains("dailymotion.com"))
+        arguments << "--referer" << "https://www.dailymotion.com/";
+
+    arguments << url;
+
+    m_ytdlpStreamProc->start(PQCSettingsCPP::get().getExecutableYtDlp(), arguments);
+
+}
+
+void PQCScriptsExternalTools::ytdlpRequestStreamTitle(QString url) {
+
+    qDebug() << "args: url =" << url;
+
+    // reset process
+    m_ytdlpStreamTitleProc->kill();
+    m_ytdlpStreamTitleProc->waitForFinished();
+
+    url = url.split("&list=")[0];
+    url = url.split("&index=")[0];
+
+    m_ytdlpStreamTitleProc->start(PQCSettingsCPP::get().getExecutableYtDlp(), {"--simulate", "--print", "%(title)s", url});
 
 }
