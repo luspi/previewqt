@@ -43,10 +43,6 @@ public:
         return PQCScriptsFilesPaths::get().cleanPath(path);
     }
 
-    Q_INVOKABLE static QString cleanPath_windows(QString path) {
-        return PQCScriptsFilesPaths::get().cleanPath_windows(path);
-    }
-
     Q_INVOKABLE QString getBasename(QString fullpath) {
         return PQCScriptsFilesPaths::get().getBasename(fullpath);
     }

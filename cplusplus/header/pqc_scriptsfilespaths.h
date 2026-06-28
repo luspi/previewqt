@@ -40,7 +40,6 @@ public:
     void operator=(PQCScriptsFilesPaths const&) = delete;
 
     static QString cleanPath(QString path);
-    static QString cleanPath_windows(QString path);
     QString getBasename(QString fullpath);
     QString getFilename(QString path);
     QString getDir(QString fullpath);

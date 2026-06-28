@@ -54,14 +54,14 @@ QString PQCScriptsFilesPaths::cleanPath(QString path) {
         return path.trimmed();
 
 #ifdef Q_OS_WIN
-    return cleanPath_windows(path);
-#else
-    if(path.startsWith("file:////"))
-        path = path.remove(0, 8);
-    else if(path.startsWith("file:///"))
-        path = path.remove(0, 7);
-    else if(path.startsWith("file://"))
-        path = path.remove(0, 6);
+    bool addslash = false;
+    if(path.startsWith("//"))
+        addslash = true;
+#endif
+
+    QUrl url(path);
+    if(url.isLocalFile())
+        path = url.toLocalFile();
     else if(path.startsWith("image://full/"))
         path = path.remove(0, 13);
     else if(path.startsWith("image://thumb/"))
@@ -71,35 +71,20 @@ QString PQCScriptsFilesPaths::cleanPath(QString path) {
     if(info.isSymLink() && info.exists())
         path = info.symLinkTarget();
 
+#ifdef Q_OS_WIN
+    path = QDir::cleanPath(path);
+    if(addslash)
+        return ("/"+path);
+    return path;
+#else
     return QDir::cleanPath(path);
 #endif
 
 }
 
-QString PQCScriptsFilesPaths::cleanPath_windows(QString path) {
-
-    if(path.startsWith("file:///"))
-        path = path.remove(0, 8);
-    else if(path.startsWith("file://"))
-        path = path.remove(0, 7);
-    else if(path.startsWith("file:/"))
-        path = path.remove(0, 6);
-    else if(path.startsWith("image://full/"))
-        path = path.remove(0, 13);
-    else if(path.startsWith("image://thumb/"))
-        path = path.remove(0, 14);
-
-    QFileInfo info(path);
-    if(info.isSymLink() && info.exists())
-        path = info.symLinkTarget();
-
-    return QDir::cleanPath(path);
-
-}
-
 QString PQCScriptsFilesPaths::getBasename(QString fullpath) {
 
-    if(fullpath == "")
+    if(fullpath.isEmpty())
         return "";
 
     return QFileInfo(fullpath).baseName();
@@ -119,7 +104,7 @@ QString PQCScriptsFilesPaths::getFilename(QString path) {
 
 QString PQCScriptsFilesPaths::getDir(QString fullpath) {
 
-    if(fullpath == "")
+    if(fullpath.isEmpty())
         return "";
 
     return QFileInfo(fullpath).absolutePath();
@@ -128,7 +113,7 @@ QString PQCScriptsFilesPaths::getDir(QString fullpath) {
 
 QString PQCScriptsFilesPaths::getSuffix(QString path) {
 
-    if(path == "")
+    if(path.isEmpty())
         return "";
 
     return QFileInfo(path).completeSuffix();
@@ -197,7 +182,7 @@ QString PQCScriptsFilesPaths::openNewFile() {
 
     int e = dlg.exec();
 
-    if(e == QDialog::Accepted && dlg.selectedFiles().length() > 0) {
+    if(e == QDialog::Accepted && dlg.selectedFiles().length()) {
         QStringList l = dlg.selectedFiles();
         return l.first();
     }
@@ -210,7 +195,7 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    if(path == "")
+    if(path.isEmpty())
         return true;
 
     QString exe = "";
@@ -260,7 +245,7 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
 
         // if nothing found check mime types
 
-        if(exe == "") {
+        if(exe.isEmpty()) {
 
             QMimeDatabase db;
             QString mimetype = db.mimeTypeForFile(path).name();
@@ -301,7 +286,7 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
     }
 
     // if nothing found default to photoqt
-    if(exe == "") {
+    if(exe.isEmpty()) {
 #ifdef WIN32
         exe = "photoqt.exe";
 #else
@@ -354,10 +339,10 @@ void PQCScriptsFilesPaths::deleteTemporaryFiles() {
 
     qDebug() << "";
 
-    QDir dir(PQCConfigFiles::get().CACHE_DIR() + "/archive");
+    QDir dir(PQCConfigFiles::get().CACHE_DIR() % "/archive");
     dir.removeRecursively();
 
-    QDir dir2(PQCConfigFiles::get().CACHE_DIR() + "/motionphotos");
+    QDir dir2(PQCConfigFiles::get().CACHE_DIR() % "/motionphotos");
     dir2.removeRecursively();
 
 }
@@ -371,7 +356,7 @@ void PQCScriptsFilesPaths::copyTextToClipboard(QString txt) {
 }
 
 QString PQCScriptsFilesPaths::saveImageToTempFile(QImage &img) {
-    QString path = PQCConfigFiles::get().CACHE_DIR() + "/tmpfile.jpg";
+    QString path = PQCConfigFiles::get().CACHE_DIR() % "/tmpfile.jpg";
     if(QFileInfo::exists(path))
         QFile::remove(path);
     if(!img.save(path))
