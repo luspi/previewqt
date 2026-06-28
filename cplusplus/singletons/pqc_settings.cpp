@@ -95,85 +95,46 @@ PQCSettings::PQCSettings() {
     }
 #endif
 
-    if(m_defaultAppImages == "") m_defaultAppImages = "_default_";
-    if(m_defaultAppDocuments == "") m_defaultAppDocuments = "_default_";
-    if(m_defaultAppArchives == "") m_defaultAppArchives = "_default_";
-    if(m_defaultAppComicBooks == "") m_defaultAppComicBooks = "_default_";
-    if(m_defaultAppEBooks == "") m_defaultAppEBooks = "_default_";
-    if(m_defaultAppVideos == "") m_defaultAppVideos = "_default_";
-    if(m_defaultAppText == "") m_defaultAppText = "_default_";
-    if(m_defaultAppUrl == "") m_defaultAppUrl = "_default_";
+    if(m_defaultAppImages    .isEmpty()) m_defaultAppImages = "_default_";
+    if(m_defaultAppDocuments .isEmpty()) m_defaultAppDocuments = "_default_";
+    if(m_defaultAppArchives  .isEmpty()) m_defaultAppArchives = "_default_";
+    if(m_defaultAppComicBooks.isEmpty()) m_defaultAppComicBooks = "_default_";
+    if(m_defaultAppEBooks    .isEmpty()) m_defaultAppEBooks = "_default_";
+    if(m_defaultAppVideos    .isEmpty()) m_defaultAppVideos = "_default_";
+    if(m_defaultAppText      .isEmpty()) m_defaultAppText = "_default_";
+    if(m_defaultAppUrl       .isEmpty()) m_defaultAppUrl = "_default_";
 
-#if __cplusplus >= 202002L
+    connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::versionChanged, this, [this]() { m_version = PQCSettingsCPP::get().getVersion(); Q_EMIT versionChanged(); });
+    connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::lastDownloadFolderChanged, this, [this]() { m_lastDownloadFolder = PQCSettingsCPP::get().getLastDownloadFolder(); Q_EMIT lastDownloadFolderChanged(); });
 
-    connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::versionChanged, this, [=,this]() { m_version = PQCSettingsCPP::get().getVersion(); Q_EMIT versionChanged(); });
-    connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::lastDownloadFolderChanged, this, [=,this]() { m_lastDownloadFolder = PQCSettingsCPP::get().getLastDownloadFolder(); Q_EMIT lastDownloadFolderChanged(); });
-
-    connect(this, &PQCSettings::versionChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::languageChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::topBarAutoHideChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::hideToSystemTrayChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::launchHiddenToSystemTrayChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::notifyNextlaunchHiddenToSystemTrayChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::maximizeImageSizeAndAdjustWindowChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultWindowWidthChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultWindowHeightChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultWindowMaximizedChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppShortcutChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppImagesChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppDocumentsChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppArchivesChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppVideosChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppComicBooksChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppEBooksChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppTextChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppUrlChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::closeAfterDefaultAppChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::filedialogLocationChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::closeWhenLosingFocusChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::textWordWrapChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::textFontPointSizeChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::textSearchCaseSensitiveChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::lastDownloadFolderChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::executableYtDlpChanged, this, [=,this]() { saveTimer->start(); });
-    connect(this, &PQCSettings::processUrlWithYtdlpChanged, this, [=,this]() { saveTimer->start(); });
-
-
-#else
-
-    connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::versionChanged, this, [=]() { m_version = PQCSettingsCPP::get().getVersion(); Q_EMIT versionChanged(); });
-    connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::lastDownloadFolderChanged, this, [=]() { m_lastDownloadFolder = PQCSettingsCPP::get().getLastDownloadFolder(); Q_EMIT lastDownloadFolderChanged(); });
-
-    connect(this, &PQCSettings::versionChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::languageChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::topBarAutoHideChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::hideToSystemTrayChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::launchHiddenToSystemTrayChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::notifyNextlaunchHiddenToSystemTrayChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::maximizeImageSizeAndAdjustWindowChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultWindowWidthChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultWindowHeightChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultWindowMaximizedChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppShortcutChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppImagesChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppDocumentsChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppArchivesChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppVideosChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppComicBooksChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppEBooksChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppTextChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::defaultAppUrlChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::closeAfterDefaultAppChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::filedialogLocationChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::closeWhenLosingFocusChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::textWordWrapChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::textFontPointSizeChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::textSearchCaseSensitiveChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::lastDownloadFolderChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::executableYtDlpChanged, this, [=]() { saveTimer->start(); });
-    connect(this, &PQCSettings::processUrlWithYtdlpChanged, this, [=]() { saveTimer->start(); });
-
-#endif
+    connect(this, &PQCSettings::versionChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::languageChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::topBarAutoHideChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::hideToSystemTrayChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::launchHiddenToSystemTrayChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::notifyNextlaunchHiddenToSystemTrayChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::maximizeImageSizeAndAdjustWindowChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultWindowWidthChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultWindowHeightChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultWindowMaximizedChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppShortcutChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppImagesChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppDocumentsChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppArchivesChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppVideosChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppComicBooksChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppEBooksChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppTextChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppUrlChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::closeAfterDefaultAppChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::filedialogLocationChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::closeWhenLosingFocusChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::textWordWrapChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::textFontPointSizeChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::textSearchCaseSensitiveChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::lastDownloadFolderChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::executableYtDlpChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::processUrlWithYtdlpChanged, this, [this]() { saveTimer->start(); });
 
 }
 
@@ -190,17 +151,14 @@ bool PQCSettings::checkToolExistence(QString tool) {
 
     QProcess which;
     which.setStandardOutputFile(QProcess::nullDevice());
-    which.start("which", QStringList() << tool);
-    which.waitForFinished();
-
-    // success
-    return !which.exitCode();
+    which.start(tool, {"--version"});
+    return which.waitForStarted();
 }
 
 void PQCSettings::loadSettings() {
 
     m_version = settings->value("version", "").toString();
-    if(PQCSettingsCPP::get().getVersion() != "" && m_version != PQCSettingsCPP::get().getVersion()) m_version = PQCSettingsCPP::get().getVersion();
+    if(!PQCSettingsCPP::get().getVersion().isEmpty() && m_version != PQCSettingsCPP::get().getVersion()) m_version = PQCSettingsCPP::get().getVersion();
     m_language = settings->value("language", "en").toString();
     m_topBarAutoHide = settings->value("topBarAutoHide", false).toBool();
     m_hideToSystemTray = settings->value("hideToSystemTray", true).toBool();
