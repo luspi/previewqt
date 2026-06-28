@@ -204,12 +204,8 @@ const QImage PQCFilePluginDevIL::loadImage(QString path, QSize requestedSize, QS
         return QImage();
     }
 
-    bool imageIsScaled = false;
-
-    if(!requestedSize.isEmpty()) {
-        imageIsScaled = true;
+    if(!requestedSize.isEmpty())
         img = img.scaled(requestedSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    }
 
     if(!img.isNull()) {
         // apply transformations if any
