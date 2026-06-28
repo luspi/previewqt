@@ -127,6 +127,8 @@ Video {
 
     onMetaDataChanged: {
 
+        if(overrideSource != "") return
+
         PQCConstants.mediainfoTitle = metaData.stringValue(MediaMetaData.Title)
         if(PQCConstants.mediainfoTitle === "") PQCConstants.mediainfoTitle = PQCScriptsFilesPaths.getBasename(PQCConstants.currentSource)
 
