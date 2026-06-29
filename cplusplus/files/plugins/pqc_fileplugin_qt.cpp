@@ -163,8 +163,6 @@ const QSize PQCFilePluginQt::loadSize(QString path) {
         reader.setFileName(path);
         reader.setAutoTransform(true);
 
-        bool imgAlreadyLoaded = false;
-
         // Store the width/height for later use
         QSize origSize = reader.size();
         // check if we need to read the image in full to get the original size

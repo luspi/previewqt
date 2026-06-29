@@ -68,8 +68,8 @@ public:
     /****************************************************/
 
     // the format for a suffix
-    const int getFormat(QString suffix) { return m_suffix2id.value(suffix, -1); }
-    const int getFormatFromDescription(QString desc) { return m_desc2id.value(desc, -1); }
+    int getFormat(QString suffix) const { return m_suffix2id.value(suffix, -1); }
+    int getFormatFromDescription(QString desc) const { return m_desc2id.value(desc, -1); }
     const QString getDescription(int id) { const QList<QStringList> tmp = m_id2data.value(id, {{""}}); return tmp[0][0]; }
 
     /****************************************************/
@@ -92,7 +92,7 @@ public:
     /****************************************************/
 
     // whether this plugin supports the format based on its format
-    const bool supportsFormat(const int id) {
+    bool supportsFormat(const int id) const {
         return m_id2data.contains(id);
     }
 

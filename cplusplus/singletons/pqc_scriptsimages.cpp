@@ -45,6 +45,10 @@
 #include <QQmlContext>
 #include <QPainter>
 
+#ifdef PQMEXIV2
+#include <exiv2/exiv2.hpp>
+#endif
+
 #ifdef PQMQTPDF
 #include <QtPdf/QPdfDocument>
 #include <QtPdf/QtPdf>
@@ -74,10 +78,6 @@
 
 #ifdef PQMLIBMPV
 #include <pqc_mpvobject.h>
-#endif
-
-#ifdef PQMEXIV2
-#include <exiv2/exiv2.hpp>
 #endif
 
 #ifdef PQMLCMS2
@@ -495,7 +495,7 @@ int PQCScriptsImages::getExifOrientation(QString path) {
         image  = Exiv2::ImageFactory::open(path.toStdString());
         image->readMetadata();
     } catch (Exiv2::Error& e) {
-        // An error code of kerFileContainsUnknownImageType (older version: 11) means unknown file type \
+        // An error code of kerFileContainsUnknownImageType (older version: 11) means unknown file type
         // Since we always try to read any file's meta data, this happens a lot
 #if EXIV2_TEST_VERSION(0, 28, 0)
         if(e.code() != Exiv2::ErrorCode::kerFileContainsUnknownImageType)
@@ -906,8 +906,6 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
 
 #ifdef PQMEPUB
 
-    using ArchivePtr = std::unique_ptr<archive, decltype(&archive_read_free)>;
-
     // clean up all old files
     QDir olddir(PQCConfigFiles::get().CACHE_DIR() % "/epub/");
     olddir.removeRecursively();
@@ -1007,7 +1005,7 @@ QVariantList PQCScriptsImages::loadEPUB(QString path) {
             QXmlStreamReader xml(data);
             while(!xml.atEnd()) {
                 xml.readNext();
-                if(xml.isStartElement() && xml.name() == "rootfile") {
+                if(xml.isStartElement() && xml.name() == QLatin1StringView("rootfile")) {
                     packageDocumentFilename = xml.attributes().value("full-path").toString();
                     break;
                 }
@@ -1396,7 +1394,7 @@ QString PQCScriptsImages::prepareSphereFile(QString path) {
         image = Exiv2::ImageFactory::open(path.toStdString());
         image->readMetadata();
     } catch (Exiv2::Error& e) {
-        // An error code of kerFileContainsUnknownImageType (older version: 11) means unknown file type \
+        // An error code of kerFileContainsUnknownImageType (older version: 11) means unknown file type
         // Since we always try to read any file's meta data, this happens a lot
 #if EXIV2_TEST_VERSION(0, 28, 0)
         if(e.code() != Exiv2::ErrorCode::kerFileContainsUnknownImageType)

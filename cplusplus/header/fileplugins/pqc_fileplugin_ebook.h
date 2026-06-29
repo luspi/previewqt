@@ -32,7 +32,7 @@ public:
     PQCFilePluginEBook();
 
     const QString name() override { return "E-Book"; }
-    const QSize loadSize(QString path) override { return QSize(); };
-    const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override { return QImage(); };
+    const QSize loadSize(QString) override { return QSize(); };
+    const QImage loadImage(QString, QSize, QSize&, QString&) override { return QImage(); };
 
 };
