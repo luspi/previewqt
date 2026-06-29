@@ -33,9 +33,9 @@ Item {
     width: PQCConstants.imageAvailableSize.width
     height: PQCConstants.imageAvailableSize.height
 
-    property var volumeList: [100, 80, 45, 0]
+    property list<int> volumeList: [100, 80, 45, 0]
     property int volumeIndex: 0
-    property var volumeIcon: ["high", "medium", "low", "mute"]
+    property list<string> volumeIcon: ["high", "medium", "low", "mute"]
 
     property string musicTitle: ""
     property string musicArtist: ""
@@ -271,7 +271,7 @@ Item {
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        audio_top.volumeIndex = (volumeIndex+1)%4
+                        audio_top.volumeIndex = (audio_top.volumeIndex+1)%4
                     }
                 }
             }
@@ -304,10 +304,10 @@ Item {
 
             } else if(modifiers === Qt.ControlModifier && keycode === Qt.Key_M) {
 
-                if(volumeIndex != 3)
-                    volumeIndex = 3
+                if(audio_top.volumeIndex != 3)
+                    audio_top.volumeIndex = 3
                 else
-                    volumeIndex = 0
+                    audio_top.volumeIndex = 0
 
             } else if(keycode === Qt.Key_Home && modifiers === Qt.NoModifier) {
 

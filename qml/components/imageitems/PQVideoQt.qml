@@ -255,14 +255,14 @@ Video {
                 width: height
                 height: 20
                 sourceSize: Qt.size(width, height)
-                source: "image://svg/:/volume_" + volumeIcon[volumeIndex] + ".svg"
+                source: "image://svg/:/volume_" + video.volumeIcon[video.volumeIndex] + ".svg"
                 MouseArea {
                     id: volumemouse
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
-                        volumeIndex = (volumeIndex+1)%4
+                        video.volumeIndex = (video.volumeIndex+1)%4
                     }
                 }
             }
@@ -318,10 +318,10 @@ Video {
 
             } else if(modifiers === Qt.ControlModifier && keycode === Qt.Key_M) {
 
-                if(volumeIndex != 3)
-                    volumeIndex = 3
+                if(video.volumeIndex != 3)
+                    video.volumeIndex = 3
                 else
-                    volumeIndex = 0
+                    video.volumeIndex = 0
 
             } else if(keycode === Qt.Key_Home && modifiers === Qt.NoModifier) {
 

@@ -41,20 +41,25 @@ Rectangle {
     width: flickme.width
     height: flickme.height
 
+    property int vBarWidth: 0
+    property real vBarOpacity: 1
+    property int hBarHeight: 0
+    property real hBarOpacity: 1
+
     Rectangle {
         x: parent.width-width
-        width: vBar.width
+        width: txt_top.vBarWidth
         height: parent.height
         color: colorPalette.shadow
-        opacity: 0.1*vBar.opacity
+        opacity: 0.1*txt_top.vBarOpacity
     }
 
     Rectangle {
         y: parent.height-height
         width: parent.width
-        height: hBar.height
+        height: txt_top.hBarHeight
         color: colorPalette.shadow
-        opacity: 0.1*hBar.opacity
+        opacity: 0.1*txt_top.hBarOpacity
     }
 
     Flickable {
@@ -70,11 +75,23 @@ Rectangle {
         clip: true
         contentItem.clip: true
 
-        contentHeight: cont.height + (htmldisplay.visible ? 0 : hBar.height)
+        contentHeight: cont.height + (htmldisplay.visible ? 0 : txt_top.hBarHeight)
         contentWidth: (htmldisplay.visible||PQCSettings.textWordWrap) ? flickme.width : (cont.width + vBar.height)
 
-        ScrollBar.horizontal: ScrollBar { id: hBar; opacity: (hBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
-        ScrollBar.vertical: ScrollBar { id: vBar; opacity: (vBar.active ? 1 : 0.1); Behavior on opacity { NumberAnimation { duration: 200 } } }
+        ScrollBar.horizontal: ScrollBar {
+            id: hBar
+            onWidthChanged: txt_top.hBarHeight = width
+            onOpacityChanged: txt_top.hBarOpacity = opacity
+            opacity: (hBar.active ? 1 : 0.1)
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+        }
+        ScrollBar.vertical: ScrollBar {
+            id: vBar
+            onWidthChanged: txt_top.vBarWidth = width
+            onOpacityChanged: txt_top.vBarOpacity = opacity
+            opacity: (vBar.active ? 1 : 0.1)
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+        }
 
         /*1on_PQMKF6*/
         SyntaxHighlighter {

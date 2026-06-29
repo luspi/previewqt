@@ -151,7 +151,7 @@ Item {
         id: view
 
         // hidden when cover image is shown
-        visible: currentDocument>-1
+        visible: epub_top.currentDocument>-1
 
         width: PQCConstants.imageAvailableSize.width
         height: PQCConstants.imageAvailableSize.height
@@ -300,7 +300,7 @@ Item {
             ToolTip {
                 delay: 500
                 text: qsTr("Progress in current chapter")
-                visible: parent.containsMouse
+                visible: progressInfo.containsMouse
             }
         }
     }

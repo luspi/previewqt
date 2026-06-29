@@ -29,7 +29,7 @@ PQIconButton {
     id: downbut
     visible: ["url"].indexOf(PQCConstants.currentType)>-1 && PQCConstants.currentStreamVideoDirectURL !== ""
     y: (parent.height-height)/2
-    height: toprow.height-2
+    height: 38 // 40-2
     tooltip: qsTr("Download video")
     source: "image://svg/:/download.svg"
     onClicked: {

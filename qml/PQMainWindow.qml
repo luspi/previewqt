@@ -55,12 +55,17 @@ ApplicationWindow {
     }
 
     // it is hidden by default until we set the stylings from the settings below
-    visibility: Window.Hidden
-    title: (PQCConstants.mainwindowOverrideTitle!== "" ?
-                (PQCConstants.mainwindowOverrideTitle+" | ") :
-                (PQCConstants.currentSource=== "" ?
-                     "" :
-                     (PQCScriptsFilesPaths.getFilename(PQCConstants.currentSource) + PQCConstants.mainwindowOverrideTitleSuffix + " | "))) + "PreviewQt"
+    visible: false
+    title: {
+        if(PQCConstants.mainwindowOverrideTitle !== "")
+            return PQCConstants.mainwindowOverrideTitle + " | PreviewQt"
+        else {
+            if(PQCConstants.currentSource=== "")
+                return "PreviewQt"
+            else
+                return PQCScriptsFilesPaths.getFilename(PQCConstants.currentSource) + PQCConstants.mainwindowOverrideTitleSuffix + " | PreviewQt"
+        }
+    }
 
     // black background with slight transparency
     color: "#dd000000"
