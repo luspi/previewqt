@@ -102,10 +102,6 @@ public:
         return PQCScriptsImages::get().findCoverImageNextToFile(path);
     }
 
-    Q_INVOKABLE int getDocumentPageCount(QString path) {
-        return PQCScriptsImages::get().getDocumentPageCount(path);
-    }
-
     Q_INVOKABLE QString extractMotionPhoto(QString path) {
         return PQCScriptsImages::get().extractMotionPhoto(path);
     }
@@ -120,10 +116,6 @@ public:
 
     Q_INVOKABLE QString prepareSphereFile(QString path) {
         return PQCScriptsImages::get().prepareSphereFile(path);
-    }
-
-    Q_INVOKABLE QStringList getArchiveContent(QString path, bool insideFilenameOnly = false) {
-        return PQCScriptsImages::get().getArchiveContent(path, insideFilenameOnly);
     }
 
     Q_INVOKABLE QVariantList loadEPUB(QString path) {

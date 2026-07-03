@@ -276,6 +276,18 @@ QImage PQCFileHandler::getImageWithPlugin(QString plugin, QString path, QSize re
 
 }
 
+int PQCFileHandler::getNumPages(QString plugin, QString path) {
+    if(m_imagePluginOrder.contains(plugin))
+        return m_plugins.value(plugin)->loadNumPages(path);
+    return 1;
+}
+
+QStringList PQCFileHandler::getContent(QString plugin, QString path) {
+    if(m_imagePluginOrder.contains(plugin))
+        return m_plugins.value(plugin)->loadContent(path);
+    return {};
+}
+
 QSet<int> PQCFileHandler::getFormats(QString category) {
 
     if(category == "all") return m_enabledIds;

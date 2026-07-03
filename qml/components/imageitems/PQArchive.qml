@@ -92,7 +92,7 @@ Item {
         interval: 100
         running: true
         onTriggered: {
-            arc_top.fileList = PQCScriptsImages.getArchiveContent(PQCConstants.currentSource, true)
+            arc_top.fileList = PQCFileHandler.getContent("libarchive", PQCConstants.currentSource)
             if(PQCConstants.currentSource.includes("::ARC::"))
                 arc_top.currentFile = arc_top.fileList.indexOf(PQCConstants.currentSource.split("::ARC::")[0])
         }
@@ -106,7 +106,7 @@ Item {
         target: PQCConstants
         function onCurrentSourceChanged() {
             arc_top.currentFile = 0
-            arc_top.fileList = PQCScriptsImages.getArchiveContent(PQCConstants.currentSource, true)
+            arc_top.fileList = PQCFileHandler.getContent("libarchive", PQCConstants.currentSource)
             arc_top.updateSource()
         }
     }

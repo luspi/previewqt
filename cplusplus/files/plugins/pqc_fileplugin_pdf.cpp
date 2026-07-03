@@ -43,6 +43,37 @@ PQCFilePluginPDF::PQCFilePluginPDF() {
 
 }
 
+const int PQCFilePluginPDF::loadNumPages(QString path) {
+
+#if PQMPOPPLER
+
+    std::unique_ptr<Poppler::Document> document = Poppler::Document::load(path);
+    if(!document || document->isLocked()) {
+        qWarning() << "Invalid PDF document, unable to load!";
+        return 1;
+    }
+
+    return document->numPages();
+
+#endif
+
+#ifdef PQMQTPDF
+
+    QPdfDocument doc;
+
+    if(doc.load(path) != QPdfDocument::Error::None) {
+        qWarning() << "Error occurred loading PDF";
+        return 1;
+    }
+
+    return doc.pageCount();
+
+#endif
+
+    return 1;
+
+}
+
 const QSize PQCFilePluginPDF::loadSize(QString path) {
 
     QSize sze;

@@ -37,6 +37,7 @@ public:
     const QSize loadSize(QString path) override;
     const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override;
     const int loadNumPages(QString path) override { return 1; }
+    const QStringList loadContent(QString path) override { return {path}; }
 
 private:
     QHash<QString,QString> m_suffix2magick;

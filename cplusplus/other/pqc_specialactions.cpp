@@ -74,7 +74,7 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
 
     QStringList archiveContent;
     if(isARC) {
-        archiveContent = PQCScriptsImages::get().getArchiveContent(filename, true);
+        archiveContent = PQCFileHandler::get().getContent("libarchive", filename);
     }
 
     QString filenameToLoad = filename;
@@ -98,7 +98,7 @@ void PQCSpecialActions::processOnly(QString path, int fileNumInside) {
 
     if(isPDF) {
         std::cout << "file number: " << fileNumInside << std::endl
-                  << "file count: " << PQCScriptsImages::get().getDocumentPageCount(filename) << std::endl;
+                  << "file count: " << PQCFileHandler::get().getNumPages("pdf", filename) << std::endl;
     } else if(isARC) {
         std::cout << "file number: " << fileNumInside << std::endl
                   << "file name (inside): " << archiveContent[fileNumInside].toStdString() << std::endl

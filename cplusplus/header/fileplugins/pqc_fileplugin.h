@@ -54,6 +54,10 @@ public:
     // How many images/pages are held by this file
     virtual const int loadNumPages(QString path) = 0;
 
+    // Load all files contained in the provided file
+    // For normal images this is just the path itself
+    virtual const QStringList loadContent(QString path) = 0;
+
     /****************************************************/
     /****************************************************/
 

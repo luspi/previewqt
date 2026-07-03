@@ -32,6 +32,11 @@ public:
     const QString name() override { return "LibArchive"; }
     const QSize loadSize(QString path) override;
     const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override;
-    const int loadNumPages(QString path) override { return 1; }
+    const int loadNumPages(QString path) override;
+    const QStringList loadContent(QString path) override;
+
+private:
+    QString m_cachePath;
+    QStringList m_cache;
 
 };

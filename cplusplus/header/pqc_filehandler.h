@@ -43,6 +43,8 @@ public:
     QSize getSize(QString path);
     QImage getImage(QString path, QSize requestedSize, QSize &origSize, QString &error);
     QImage getImageWithPlugin(QString plugin, QString path, QSize requestedSize, QSize &origSize, QString &error);
+    int getNumPages(QString plugin, QString path);
+    QStringList getContent(QString plugin, QString path);
 
     int getNumFormats() { return m_numEnabled; }
 

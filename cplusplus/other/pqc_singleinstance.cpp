@@ -40,6 +40,7 @@
 #include <pqc_scriptsfilespaths.h>
 #include <pqc_scriptsother.h>
 #include <pqc_specialactions.h>
+#include <pqc_filehandler.h>
 
 PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(argc, argv) {
 
@@ -165,7 +166,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         if(PQCScriptsImages::get().isPDFDocument(filename)) {
             filenameToSend = QUrl::toPercentEncoding(filename % ":/:/:" % QString::number(fileNumInside));
         } else if(PQCScriptsImages::get().isArchive(filename)) {
-            QStringList cont = PQCScriptsImages::get().getArchiveContent(filename, true);
+            QStringList cont = PQCFileHandler::get().getContent("libarchive", filename);
             if(fileNumInside < cont.length())
                 filenameToSend = QUrl::toPercentEncoding(filename % ":/:/:" % cont[fileNumInside]);
             else

@@ -60,13 +60,11 @@ public:
 
     QString findCoverImageNextToFile(QString path);
 
-    int getDocumentPageCount(QString path);
     QString extractMotionPhoto(QString path);
     int getExifOrientation(QString path);
     void applyExifOrientation(const QString filename, QImage &img);
     QString getTextFileContents(QString path);
     QString prepareSphereFile(QString path);
-    QStringList getArchiveContent(QString path, bool insideFilenameOnly = false);
 
     QVariantList loadEPUB(QString path);
     void analyzeEpubMetaData(QString subfolder, QString txt, QString &title, QString &coverId, QMap<QString, QString> &outFileList, QStringList &outIdOrder);
@@ -77,9 +75,6 @@ public:
 
 private:
     PQCScriptsImages();
-
-    QMap<QString,QStringList> archiveContents;
-    QString generateArchiveId(QString path);
 
     int m_maxTextureLimit;
 

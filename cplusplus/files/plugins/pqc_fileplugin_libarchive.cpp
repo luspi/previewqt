@@ -31,6 +31,7 @@
 #include <QtDebug>
 #include <QTemporaryFile>
 #include <QProcess>
+#include <QCollator>
 
 #ifdef PQMLIBARCHIVE
 #include <archive.h>
@@ -69,6 +70,147 @@ setData({
              {{"ZIP file format"}, {"zip"}, {}}}});
 #endif
 
+    m_cachePath = "";
+
+}
+
+const int PQCFilePluginLibarchive::loadNumPages(QString path) {
+
+    if(m_cachePath == path)
+        return m_cache.length();
+
+    return loadContent(path).length();
+
+}
+
+const QStringList PQCFilePluginLibarchive::loadContent(QString path) {
+
+    if(m_cachePath == path)
+        return m_cache;
+
+    const QFileInfo info(path);
+
+    QStringList ret;
+
+#ifndef Q_OS_WIN
+
+    const QString suffix = info.suffix();
+
+    const QSet<QString> supportedSuffixes = PQCFileHandler::get().getSuffixes();
+
+    if(suffix == "cbr" || suffix == "rar") {
+
+        QProcess p;
+        p.setProcessChannelMode(QProcess::MergedChannels);
+        p.start("unrar", QStringList() << "lb" << info.absoluteFilePath());
+
+        if(p.waitForStarted()) {
+
+            if(p.waitForFinished()) {
+
+                if(p.exitStatus() == QProcess::NormalExit && p.exitCode() == 0) {
+
+                    QStringList allfiles = QString::fromLocal8Bit(p.readAllStandardOutput()).split('\n', Qt::SkipEmptyParts);
+
+                    // remove archives and unsupported files
+                    allfiles.erase(std::remove_if(allfiles.begin(), allfiles.end(), [&](const QString &f) {
+                                       QFileInfo info(f);
+                                       return (PQCScriptsImages::get().isArchive(f) ||
+                                               (!supportedSuffixes.contains(info.suffix().toLower()) && !supportedSuffixes.contains(info.completeSuffix().toLower())));
+                                   }), allfiles.end());
+
+                    allfiles.sort();
+
+                    for(const QString &f : std::as_const(allfiles)) {
+                        if(supportedSuffixes.contains(QFileInfo(f).suffix()))
+                            ret.append(f);
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    if(ret.isEmpty()) {
+
+#endif
+
+#ifdef PQMLIBARCHIVE
+
+        // Create new archive handler
+        struct archive *a = archive_read_new();
+
+        // We allow any type of compression and format
+        archive_read_support_filter_all(a);
+        archive_read_support_format_all(a);
+
+    // Read file
+    #ifdef Q_OS_WIN
+        int r = archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(info.absoluteFilePath().utf16()), 10240);
+    #else
+        QByteArray tmpPath = QFile::encodeName(info.absoluteFilePath());
+        int r = archive_read_open_filename(a, tmpPath.constData(), 10240);
+    #endif
+
+        // If something went wrong, output error message and stop here
+        if(r != ARCHIVE_OK) {
+            qWarning() << "ERROR: archive_read_open_filename() returned code of" << r;
+            qWarning() << "Archive:" << info.absoluteFilePath();
+            archive_read_free(a);
+            m_cache = {};
+            m_cachePath = "";
+            return {};
+        }
+
+        // Loop over entries in archive
+        struct archive_entry *entry;
+        while(archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+
+            // Read the current file entry
+            // We use the '_w' variant here, as otherwise on Windows this call causes a segfault when a file in an archive contains non-latin characters
+            // Also, if the archives is malformed or there is an encoding issue then it is possible that this may return a nullptr
+            // and PhotoQt might crash if not handled properly -> check before converting to QString
+            const wchar_t *wpath = archive_entry_pathname_w(entry);
+            if(!wpath) continue;
+            QString filenameinside = QString::fromWCharArray(wpath);
+
+            // If supported file format, append to list
+            QFileInfo info(filenameinside);
+            if(!PQCScriptsImages::get().isArchive(filenameinside, true) && (supportedSuffixes.contains(info.suffix().toLower()) || supportedSuffixes.contains(info.completeSuffix().toLower())))
+                ret.append(filenameinside);
+
+        }
+
+        // Sort the list
+        ret.sort();
+
+        // Close archive
+        r = archive_read_free(a);
+        if(r != ARCHIVE_OK)
+            qWarning() << "ERROR: archive_read_free() returned code of" << r;
+
+#endif
+
+#ifndef Q_OS_WIN
+    }
+#endif
+
+    QCollator collator;
+    collator.setLocale(QLocale::system());
+    collator.setCaseSensitivity(Qt::CaseInsensitive);
+    collator.setIgnorePunctuation(true);
+    collator.setNumericMode(true);
+
+    std::sort(ret.begin(), ret.end(), [&collator](const QString &file1, const QString &file2) { return collator.compare(file1, file2) < 0; });
+
+    m_cache = ret;
+    m_cachePath = path;
+
+    return ret;
+
 }
 
 const QSize PQCFilePluginLibarchive::loadSize(QString path) {
@@ -83,7 +225,7 @@ const QSize PQCFilePluginLibarchive::loadSize(QString path) {
         archivefile = archivefile.mid(idx+7);
         compressedFilename = archivefile.mid(0,idx);
     } else {
-        QStringList cont = PQCScriptsImages::get().getArchiveContent(archivefile, true);
+        QStringList cont = loadContent(archivefile);
         if(cont.length() == 0) {
             qWarning() << "Unable to list contents of archive file...";
             return QSize();
@@ -227,7 +369,7 @@ const QImage PQCFilePluginLibarchive::loadImage(QString path, QSize requestedSiz
         archivefile = parts.at(1);
         compressedFilename = parts.at(0);
     } else {
-        QStringList cont = PQCScriptsImages::get().getArchiveContent(archivefile, true);
+        QStringList cont = loadContent(archivefile);
         if(cont.length() == 0) {
             const QString msg = "Unable to list contents of archive file...";
             error += msg % "\n";

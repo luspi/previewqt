@@ -87,7 +87,7 @@ Item {
     }
 
     property int currentPage: 0
-    property int pageCount: PQCScriptsImages.getDocumentPageCount(PQCConstants.currentSource)
+    property int pageCount: PQCFileHandler.getNumPages("pdf", PQCConstants.currentSource)
 
     onCurrentPageChanged: {
         if(PQCConstants.currentSource === "") {

@@ -49,6 +49,14 @@ public:
         return PQCFileHandler::get().getSize(path);
     }
 
+    Q_INVOKABLE int getNumPages(QString plugin, QString path) {
+        return PQCFileHandler::get().getNumPages(plugin, path);
+    }
+
+    Q_INVOKABLE QStringList getContent(QString plugin, QString path) {
+        return PQCFileHandler::get().getContent(plugin, path);
+    }
+
     Q_INVOKABLE int getNumFormats() {
         return PQCFileHandler::get().getNumFormats();
     }
