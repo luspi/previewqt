@@ -51,6 +51,9 @@ public:
     // > error holding any potential error message
     virtual const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) = 0;
 
+    // How many images/pages are held by this file
+    virtual const int loadNumPages(QString path) = 0;
+
     /****************************************************/
     /****************************************************/
 

@@ -41,6 +41,7 @@ public:
     const QString name() override { return "libsai"; }
     const QSize loadSize(QString path) override;
     const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override;
+    const int loadNumPages(QString path) override { return 1; }
 
 private:
 #ifdef PQMLIBSAI

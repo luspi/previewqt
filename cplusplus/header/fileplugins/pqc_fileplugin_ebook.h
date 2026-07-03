@@ -34,5 +34,6 @@ public:
     const QString name() override { return "E-Book"; }
     const QSize loadSize(QString) override { return QSize(); };
     const QImage loadImage(QString, QSize, QSize&, QString&) override { return QImage(); };
+    const int loadNumPages(QString path) override { return 1; }
 
 };
