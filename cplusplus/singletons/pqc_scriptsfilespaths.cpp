@@ -216,6 +216,10 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
 
             exe = PQCSettingsCPP::get().getDefaultAppDocuments();
 
+        } else if(PQCFileHandler::get().getSuffixes("libreoffice").contains(suffix)) {
+
+            exe = PQCSettingsCPP::get().getDefaultAppOfficeDocuments();
+
         } else if(PQCFileHandler::get().getSuffixes("libarchive").contains(suffix) &&
                    (suffix == "cbr" || suffix == "cbt" || suffix == "cbz" || suffix == "cb7")) {
 

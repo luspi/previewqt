@@ -1349,7 +1349,7 @@ bool PQCScriptsImages::isTextDocument(QString path) {
     QMimeDatabase db;
     const QString mimetype = db.mimeTypeForFile(path).name();
     qDebug() << "detected mime type:" << mimetype;
-    if(mimetype.startsWith("text/") || PQCFileHandler::get().getMimetypes("text").contains(mimetype))
+    if(PQCFileHandler::get().getMimetypes("text").contains(mimetype) || (!PQCFileHandler::get().getMimetypes().contains(mimetype) && mimetype.startsWith("text/")))
         return true;
 
     return false;

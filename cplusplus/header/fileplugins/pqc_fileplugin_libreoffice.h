@@ -19,43 +19,29 @@
  ** along with PhotoQt. If not, see <http://www.gnu.org/licenses/>.      **
  **                                                                      **
  **************************************************************************/
+#pragma once
 
-#include <fileplugins/pqc_fileplugin_text.h>
+#include <fileplugins/pqc_fileplugin.h>
+#include <QSet>
+#include <QSize>
+#include <QImage>
 
-PQCFilePluginText::PQCFilePluginText() {
+namespace lok { class Office; }
 
-// tex	27654	application/x-latex	LaTex files
-// rtf	23222	application/rtf	Rich Text Format
-// troff,t,man	33233	application/x-troff,application/x-troff-man	Troff files
-// desktop	23232	application/x-desktop	Desktop file
+class PQCFilePluginLibreOffice : public PQCFilePlugin {
 
+public:
+    PQCFilePluginLibreOffice();
+    ~PQCFilePluginLibreOffice();
 
-    setData({
-         {88823,
-          {{"Text document"}, {"txt"}, {"text/plain", "text/x-csrc", "application/vnd.kde.kxmlguirc"}}},
-         {11445,
-          {{"JSON file"}, {"json"}, {"application/json"}}},
-         {88736,
-          {{"XML/HTML files"}, {"html", "xml", "xhtml"}, {"application/xml", "text/xml"}}},
-         {22765,
-          {{"YAML files"}, {"yaml", "yml"}, {"application/x-yaml"}}},
-         {76245,
-          {{"SQL scripts"}, {"sql"}, {"application/sql"}}},
-         {33387,
-          {{"JavaScript"}, {"js"}, {"application/javascript"}}},
-         {62526,
-          {{"Shell/Bash scripts"}, {"sh", "bash", "fsh"}, {"application/x-sh"}}},
-         {33876,
-          {{"PHP scripts"}, {"php"}, {"application/x-httpd-php"}}},
-         {27654,
-          {{"LaTex files"}, {"tex"}, {"application/x-latex"}}},
-#ifndef PQMLIBREOFFICE
-         {23222,
-          {{"Rich Text Format"}, {"rtf"}, {"application/rtf"}}},
-#endif
-         {33233,
-          {{"Troff files"}, {"troff", "t", "man"}, {"application/x-troff", "application/x-troff-man"}}},
-         {23232,
-          {{"Desktop file"}, {"desktop"}, {"application/x-desktop"}}}});
+    const QString name() override { return "LibreOffice"; }
+    const QSize loadSize(QString path) override;
+    const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override;
+    const int loadNumPages(QString path) override { return 1; }
 
-}
+private:
+    lok::Office *office;
+
+    QStringList m_suffixesWithNoFixedSize;
+
+};

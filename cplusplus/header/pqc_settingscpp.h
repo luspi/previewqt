@@ -56,6 +56,7 @@ public:
 
     QString getDefaultAppImages() { return m_defaultAppImages; }
     QString getDefaultAppDocuments() { return m_defaultAppDocuments; }
+    QString getDefaultAppOfficeDocuments() { return m_defaultAppOfficeDocuments; }
     QString getDefaultAppArchives() { return m_defaultAppArchives; }
     QString getDefaultAppVideos() { return m_defaultAppVideos; }
     QString getDefaultAppComicBooks() { return m_defaultAppComicBooks; }
@@ -77,6 +78,7 @@ private:
         // these NEED TO BE DUPLICATED in pqc_settings.h/cpp
         opt_img = {"_default_", "photoqt", "gwenview", "nomacs", "eog", "feh", "gthumb", "mirage", "geeqie"};
         opt_doc = {"_default_", "okular", "evince", "atril", "photoqt"};
+        opt_off = {"_default_", "libreoffice", "onlyoffice", "collabora"};
         opt_arc = {"_default_", "ark", "photoqt"};
         opt_com = {"_default_", "okular", "photoqt"};
         opt_bok = {"_default_", "ebook-viewer", "calibre", "okular"};
@@ -88,6 +90,7 @@ private:
         // we need empty entries here to not crash when loading the settings
         opt_img = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
         opt_doc = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
+        opt_off = {"_default_", ""};
         opt_arc = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
         opt_com = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
         opt_bok = {"_default_", ""};
@@ -111,6 +114,7 @@ private:
 
     QStringList opt_img;
     QStringList opt_doc;
+    QStringList opt_off;
     QStringList opt_arc;
     QStringList opt_com;
     QStringList opt_bok;
@@ -126,6 +130,7 @@ private:
 
         m_defaultAppImages = settings->value("defaultAppImages", opt_img[1]).toString();
         m_defaultAppDocuments = settings->value("defaultAppDocuments", opt_doc[0]).toString();
+        m_defaultAppOfficeDocuments = settings->value("defaultAppOfficeDocuments", opt_off[0]).toString();
         m_defaultAppArchives = settings->value("defaultAppArchives", opt_arc[0]).toString();
         m_defaultAppVideos = settings->value("defaultAppVideos", opt_vid[0]).toString();
         m_defaultAppComicBooks = settings->value("defaultAppComicBooks", opt_com[0]).toString();
@@ -135,6 +140,7 @@ private:
 
         if(m_defaultAppImages == "") m_defaultAppImages = "_default_";
         if(m_defaultAppDocuments == "") m_defaultAppDocuments = "_default_";
+        if(m_defaultAppOfficeDocuments == "") m_defaultAppOfficeDocuments = "_default_";
         if(m_defaultAppArchives == "") m_defaultAppArchives = "_default_";
         if(m_defaultAppVideos == "") m_defaultAppVideos = "_default_";
         if(m_defaultAppComicBooks == "") m_defaultAppComicBooks = "_default_";
@@ -162,6 +168,7 @@ private:
 
     QString m_defaultAppImages;
     QString m_defaultAppDocuments;
+    QString m_defaultAppOfficeDocuments;
     QString m_defaultAppArchives;
     QString m_defaultAppVideos;
     QString m_defaultAppComicBooks;

@@ -46,6 +46,7 @@ PQCSettings::PQCSettings() {
     // these NEED TO BE DUPLICATED in pqc_settingscpp.h
     opt_img = {"_default_", "photoqt", "gwenview", "nomacs", "eog", "feh", "gthumb", "mirage", "geeqie"};
     opt_doc = {"_default_", "okular", "evince", "atril", "photoqt"};
+    opt_off = {"_default_", "libreoffice", "onlyoffice", "collabora"};
     opt_arc = {"_default_", "ark", "photoqt"};
     opt_com = {"_default_", "okular", "photoqt"};
     opt_bok = {"_default_", "ebook-viewer", "calibre", "okular"};
@@ -57,6 +58,7 @@ PQCSettings::PQCSettings() {
     // we need empty entries here to not crash when loading the settings
     opt_img = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
     opt_doc = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
+    opt_off = {"_default_", ""};
     opt_arc = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
     opt_com = {"_default_", "C:/Program Files/PhotoQt/photoqt.exe", ""};
     opt_bok = {"_default_", ""};
@@ -81,6 +83,7 @@ PQCSettings::PQCSettings() {
 
         // all other types default to the default application
         m_defaultAppDocuments = "_default_";
+        m_defaultAppOfficeDocuments = "_default_";
         m_defaultAppArchives = "_default_";
         m_defaultAppComicBooks = "_default_";
         m_defaultAppEBooks = "_default_";
@@ -95,14 +98,15 @@ PQCSettings::PQCSettings() {
     }
 #endif
 
-    if(m_defaultAppImages    .isEmpty()) m_defaultAppImages = "_default_";
-    if(m_defaultAppDocuments .isEmpty()) m_defaultAppDocuments = "_default_";
-    if(m_defaultAppArchives  .isEmpty()) m_defaultAppArchives = "_default_";
-    if(m_defaultAppComicBooks.isEmpty()) m_defaultAppComicBooks = "_default_";
-    if(m_defaultAppEBooks    .isEmpty()) m_defaultAppEBooks = "_default_";
-    if(m_defaultAppVideos    .isEmpty()) m_defaultAppVideos = "_default_";
-    if(m_defaultAppText      .isEmpty()) m_defaultAppText = "_default_";
-    if(m_defaultAppUrl       .isEmpty()) m_defaultAppUrl = "_default_";
+    if(m_defaultAppImages         .isEmpty()) m_defaultAppImages = "_default_";
+    if(m_defaultAppDocuments      .isEmpty()) m_defaultAppDocuments = "_default_";
+    if(m_defaultAppOfficeDocuments.isEmpty()) m_defaultAppOfficeDocuments = "_default_";
+    if(m_defaultAppArchives       .isEmpty()) m_defaultAppArchives = "_default_";
+    if(m_defaultAppComicBooks     .isEmpty()) m_defaultAppComicBooks = "_default_";
+    if(m_defaultAppEBooks         .isEmpty()) m_defaultAppEBooks = "_default_";
+    if(m_defaultAppVideos         .isEmpty()) m_defaultAppVideos = "_default_";
+    if(m_defaultAppText           .isEmpty()) m_defaultAppText = "_default_";
+    if(m_defaultAppUrl            .isEmpty()) m_defaultAppUrl = "_default_";
 
     connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::versionChanged, this, [this]() { m_version = PQCSettingsCPP::get().getVersion(); Q_EMIT versionChanged(); });
     connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::lastDownloadFolderChanged, this, [this]() { m_lastDownloadFolder = PQCSettingsCPP::get().getLastDownloadFolder(); Q_EMIT lastDownloadFolderChanged(); });
@@ -119,6 +123,7 @@ PQCSettings::PQCSettings() {
     connect(this, &PQCSettings::defaultWindowMaximizedChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::defaultAppShortcutChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::defaultAppImagesChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppOfficeDocumentsChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::defaultAppDocumentsChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::defaultAppArchivesChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::defaultAppVideosChanged, this, [this]() { saveTimer->start(); });
@@ -170,7 +175,8 @@ void PQCSettings::loadSettings() {
     m_defaultWindowMaximized = settings->value("defaultWindowMaximized", false).toBool();
     m_defaultAppShortcut = settings->value("defaultAppShortcut", "E").toString();
     m_defaultAppImages = settings->value("defaultAppImages", opt_img[1]).toString();
-    m_defaultAppDocuments = settings->value("defaultAppDocuments", opt_doc[0]).toString();
+    m_defaultAppOfficeDocuments = settings->value("defaultAppOfficeDocuments", opt_doc[0]).toString();
+    m_defaultAppDocuments = settings->value("defaultAppDocuments", opt_off[0]).toString();
     m_defaultAppArchives = settings->value("defaultAppArchives", opt_arc[0]).toString();
     m_defaultAppVideos = settings->value("defaultAppVideos", opt_vid[0]).toString();
     m_defaultAppComicBooks = settings->value("defaultAppComicBooks", opt_com[0]).toString();
@@ -203,6 +209,7 @@ void PQCSettings::loadSettings() {
     Q_EMIT defaultWindowMaximizedChanged();
     Q_EMIT defaultAppShortcutChanged();
     Q_EMIT defaultAppImagesChanged();
+    Q_EMIT defaultAppOfficeDocumentsChanged();
     Q_EMIT defaultAppDocumentsChanged();
     Q_EMIT defaultAppArchivesChanged();
     Q_EMIT defaultAppVideosChanged();
@@ -236,6 +243,7 @@ void PQCSettings::saveSettings() {
     settings->setValue("defaultWindowMaximized", m_defaultWindowMaximized);
     settings->setValue("defaultAppShortcut", m_defaultAppShortcut);
     settings->setValue("defaultAppImages", m_defaultAppImages);
+    settings->setValue("defaultAppOfficeDocuments", m_defaultAppOfficeDocuments);
     settings->setValue("defaultAppDocuments", m_defaultAppDocuments);
     settings->setValue("defaultAppArchives", m_defaultAppArchives);
     settings->setValue("defaultAppVideos", m_defaultAppVideos);

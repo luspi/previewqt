@@ -49,6 +49,7 @@ public:
     Q_PROPERTY(bool defaultWindowMaximized MEMBER m_defaultWindowMaximized NOTIFY defaultWindowMaximizedChanged)
     Q_PROPERTY(QString defaultAppShortcut MEMBER m_defaultAppShortcut NOTIFY defaultAppShortcutChanged)
     Q_PROPERTY(QString defaultAppImages MEMBER m_defaultAppImages NOTIFY defaultAppImagesChanged)
+    Q_PROPERTY(QString defaultAppOfficeDocuments MEMBER m_defaultAppOfficeDocuments NOTIFY defaultAppOfficeDocumentsChanged)
     Q_PROPERTY(QString defaultAppDocuments MEMBER m_defaultAppDocuments NOTIFY defaultAppDocumentsChanged)
     Q_PROPERTY(QString defaultAppArchives MEMBER m_defaultAppArchives NOTIFY defaultAppArchivesChanged)
     Q_PROPERTY(QString defaultAppVideos MEMBER m_defaultAppVideos NOTIFY defaultAppVideosChanged)
@@ -81,6 +82,7 @@ private:
     bool m_defaultWindowMaximized;
     QString m_defaultAppShortcut;
     QString m_defaultAppImages;
+    QString m_defaultAppOfficeDocuments;
     QString m_defaultAppDocuments;
     QString m_defaultAppArchives;
     QString m_defaultAppVideos;
@@ -107,6 +109,7 @@ private:
 
     QStringList opt_img;
     QStringList opt_doc;
+    QStringList opt_off;
     QStringList opt_arc;
     QStringList opt_com;
     QStringList opt_bok;
@@ -133,6 +136,7 @@ Q_SIGNALS:
     void defaultWindowMaximizedChanged();
     void defaultAppShortcutChanged();
     void defaultAppImagesChanged();
+    void defaultAppOfficeDocumentsChanged();
     void defaultAppDocumentsChanged();
     void defaultAppArchivesChanged();
     void defaultAppVideosChanged();

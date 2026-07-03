@@ -38,6 +38,9 @@ Flickable {
     property list<string> docoptions_key: ["[system default]", "PhotoQt", "Atril", "Evince", "Okular", "(custom)"]
     property list<string> docoptions_val: ["_default_", "photoqt", "atril", "evince", "okular", ""]
 
+    property list<string> offoptions_key: ["[system default]", "LibreOffice", "OnlyOffice", "Collabora Office", "(custom)"]
+    property list<string> offoptions_val: ["_default_", "libreoffice", "onlyoffice", "collabora", ""]
+
     property list<string> arcoptions_key: ["[system default]", "PhotoQt", "Ark", "Engrampa", "File Roller", "(custom)"]
     property list<string> arcoptions_val: ["_default_", "photoqt", "ark", "engrampa", "file-roller", ""]
 
@@ -85,6 +88,10 @@ Flickable {
         var docindex = Object.values(docoptions_val).indexOf(PQCSettings.defaultAppDocuments)
         custom_doc.checked = (docindex !== 0)
         doccombo.currentIndex = (docindex===-1 ? doccombo.currentIndex=doccombo.model.length-1 : docindex)
+
+        var offindex = Object.values(offoptions_val).indexOf(PQCSettings.defaultAppOfficeDocuments)
+        custom_off.checked = (offindex !== 0)
+        offcombo.currentIndex = (offindex===-1 ? offcombo.currentIndex=offcombo.model.length-1 : offindex)
 
         var vidindex = Object.values(vidoptions_val).indexOf(PQCSettings.defaultAppVideos)
         custom_vid.checked = (vidindex !== 0)
@@ -269,6 +276,71 @@ Flickable {
                     }
                 }
 
+            }
+
+        }
+
+        CheckBox {
+            id: custom_off
+            text: "Use custom application for office documents"
+            onCheckedChanged: {
+                if(!defaultappsettings.optionsLoaded) return
+                if(!checked) PQCSettings.defaultAppOfficeDocuments = "_default_"
+                else PQCSettings.defaultAppOfficeDocuments = defaultappsettings.offoptions_val[offcombo.currentIndex]
+            }
+        }
+
+        Item {
+
+            width: parent.width
+            height: custom_off.checked ? offcol.height : 0
+            Behavior on height { NumberAnimation { duration: 200 } }
+            clip: true
+
+            Column {
+
+                id: offcol
+
+                ComboBox {
+                    id: offcombo
+                    x: (defaultappsettings.usableWidth-width)/2
+                    width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                    model: defaultappsettings.offoptions_key
+                    visible: !PQCScriptsConfig.amIOnWindows()
+                    onCurrentIndexChanged: {
+                        if(!defaultappsettings.optionsLoaded) return
+                        defaultappsettings.resetFocus()
+                        if(currentIndex < offcombo.model.length-1) {
+                            PQCSettings.defaultAppOfficeDocuments = defaultappsettings.offoptions_val[currentIndex]
+                        } else {
+                            offedit.text = PQCSettings.defaultAppOfficeDocuments
+                        }
+                    }
+                }
+
+                Row {
+                    spacing: 5
+                    visible: offcombo.currentIndex === offcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                    TextField {
+                        id: offedit
+                        y: (offbut.height-height)/2
+                        width: defaultappsettings.usableWidth-offbut.width-5
+                        text: PQCSettings.defaultAppOfficeDocuments
+                        onTextChanged: {
+                            if(text !== PQCSettings.defaultAppOfficeDocuments)
+                                PQCSettings.defaultAppOfficeDocuments = text
+                        }
+                    }
+                    Button {
+                        id: offbut
+                        text: "..."
+                        onClicked: {
+                            selectExe.category = "office"
+                            selectExe.prevexe = offedit.text
+                            selectExe.open()
+                        }
+                    }
+                }
             }
 
         }
@@ -760,6 +832,8 @@ Flickable {
                 imgedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "documents")
                 imgedit.text = PQCScriptsFilesPaths.cleanPath(file)
+            else if(category == "office")
+                offedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "videos")
                 imgedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "archives")

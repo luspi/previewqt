@@ -35,6 +35,7 @@
 #include <fileplugins/pqc_fileplugin_magick.h>
 #include <fileplugins/pqc_fileplugin_devil.h>
 #include <fileplugins/pqc_fileplugin_libvips.h>
+#include <fileplugins/pqc_fileplugin_libreoffice.h>
 
 #include <fileplugins/pqc_fileplugin_audio.h>
 #include <fileplugins/pqc_fileplugin_text.h>
@@ -52,6 +53,9 @@ PQCFileHandler::PQCFileHandler() {
 #endif
 #if defined(PQMPOPPLER) || defined(PQMQTPDF)
         << "pdf"
+#endif
+#ifdef PQMLIBREOFFICE
+        << "libreoffice"
 #endif
         << "qt"
 #ifdef PQMRAW
@@ -130,6 +134,9 @@ PQCFileHandler::PQCFileHandler() {
     m_plugins.insert("text", new PQCFilePluginText);
 #ifdef PQMLIBARCHIVE
     m_plugins.insert("ebook", new PQCFilePluginEBook);
+#endif
+#ifdef PQMLIBREOFFICE
+    m_plugins.insert("libreoffice", new PQCFilePluginLibreOffice);
 #endif
 
     /*******************************************************/
