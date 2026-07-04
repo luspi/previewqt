@@ -10,6 +10,7 @@ set(previewqt_QML qml/PQMainWindow.qml
                   qml/components/imageitems/PQArchive.qml
                   qml/components/imageitems/PQAudio.qml
                   qml/components/imageitems/PQDocument.qml
+                  qml/components/imageitems/PQOfficeDocument.qml
                   qml/components/imageitems/PQImageAnimated.qml
                   qml/components/imageitems/PQImageNormal.qml
                   qml/components/imageitems/PQSVG.qml

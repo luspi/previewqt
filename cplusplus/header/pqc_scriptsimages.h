@@ -50,6 +50,7 @@ public:
     bool isMpvVideo(QString path);
     bool isQtVideo(QString path);
     bool isPDFDocument(QString path);
+    bool isOfficeDocument(QString path);
     bool isSVG(QString path);
     bool isPhotoSphere(QString path);
     int isMotionPhoto(QString path);

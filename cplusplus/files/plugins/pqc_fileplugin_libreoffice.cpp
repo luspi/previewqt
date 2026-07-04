@@ -73,6 +73,30 @@ PQCFilePluginLibreOffice::~PQCFilePluginLibreOffice() {
 #endif
 }
 
+const int PQCFilePluginLibreOffice::loadNumPages(QString path) {
+
+#ifdef PQMLIBREOFFICE
+
+    // extract page and totalpage value from path (prepended to path (after filepath))
+    const int idx = path.indexOf("::DOC::");
+    if(idx != -1)
+        path = path.mid(idx+7);
+
+    lok::Document *lodoc = office->documentLoad(path.toStdString().c_str());
+
+    const int num = lodoc->getParts();
+    delete lodoc;
+
+    qWarning() << ">>>" << num;
+
+    return num;
+
+#endif
+
+    return 1;
+
+}
+
 const QSize PQCFilePluginLibreOffice::loadSize(QString path) {
 
 #ifdef PQMLIBREOFFICE
@@ -124,36 +148,51 @@ const QImage PQCFilePluginLibreOffice::loadImage(QString path, QSize requestedSi
 
     lok::Document *lodoc = office->documentLoad(path.toStdString().c_str());
 
-    lodoc->setPart(page);
-
     lodoc->setClientZoom(100, 100, requestedSize.width(), requestedSize.height());
 
-    long pageWidthTwips;
-    long pageHeightTwips;
-
-    lodoc->getDocumentSize(&pageWidthTwips, &pageHeightTwips);
+    int pageX = 0, pageY = 0;
+    long pageWidthTwips, pageHeightTwips;
 
     if(m_suffixesWithNoFixedSize.contains(suffix)) {
-        QSize maxSize = QSize(10000, 10000*(static_cast<double>(requestedSize.height())/static_cast<double>(requestedSize.width())));
-        pageWidthTwips = qMin(maxSize.width(), pageWidthTwips);
-        pageHeightTwips = qMin(maxSize.height(), pageHeightTwips);
+
+        lodoc->getDocumentSize(&pageWidthTwips, &pageHeightTwips);
+        pageWidthTwips = qMin(8*requestedSize.width(), pageWidthTwips);
+        pageHeightTwips = qMin(8*requestedSize.height(), pageHeightTwips);
+
+    } else if(lodoc->getParts() < 2) {
+
+        lodoc->getDocumentSize(&pageWidthTwips, &pageHeightTwips);
+
+    } else {
+
+        QStringList rects = QString(lodoc->getPartPageRectangles()).split(";");
+
+        if(page < rects.length()) {
+
+            const QStringList r = rects.at(page).split(",");
+            if(r.length() == 4) {
+                pageX = r.at(0).toInt();
+                pageY = r.at(1).toInt();
+                pageWidthTwips = r.at(2).toInt();
+                pageHeightTwips = r.at(3).toInt();
+            }
+
+        }
+
     }
 
-    // we render to 1/4 of the twips size
-    // a typical twips size for an A4 page is 11906x16838
-    // rendering it to roughly a quarter of that equates to about 300 dpi (not exact, but close enough)
-    // if we immediately go to the requestedSize (potentially much smaller), then the result tends to be blurry
     QSize pageSize(pageWidthTwips, pageHeightTwips);
     QImage img(pageSize, QImage::Format_ARGB32);
     img.fill(Qt::white);
 
     lodoc->paintTile(reinterpret_cast<unsigned char*>(img.bits()),
                      img.width(), img.height(),
-                     0, 0, pageWidthTwips, pageHeightTwips);
+                     pageX, pageY, pageWidthTwips, pageHeightTwips);
 
     delete lodoc;
 
-    saveImageToCache(origPath, img);
+    if(!m_suffixesWithNoFixedSize.contains(suffix))
+        saveImageToCache(origPath, img);
 
     origSize = img.size();
 

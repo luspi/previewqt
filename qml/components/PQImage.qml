@@ -174,6 +174,9 @@ Item {
         } else if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
             PQCConstants.currentType = "doc"
             imageloader.sourceComponent = comp_doc
+        } else if(PQCScriptsImages.isOfficeDocument(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "off"
+            imageloader.sourceComponent = comp_off
         } else if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
             PQCConstants.currentType = "bok"
             imageloader.sourceComponent = comp_bok
@@ -236,6 +239,11 @@ Item {
     Component {
         id: comp_doc
         PQDocument {}
+    }
+
+    Component {
+        id: comp_off
+        PQOfficeDocument {}
     }
 
     Component {

@@ -93,7 +93,7 @@ QString PQCHelper::setJoin(QSet<int> set, QString sep) {
 
 QString PQCHelper::extractInsideFilename(QString path) {
 
-    const QStringList lst = {"::PDF::", "::ARC::"};
+    const QStringList lst = {"::PDF::", "::ARC::", "::DOC::"};
 
     for(const QString &str : lst) {
         const int idx = path.indexOf(str);

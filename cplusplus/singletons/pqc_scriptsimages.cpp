@@ -585,6 +585,27 @@ bool PQCScriptsImages::isPDFDocument(QString path) {
 
 }
 
+bool PQCScriptsImages::isOfficeDocument(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+#ifdef PQMLIBREOFFICE
+
+    const QSet<QString> suffixes = PQCFileHandler::get().getSuffixes("libreoffice");
+    QFileInfo info(path);
+    if(suffixes.contains(info.suffix().toLower()) || suffixes.contains(info.completeSuffix().toLower()))
+        return true;
+
+    QMimeDatabase db;
+    if(PQCFileHandler::get().getMimetypes("libreoffice").contains(db.mimeTypeForFile(path).name()))
+        return true;
+
+#endif
+
+    return false;
+
+}
+
 bool PQCScriptsImages::isURL(QString url) {
     return (url.startsWith("http:") || url.startsWith("https:") || isLocalURL(url));
 }

@@ -70,6 +70,10 @@ public:
         return PQCScriptsImages::get().isPDFDocument(path);
     }
 
+    Q_INVOKABLE bool isOfficeDocument(QString path) {
+        return PQCScriptsImages::get().isOfficeDocument(path);
+    }
+
     Q_INVOKABLE bool isSVG(QString path) {
         return PQCScriptsImages::get().isSVG(path);
     }
