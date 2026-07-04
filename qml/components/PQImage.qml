@@ -79,7 +79,9 @@ Item {
                 if(imageloader.item != null && PQCConstants.currentType !== "aud") {
                     PQCNotify.updateWindowSize(PQCConstants.imagePaintedSize.width+10, PQCConstants.imagePaintedSize.height+10)
                 }
-            }
+                loading.hide()
+            } else if(PQCConstants.imageStatus === Image.Error)
+                loading.hide()
         }
 
     }
@@ -160,8 +162,11 @@ Item {
             PQCConstants.currentSource = ""
             imageloader.sourceComponent = comp_empty
             PQCConstants.imageStatus = Image.Null
+            loading.hide()
             return
         }
+
+        loading.startTimer()
 
         PQCConstants.currentSource = PQCScriptsFilesPaths.cleanPath(path)
         PQCConstants.imageStatus = Image.Loading
@@ -299,6 +304,67 @@ Item {
     Component {
         id: comp_aud
         PQAudio {}
+    }
+
+    // LOADING indicator
+    Rectangle {
+
+        id: loading
+
+        anchors.fill: parent
+        color: "#88000000"
+        visible: false
+
+        Item {
+
+            anchors.fill: parent
+
+            Repeater {
+
+                model: 3
+
+                delegate: Canvas {
+                    id: load
+                    required property int modelData
+                    x: (parent.width-width)/2
+                    y: (parent.height-height)/2
+                    width: (106 - modelData*20)
+                    height: (106 - modelData*20)
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.strokeStyle = "#ffffff";
+                        ctx.lineWidth = 3
+                        ctx.beginPath();
+                        ctx.arc(width/2, height/2, width/2-3, 0, 3.14, false);
+                        ctx.stroke();
+                    }
+                    RotationAnimator {
+                        target: load
+                        from: load.modelData%2 ? 360 : 0
+                        to: load.modelData%2 ? 0 : 360
+                        duration: 2000 - load.modelData*222
+                        running: loading.visible
+                        loops: Animation.Infinite
+                    }
+                }
+
+            }
+
+        }
+
+        function startTimer() {
+            showTimer.restart()
+        }
+        function hide() {
+            showTimer.stop()
+            visible = false
+        }
+        Timer {
+            id: showTimer
+            interval: 0
+            onTriggered:
+                loading.visible = true
+        }
     }
 
 }
