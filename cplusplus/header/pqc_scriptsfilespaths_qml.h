@@ -59,6 +59,14 @@ public:
         return PQCScriptsFilesPaths::get().getSuffix(path);
     }
 
+    Q_INVOKABLE QString getCompleteSuffix(QString path) {
+        return PQCScriptsFilesPaths::get().getCompleteSuffix(path);
+    }
+
+    Q_INVOKABLE QString getMimetype(QString path) {
+        return PQCScriptsFilesPaths::get().getMimetype(path);
+    }
+
     Q_INVOKABLE QString toPercentEncoding(QString str) {
         return PQCScriptsFilesPaths::get().toPercentEncoding(str);
     }

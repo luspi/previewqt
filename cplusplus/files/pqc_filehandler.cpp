@@ -36,6 +36,7 @@
 #include <fileplugins/pqc_fileplugin_devil.h>
 #include <fileplugins/pqc_fileplugin_libvips.h>
 #include <fileplugins/pqc_fileplugin_libreoffice.h>
+#include <fileplugins/pqc_fileplugin_package.h>
 
 #include <fileplugins/pqc_fileplugin_audio.h>
 #include <fileplugins/pqc_fileplugin_text.h>
@@ -92,6 +93,7 @@ PQCFileHandler::PQCFileHandler() {
         << "text"
 #ifdef PQMLIBARCHIVE
         << "ebook"
+        << "package"
 #endif
     ;
 
@@ -137,6 +139,9 @@ PQCFileHandler::PQCFileHandler() {
 #endif
 #ifdef PQMLIBREOFFICE
     m_plugins.insert("libreoffice", new PQCFilePluginLibreOffice);
+#endif
+#ifdef PQMLIBARCHIVE
+    m_plugins.insert("package", new PQCFilePluginPackage);
 #endif
 
     /*******************************************************/
@@ -273,6 +278,71 @@ QImage PQCFileHandler::getImageWithPlugin(QString plugin, QString path, QSize re
     }
 
     return m_plugins.value(plugin)->loadImage(path, requestedSize, origSize, error);
+
+}
+
+QVariantList PQCFileHandler::getData(QString path) {
+
+    if(path.trimmed().isEmpty())
+        return {};
+
+    QFileInfo info(path);
+
+    if(info.isSymLink() && info.exists())
+        path = info.symLinkTarget();
+
+    const QString suffix1 = info.suffix().toLower();
+    const QString suffix2 = info.completeSuffix().toLower();
+
+    for(const QString &name : std::as_const(m_pluginOrder)) {
+
+        if(!m_plugins.contains(name)) continue;
+
+        PQCFilePlugin *plugin = m_plugins[name];
+
+        QSet<QString> suf = plugin->getSuffixes();
+        if(suf.contains(suffix1) || suf.contains(suffix2)) {
+
+            QVariantList lst = plugin->loadData(path);
+            if(!lst.isEmpty())
+                return lst;
+
+        }
+
+    }
+
+    QMimeDatabase db;
+    const QString mimetype = db.mimeTypeForFile(path).name();
+
+    for(const QString &name : std::as_const(m_pluginOrder)) {
+
+        if(!m_plugins.contains(name)) continue;
+
+        PQCFilePlugin *plugin = m_plugins[name];
+
+        QSet<QString> mim = plugin->getMimetypes();
+        if(mim.contains(mimetype)) {
+
+            QVariantList lst = plugin->loadData(path);
+            if(!lst.isEmpty())
+                return lst;
+
+        }
+
+    }
+
+    return {};
+
+}
+
+QVariantList PQCFileHandler::getDataWithPlugin(QString plugin, QString path) {
+
+    if(!m_pluginOrder.contains(plugin)) {
+        qWarning() << "Requested plugin" << plugin << "not found.";
+        return {};
+    }
+
+    return m_plugins.value(plugin)->loadData(path);
 
 }
 

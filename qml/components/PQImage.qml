@@ -151,6 +151,8 @@ Item {
 
         console.log("args: path =", path)
 
+        loading.startTimer()
+
         PQCConstants.mainwindowManuallyResized = false
         imageloader.active = false
         setRotation = 0
@@ -165,8 +167,6 @@ Item {
             loading.hide()
             return
         }
-
-        loading.startTimer()
 
         PQCConstants.currentSource = PQCScriptsFilesPaths.cleanPath(path)
         PQCConstants.imageStatus = Image.Loading
@@ -209,6 +209,9 @@ Item {
         } else if(PQCScriptsImages.isAudio(PQCConstants.currentSource)) {
             PQCConstants.currentType = "aud"
             imageloader.sourceComponent = comp_aud
+        } else if(PQCScriptsImages.isPackage(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "pak"
+            imageloader.sourceComponent = comp_pak
         } else {
             PQCConstants.currentType = "img"
             imageloader.sourceComponent = comp_img
@@ -304,6 +307,11 @@ Item {
     Component {
         id: comp_aud
         PQAudio {}
+    }
+
+    Component {
+        id: comp_pak
+        PQPackage {}
     }
 
     // LOADING indicator

@@ -44,6 +44,8 @@ public:
     QString getFilename(QString path);
     QString getDir(QString fullpath);
     QString getSuffix(QString path);
+    QString getCompleteSuffix(QString path);
+    QString getMimetype(QString path);
     QString toPercentEncoding(QString str);
     QString fromPercentEncoding(QByteArray str);
     bool isFileSupported(QString path);

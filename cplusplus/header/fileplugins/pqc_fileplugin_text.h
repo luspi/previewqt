@@ -34,6 +34,7 @@ public:
     const QString name() override { return "Text"; }
     const QSize loadSize(QString) override { return QSize(); };
     const QImage loadImage(QString, QSize, QSize&, QString&) override { return QImage(); };
+    const QVariantList loadData(QString path) override { return {}; }
     const int loadNumPages(QString path) override { return 1; }
     const QStringList loadContent(QString path) override { return {path}; }
 

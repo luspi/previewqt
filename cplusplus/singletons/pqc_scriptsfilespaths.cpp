@@ -116,7 +116,26 @@ QString PQCScriptsFilesPaths::getSuffix(QString path) {
     if(path.isEmpty())
         return "";
 
+    return QFileInfo(path).suffix();
+
+}
+
+QString PQCScriptsFilesPaths::getCompleteSuffix(QString path) {
+
+    if(path.isEmpty())
+        return "";
+
     return QFileInfo(path).completeSuffix();
+
+}
+
+QString PQCScriptsFilesPaths::getMimetype(QString path) {
+
+    if(path.isEmpty())
+        return "";
+
+    QMimeDatabase db;
+    return db.mimeTypeForFile(path).name();
 
 }
 

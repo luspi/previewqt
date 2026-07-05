@@ -26,16 +26,20 @@
 #include <QSize>
 #include <QImage>
 
-class PQCFilePluginAudio : public PQCFilePlugin {
+class PQCFilePluginPackage : public PQCFilePlugin {
 
 public:
-    PQCFilePluginAudio();
+    PQCFilePluginPackage();
 
-    const QString name() override { return "Audio"; }
+    const QString name() override { return "Package"; }
     const QSize loadSize(QString) override { return QSize(); };
     const QImage loadImage(QString, QSize, QSize&, QString&) override { return QImage(); };
-    const QVariantList loadData(QString path) override { return {}; }
+    const QVariantList loadData(QString path) override;
     const int loadNumPages(QString path) override { return 1; }
     const QStringList loadContent(QString path) override { return {path}; }
+
+private:
+    QVariantList getDebianData(QString path);
+    QVariantList getRPMData(QString path);
 
 };

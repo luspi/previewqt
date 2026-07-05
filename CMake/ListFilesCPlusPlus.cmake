@@ -26,6 +26,7 @@ SET(previewqt_SRC cplusplus/main.cpp
                   cplusplus/files/plugins/pqc_fileplugin_text.cpp
                   cplusplus/files/plugins/pqc_fileplugin_video.cpp
                   cplusplus/files/plugins/pqc_fileplugin_libreoffice.cpp
+                  cplusplus/files/plugins/pqc_fileplugin_package.cpp
 
                   cplusplus/files/pqc_filehandler.cpp
                   cplusplus/files/pqc_imageproviderfull.cpp
@@ -74,6 +75,7 @@ SET(previewqt_SRC cplusplus/main.cpp
                   cplusplus/header/fileplugins/pqc_fileplugin_text.h
                   cplusplus/header/fileplugins/pqc_fileplugin_video.h
                   cplusplus/header/fileplugins/pqc_fileplugin_libreoffice.h
+                  cplusplus/header/fileplugins/pqc_fileplugin_package.h
 )
 
 if(WITH_LIBMPV)

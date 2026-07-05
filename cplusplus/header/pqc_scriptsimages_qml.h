@@ -102,6 +102,10 @@ public:
         return PQCScriptsImages::get().isAudio(path);
     }
 
+    Q_INVOKABLE bool isPackage(QString path) {
+        return PQCScriptsImages::get().isPackage(path);
+    }
+
     Q_INVOKABLE QString findCoverImageNextToFile(QString path) {
         return PQCScriptsImages::get().findCoverImageNextToFile(path);
     }

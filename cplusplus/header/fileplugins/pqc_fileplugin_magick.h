@@ -36,6 +36,7 @@ public:
 #endif
     const QSize loadSize(QString path) override;
     const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override;
+    const QVariantList loadData(QString path) override { return {}; }
     const int loadNumPages(QString path) override { return 1; }
     const QStringList loadContent(QString path) override { return {path}; }
 
