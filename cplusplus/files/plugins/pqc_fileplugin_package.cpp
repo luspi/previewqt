@@ -28,6 +28,8 @@
 #include <QXmlStreamReader>
 #endif
 
+using namespace Qt::StringLiterals;
+
 PQCFilePluginPackage::PQCFilePluginPackage() {
 
 #ifdef PQMLIBARCHIVE
@@ -387,27 +389,27 @@ QVariantList PQCFilePluginPackage::getRPMData(QString path) {
         QXmlStreamReader::TokenType token = xmlReader.readNext();
         if(token == QXmlStreamReader::StartElement) {
 
-            if(xmlReader.name() == "name") {
+            if(xmlReader.name() == "name"_L1) {
                 if(insideDeveloper)
                     data["author"] = xmlReader.readElementText(QXmlStreamReader::SkipChildElements);
                 else
                     data["name"] = xmlReader.readElementText(QXmlStreamReader::SkipChildElements);
-            } else if(xmlReader.name() == "developer") {
+            } else if(xmlReader.name() == "developer"_L1) {
                 insideDeveloper = true;
-            } else if(xmlReader.name() == "project_license")
+            } else if(xmlReader.name() == "project_license"_L1)
                 data["license"] = xmlReader.readElementText(QXmlStreamReader::SkipChildElements);
-            else if(xmlReader.name() == "summary")
+            else if(xmlReader.name() == "summary"_L1)
                 data["description"] = xmlReader.readElementText(QXmlStreamReader::SkipChildElements);
-            else if(xmlReader.name() == "url") {
+            else if(xmlReader.name() == "url"_L1) {
                 const QString tpe = xmlReader.attributes().value("type").toString();
                 if(tpe == "homepage")
                     data["homepage"] = xmlReader.readElementText(QXmlStreamReader::SkipChildElements);
-            } else if(xmlReader.name() == "release" && data["version"].toString().isEmpty()) {
+            } else if(xmlReader.name() == "release"_L1 && data["version"].toString().isEmpty()) {
                 data["version"] = xmlReader.attributes().value("version").toString();
                 data["releaseDate"] = xmlReader.attributes().value("date").toString();
-            } else if(xmlReader.name() == "keyword")
+            } else if(xmlReader.name() == "keyword"_L1)
                 keywords << xmlReader.readElementText(QXmlStreamReader::SkipChildElements);
-            else if(xmlReader.name() == "id" && data["id"].toString().isEmpty())
+            else if(xmlReader.name() == "id"_L1 && data["id"].toString().isEmpty())
                 data["id"] = xmlReader.readElementText(QXmlStreamReader::SkipChildElements);
         }
     }
