@@ -869,6 +869,25 @@ if(UNIX)
         DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo/
     )
 
+else()
+
+    # automatically install all dependencies
+    install(TARGETS previewqt
+        RUNTIME_DEPENDENCIES
+        DIRECTORIES "${IMAGEMAGICK_ROOT_DIR}" "${QT_ROOT_DIR}/bin" "${LIBREOFFICE_SDK_ROOT_DIR}" "${LIBREOFFICE_SDK_ROOT_DIR}/bin"
+        PRE_EXCLUDE_REGEXES "api-ms-" "ext-ms-"
+        POST_EXCLUDE_REGEXES ".*system32/.*\\.dll"
+        BUNDLE  DESTINATION .
+        RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}
+    )
+
+    # call windeployqt
+    if(DEFINED WINDEPLOYQT_EXECUTABLE)
+        install(CODE "execute_process(COMMAND \"${WINDEPLOYQT_EXECUTABLE}\" --qmldir ${CMAKE_SOURCE_DIR}/qml/ --release ${CMAKE_INSTALL_PREFIX}/previewqt.exe)")
+    else()
+        message(" ** Need variable WINDEPLOYQT_EXECUTABLE to call windeployqt directly")
+    endif()
+
 endif()
 
 
