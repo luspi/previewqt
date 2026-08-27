@@ -92,12 +92,11 @@ const QStringList PQCFilePluginLibarchive::loadContent(QString path) {
 
     QStringList ret;
 
-#ifndef Q_OS_WIN
-
-    const QString suffix = info.suffix();
-
     const QSet<QString> supportedSuffixes = PQCFileHandler::get().getSuffixes();
 
+#ifndef Q_OS_WIN
+
+    const QString suffix = info.suffix().toLower();
     if(suffix == "cbr" || suffix == "rar") {
 
         QProcess p;
