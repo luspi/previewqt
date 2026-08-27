@@ -89,9 +89,17 @@ int main(int argc, char *argv[]) {
 #endif
 
     QFileInfo f(argv[0]);
-    qputenv("PATH", QString("%1;%2").arg(qgetenv("PATH"),f.absolutePath().replace("/", "\\")).toLocal8Bit());
-    qputenv("MAGICK_CODER_MODULE_PATH", QString("%1").arg(f.absolutePath().replace("/", "\\") + "\\imagemagick\\coders").toLocal8Bit());
-    qputenv("MAGICK_FILTER_MODULE_PATH", QString("%1").arg(f.absolutePath().replace("/", "\\") + "\\imagemagick\\filters").toLocal8Bit());
+    const QString basePath = f.absolutePath().replace("/", "\\");
+    qputenv("PATH", QString("%1;%2").arg(qgetenv("PATH"),basePath).toLocal8Bit());
+    qputenv("MAGICK_CODER_MODULE_PATH", QString("%1").arg(basePath + "\\imagemagick\\coders").toLocal8Bit());
+    qputenv("MAGICK_FILTER_MODULE_PATH", QString("%1").arg(basePath + "\\imagemagick\\filters").toLocal8Bit());
+
+#ifdef PQMLIBREOFFICE
+    // This makes sure PreviewQt find the necessary libreoffice dlls
+    SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_USER_DIRS);
+    AddDllDirectory(QString("%1%2").arg(basePath, "\\LibreOffice\\program").toStdWString().c_str());
+    qputenv("LibreOffice_LOPATH", QString("%1%2").arg(basePath, "\\LibreOffice\\program").toLocal8Bit());
+#endif
 
     // This allows for semi-transparent windows
     // By default Qt6 uses Direct3D which does not seem to support this

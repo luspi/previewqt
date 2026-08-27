@@ -61,7 +61,11 @@ PQCFilePluginLibreOffice::PQCFilePluginLibreOffice() {
 
     m_suffixesWithNoFixedSize << "ods" << "xls" << "xlsx" << "xlsm" << "xlst" << "xltx";
 
+#ifdef Q_OS_WIN
+    office = lok::lok_cpp_init(qgetenv("LibreOffice_LOPATH"));
+#else
     office = lok::lok_cpp_init(PQMLIBREOFFICE_LOPATH);
+#endif
 
 #endif
 
@@ -82,12 +86,21 @@ const int PQCFilePluginLibreOffice::loadNumPages(QString path) {
     if(idx != -1)
         path = path.mid(idx+7);
 
-    lok::Document *lodoc = office->documentLoad(path.toStdString().c_str());
+    lok::Document *lodoc = office->documentLoad(("file:///"+path).toStdString().c_str());
+
+    if(!lodoc) {
+        char* error = office->getError();
+        if(error) {
+            qWarning() << "LibreOfficeKit error:" << error;
+            office->freeError(error);
+        } else {
+            qWarning() << "LibreOfficeKit: documentLoad() failed with no error";
+        }
+        return 0;
+    }
 
     const int num = lodoc->getParts();
     delete lodoc;
-
-    qWarning() << ">>>" << num;
 
     return num;
 
@@ -110,7 +123,18 @@ const QSize PQCFilePluginLibreOffice::loadSize(QString path) {
     if(idx != -1)
         path = path.mid(idx+7);
 
-    lok::Document *lodoc = office->documentLoad(path.toStdString().c_str());
+    lok::Document *lodoc = office->documentLoad(("file:///"+path).toStdString().c_str());
+
+    if(!lodoc) {
+        char* error = office->getError();
+        if(error) {
+            qWarning() << "LibreOfficeKit error:" << error;
+            office->freeError(error);
+        } else {
+            qWarning() << "LibreOfficeKit: documentLoad() failed with no error";
+        }
+        return QSize();
+    }
 
     long w = 0, h = 0;
     lodoc->getDocumentSize(&w, &h);
@@ -146,7 +170,18 @@ const QImage PQCFilePluginLibreOffice::loadImage(QString path, QSize requestedSi
         path = path.mid(idx+7);
     }
 
-    lok::Document *lodoc = office->documentLoad(path.toStdString().c_str());
+    lok::Document *lodoc = office->documentLoad(("file:///"+path).toStdString().c_str());
+
+    if(!lodoc) {
+        char* error = office->getError();
+        if(error) {
+            qWarning() << "LibreOfficeKit error:" << error;
+            office->freeError(error);
+        } else {
+            qWarning() << "LibreOfficeKit: documentLoad() failed with no error";
+        }
+        return QImage();
+    }
 
     lodoc->setClientZoom(100, 100, requestedSize.width(), requestedSize.height());
 
