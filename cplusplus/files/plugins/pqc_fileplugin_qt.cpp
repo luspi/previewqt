@@ -94,7 +94,7 @@ PQCFilePluginQt::PQCFilePluginQt() {
              {26486,
                     {{"Adobe PhotoShop"}, {"psd", "psb", "psdt"}, {"image/vnd.adobe.photoshop"}}},
              {11278,
-                    {{"PIXAR format"}, {"PIXAR format"}, {}}},
+                    {{"PIXAR format"}, {"pxr"}, {}}},
              {31111,
                     {{"Quite OK image format"}, {"qoi"}, {}}},
              {99344,

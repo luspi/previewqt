@@ -91,7 +91,7 @@ QString PQCScriptsConfig::getConfigInfo(bool formatHTML) {
 
     txt += " - Compiled with " % bold1 % "Qt " % QT_VERSION_STR % bold2 % ", running with " % bold1 % "Qt " % qVersion() % bold2 % nl;
 
-    txt += " - Total of " % bold1 % QString::number(PQCFileHandler::get().getNumFormats()) % bold2 % " supported file formats" % nl;
+    txt += " - Total of " % bold1 % QString::number(PQCFileHandler::get().getNumFormats()) % bold2 % " supported file endings" % nl;
 
 #ifdef PQMEXIV2
     txt += " - " % bold1 % "Exiv2" % bold2 % ": " % Exiv2::version() % nl;
