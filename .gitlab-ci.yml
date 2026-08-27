@@ -16,7 +16,7 @@ localization:
     - git diff-index --quiet HEAD || git commit -m "updating translation source files from CI - Qt6 version"
     - git push origin main
 
-appimage:
+appimageJammy:
 
   image: ubuntu:jammy
 
@@ -31,18 +31,26 @@ appimage:
     - apt-get update -qq && apt-get -y upgrade
     - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev libqt6chartsqml6 qml6-module-qt-labs-platform qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-window qt6-multimedia-dev qml6-module-qtqml-workerscript qml6-module-qtquick-templates qml6-module-qtquick-dialogs qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-pdf-dev qml6-module-org-kde-syntaxhighlighting
     - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-6
-    - git clone https://github.com/ImageMagick/ImageMagick  # Install up-to-date ImageMagick
+    # Install up-to-date ImageMagick
+    - git clone https://github.com/ImageMagick/ImageMagick
     - cd ImageMagick
     - git checkout $(git describe --tags --abbrev=0)
-    - ./configure --prefix=/usr --with-bzlib --with-fontconfig --with-freetype=yes --with-gslib --with-gvc --with-jpeg --with-png --with-tiff --with-xml --with-gs-font-dir --enable-hdri --disable-docs
+    - ./configure --prefix=/usr --with-bzlib --with-fontconfig --with-freetype=yes --with-gslib --with-gvc --with-jpeg --with-png --with-tiff --with-xml --with-gs-font-dir --enable-hdri --disable-docs --with-webp --with-wmf --with-rsvg --with-fftw
     - make -j$(nproc) install
     - cd ..
+    # Install libsai
+    - git clone https://github.com/Wunkolo/libsai
+    - sed -i 's|FILES include/sai.hpp|& include/sai2.hpp include/util.hpp|' libsai/CMakeLists.txt
+    - mkdir -p libsai/build && cd libsai/build
+    - cmake .. -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr
+    - make -j$(nproc) install
+    - cd ../..
     - export QT_SELECT=qt6
     - rm -rf lang/
     - git clone -b l10n_main https://gitlab.com/lspies/previewqt-lang
     - mv previewqt-lang/localized lang
     - mkdir -p build && cd build/
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_QTMULTIMEDIA=ON -DWITH_LIBMPV=OFF -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=ON -DWITH_LCMS2=ON -DWITH_FREEIMAGE=OFF -DWITH_KF6SYNTAXHIGHLIGHT=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_QTMULTIMEDIA=ON -DWITH_LIBMPV=OFF -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=ON -DWITH_LCMS2=ON -DWITH_KF6SYNTAXHIGHLIGHT=ON -DWITH_LIBREOFFICE=OFF -DWITH_LIBSAI=ON
     - make DESTDIR=../appdir -j$(nproc) install
     - cd ..
     - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
@@ -62,31 +70,40 @@ appimage:
     paths:
       - PreviewQt-nightly.AppImage
 
+appimageNoble:
 
-releaseappimage:
-
-  image: ubuntu:jammy
+  image: ubuntu:noble
 
   only:
-    - tags
+    - schedules
 
   script:
     - export DEBIAN_FRONTEND=noninteractive
-    - apt-get update -qq && apt-get -y install git software-properties-common build-essential libgl1-mesa-dev cmake wget extra-cmake-modules apt-transport-https curl
-    - echo "deb http://archive.neon.kde.org/user jammy main" | tee /etc/apt/sources.list.d/neon.list # add Neon PPA
+    - apt-get update -qq &&  apt-get -y install git software-properties-common build-essential libgl1-mesa-dev cmake wget extra-cmake-modules apt-transport-https curl
+    - echo "deb http://archive.neon.kde.org/user noble main" | tee /etc/apt/sources.list.d/neon.list # add Neon PPA
     - wget -qO - http://archive.neon.kde.org/public.key | apt-key add -
     - apt-get update -qq && apt-get -y upgrade
     - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev libqt6chartsqml6 qml6-module-qt-labs-platform qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-window qt6-multimedia-dev qml6-module-qtqml-workerscript qml6-module-qtquick-templates qml6-module-qtquick-dialogs qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-pdf-dev qml6-module-org-kde-syntaxhighlighting
-    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-6
-    - git clone https://github.com/ImageMagick/ImageMagick  # Install up-to-date ImageMagick
+    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-7 libreofficekit-dev libreoffice-base-core
+    # Install up-to-date ImageMagick
+    - git clone https://github.com/ImageMagick/ImageMagick
     - cd ImageMagick
     - git checkout $(git describe --tags --abbrev=0)
-    - ./configure --prefix=/usr --with-bzlib --with-fontconfig --with-freetype=yes --with-gslib --with-gvc --with-jpeg --with-png --with-tiff --with-xml --with-gs-font-dir --enable-hdri --disable-docs
+    - ./configure --prefix=/usr --with-bzlib --with-fontconfig --with-freetype=yes --with-gslib --with-gvc --with-jpeg --with-png --with-tiff --with-xml --with-gs-font-dir --enable-hdri --disable-docs --with-webp --with-wmf --with-rsvg --with-fftw
     - make -j$(nproc) install
     - cd ..
-    - export QT_SELECT=qt6
+    # Install libsai
+    - git clone https://github.com/Wunkolo/libsai
+    - sed -i 's|FILES include/sai.hpp|& include/sai2.hpp include/util.hpp|' libsai/CMakeLists.txt
+    - mkdir -p libsai/build && cd libsai/build
+    - cmake .. -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr
+    - make -j$(nproc) install
+    - cd ../..
+    - rm -rf lang/
+    - git clone -b l10n_main https://gitlab.com/lspies/previewqt-lang
+    - mv previewqt-lang/localized lang
     - mkdir -p build && cd build/
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_QTMULTIMEDIA=ON -DWITH_LIBMPV=OFF -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=ON -DWITH_LCMS2=ON -DWITH_FREEIMAGE=OFF -DWITH_KF6SYNTAXHIGHLIGHT=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_QTMULTIMEDIA=ON -DWITH_LIBMPV=OFF -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=ON -DWITH_LCMS2=ON -DWITH_KF6SYNTAXHIGHLIGHT=ON -DWITH_LIBREOFFICE=ON -DWITH_LIBSAI=ON
     - make DESTDIR=../appdir -j$(nproc) install
     - cd ..
     - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
@@ -95,15 +112,12 @@ releaseappimage:
     - ./linuxdeploy-plugin-qt-x86_64.AppImage --appimage-extract
     - ./linuxdeploy-x86_64.AppImage --appimage-extract
     - rm ./linuxdeploy-plugin-qt-x86_64.AppImage
-    - cp /usr/bin/qmake6 /usr/bin/qmake # This file is needed for the next run to succeed
-    - export EXTRA_PLATFORM_PLUGINS=libqwayland-generic.so
+    - export EXTRA_PLATFORM_PLUGINS=libqwayland.so
     - export EXTRA_QT_MODULES="waylandcompositor;svg"
     - export DEPLOY_PLATFORM_THEMES=1
     - LD_LIBRARY_PATH=appdir/usr/lib QML_SOURCES_PATHS=./qml ./squashfs-root/AppRun --appdir ./appdir/ --plugin=qt --output appimage
-    - mv ./PreviewQt*.AppImage PreviewQt-latesttag.AppImage
+    - mv ./PreviewQt*.AppImage PreviewQt-nightly-noble.AppImage
 
   artifacts:
     paths:
-      - PreviewQt-latesttag.AppImage
-
-
+      - PreviewQt-nightly-noble.AppImage
