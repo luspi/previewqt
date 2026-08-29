@@ -96,9 +96,13 @@ int main(int argc, char *argv[]) {
 
 #ifdef PQMLIBREOFFICE
     // This makes sure PreviewQt find the necessary libreoffice dlls
+    QString pth = qgetenv("LibreOffice_LOPATH");
+    if(pth.isNull() || pth == "") {
+        pth = "C:\\Program Files\\LibreOffice\\program";
+        qputenv("LibreOffice_LOPATH", pth.toLocal8Bit());
+    }
     SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_USER_DIRS);
-    AddDllDirectory(QString("%1%2").arg(basePath, "\\LibreOffice\\program").toStdWString().c_str());
-    qputenv("LibreOffice_LOPATH", QString("%1%2").arg(basePath, "\\LibreOffice\\program").toLocal8Bit());
+    AddDllDirectory(pth.toStdWString().c_str());
 #endif
 
     // This allows for semi-transparent windows
