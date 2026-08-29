@@ -33,39 +33,83 @@
 #include <vips/vips.h>
 #endif
 
+#ifdef PQMLIBVIPS
+bool hasLoaderForExtension(const QString suffix, const QSet<QString> &supported) {
+    return supported.contains("."%suffix);
+}
+bool hasSaverForExtension(const QString suffix) {
+    return (vips_foreign_find_save(QString("randtest.%1").arg(suffix).toStdString().c_str()) != nullptr);
+}
+#endif
+
 PQCFilePluginLibVips::PQCFilePluginLibVips() {
 
-    setData({
-            {12444,
-                 {{"FITS: Flexible Image Transport System"}, {"fits","fit","fts"}, {"image/fits"}}},
-            {52412,
-                 {{"GIF: Graphics Interchange Format"}, {"gif"}, {"image/gif"}}},
-            {11113,
-                 {{"HDR: Radiance RGBE image format"}, {"rgbe","hdr","rad"}, {""}}},
-            {22226,
-                 {{"HEIF: High Efficiency Image Format"}, {"heif","heic"}, {"image/heic","image/heif"}}},
-            {13245,
-                 {{"JPEG-2000"}, {"jpeg2000","j2k","jp2","jpc","jpx"}, {"image/jp2","image/jpx","image/jpm"}}},
-            {11485,
-                 {{"JPEG: Joint Photographic Experts Group JFIF format"}, {"jpeg","jpg","jpe","jif"}, {"image/jpeg"}}},
-            {74586,
-                 {{"OpenEXR"}, {"exr"}, {"image/x-exr"}}},
-            {16685,
-                 {{"PBM: Portable bitmap format (black and white)"}, {"pbm"}, {"image/x-portable-anymap"}}},
-            {85444,
-                 {{"PGM: Portable graymap format (gray scale)"}, {"pgm"}, {"image/x-portable-greymap","image/x-portable-anymap"}}},
-            {46215,
-                 {{"PNG: Portable Network Graphics"}, {"png"}, {"image/png"}}},
-            {77521,
-                 {{"PPM: Portable pixmap format (color)"}, {"ppm","pnm"}, {"image/x-portable-pixmap","image/x-portable-anymap"}}},
-            {44444,
-                 {{"Portable Float Map"}, {"pfm"}, {""}}},
-            {26112,
-                 {{"SVG: Scalable Vector Graphics"}, {"svg","svgz"}, {"image/svg+xml"}}},
-            {44462,
-                 {{"TIFF: Tagged Image File Format"}, {"tiff","tif"}, {"image/tiff","image/tiff-fx"}}},
-            {28282,
-                 {{"WEBP: Google web image format"}, {"webp"}, {"image/webp"}}}});
+#ifdef PQMLIBVIPS
+
+    const QHash<int, QList<QStringList > > candidateData = {
+        {12444,
+             {{"FITS: Flexible Image Transport System"}, {"fits","fit","fts"}, {"image/fits"}}},
+        {52412,
+             {{"GIF: Graphics Interchange Format"}, {"gif"}, {"image/gif"}}},
+        {11113,
+             {{"HDR: Radiance RGBE image format"}, {"rgbe","hdr","rad"}, {""}}},
+        {22226,
+             {{"HEIF: High Efficiency Image Format"}, {"heif","heic"}, {"image/heic","image/heif"}}},
+        {13245,
+             {{"JPEG-2000"}, {"jpeg2000","j2k","jp2","jpc","jpx"}, {"image/jp2","image/jpx","image/jpm"}}},
+        {11485,
+             {{"JPEG: Joint Photographic Experts Group JFIF format"}, {"jpeg","jpg","jpe","jif"}, {"image/jpeg"}}},
+        {74586,
+             {{"OpenEXR"}, {"exr"}, {"image/x-exr"}}},
+        {16685,
+             {{"PBM: Portable bitmap format (black and white)"}, {"pbm"}, {"image/x-portable-anymap"}}},
+        {85444,
+             {{"PGM: Portable graymap format (gray scale)"}, {"pgm"}, {"image/x-portable-greymap","image/x-portable-anymap"}}},
+        {46215,
+             {{"PNG: Portable Network Graphics"}, {"png"}, {"image/png"}}},
+        {77521,
+             {{"PPM: Portable pixmap format (color)"}, {"ppm","pnm"}, {"image/x-portable-pixmap","image/x-portable-anymap"}}},
+        {44444,
+             {{"Portable Float Map"}, {"pfm"}, {""}}},
+        {26112,
+             {{"SVG: Scalable Vector Graphics"}, {"svg","svgz"}, {"image/svg+xml"}}},
+        {44462,
+             {{"TIFF: Tagged Image File Format"}, {"tiff","tif"}, {"image/tiff","image/tiff-fx"}}},
+        {28282,
+             {{"WEBP: Google web image format"}, {"webp"}, {"image/webp"}}},
+        {44412,
+             {{"VIPS image"}, {"vips","v"}, {""}}},
+        {66696,
+             {{"AVIF: AV1 Image File Format"}, {"avif","avifs"}, {"image/avif","image/avif-sequence"}}},
+        {34567,
+             {{"JPEG XL"}, {"jxl"}, {"image/jxl"}}}
+    };
+
+    QSet<QString> supportedFormats;
+    supportedFormats.reserve(50);
+    char **suffixes = vips_foreign_get_suffixes();
+    for(char **p = suffixes; *p; ++p)
+        supportedFormats.insert(*p);
+    g_strfreev(suffixes);
+
+    QHash<int,QList<QStringList > > finalData;
+
+    for(const auto &[key, value] : std::as_const(candidateData).asKeyValueRange()) {
+
+        const QStringList allS = value.at(1);
+        bool canLoad = false;
+        for(const QString &s : allS) {
+            if(!canLoad && hasLoaderForExtension(s, supportedFormats))
+                canLoad = true;
+        }
+
+        if(canLoad) finalData.insert(key, value);
+
+    }
+
+    setData(finalData);
+
+#endif
 
 }
 
