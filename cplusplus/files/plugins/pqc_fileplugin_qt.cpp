@@ -35,7 +35,8 @@
 
 PQCFilePluginQt::PQCFilePluginQt() {
 
-    setData({{53218,
+    setData({
+             {53218,
                     {{"Animated Windows cursors"}, {"ani"}, {"application/x-navi-animation"}}},
              {66696,
                     {{"AVIF: AV1 Image File Format"}, {"avif", "avifs"}, {"image/avif", "image/avif-sequence"}}},
@@ -112,7 +113,7 @@ PQCFilePluginQt::PQCFilePluginQt() {
              {26112,
                     {{"SVG: Scalable Vector Graphics"}, {"svg", "svgz"}, {"image/svg+xml"}}},
              {85621,
-                    {{"TGA: Truevision Targa image"}, {"tga", "icb", "vda", "vst"}, {"image/x-targa", "image/x-tga"}}},
+                    {{"TGA: Truevision Targa image"}, {"tga", "icb", "vda"}, {"image/x-targa", "image/x-tga"}}},
              {44462,
                     {{"TIFF: Tagged Image File Format"}, {"tiff", "tif"}, {"image/tiff", "image/tiff-fx"}}},
              {12788,

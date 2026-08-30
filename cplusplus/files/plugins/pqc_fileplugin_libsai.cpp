@@ -33,7 +33,10 @@
 PQCFilePluginLibsai::PQCFilePluginLibsai() {
 
 #ifdef PQMLIBSAI
-    setData({{63535, {{"PaintTool Sai"}, {"sai"}, {}}}});
+    setData({
+        {63535,
+            {{"PaintTool Sai"}, {"sai"}, {}}}
+        });
 #endif
 
 }
