@@ -168,7 +168,13 @@ const QImage PQCFilePluginOpenSlide::loadImage(QString path, QSize requestedSize
 
     // check whether we need to load the FULL resolution slide
     // or a downsampled version only
-    const QSize outputSize = (requestedSize.isEmpty() ? origSize : requestedSize);
+    QSize outputSize = (requestedSize.isEmpty() ? origSize : requestedSize);
+
+    // slides images can be VERY large and consume many many GB of memory
+    // thus we limit the output factor to a maximum of 8000x8000
+    const int maxDim = 8000;
+    if(outputSize.width() > maxDim || outputSize.height() > maxDim)
+        outputSize = outputSize.scaled(maxDim, maxDim, Qt::KeepAspectRatio);
 
     // get downsample factor
     // example: 100000x80000 -> 1000x800  =>  ~100x downsample
