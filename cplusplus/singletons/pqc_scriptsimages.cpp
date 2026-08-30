@@ -1171,8 +1171,19 @@ bool PQCScriptsImages::isTextDocument(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    const QSet<QString> suffixes = PQCFileHandler::get().getSuffixes("text");
+    QSet<QString> excludeSuffixes;
+#ifdef PQMOPENSLIDE
+    excludeSuffixes << "vms";
+#endif
+
     QFileInfo info(path);
+
+    // some formats are detected as text but are actually images
+    const QString suf = info.suffix().toLower();
+    if(excludeSuffixes.contains(suf))
+        return false;
+
+    const QSet<QString> suffixes = PQCFileHandler::get().getSuffixes("text");
     if(suffixes.contains(info.suffix().toLower()) || suffixes.contains(info.completeSuffix().toLower()))
         return true;
 
