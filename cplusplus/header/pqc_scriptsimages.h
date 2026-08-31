@@ -59,6 +59,7 @@ public:
     bool isLocalURL(QString url);
     bool isAudio(QString path);
     bool isPackage(QString path);
+    bool isMuseScore(QString path);
 
     QString findCoverImageNextToFile(QString path);
 

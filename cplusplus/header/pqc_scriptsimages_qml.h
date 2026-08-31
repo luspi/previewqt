@@ -106,6 +106,10 @@ public:
         return PQCScriptsImages::get().isPackage(path);
     }
 
+    Q_INVOKABLE bool isMuseScore(QString path) {
+        return PQCScriptsImages::get().isMuseScore(path);
+    }
+
     Q_INVOKABLE QString findCoverImageNextToFile(QString path) {
         return PQCScriptsImages::get().findCoverImageNextToFile(path);
     }

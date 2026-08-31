@@ -43,6 +43,8 @@ public:
     void ytdlpRequestStreamURL(QString url);
     void ytdlpRequestStreamTitle(QString url);
 
+    void extractMuseScore(QString path);
+    int getMuseScoreCurrentPageCount();
 
 private:
     PQCScriptsExternalTools();
@@ -51,11 +53,17 @@ private:
     QProcess *m_ytdlpStreamProc;
     QProcess *m_ytdlpStreamTitleProc;
 
+    QProcess *musescoreProcess;
+    QString musescoreCommand;
+    QString musescoreTempDir;
+
 Q_SIGNALS:
     void ytdlpReceivedStreamSupported(bool supp);
     void ytdlpReceivedStreamURL(QString url);
     void ytdlpReceivedStreamTitle(QString title);
     void ytdlpReceivedStreamError(QString err);
     void ytdlpFinished();
+
+    void musescoreTemporaryDirLoaded(QString dir);
 
 };

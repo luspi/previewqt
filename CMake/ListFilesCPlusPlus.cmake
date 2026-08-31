@@ -28,6 +28,7 @@ SET(previewqt_SRC cplusplus/main.cpp
                   cplusplus/files/plugins/pqc_fileplugin_libreoffice.cpp
                   cplusplus/files/plugins/pqc_fileplugin_package.cpp
                   cplusplus/files/plugins/pqc_fileplugin_openslide.cpp
+                  cplusplus/files/plugins/pqc_fileplugin_musescore.cpp
 
                   cplusplus/files/pqc_filehandler.cpp
                   cplusplus/files/pqc_imageproviderfull.cpp
@@ -78,6 +79,7 @@ SET(previewqt_SRC cplusplus/main.cpp
                   cplusplus/header/fileplugins/pqc_fileplugin_libreoffice.h
                   cplusplus/header/fileplugins/pqc_fileplugin_package.h
                   cplusplus/header/fileplugins/pqc_fileplugin_openslide.h
+                  cplusplus/header/fileplugins/pqc_fileplugin_musescore.h
 )
 
 if(WITH_LIBMPV)

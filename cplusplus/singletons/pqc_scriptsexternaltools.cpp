@@ -80,6 +80,10 @@ PQCScriptsExternalTools::PQCScriptsExternalTools() {
     /************************************************************/
     /************************************************************/
 
+    musescoreProcess = new QProcess;
+    musescoreCommand = "";
+    musescoreTempDir = "";
+
 }
 
 PQCScriptsExternalTools::~PQCScriptsExternalTools() {
@@ -162,4 +166,89 @@ void PQCScriptsExternalTools::ytdlpRequestStreamTitle(QString url) {
 
     m_ytdlpStreamTitleProc->start(PQCSettingsCPP::get().getExecutableYtDlp(), {"--simulate", "--print", "%(title)s", url});
 
+}
+
+void PQCScriptsExternalTools::extractMuseScore(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    if(musescoreCommand == "") {
+
+#ifdef Q_OS_WIN
+
+        // check for executable in PATH
+        QProcess which;
+        which.setStandardOutputFile(QProcess::nullDevice());
+        which.start("C:/Program Files/MuseScore 4/mscore.exe", {"--version"});
+        if(!which.waitForStarted()) {
+            qDebug() << "mscore not found";
+            return;
+        } else {
+            musescoreCommand = "system";
+        }
+
+#else
+
+        // check for executable in PATH
+        QProcess which;
+        which.setStandardOutputFile(QProcess::nullDevice());
+        which.start("mscore", {"--version"});
+        if(!which.waitForStarted()) {
+            qDebug() << "mscore not found, trying flatpak";
+        } else {
+            musescoreCommand = "system";
+        }
+
+        if(musescoreCommand == "") {
+
+            QProcess which2;
+            which2.setStandardOutputFile(QProcess::nullDevice());
+            which2.start("flatpak", {"run", "org.musescore.MuseScore", "--version"});
+            if(!which2.waitForStarted()) {
+                qDebug() << "mscore flatpak not found";
+            } else {
+                if(!which2.waitForFinished())
+                    qDebug() << "mscore flatpak exited abnormally";
+                musescoreCommand = "flatpak";
+            }
+
+        }
+
+#endif
+
+    }
+
+    qDebug() << "using musescoreCommand =" << musescoreCommand;
+
+    if(musescoreCommand == "") {
+        Q_EMIT musescoreTemporaryDirLoaded("");
+        return;
+    }
+
+    delete musescoreProcess;
+    musescoreProcess = new QProcess;
+    musescoreProcess->setStandardOutputFile(QProcess::nullDevice());
+
+    connect(musescoreProcess, &QProcess::finished, this, [this]() {
+        Q_EMIT musescoreTemporaryDirLoaded(musescoreTempDir);
+    });
+
+    if(musescoreTempDir.startsWith(PQCConfigFiles::get().CACHE_DIR() % "/mscz-"))
+        QDir(musescoreTempDir).removeRecursively();
+    musescoreTempDir = PQCConfigFiles::get().CACHE_DIR() % "/mscz-" % QString::number(QDateTime::currentSecsSinceEpoch());
+    QDir(musescoreTempDir).mkdir(musescoreTempDir);
+
+#ifdef Q_OS_WIN
+    musescoreProcess->start("C:/Program Files/MuseScore 4/mscore.exe", {"--export-to", musescoreTempDir % "/"%"page.svg", path});
+#else
+    if(musescoreCommand == "system")
+        musescoreProcess->start("mscore", {"--export-to", musescoreTempDir % "/"%"page.svg", path});
+    else if(musescoreCommand == "flatpak")
+        musescoreProcess->start("flatpak", {"run", "org.musescore.MuseScore", "--export-to", musescoreTempDir % "/" % "page.svg", path});
+#endif
+
+}
+
+int PQCScriptsExternalTools::getMuseScoreCurrentPageCount() {
+    return QDir(musescoreTempDir).entryList({"*.svg"}, QDir::Files).count();
 }

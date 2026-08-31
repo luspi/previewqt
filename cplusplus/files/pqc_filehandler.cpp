@@ -38,6 +38,7 @@
 #include <fileplugins/pqc_fileplugin_libreoffice.h>
 #include <fileplugins/pqc_fileplugin_package.h>
 #include <fileplugins/pqc_fileplugin_openslide.h>
+#include <fileplugins/pqc_fileplugin_musescore.h>
 
 #include <fileplugins/pqc_fileplugin_audio.h>
 #include <fileplugins/pqc_fileplugin_text.h>
@@ -82,11 +83,12 @@ PQCFileHandler::PQCFileHandler() {
         << "devil"
 #endif
 #ifdef PQMQTMULTIMEDIA
-           << "video"
+        << "video"
 #endif
 #ifdef PQMLIBMPV
-           << "libmpv"
+        << "libmpv"
 #endif
+        << "musescore"
     ;
 
     m_pluginOrder = m_imagePluginOrder;
@@ -150,6 +152,7 @@ PQCFileHandler::PQCFileHandler() {
 #ifdef PQMOPENSLIDE
     m_plugins.insert("openslide", new PQCFilePluginOpenSlide);
 #endif
+    m_plugins.insert("musescore", new PQCFilePluginMuseScore);
 
     /*******************************************************/
 

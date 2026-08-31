@@ -17,6 +17,7 @@ set(previewqt_QML qml/PQMainWindow.qml
                   qml/components/imageitems/PQTxt.qml
                   qml/components/imageitems/PQURL.qml
                   qml/components/imageitems/PQPackage.qml
+                  qml/components/imageitems/PQMuseScore.qml
 
                   qml/windows/PQAbout.qml
                   qml/windows/PQHelp.qml

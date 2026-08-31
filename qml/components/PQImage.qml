@@ -212,6 +212,9 @@ Item {
         } else if(PQCScriptsImages.isPackage(PQCConstants.currentSource)) {
             PQCConstants.currentType = "pak"
             imageloader.sourceComponent = comp_pak
+        } else if(PQCScriptsImages.isMuseScore(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "msc"
+            imageloader.sourceComponent = comp_mscz
         } else {
             PQCConstants.currentType = "img"
             imageloader.sourceComponent = comp_img
@@ -312,6 +315,11 @@ Item {
     Component {
         id: comp_pak
         PQPackage {}
+    }
+
+    Component {
+        id: comp_mscz
+        PQMuseScore {}
     }
 
     // LOADING indicator

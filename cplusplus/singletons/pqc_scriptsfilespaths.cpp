@@ -368,6 +368,17 @@ void PQCScriptsFilesPaths::deleteTemporaryFiles() {
     QDir dir2(PQCConfigFiles::get().CACHE_DIR() % "/motionphotos");
     dir2.removeRecursively();
 
+    QDir dir3(PQCConfigFiles::get().CACHE_DIR());
+    const QFileInfoList folders = dir3.entryInfoList({"mscz-*"}, QDir::Dirs|QDir::NoDotAndDotDot);
+    for(const QFileInfo &folder : folders)
+        QDir(folder.absoluteFilePath()).removeRecursively();
+
+    QDir dir4(PQCConfigFiles::get().CACHE_DIR() % "/epub");
+    dir4.removeRecursively();
+
+    QFile::remove(PQCConfigFiles::get().CACHE_DIR() % "/coverimage.jpg");
+    QFile::remove(PQCConfigFiles::get().CACHE_DIR() % "/tmpfile.jpg");
+
 }
 
 void PQCScriptsFilesPaths::copyTextToClipboard(QString txt) {

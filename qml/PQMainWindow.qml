@@ -390,6 +390,8 @@ ApplicationWindow {
                     PQCNotify.loadNewFile("%1::ARC::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
                 else if(PQCScriptsImages.isPDFDocument(path))
                     PQCNotify.loadNewFile("%1::PDF::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
+                else if(PQCScriptsImages.isMuseScore(path))
+                    PQCNotify.loadNewFile("%1::MSC::%2".arg(inside).arg(PQCScriptsFilesPaths.cleanPath(path)))
                 else
                     PQCNotify.loadNewFile(PQCScriptsFilesPaths.cleanPath(msg))
             }
@@ -564,6 +566,8 @@ ApplicationWindow {
                         PQCNotify.loadNewFile("%1::PDF::%2".arg(fileInside).arg(path))
                     else if(PQCScriptsImages.isArchive(path))
                         PQCNotify.loadNewFile("%1::ARC::%2".arg(fileInside).arg(path))
+                    else if(PQCScriptsImages.isMuseScore(path))
+                        PQCNotify.loadNewFile("%1::MSC::%2".arg(fileInside).arg(path))
                     else
                         PQCNotify.loadNewFile(path)
                 } else
