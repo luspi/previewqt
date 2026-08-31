@@ -52,6 +52,7 @@ Item {
                 source = ""
                 return
             }
+            error.visible = false
             if(PQCConstants.currentSource.includes("::MSC::"))
                 PQCScriptsExternalTools.extractMuseScore(PQCConstants.currentSource.split("::MSC::")[1])
             else
@@ -61,9 +62,11 @@ Item {
         Connections {
             target: PQCScriptsExternalTools
             function onMusescoreTemporaryDirLoaded(dir) {
-                console.warn(">>> dir =", dir)
                 if(dir === "") {
                     source = ""
+                    PQCConstants.imageStatus = Image.Ready
+                    error.text = "ERROR: Music score could not be loaded with MuseScore."
+                    error.visible = true
                     return
                 }
                 msc_top.useDirectory = dir
@@ -75,13 +78,6 @@ Item {
                     msc_top.currentPage = 1
                     imageitem.source = "image://full/" + dir + "/" + PQCScriptsFilesPaths.toPercentEncoding("page-1.svg")
                 }
-            }
-        }
-        Timer {
-            id: loadScore
-            interval: 200
-            onTriggered: {
-
             }
         }
 
@@ -108,6 +104,18 @@ Item {
                 asynchronous = false
         }
 
+    }
+
+    Text {
+        id: error
+        width: parent.width
+        y: 50
+        horizontalAlignment: Text.AlignHCenter
+        color: "red"
+        font.pointSize: 14
+        font.bold: true
+        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        text: "ERROR"
     }
 
     property int currentPage: 0

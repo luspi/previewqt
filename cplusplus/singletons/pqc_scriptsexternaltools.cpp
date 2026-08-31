@@ -24,6 +24,7 @@
 
 #include <QProcess>
 #include <QtDebug>
+#include <QMessageBox>
 
 PQCScriptsExternalTools::PQCScriptsExternalTools() {
 
@@ -221,6 +222,7 @@ void PQCScriptsExternalTools::extractMuseScore(QString path) {
     qDebug() << "using musescoreCommand =" << musescoreCommand;
 
     if(musescoreCommand == "") {
+        QMessageBox::warning(nullptr, "MuseScore not found", "MuseScore was not found. If it is installed, however, then you might need to specify the path where it can be found in the settings.");
         Q_EMIT musescoreTemporaryDirLoaded("");
         return;
     }
