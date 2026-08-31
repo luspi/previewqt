@@ -60,6 +60,10 @@
 #include <exiv2/exiv2.hpp>
 #endif
 
+#ifdef PQMOPENSLIDE
+#include <openslide/openslide.h>
+#endif
+
 PQCScriptsConfig::PQCScriptsConfig() {
     m_qmlEngine = nullptr;
     m_debug = false;
@@ -139,6 +143,14 @@ QString PQCScriptsConfig::getConfigInfo(bool formatHTML) {
 
 #ifdef PQMQTMULTIMEDIA
     txt += " - " % bold1 % "Multimedia" % bold2 % " through Qt" % nl;
+#endif
+
+#ifdef PQMLIBREOFFICE
+    txt += " - " % bold1 % "LibreOffice" % bold2 % nl;
+#endif
+
+#ifdef PQMOPENSLIDE
+    txt += " - " % bold1 % "OpenSlide" % bold2 % ": " % openslide_get_version() % nl;
 #endif
 
 #ifdef PQMLIBMPV
