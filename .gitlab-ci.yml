@@ -30,7 +30,7 @@ appimageJammy:
     - wget -qO - http://archive.neon.kde.org/public.key | apt-key add -
     - apt-get update -qq && apt-get -y upgrade
     - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev libqt6chartsqml6 qml6-module-qt-labs-platform qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-window qt6-multimedia-dev qml6-module-qtqml-workerscript qml6-module-qtquick-templates qml6-module-qtquick-dialogs qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-pdf-dev qml6-module-org-kde-syntaxhighlighting
-    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-6
+    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-6 libopenslide-dev
     # Install up-to-date ImageMagick
     - git clone https://github.com/ImageMagick/ImageMagick
     - cd ImageMagick
@@ -50,7 +50,7 @@ appimageJammy:
     - git clone -b l10n_main https://gitlab.com/lspies/previewqt-lang
     - mv previewqt-lang/localized lang
     - mkdir -p build && cd build/
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_QTMULTIMEDIA=ON -DWITH_LIBMPV=OFF -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=ON -DWITH_LCMS2=ON -DWITH_KF6SYNTAXHIGHLIGHT=ON -DWITH_LIBREOFFICE=OFF -DWITH_LIBSAI=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_QTMULTIMEDIA=ON -DWITH_LIBMPV=OFF -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=ON -DWITH_LCMS2=ON -DWITH_KF6SYNTAXHIGHLIGHT=ON -DWITH_LIBREOFFICE=OFF -DWITH_LIBSAI=ON -DWITH_OPENSLIDE=ON
     - make DESTDIR=../appdir -j$(nproc) install
     - cd ..
     - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
@@ -84,7 +84,7 @@ appimageNoble:
     - wget -qO - http://archive.neon.kde.org/public.key | apt-key add -
     - apt-get update -qq && apt-get -y upgrade
     - apt-get -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev libqt6chartsqml6 qml6-module-qt-labs-platform qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-window qt6-multimedia-dev qml6-module-qtqml-workerscript qml6-module-qtquick-templates qml6-module-qtquick-dialogs qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-pdf-dev qml6-module-org-kde-syntaxhighlighting
-    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-7 libreofficekit-dev libreoffice-base-core
+    - apt-get -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-7 libreofficekit-dev libreoffice-base-core libopenslide-dev
     # Install up-to-date ImageMagick
     - git clone https://github.com/ImageMagick/ImageMagick
     - cd ImageMagick
@@ -103,7 +103,7 @@ appimageNoble:
     - git clone -b l10n_main https://gitlab.com/lspies/previewqt-lang
     - mv previewqt-lang/localized lang
     - mkdir -p build && cd build/
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_QTMULTIMEDIA=ON -DWITH_LIBMPV=OFF -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=ON -DWITH_LCMS2=ON -DWITH_KF6SYNTAXHIGHLIGHT=ON -DWITH_LIBREOFFICE=ON -DWITH_LIBSAI=ON
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_EXIV2=ON -DWITH_GRAPHICSMAGICK=OFF -DWITH_IMAGEMAGICK=ON -DWITH_QTMULTIMEDIA=ON -DWITH_LIBMPV=OFF -DWITH_LIBVIPS=ON -DWITH_POPPLER=OFF -DWITH_EXIV2_ENABLE_BMFF=ON -DWITH_RESVG=OFF -DWITH_MOTIONPHOTO=ON -DWITH_LCMS2=ON -DWITH_KF6SYNTAXHIGHLIGHT=ON -DWITH_LIBREOFFICE=ON -DWITH_LIBSAI=ON -DWITH_OPENSLIDE=ON
     - make DESTDIR=../appdir -j$(nproc) install
     - cd ..
     - wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
