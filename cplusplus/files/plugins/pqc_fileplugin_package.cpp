@@ -28,16 +28,26 @@
 #include <QXmlStreamReader>
 #endif
 
+#ifdef PQMLIBAPPIMAGE
+#include <appimage/core/AppImage.h>
+#include <appimage/core/PayloadIterator.h>
+#include <appimage/utils/ResourcesExtractor.h>
+#endif
+
 using namespace Qt::StringLiterals;
 
 PQCFilePluginPackage::PQCFilePluginPackage() {
 
-#ifdef PQMLIBARCHIVE
     setData({
+#ifdef PQMLIBARCHIVE
         {88877,	{{"Debian package"}, {"deb"}, {"application/vnd.debian.binary-package"}}},
-        {88876, {{"RPM package"}, {"rpm"}, {""}}}});
-
+        {88876, {{"RPM package"}, {"rpm"}, {""}}},
 #endif
+#ifdef PQMLIBAPPIMAGE
+        {12548, {{"AppImage file"}, {"appimage"}, {""}}},
+#endif
+    });
+
 
 }
 
@@ -49,6 +59,8 @@ const QVariantList PQCFilePluginPackage::loadData(QString path) {
         return getDebianData(path);
     } else if(suffix == "rpm") {
         return getRPMData(path);
+    } else if(suffix == "appimage") {
+        return getAppImageData(path);
     }
 
     return {false, "Unknown file"};
@@ -370,21 +382,98 @@ QVariantList PQCFilePluginPackage::getRPMData(QString path) {
 
     }
 
+    return parseMetaInfo(metainfoData);
+
+#endif
+
+    return {};
+
+}
+
+QVariantList PQCFilePluginPackage::getAppImageData(QString path) {
+
+#ifdef PQMLIBAPPIMAGE
+
+    appimage::core::AppImage appImage(path.toStdString());
+
+    // first find the metainfo files present
+    // we also (while we're at it) look for the desktop files
+    // as multiple metainfo files might be present but only one desktop file should be
+    // this allows us to detect the authoritative metainfo file if necessary
+    QStringList metainfoFiles, desktopFiles;
+    auto files = appImage.files();
+    const std::string prefixMetainfo = "usr/share/metainfo/";
+    const std::string prefixDesktop = "usr/share/applications/";
+    for(const std::string &path : files) {
+        if(path.rfind(prefixMetainfo, 0) == 0)
+            metainfoFiles.append(QString::fromStdString(path));
+        else if(path.rfind(prefixDesktop, 0) == 0)
+            desktopFiles.append(QString::fromStdString(path));
+    }
+
+    if(metainfoFiles.length() == 0) {
+
+        // no metainfo.xml file -> not much we can do
+
+        const QString msg = "No metainfo.xml files found, unable to find out anything about this AppImage";
+        qWarning() << msg;
+        return {false, msg};
+
+    } else if(metainfoFiles.length() == 1 || desktopFiles.length() == 0) {
+
+        // exactly one metainfo.xml file, or no .desktop files -> use first metainfo.xml file in list
+
+        appimage::utils::ResourcesExtractor extractor(appImage);
+        const auto data = extractor.extract(metainfoFiles.first().toStdString());
+        QByteArray dat(data.data(), data.size());
+        return parseMetaInfo(dat);
+
+    } else {
+
+        // multiple metainfo.xml files -> check whether one of them matches the pattern of the .desktop file (if only one found)
+        // otherwise we use simply the first one in the list of metainfo.xml files
+
+        QString xmlFilename = desktopFiles.first();
+        // 23 == prefixDesktop.length()
+        // 8 == ".desktop".length()
+        xmlFilename = "usr/share/metainfo/" % xmlFilename.sliced(23, xmlFilename.length()-23-8) % ".metainfo.xml";
+        QString toParse = metainfoFiles.first();
+        if(metainfoFiles.contains(xmlFilename))
+            toParse = xmlFilename;
+
+        appimage::utils::ResourcesExtractor extractor(appImage);
+        const auto data = extractor.extract(toParse.toStdString());
+        QByteArray dat(data.data(), data.size());
+        return parseMetaInfo(dat);
+
+    }
+
+#endif
+
+    const QString msg = "AppImage support wasn't enabled at compile time.";
+    qWarning() << msg;
+    return {false, msg};
+
+}
+
+QVariantList PQCFilePluginPackage::parseMetaInfo(QString content) {
+
     QVariantMap data = {{"name", ""},
                         {"license", ""},
                         {"version",""},
                         {"releaseDate", ""},
                         {"author", ""},
                         {"homepage", ""},
-                        {"description", ""},
                         {"keywords", ""},
-                        {"id", ""}};
+                        {"id", ""},
+                        {"summary", ""},
+                        {"description", ""}};
 
     bool insideDeveloper = false;
 
     QStringList keywords;
 
-    QXmlStreamReader xmlReader(metainfoData);
+    QXmlStreamReader xmlReader(content);
     while(!xmlReader.atEnd() && !xmlReader.hasError()) {
         QXmlStreamReader::TokenType token = xmlReader.readNext();
         if(token == QXmlStreamReader::StartElement) {
@@ -399,6 +488,8 @@ QVariantList PQCFilePluginPackage::getRPMData(QString path) {
             } else if(xmlReader.name() == "project_license"_L1)
                 data["license"] = xmlReader.readElementText(QXmlStreamReader::SkipChildElements);
             else if(xmlReader.name() == "summary"_L1)
+                data["summary"] = xmlReader.readElementText(QXmlStreamReader::SkipChildElements);
+            else if(xmlReader.name() == "description"_L1 && data["description"].toString().isEmpty())
                 data["description"] = xmlReader.readElementText(QXmlStreamReader::SkipChildElements);
             else if(xmlReader.name() == "url"_L1) {
                 const QString tpe = xmlReader.attributes().value("type").toString();
@@ -419,12 +510,14 @@ QVariantList PQCFilePluginPackage::getRPMData(QString path) {
         return {false, msg};
     }
 
+    // get the full description including any HTML tags
+    // this cannot be obtained through QXmlStreamReader (yet)
+    // if this check fails we stick to what (if anything) we found in the loop above
+    if(content.contains("<description>") && content.contains("</description>"))
+        data["description"] = content.split("<description>")[1].split("</description>")[0].trimmed();
+
     data["keywords"] = keywords.join(", ");
 
     return {true, data};
-
-#endif
-
-    return {};
 
 }

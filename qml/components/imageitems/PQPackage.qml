@@ -37,10 +37,11 @@ Rectangle {
 
     property bool isDEB: false
     property bool isRPM: false
+    property bool isAPPIMAGE: false
 
     property var currentData: ({})
 
-    property list<string> keysToDisplay: isDEB ? keysToDisplay_DEB : (isRPM ? keysToDisplay_RPM : [])
+    property list<string> keysToDisplay: isDEB ? keysToDisplay_DEB : (isRPM||isAPPIMAGE ? keysToDisplay_METAINFO : [])
 
     property list<string> keysToDisplay_DEB: [
         "name",
@@ -53,20 +54,22 @@ Rectangle {
         "depends"
     ]
 
-    property list<string> keysToDisplay_RPM: [
+    property list<string> keysToDisplay_METAINFO: [
         "name",
         "id",
-        "description",
+        "summary",
         "version",
         "releaseDate",
         "author",
         "homepage",
-        "keywords"
+        "keywords",
+        "description"
     ]
 
     property var keysToString: {
         "name" : "Name",
         "id" : "ID",
+        "summary" : "Summary",
         "description" : "Description",
         "version" : "Version",
         "section" : "Section",
@@ -117,9 +120,21 @@ Rectangle {
                     x: (parent.width-width)/2
                     width: parent.width
                     horizontalAlignment: Qt.AlignHCenter
-                    font.pointSize: 18
+                    font.pointSize: 16
                     font.bold: true
-                    text: package_top.isDEB ? "Debian installer package (*.deb)" : "RPM package (*.rpm)"
+                    text: package_top.isDEB
+                            ? "Debian installer package (*.deb)"
+                            : isRPM
+                                ? "RPM package (*.rpm)"
+                                : isAPPIMAGE
+                                    ? "AppImage"
+                                    : "unknown"
+                    color: palette.text
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
                     color: palette.text
                 }
 
@@ -152,7 +167,7 @@ Rectangle {
 
                         Text {
                             id: title
-                            font.pointSize: 14
+                            font.pointSize: deleg.key==="name" ? 13 : 11
                             font.bold: true
                             text: package_top.keysToString[deleg.key] + ":"
                             color: palette.text
@@ -166,8 +181,9 @@ Rectangle {
 
                         TextEdit {
                             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                            font.pointSize: deleg.key==="name" ? 16 : 14
+                            font.pointSize: deleg.key==="name" ? 13 : 11
                             readOnly: true
+                            textFormat: Text.RichText
                             font.bold: deleg.key==="name"
                             text: deleg.val
                             color: palette.text
@@ -196,6 +212,7 @@ Rectangle {
             console.warn(msg)
             error.text = msg
             error.visible = true
+            PQCConstants.imageStatus = Image.Ready
             return;
         }
 
@@ -204,6 +221,7 @@ Rectangle {
             console.warn(msg)
             error.text = msg
             error.visible = true
+            PQCConstants.imageStatus = Image.Ready
             return
         }
 
@@ -216,13 +234,29 @@ Rectangle {
             isDEB = true
         } else if(suf === "rpm") {
             isRPM  = true
+        } else if(suf === "appimage") {
+            isAPPIMAGE  = true
         } else {
             const msg = "ERROR: Unsupported file? Filename: " + PQCConstants.currentSource
             console.warn(msg)
             error.text = msg
             error.visible = true
+            PQCConstants.imageStatus = Image.Ready
             return
         }
+
+        var wToSet = PQCConstants.imagePaintedSize.width
+        var hToSet = PQCConstants.imagePaintedSize.height
+        var toUpd = false
+        if(wToSet < 1200) {
+            wToSet = 1200
+            toUpd = true
+        }
+        if(hToSet < 800) {
+            hToSet = 800
+            toUpd = true
+        }
+        if(toUpd) PQCNotify.updateWindowSize(wToSet, hToSet)
 
         PQCConstants.imageStatus = Image.Ready
 

@@ -41,5 +41,8 @@ public:
 private:
     QVariantList getDebianData(QString path);
     QVariantList getRPMData(QString path);
+    QVariantList getAppImageData(QString path);
+
+    QVariantList parseMetaInfo(QString content);
 
 };
