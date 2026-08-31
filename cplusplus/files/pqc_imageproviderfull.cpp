@@ -75,7 +75,7 @@ QImage PQCImageProviderFull::requestImage(const QString &url, QSize *origSize, c
 
         // get the sad face image
         QString err;
-        QImage sadface = PQCFileHandler::get().getImageWithPlugin("qt", ":/other/sadface.svg", QSize(128,128), *origSize, err);
+        QImage sadface = PQCFileHandler::get().getImageWithPlugin("qt", ":/errorimage.svg", QSize(128,128), *origSize, err);
 
         // start constructing
         QPainter painter(&img);
