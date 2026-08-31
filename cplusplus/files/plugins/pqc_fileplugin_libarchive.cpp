@@ -49,7 +49,7 @@ setData({
         {44556,
              {{"RAR file format"}, {"rar"}, {}}},
         {77889,
-             {{"TAR file format"}, {"tar"}, {}}},
+             {{"TAR file format"}, {"tar"}, {"application/x-compressed-tar"}}},
         {12213,
              {{"TAR file format (BZIP2)"}, {"tar.bz2","tb2","tbz","tbz2","tz2"}, {}}},
         {14473,

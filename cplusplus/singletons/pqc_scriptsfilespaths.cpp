@@ -161,12 +161,14 @@ bool PQCScriptsFilesPaths::isFileSupported(QString path) {
         return false;
     }
 
-    const QString suffix = QFileInfo(path).suffix().toLower();
-    if(PQCFileHandler::get().getSuffixes().contains(suffix)) {
+    const QString suffix1 = QFileInfo(path).suffix().toLower();
+    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+    const QSet<QString> allSuffixed = PQCFileHandler::get().getSuffixes();
+    if(allSuffixed.contains(suffix1) || allSuffixed.contains(suffix2)) {
         qDebug() << "Supported suffix detected.";
         return true;
     } else
-        qDebug() << "Unknown suffix:" << suffix;
+        qDebug() << "Unknown suffix:" << suffix1 << "/" << suffix2;
 
     QMimeDatabase db;
     const QString mimetype = db.mimeTypeForFile(path).name();
