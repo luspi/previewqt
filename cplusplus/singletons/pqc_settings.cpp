@@ -170,8 +170,8 @@ void PQCSettings::loadSettings() {
     m_launchHiddenToSystemTray = settings->value("launchHiddenToSystemTray", false).toBool();
     m_notifyNextLaunchHiddenToSystemTray = settings->value("notifyNextlaunchHiddenToSystemTray", true).toBool();
     m_maximizeImageSizeAndAdjustWindow = settings->value("maximizeImageSizeAndAdjustWindow", true).toBool();
-    m_defaultWindowWidth = settings->value("defaultWindowWidth", 500).toInt();
-    m_defaultWindowHeight = settings->value("defaultWindowHeight", 400).toInt();
+    m_defaultWindowWidth = settings->value("defaultWindowWidth", 800).toInt();
+    m_defaultWindowHeight = settings->value("defaultWindowHeight", 600).toInt();
     m_defaultWindowMaximized = settings->value("defaultWindowMaximized", false).toBool();
     m_defaultAppShortcut = settings->value("defaultAppShortcut", "E").toString();
     m_defaultAppImages = settings->value("defaultAppImages", opt_img[1]).toString();
