@@ -66,6 +66,10 @@ public:
     Q_PROPERTY(QString lastDownloadFolder MEMBER m_lastDownloadFolder NOTIFY lastDownloadFolderChanged)
     Q_PROPERTY(QString executableYtDlp MEMBER m_executableYtDlp NOTIFY executableYtDlpChanged)
     Q_PROPERTY(bool processUrlWithYtdlp MEMBER m_processUrlWithYtdlp NOTIFY processUrlWithYtdlpChanged)
+    Q_PROPERTY(bool customLibreOffice MEMBER m_customLibreOffice NOTIFY customLibreOfficeChanged)
+    Q_PROPERTY(QString customLibreOfficePath MEMBER m_customLibreOfficePath NOTIFY customLibreOfficePathChanged)
+    Q_PROPERTY(bool customMuseScore MEMBER m_customMuseScore NOTIFY customMuseScoreChanged)
+    Q_PROPERTY(QString customMuseScorePath MEMBER m_customMuseScorePath NOTIFY customMuseScorePathChanged)
 
     Q_INVOKABLE bool getFirstStart() { return firstStart; }
 
@@ -97,6 +101,10 @@ private:
     int m_textFontPointSize;
     bool m_textSearchCaseSensitive;
     bool m_processUrlWithYtdlp;
+    bool m_customLibreOffice;
+    QString m_customLibreOfficePath;
+    bool m_customMuseScore;
+    QString m_customMuseScorePath;
 
     QSettings *settings;
     QTimer *saveTimer;
@@ -153,5 +161,9 @@ Q_SIGNALS:
     void lastDownloadFolderChanged();
     void executableYtDlpChanged();
     void processUrlWithYtdlpChanged();
+    void customLibreOfficeChanged();
+    void customLibreOfficePathChanged();
+    void customMuseScoreChanged();
+    void customMuseScorePathChanged();
 
 };

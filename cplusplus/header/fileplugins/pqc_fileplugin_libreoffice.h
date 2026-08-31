@@ -46,4 +46,6 @@ private:
 
     QStringList m_suffixesWithNoFixedSize;
 
+    void resetLibreOffice();
+
 };

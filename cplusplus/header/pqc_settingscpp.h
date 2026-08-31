@@ -71,6 +71,11 @@ public:
 
     QString getExecutableYtDlp() { return m_executableYtDlp; }
 
+    bool getCustomLibreOffice() { return m_customLibreOffice; }
+    QString getCustomLibreOfficePath() { return m_customLibreOfficePath; }
+    bool getCustomMuseScore() { return m_customMuseScore; }
+    QString getCustomMuseScorePath() { return m_customMuseScorePath; }
+
 private:
     PQCSettingsCPP() {
 
@@ -152,10 +157,17 @@ private:
 
         m_lastDownloadFolder = settings->value("lastDownloadFolder", QDir::homePath()).toString();
 #ifdef Q_OS_WIN
-    m_executableYtDlp = settings->value("executableYtDlp", "C:/Program Files/ytdlp/ytdlp.exe").toString();
+        m_executableYtDlp = settings->value("executableYtDlp", "C:/Program Files/ytdlp/ytdlp.exe").toString();
 #else
-    m_executableYtDlp = settings->value("executableYtDlp", "yt-dlp").toString();
+        m_executableYtDlp = settings->value("executableYtDlp", "yt-dlp").toString();
 #endif
+
+        m_customLibreOffice = settings->value("customLibreOffice", false).toBool();
+        m_customLibreOfficePath = settings->value("customLibreOfficePath", "").toString();
+        m_customMuseScore = settings->value("customMuseScore", false).toBool();
+        m_customMuseScorePath = settings->value("customMuseScorePath", "").toString();
+
+        Q_EMIT settingsReloaded();
 
     }
 
@@ -176,6 +188,11 @@ private:
     QString m_defaultAppText;
     QString m_defaultAppUrl;
 
+    bool m_customLibreOffice;
+    QString m_customLibreOfficePath;
+    bool m_customMuseScore;
+    QString m_customMuseScorePath;
+
     bool m_closeAfterDefaultApp;
     QString m_lastDownloadFolder;
     QString m_executableYtDlp;
@@ -183,5 +200,6 @@ private:
 Q_SIGNALS:
     void versionChanged();
     void lastDownloadFolderChanged();
+    void settingsReloaded();
 
 };

@@ -173,7 +173,11 @@ void PQCScriptsExternalTools::extractMuseScore(QString path) {
 
     qDebug() << "args: path =" << path;
 
-    if(musescoreCommand == "") {
+    if(PQCSettingsCPP::get().getCustomMuseScore()) {
+
+        musescoreCommand = "::" % PQCSettingsCPP::get().getCustomMuseScorePath();
+
+    } else if(musescoreCommand == "" || musescoreCommand.startsWith("::")) {
 
 #ifdef Q_OS_WIN
 
@@ -214,9 +218,7 @@ void PQCScriptsExternalTools::extractMuseScore(QString path) {
             }
 
         }
-
 #endif
-
     }
 
     qDebug() << "using musescoreCommand =" << musescoreCommand;
@@ -240,14 +242,22 @@ void PQCScriptsExternalTools::extractMuseScore(QString path) {
     musescoreTempDir = PQCConfigFiles::get().CACHE_DIR() % "/mscz-" % QString::number(QDateTime::currentSecsSinceEpoch());
     QDir(musescoreTempDir).mkdir(musescoreTempDir);
 
+    if(musescoreCommand.startsWith("::")) {
+
+        musescoreProcess->start(musescoreCommand.sliced(2), {"--export-to", musescoreTempDir % "/"%"page.svg", path});
+
+    } else {
+
 #ifdef Q_OS_WIN
-    musescoreProcess->start("C:/Program Files/MuseScore 4/mscore.exe", {"--export-to", musescoreTempDir % "/"%"page.svg", path});
+        musescoreProcess->start("C:/Program Files/MuseScore 4/mscore.exe", {"--export-to", musescoreTempDir % "/"%"page.svg", path});
 #else
-    if(musescoreCommand == "system")
-        musescoreProcess->start("mscore", {"--export-to", musescoreTempDir % "/"%"page.svg", path});
-    else if(musescoreCommand == "flatpak")
-        musescoreProcess->start("flatpak", {"run", "org.musescore.MuseScore", "--export-to", musescoreTempDir % "/" % "page.svg", path});
+        if(musescoreCommand == "system")
+            musescoreProcess->start("mscore", {"--export-to", musescoreTempDir % "/"%"page.svg", path});
+        else if(musescoreCommand == "flatpak")
+            musescoreProcess->start("flatpak", {"run", "org.musescore.MuseScore", "--export-to", musescoreTempDir % "/" % "page.svg", path});
 #endif
+
+    }
 
 }
 

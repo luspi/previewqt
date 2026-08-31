@@ -86,7 +86,7 @@ Window {
                 settings_top.close()
 
             else if(event.key === Qt.Key_Tab && event.modifiers&Qt.ControlModifier)
-                tabbar.currentIndex = (tabbar.currentIndex+1)%2
+                tabbar.currentIndex = (tabbar.currentIndex+1)%3
 
         }
 

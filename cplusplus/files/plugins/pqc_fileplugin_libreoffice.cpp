@@ -28,6 +28,7 @@
 #include <LibreOfficeKit/LibreOfficeKitEnums.h>
 #include <QMessageBox>
 #endif
+#include <pqc_settingscpp.h>
 
 PQCFilePluginLibreOffice::PQCFilePluginLibreOffice() {
 
@@ -62,23 +63,14 @@ PQCFilePluginLibreOffice::PQCFilePluginLibreOffice() {
 
     m_suffixesWithNoFixedSize << "ods" << "xls" << "xlsx" << "xlsm" << "xlst" << "xltx";
 
-#ifdef Q_OS_WIN
-
-    QByteArray lok = qgetenv("LibreOffice_LOPATH");
-
-    if(!QFile::exists(lok))
-        QMessageBox::warning(nullptr,
-                             tr("LibreOffice 25.2.7.2 (or older) not found"),
-                             tr("LibreOffice 25.2.7.2 (or older) needs to be installed on your system for PreviewQt to be able to preview office documents.")+"\n\n"+
-                                 tr("You can specify the location of LibreOffice (by default %1) using the %2 environment variable.").arg("C:\\Program Files\\LibreOffice\\", "LibreOffice_LOPATH")+"\n\n"+
-                                 tr("For more information check the FAQs on the website."));
-
-    office = lok::lok_cpp_init(qgetenv("LibreOffice_LOPATH"));
-#else
-    office = lok::lok_cpp_init(PQMLIBREOFFICE_LOPATH);
-#endif
+    resetLibreOffice();
 
 #endif
+
+    connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::settingsReloaded, this, [this]() {
+        delete office;
+        resetLibreOffice();
+    });
 
 }
 
@@ -86,6 +78,34 @@ PQCFilePluginLibreOffice::~PQCFilePluginLibreOffice() {
 #ifdef PQMLIBREOFFICE
     delete office;
 #endif
+}
+
+void PQCFilePluginLibreOffice::resetLibreOffice() {
+
+    if(PQCSettingsCPP::get().getCustomLibreOffice() && QFile::exists(PQCSettingsCPP::get().getCustomLibreOfficePath() % "/program")) {
+
+        office = lok::lok_cpp_init(PQCSettingsCPP::get().getCustomLibreOfficePath().toStdString().c_str());
+
+    } else {
+
+#ifdef Q_OS_WIN
+
+        QByteArray lok = qgetenv("LibreOffice_LOPATH");
+
+        if(!QFile::exists(lok))
+            QMessageBox::warning(nullptr,
+                                 tr("LibreOffice 25.2.7.2 (or older) not found"),
+                                 tr("LibreOffice 25.2.7.2 (or older) needs to be installed on your system for PreviewQt to be able to preview office documents.")+"\n\n"+
+                                     tr("You can specify the location of LibreOffice (by default %1) using the %2 environment variable.").arg("C:\\Program Files\\LibreOffice\\", "LibreOffice_LOPATH")+"\n\n"+
+                                     tr("For more information check the FAQs on the website."));
+
+        office = lok::lok_cpp_init(qgetenv("LibreOffice_LOPATH"));
+#else
+        office = lok::lok_cpp_init(PQMLIBREOFFICE_LOPATH);
+#endif
+
+    }
+
 }
 
 const int PQCFilePluginLibreOffice::loadNumPages(QString path) {

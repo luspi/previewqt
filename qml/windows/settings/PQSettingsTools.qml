@@ -105,6 +105,96 @@ Flickable {
             }
         }
 
+        /************************************/
+
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: palette.text
+        }
+
+        /************************************/
+
+        CheckBox {
+            id: customLibreCheck
+            text: qsTr("Custom location of LibreOffice installation folder")
+            checked: PQCSettings.customLibreOffice
+            onCheckedChanged: {
+                catchKeyPress.forceActiveFocus()
+                if(PQCSettings.customLibreOffice !== checked)
+                    PQCSettings.customLibreOffice = checked
+            }
+        }
+
+        Row {
+            spacing: 5
+            enabled: customLibreCheck.checked
+            TextField {
+                id: customLibreLocation
+                y: (customLibreBut.height-height)/2
+                width: tools_top.usableWidth-customLibreBut.width-5
+                text: PQCSettings.customLibreOfficePath
+                onTextChanged: {
+                    if(text !== PQCSettings.customLibreOfficePath)
+                        PQCSettings.customLibreOfficePath = text
+                }
+            }
+            Button {
+                id: customLibreBut
+                text: "..."
+                onClicked: {
+                    selectFolder.category = "libreoffice"
+                    selectFolder.prevfolder = customLibreLocation.text
+                    selectFolder.open()
+                }
+            }
+        }
+
+        /************************************/
+
+        Rectangle {
+            width: parent.width
+            height: 1
+            color: palette.text
+        }
+
+        /************************************/
+
+        CheckBox {
+            id: customMuseScoreCheck
+            text: qsTr("Custom location of MuseScore executable")
+            checked: PQCSettings.customMuseScore
+            onCheckedChanged: {
+                catchKeyPress.forceActiveFocus()
+                if(PQCSettings.customMuseScore !== checked)
+                    PQCSettings.customMuseScore = checked
+            }
+        }
+
+        Row {
+            spacing: 5
+            enabled: customMuseScoreCheck.checked
+            TextField {
+                id: customMuseScoreLocation
+                y: (customMuseScoreBut.height-height)/2
+                width: tools_top.usableWidth-customMuseScoreBut.width-5
+                text: PQCSettings.customMuseScorePath
+                onTextChanged: {
+                    if(text !== PQCSettings.customMuseScorePath)
+                        PQCSettings.customMuseScorePath = text
+                }
+            }
+            Button {
+                id: customMuseScoreBut
+                text: "..."
+                onClicked: {
+                    selectExe.category = "musescore"
+                    selectExe.prevexe = customMuseScoreLocation.text
+                    selectExe.open()
+                }
+            }
+        }
+
     }
 
     // file dialog to choose an executable
@@ -128,6 +218,28 @@ Flickable {
 
             if(category == "ytdlp")
                 ytdlpedit.text = PQCScriptsFilesPaths.cleanPath(file)
+            else if(category == "musescore")
+                customMuseScoreLocation.text = PQCScriptsFilesPaths.cleanPath(file)
+            else
+                console.warn("Unknown category:", category)
+
+        }
+    }
+
+    // file dialog to choose an executable
+    FolderDialog {
+        id: selectFolder
+        currentFolder: "file://" + (prevfolder.slice(0,1)==="/" ?
+                                       prevfolder :
+                                       (PQCScriptsConfig.amIOnWindows() ?
+                                            StandardPaths.standardLocations(StandardPaths.HomeLocation)[0] :
+                                            "/usr/"))
+        property string category: ""
+        property string prevfolder: ""
+        onAccepted: {
+            var folder = selectedFolder
+            if(category == "libreoffice")
+                customLibreLocation.text = PQCScriptsFilesPaths.cleanPath(folder)
             else
                 console.warn("Unknown category:", category)
 

@@ -140,6 +140,10 @@ PQCSettings::PQCSettings() {
     connect(this, &PQCSettings::lastDownloadFolderChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::executableYtDlpChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::processUrlWithYtdlpChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::customLibreOfficeChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::customLibreOfficePathChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::customMuseScoreChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::customMuseScorePathChanged, this, [this]() { saveTimer->start(); });
 
 }
 
@@ -196,6 +200,10 @@ void PQCSettings::loadSettings() {
     m_executableYtDlp = settings->value("executableYtDlp", "yt-dlp").toString();
 #endif
     m_processUrlWithYtdlp = settings->value("processUrlWithYtdlp", false).toBool();
+    m_customLibreOffice = settings->value("customLibreOffice", false).toBool();
+    m_customLibreOfficePath = settings->value("customLibreOfficePath", "").toString();
+    m_customMuseScore = settings->value("customMuseScore", false).toBool();
+    m_customMuseScorePath = settings->value("customMuseScorePath", "").toString();
 
     Q_EMIT versionChanged();
     Q_EMIT languageChanged();
@@ -226,6 +234,10 @@ void PQCSettings::loadSettings() {
     Q_EMIT lastDownloadFolderChanged();
     Q_EMIT executableYtDlpChanged();
     Q_EMIT processUrlWithYtdlpChanged();
+    Q_EMIT customLibreOfficeChanged();
+    Q_EMIT customLibreOfficePathChanged();
+    Q_EMIT customMuseScoreChanged();
+    Q_EMIT customMuseScorePathChanged();
 
 }
 
@@ -259,5 +271,9 @@ void PQCSettings::saveSettings() {
     settings->setValue("lastDownloadFolder", m_lastDownloadFolder);
     settings->setValue("executableYtDlp", m_executableYtDlp);
     settings->setValue("processUrlWithYtdlp", m_processUrlWithYtdlp);
+    settings->setValue("customLibreOffice", m_customLibreOffice);
+    settings->setValue("customLibreOfficePath", m_customLibreOfficePath);
+    settings->setValue("customMuseScore", m_customMuseScore);
+    settings->setValue("customMuseScorePath", m_customMuseScorePath);
 
 }
