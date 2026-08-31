@@ -208,7 +208,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: msc_top.currentPage = (msc_top.currentPage==1 ? msc_top.pageCount : msc_top.currentPage-1)
+                        onClicked: msc_top.currentPage = (msc_top.currentPage==1 ? 1 : msc_top.currentPage-1)
                     }
                 }
 
@@ -230,7 +230,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: msc_top.currentPage = (msc_top.currentPage == msc_top.pageCount ? 1 : msc_top.currentPage+1)
+                        onClicked: msc_top.currentPage = (msc_top.currentPage == msc_top.pageCount ? msc_top.pageCount : msc_top.currentPage+1)
                     }
                 }
 
@@ -369,11 +369,11 @@ Item {
 
             if(keycode === Qt.Key_Left) {
 
-                msc_top.currentPage = (msc_top.currentPage+msc_top.pageCount-1)%msc_top.pageCount
+                msc_top.currentPage = (msc_top.currentPage==1 ? 1 : msc_top.currentPage-1)
 
             } else if(keycode === Qt.Key_Right || keycode === Qt.Key_Space) {
 
-                msc_top.currentPage = (msc_top.currentPage+1)%msc_top.pageCount
+                msc_top.currentPage = (msc_top.currentPage == msc_top.pageCount ? msc_top.pageCount : msc_top.currentPage+1)
 
             } else if(keycode === Qt.Key_Home) {
 

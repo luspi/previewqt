@@ -29,22 +29,13 @@ class PQCFilePluginMuseScore : public PQCFilePlugin {
 
 public:
     PQCFilePluginMuseScore();
-    ~PQCFilePluginMuseScore();
 
     const QString name() override { return "MuseScore"; }
-    const QSize loadSize(QString path) override;
-    const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override;
+    const QSize loadSize(QString path) override { return {}; }
+    const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override { return {}; };
     const QVariantList loadData(QString path) override { return {}; }
-    const int loadNumPages(QString path) override;
-    const QStringList loadContent(QString path) override;
+    const int loadNumPages(QString path) override { return 1; };
+    const QStringList loadContent(QString path) override { return {}; };
 
-private:
-    QString loadedScore;
-
-    QString musescoreCommand;
-    QString scoreDir;
-
-    const bool detectMuseScore();
-    void exportPages(QString path);
 
 };
