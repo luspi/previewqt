@@ -131,6 +131,10 @@ Item {
 
             url: url_top.isWebsite
 
+            Component.onCompleted: {
+                PQCConstants.imageStatus = Image.Ready
+            }
+
         }
     }
 
