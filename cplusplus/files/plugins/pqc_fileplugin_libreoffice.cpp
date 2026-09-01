@@ -82,6 +82,8 @@ PQCFilePluginLibreOffice::~PQCFilePluginLibreOffice() {
 
 void PQCFilePluginLibreOffice::resetLibreOffice() {
 
+#ifdef PQMLIBREOFFICE
+
     if(PQCSettingsCPP::get().getCustomLibreOffice() && QFile::exists(PQCSettingsCPP::get().getCustomLibreOfficePath() % "/program")) {
 
         office = lok::lok_cpp_init(PQCSettingsCPP::get().getCustomLibreOfficePath().toStdString().c_str());
@@ -105,6 +107,8 @@ void PQCFilePluginLibreOffice::resetLibreOffice() {
 #endif
 
     }
+
+#endif
 
 }
 
