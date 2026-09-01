@@ -49,6 +49,10 @@ public:
     QStringList getContent(QString plugin, QString path);
 
     int getNumFormats() { return m_numEnabled; }
+    int getNumFormatsFormats() { return m_numEnabledFormats; }
+
+    const QStringList getPluginList() { return m_pluginOrder; }
+    const QString getPluginName(const QString plugin) { if(m_plugins.contains(plugin)) return m_plugins.value(plugin)->name(); else return "Unknown plugin"; }
 
     QSet<int> getFormats(QString category = "all");
     QSet<QString> getSuffixes(QString category = "all");
@@ -62,6 +66,7 @@ private:
     QHash<QString, PQCFilePlugin*> m_plugins;
 
     int m_numEnabled;
+    int m_numEnabledFormats;
 
     QSet<int> m_enabledIds;
     QSet<QString> m_enabledSuffixes;

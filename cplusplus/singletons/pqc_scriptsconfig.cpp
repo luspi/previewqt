@@ -82,94 +82,105 @@ QString PQCScriptsConfig::getConfigInfo(bool formatHTML) {
 
     QString bold1 = "";
     QString bold2 = "";
-    QString nl = "\n";
     QString spacing = "    ";
+    QString startLI = " - ";
+    QString endLI = "\n";
     if(formatHTML) {
         bold1 = "<b>";
         bold2 = "</b>";
-        nl = "<br>";
         spacing = "&nbsp;&nbsp;&nbsp;";
+        startLI = "<li>";
+        endLI = "</li>";
     }
 
     QString txt = "";
 
-    txt += " - Compiled with " % bold1 % "Qt " % QT_VERSION_STR % bold2 % ", running with " % bold1 % "Qt " % qVersion() % bold2 % nl;
+    txt += startLI % "Total of " % bold1 % QString::number(PQCFileHandler::get().getNumFormatsFormats()) % bold2 % " supported file formats." % endLI;
 
-    txt += " - Total of " % bold1 % QString::number(PQCFileHandler::get().getNumFormats()) % bold2 % " supported file endings" % nl;
+    txt += startLI % "Compiled with " % bold1 % "Qt " % QT_VERSION_STR % bold2 % ", running with " % bold1 % "Qt " % qVersion() % "." % bold2 % endLI;
+
+    if(formatHTML)
+        txt += "<br><h3>Configured options:</h3><ul>";
+    else
+        txt += "\nCONFIGURED OPTIONS:\n\n";
 
 #ifdef PQMEXIV2
-    txt += " - " % bold1 % "Exiv2" % bold2 % ": " % Exiv2::version() % nl;
+    txt += startLI % bold1 % "Exiv2" % bold2 % ": " % Exiv2::version() % endLI;
 #endif
 
 #ifdef PQMRAW
-    txt += " - " % bold1 % "LibRaw" % bold2 % ": " % LibRaw::version() % nl;
+    txt += startLI % bold1 % "LibRaw" % bold2 % ": " % LibRaw::version() % endLI;
 #endif
 
 #ifdef PQMPOPPLER
-    txt += " - " % bold1 % "Poppler" % bold2 % ": " % POPPLER_VERSION % nl;
+    txt += startLI % bold1 % "Poppler" % bold2 % ": " % POPPLER_VERSION % endLI;
 #endif
 
 #ifdef PQMQTPDF
-    txt += " - " % bold1 % "QtPDF" % bold2 % nl;
+    txt += startLI % bold1 % "QtPDF" % bold2 % endLI;
 #endif
 
 #ifdef PQMLIBARCHIVE
-    txt += " - " % bold1 % "LibArchive" % bold2 % ": " % ARCHIVE_VERSION_ONLY_STRING % nl;
+    txt += startLI % bold1 % "LibArchive" % bold2 % ": " % ARCHIVE_VERSION_ONLY_STRING % endLI;
 #endif
 
 #ifdef PQMIMAGEMAGICK
-    txt += " - " % bold1 % "ImageMagick" % bold2 % ": " % MagickLibVersionText % nl;
+    txt += startLI % bold1 % "ImageMagick" % bold2 % ": " % MagickLibVersionText % endLI;
 #endif
 
 #ifdef PQMGRAPHICSMAGICK
-    txt += " - " % bold1 % "GraphicsMagick" % bold2 % ": " % MagickLibVersionText % nl;
+    txt += startLI % bold1 % "GraphicsMagick" % bold2 % ": " % MagickLibVersionText % endLI;
 #endif
 
 #ifdef PQMDEVIL
-    txt += " - " % bold1 % "DevIL" % bold2 % ": " % QString::number(IL_VERSION) % nl;
+    txt += startLI % bold1 % "DevIL" % bold2 % ": " % QString::number(IL_VERSION) % endLI;
 #endif
 
 #ifdef PQMMOTIONPHOTO
-    txt += " - " % bold1 % "Motion Photo" % bold2 % nl;
+    txt += startLI % bold1 % "Motion Photo" % bold2 % endLI;
 #endif
 
 #ifdef PQMPHOTOSPHERE
-    txt += " - " % bold1 % "Photosphere" % bold2 % nl;
+    txt += startLI % bold1 % "Photosphere" % bold2 % endLI;
 #endif
 
 #ifdef PQMEPUB
-    txt += " - " % bold1 % "E-books (epub)" % bold2 % nl;
+    txt += startLI % bold1 % "E-books (epub)" % bold2 % endLI;
 #endif
 
 #ifdef PQMQTMULTIMEDIA
-    txt += " - " % bold1 % "Multimedia" % bold2 % " through Qt" % nl;
+    txt += startLI % bold1 % "Multimedia" % bold2 % " through Qt" % endLI;
 #endif
 
 #ifdef PQMLIBREOFFICE
-    txt += " - " % bold1 % "LibreOffice" % bold2 % nl;
+    txt += startLI % bold1 % "LibreOffice" % bold2 % endLI;
 #endif
 
 #ifdef PQMOPENSLIDE
-    txt += " - " % bold1 % "OpenSlide" % bold2 % ": " % openslide_get_version() % nl;
+    txt += startLI % bold1 % "OpenSlide" % bold2 % ": " % openslide_get_version() % endLI;
 #endif
 
 #ifdef PQMLIBMPV
     mpv_handle *mpv = mpv_create();
     if(mpv_initialize(mpv) < 0)
         throw std::runtime_error("could not initialize mpv context");
-    txt += " - " % bold1 % "libmpv" % bold2 % ": " % mpv::qt::get_property(mpv, "mpv-version").toString() % " (ffmpeg: " % mpv::qt::get_property(mpv, "ffmpeg-version").toString() % ")" % nl;
+    txt += startLI % bold1 % "libmpv" % bold2 % ": " % mpv::qt::get_property(mpv, "mpv-version").toString() % " (ffmpeg: " % mpv::qt::get_property(mpv, "ffmpeg-version").toString() % ")" % endLI;
 #endif
 
-    txt += " - " % bold1 % "Qt" % bold2 % " image formats available:" % nl % spacing;
-    QImageReader reader;
-    auto formats = reader.supportedImageFormats();
-    for(int i = 0; i < formats.length(); ++i) {
-        if(i != 0 && i%10 == 0)
-            txt += nl % spacing;
-        txt += QString("%1, ").arg(QString(formats[i]), 5);
+    if(formatHTML)
+        txt += "</ul>";
+
+    if(formatHTML)
+        txt += "<h3>File Plugins:</h3><ul>";
+    else
+        txt += "\nFILE PLUGINS:\n\n";
+
+    for(const QString plugin : PQCFileHandler::get().getPluginList()) {
+        txt += startLI % bold1 % PQCFileHandler::get().getPluginName(plugin) % bold2 % ": " % QString::number(PQCFileHandler::get().getFormats(plugin).count()) % " file formats" % endLI;
     }
 
-    txt += nl;
+    if(formatHTML)
+        txt += "</ul>";
 
     return txt;
 

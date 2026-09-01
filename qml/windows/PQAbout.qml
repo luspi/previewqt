@@ -279,7 +279,9 @@ Window {
                 Text {
                     id: configtxt
                     x: (parent.width-width)/2
+                    width: Math.min(400, parent.width-20)
                     text: ""
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     color: palette.text
                 }
 

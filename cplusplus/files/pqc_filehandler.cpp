@@ -170,6 +170,7 @@ PQCFileHandler::PQCFileHandler() {
     }
 
     m_numEnabled = m_enabledSuffixes.size();
+    m_numEnabledFormats = m_enabledIds.size();
 
 }
 
