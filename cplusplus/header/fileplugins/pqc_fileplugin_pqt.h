@@ -21,27 +21,21 @@
  **************************************************************************/
 #pragma once
 
-#include <QObject>
+#include <fileplugins/pqc_fileplugin.h>
+#include <QSet>
+#include <QSize>
+#include <QImage>
 
-class PQCHelper {
+class PQCFilePluginPQT : public PQCFilePlugin {
 
 public:
+    PQCFilePluginPQT();
 
-    static qsizetype setAccumulatedSize(QSet<QString> set, qsizetype seplen);
-    static qsizetype setAccumulatedSize(QSet<int> set, qsizetype seplen);
-    static QString setJoin(QSet<QString> set, QString sep);
-    static QString setJoin(QSet<int> set, QString sep);
-
-    static QString extractInsideFilename(QString path);
-    static QString extractInsidePDFFilename(QString path);
-    static QString extractInsideARCFilename(QString path);
-    static int extractOutsidePDFNumber(QString path);
-    static QString extractOutsideARCFilename(QString path);
-
-    static bool zipDirectory(const QString sourceDir, const QString archiveFile);
-    static bool unzipDirectory(const QString archiveFile, const QString targetDir);
-
-    static QStringList extractFileListArchive(const QString archiveFile);
-    static QVariantList extractFileFromArchive(const QString archiveFile, const QString exactFilename, const QString filenameStartsWith = "", const QString filenameEndsWith = "");
+    const QString name() override { return "PQT"; }
+    const QSize loadSize(QString) override { return QSize(); };
+    const QImage loadImage(QString, QSize, QSize&, QString&) override { return QImage(); };
+    const QVariantList loadData(QString path) override;
+    const int loadNumPages(QString path) override { return 1; }
+    const QStringList loadContent(QString path) override { return {path}; }
 
 };

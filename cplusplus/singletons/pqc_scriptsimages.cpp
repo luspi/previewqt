@@ -660,6 +660,17 @@ bool PQCScriptsImages::isMuseScore(QString path) {
 
 }
 
+bool PQCScriptsImages::isPQT(QString path) {
+
+    const QSet<QString> suffixes = PQCFileHandler::get().getSuffixes("pqt");
+    QFileInfo info(path);
+    if(suffixes.contains(info.suffix().toLower()) || suffixes.contains(info.completeSuffix().toLower()))
+        return true;
+
+    return false;
+
+}
+
 QString PQCScriptsImages::findCoverImageNextToFile(QString path) {
 
     QStringList possibleSuffix = {"jpg", "jpeg", "png"};

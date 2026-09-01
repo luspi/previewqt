@@ -60,6 +60,7 @@ public:
     bool isAudio(QString path);
     bool isPackage(QString path);
     bool isMuseScore(QString path);
+    bool isPQT(QString path);
 
     QString findCoverImageNextToFile(QString path);
 

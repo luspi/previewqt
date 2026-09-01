@@ -39,6 +39,7 @@
 #include <fileplugins/pqc_fileplugin_package.h>
 #include <fileplugins/pqc_fileplugin_openslide.h>
 #include <fileplugins/pqc_fileplugin_musescore.h>
+#include <fileplugins/pqc_fileplugin_pqt.h>
 
 #include <fileplugins/pqc_fileplugin_audio.h>
 #include <fileplugins/pqc_fileplugin_text.h>
@@ -60,6 +61,7 @@ PQCFileHandler::PQCFileHandler() {
 #ifdef PQMLIBREOFFICE
         << "libreoffice"
 #endif
+        << "pqt"
 #ifdef PQMOPENSLIDE
         << "openslide"
 #endif
@@ -153,6 +155,7 @@ PQCFileHandler::PQCFileHandler() {
     m_plugins.insert("openslide", new PQCFilePluginOpenSlide);
 #endif
     m_plugins.insert("musescore", new PQCFilePluginMuseScore);
+    m_plugins.insert("pqt", new PQCFilePluginPQT);
 
     /*******************************************************/
 

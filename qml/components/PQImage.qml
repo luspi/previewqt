@@ -185,6 +185,9 @@ Item {
         } else if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
             PQCConstants.currentType = "bok"
             imageloader.sourceComponent = comp_bok
+        } else if(PQCScriptsImages.isPQT(PQCConstants.currentSource)) {
+            PQCConstants.currentType = "arc"
+            imageloader.sourceComponent = comp_pqt
         } else if(PQCScriptsImages.isArchive(PQCConstants.currentSource)) {
             PQCConstants.currentType = "arc"
             imageloader.sourceComponent = comp_arc
@@ -260,6 +263,11 @@ Item {
     Component {
         id: comp_bok
         PQEPUB {}
+    }
+
+    Component {
+        id: comp_pqt
+        PQPQT {}
     }
 
     Component {

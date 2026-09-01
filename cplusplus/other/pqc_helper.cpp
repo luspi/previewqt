@@ -318,3 +318,164 @@ bool PQCHelper::unzipDirectory(const QString archiveFile, const QString targetDi
     return false;
 
 }
+
+QStringList PQCHelper::extractFileListArchive(const QString archiveFile) {
+
+#ifdef PQMLIBARCHIVE
+
+    QFileInfo info(archiveFile);
+
+    // Create new archive handler
+    struct archive *a = archive_read_new();
+
+    // We allow any type of compression and format
+    archive_read_support_filter_all(a);
+    archive_read_support_format_all(a);
+    // Read file
+#ifdef Q_OS_WIN
+    if(archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(path.utf16()), 10240) != ARCHIVE_OK) {
+#else
+    QByteArray tmpPath = QFile::encodeName(info.absoluteFilePath());
+    if(archive_read_open_filename(a, tmpPath.constData(), 10240) != ARCHIVE_OK) {
+#endif
+        // If something went wrong, output error message and stop here
+        qWarning() << "archive_read_open_filename() failed: " % QString(archive_error_string(a));
+        return {};
+    }
+
+    // Create a buffer of that size to hold the control archive
+    QStringList files;
+
+    // Loop over entries in archive
+    struct archive_entry *entry;
+    while(archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+
+        // Read the current file entry
+        // We use the '_w' variant here, as otherwise on Windows this call causes a segfault when a file in an archive contains non-latin characters
+        // Also, if the archives is malformed or there is an encoding issue then it is possible that this may return a nullptr
+        // and PhotoQt might crash if not handled properly -> check before converting to QString
+        const wchar_t *wpath = archive_entry_pathname_w(entry);
+        if(!wpath) continue;
+        files.append(QString::fromWCharArray(wpath));
+
+    }
+
+    // Close archive
+    if(archive_read_close(a) != ARCHIVE_OK)
+        qWarning() << "ERROR: archive_read_close() failed" << archive_error_string(a);
+    if(archive_read_free(a) != ARCHIVE_OK)
+        qWarning() << "ERROR: archive_read_free() failed:" << archive_error_string(a);
+
+    return files;
+
+#endif
+
+    qWarning() << "libarchive support not available";
+    return {};
+
+}
+
+QVariantList PQCHelper::extractFileFromArchive(const QString archiveFile, const QString exactFilename, const QString filenameStartsWith, const QString filenameEndsWith) {
+
+#ifdef PQMLIBARCHIVE
+
+    QFileInfo info(archiveFile);
+
+    // Create new archive handler
+    struct archive *a = archive_read_new();
+
+    // We allow any type of compression and format
+    archive_read_support_filter_all(a);
+    archive_read_support_format_all(a);
+    // Read file
+#ifdef Q_OS_WIN
+    if(archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(path.utf16()), 10240) != ARCHIVE_OK) {
+#else
+    QByteArray tmpPath = QFile::encodeName(info.absoluteFilePath());
+    if(archive_read_open_filename(a, tmpPath.constData(), 10240) != ARCHIVE_OK) {
+#endif
+        // If something went wrong, output error message and stop here
+        const QString msg = "archive_read_open_filename() failed: " % QString(archive_error_string(a));
+        qWarning() << msg;
+        return {false, msg};
+    }
+
+    // Create a buffer of that size to hold the control archive
+    QByteArray fileContent;
+
+    // Loop over entries in archive
+    struct archive_entry *entry;
+    while(archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+
+        // Read the current file entry
+        // We use the '_w' variant here, as otherwise on Windows this call causes a segfault when a file in an archive contains non-latin characters
+        // Also, if the archives is malformed or there is an encoding issue then it is possible that this may return a nullptr
+        // and PhotoQt might crash if not handled properly -> check before converting to QString
+        const wchar_t *wpath = archive_entry_pathname_w(entry);
+        if(!wpath) continue;
+        QString filenameinside = QString::fromWCharArray(wpath);
+
+        if((exactFilename != "" && filenameinside == exactFilename) ||
+            (filenameStartsWith != "" && filenameinside.startsWith(filenameStartsWith)) ||
+            (filenameEndsWith != "" && filenameinside.endsWith(filenameEndsWith))) {
+
+            // Find out the size of the data
+            int64_t size = archive_entry_size(entry);
+
+            if(size <= 0) {
+                const QString msg = QString("Invalid file size of file in archive: %1").arg(size);
+                qWarning() << msg;
+                return {false, msg};
+            }
+            fileContent.resize(size);
+
+            // And finally read the file into the buffer in chunks
+            char* ptr = fileContent.data();
+            qint64 total = 0;
+            while (total < size) {
+                la_ssize_t chunk = archive_read_data(a, ptr + total, size - total);
+                if(chunk < 0) {
+                    const QString msg = QString("Invalid chunk read: %1").arg(archive_error_string(a));
+                    qWarning() << msg;
+                    return {false, msg};
+                }
+
+                if (chunk == 0) {
+                    break;
+                }
+
+                total += chunk;
+            }
+
+            if(total != size) {
+                const QString msg = QString("Failed to read file data, read size (%1) doesn't match expected size (%2)...").arg(total).arg(size);
+                qWarning() << msg;
+                return {false, msg};
+            }
+
+            // Nothing more to do except some cleaning up below
+            break;
+
+        }
+
+    }
+
+    if(fileContent.isEmpty()) {
+        const QString msg = "Unable to extract file";
+        qWarning() << msg;
+        return {false, msg};
+    }
+
+    // Close archive
+    if(archive_read_close(a) != ARCHIVE_OK)
+        qWarning() << "ERROR: archive_read_close() failed" << archive_error_string(a);
+    if(archive_read_free(a) != ARCHIVE_OK)
+        qWarning() << "ERROR: archive_read_free() failed:" << archive_error_string(a);
+
+    return {true, fileContent};
+
+#endif
+
+    return {false, "libarchive support not available"};
+
+}
