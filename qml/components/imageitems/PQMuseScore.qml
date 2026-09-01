@@ -40,46 +40,59 @@ Item {
 
     // this will be set to wherever musescore extracted the score to
     property string useDirectory: ""
+    property int currentPage: 1
+    property int pageCount: 1
+
+    onCurrentPageChanged: {
+        if(PQCConstants.currentSource === "") {
+            imageitem.source = ""
+            return
+        }
+        imageitem.asynchronous = false
+        imageitem.source = "image://full/" + useDirectory + "/page-" + msc_top.currentPage + ".svg"
+        imageitem.asynchronous = false
+
+        PQCCache.setEntry(PQCConstants.currentSource, currentPage)
+    }
+
+    Loader {
+        asynchronous: true
+        sourceComponent:
+        Item {
+            Component.onCompleted: {
+                if(PQCConstants.currentSource === "") {
+                    imageitem.source = ""
+                    return
+                }
+                error.visible = false
+                var result = []
+                if(PQCConstants.currentSource.includes("::MSC::"))
+                    result = PQCFileHandler.getDataWithPlugin("musescore", PQCConstants.currentSource.split("::MSC::")[1])
+                else
+                    result = PQCFileHandler.getDataWithPlugin("musescore", PQCConstants.currentSource)
+
+                if(!result[0]) {
+                    error.text = "ERROR loading score with MuseScore: " + result[1]
+                } else {
+                    msc_top.useDirectory = result[1]
+                    msc_top.pageCount = PQCFileHandler.getNumPages("musescore", PQCConstants.currentSource)
+                    if(PQCConstants.currentSource.includes("::MSC::")) {
+                        msc_top.currentPage = PQCConstants.currentSource.split("::MSC::")[0]*1
+                        imageitem.source = "image://full/" + msc_top.useDirectory + "/page-" + msc_top.currentPage + ".svg"
+                    } else {
+                        msc_top.currentPage = 1
+                        imageitem.source = "image://full/" + msc_top.useDirectory + "/" + "page-1.svg"
+                    }
+                }
+            }
+        }
+    }
 
     Image {
 
         id: imageitem
 
         source: ""
-
-        Component.onCompleted: {
-            if(PQCConstants.currentSource === "") {
-                source = ""
-                return
-            }
-            error.visible = false
-            if(PQCConstants.currentSource.includes("::MSC::"))
-                PQCScriptsExternalTools.extractMuseScore(PQCConstants.currentSource.split("::MSC::")[1])
-            else
-                PQCScriptsExternalTools.extractMuseScore(PQCConstants.currentSource)
-        }
-
-        Connections {
-            target: PQCScriptsExternalTools
-            function onMusescoreTemporaryDirLoaded(dir) {
-                if(dir === "") {
-                    source = ""
-                    PQCConstants.imageStatus = Image.Ready
-                    error.text = "ERROR: Music score could not be loaded with MuseScore."
-                    error.visible = true
-                    return
-                }
-                msc_top.useDirectory = dir
-                msc_top.pageCount = PQCScriptsExternalTools.getMuseScoreCurrentPageCount()
-                if(PQCConstants.currentSource.includes("::MSC::")) {
-                    msc_top.currentPage = PQCConstants.currentSource.split("::MSC::")[0]*1
-                    imageitem.source = "image://full/" + PQCScriptsFilesPaths.toPercentEncoding(dir + "/page-" + msc_top.currentPage + ".svg")
-                } else {
-                    msc_top.currentPage = 1
-                    imageitem.source = "image://full/" + dir + "/" + PQCScriptsFilesPaths.toPercentEncoding("page-1.svg")
-                }
-            }
-        }
 
         asynchronous: false
 
@@ -109,6 +122,7 @@ Item {
     Text {
         id: error
         width: parent.width
+        visible: false
         y: 50
         horizontalAlignment: Text.AlignHCenter
         color: "red"
@@ -116,21 +130,6 @@ Item {
         font.bold: true
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         text: "ERROR"
-    }
-
-    property int currentPage: 0
-    property int pageCount: 1
-
-    onCurrentPageChanged: {
-        if(PQCConstants.currentSource === "") {
-            imageitem.source = ""
-            return
-        }
-        imageitem.asynchronous = false
-        imageitem.source = "image://full/" + useDirectory + "/page-" + msc_top.currentPage + ".svg"
-        imageitem.asynchronous = false
-
-        PQCCache.setEntry(PQCConstants.currentSource, currentPage)
     }
 
     Rectangle {

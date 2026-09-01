@@ -25,6 +25,8 @@
 #include <QSet>
 #include <QTemporaryDir>
 
+class QProcess;
+
 class PQCFilePluginMuseScore : public PQCFilePlugin {
 
 public:
@@ -33,9 +35,13 @@ public:
     const QString name() override { return "MuseScore"; }
     const QSize loadSize(QString path) override { return {}; }
     const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override { return {}; };
-    const QVariantList loadData(QString path) override { return {}; }
-    const int loadNumPages(QString path) override { return 1; };
+    const QVariantList loadData(QString path) override;
+    const int loadNumPages(QString path) override;
     const QStringList loadContent(QString path) override { return {}; };
 
+private:
+    QProcess *musescoreProcess;
+    QString musescoreCommand;
+    QString musescoreTempDir;
 
 };

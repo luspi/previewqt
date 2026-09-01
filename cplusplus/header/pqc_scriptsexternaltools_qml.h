@@ -44,8 +44,6 @@ public:
                 this, &PQCScriptsExternalToolsQML::ytdlpReceivedStreamError);
         connect(&PQCScriptsExternalTools::get(), &PQCScriptsExternalTools::ytdlpFinished,
                 this, &PQCScriptsExternalToolsQML::ytdlpFinished);
-        connect(&PQCScriptsExternalTools::get(), &PQCScriptsExternalTools::musescoreTemporaryDirLoaded,
-                this, &PQCScriptsExternalToolsQML::musescoreTemporaryDirLoaded);
     };
     ~PQCScriptsExternalToolsQML() {}
 
@@ -61,20 +59,11 @@ public:
         PQCScriptsExternalTools::get().ytdlpRequestStreamTitle(url);
     }
 
-    Q_INVOKABLE void extractMuseScore(QString url) {
-        PQCScriptsExternalTools::get().extractMuseScore(url);
-    }
-
-    Q_INVOKABLE int getMuseScoreCurrentPageCount() {
-        return PQCScriptsExternalTools::get().getMuseScoreCurrentPageCount();
-    }
-
 Q_SIGNALS:
     void ytdlpReceivedStreamSupported(bool supp);
     void ytdlpReceivedStreamURL(QString url);
     void ytdlpReceivedStreamTitle(QString title);
     void ytdlpReceivedStreamError(QString err);
     void ytdlpFinished();
-    void musescoreTemporaryDirLoaded(QString dir);
 
 };
