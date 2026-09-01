@@ -24,19 +24,13 @@
 
 PQCFilePluginText::PQCFilePluginText() {
 
-// tex	27654	application/x-latex	LaTex files
-// rtf	23222	application/rtf	Rich Text Format
-// troff,t,man	33233	application/x-troff,application/x-troff-man	Troff files
-// desktop	23232	application/x-desktop	Desktop file
-
-
     setData({
          {88823,
           {{"Text document"}, {"txt"}, {"text/plain", "text/x-csrc", "application/vnd.kde.kxmlguirc"}}},
          {11445,
           {{"JSON file"}, {"json"}, {"application/json"}}},
          {88736,
-          {{"XML/HTML files"}, {"html", "xml", "xhtml"}, {"application/xml", "text/xml"}}},
+          {{"XML/HTML files"}, {"html", "xml", "xhtml", "htm"}, {"application/xml", "text/xml"}}},
          {22765,
           {{"YAML files"}, {"yaml", "yml"}, {"application/x-yaml"}}},
          {76245,
