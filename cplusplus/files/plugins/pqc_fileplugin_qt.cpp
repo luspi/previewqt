@@ -56,6 +56,8 @@ PQCFilePluginQt::PQCFilePluginQt() {
                     {{"HEIF: High Efficiency Image Format"}, {"heif", "heic"}, {"image/heif", "image/heic"}}},
              {66646,
                     {{"Microsoft Windows icon format"}, {"ico"}, {"image/vnd.microsoft.icon", "image/x-icon"}}},
+             {54789,
+                    {{"Apple Icon Image"}, {"icns"}, {}}},
              {12454,
                     {{"JPEG File Interchange Format"}, {"jfif"}, {}}},
              {11485,
