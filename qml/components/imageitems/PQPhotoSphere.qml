@@ -74,7 +74,7 @@ Item {
                 cullMode: Material.NoCulling
 
                 baseColorMap: Texture {
-                    source: "file:/" + PQCScriptsImages.prepareSphereFile(PQCConstants.currentSource)
+                    source: "file:/" + PQCScriptsFilesPaths.toPercentEncoding(PQCScriptsImages.prepareSphereFile(PQCConstants.currentSource))
                 }
             }
         }
