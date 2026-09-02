@@ -142,6 +142,10 @@ public:
         return PQCScriptsImages::get().getMaxTextureLimit();
     }
 
+    Q_INVOKABLE QString getFileLoadError() {
+        return PQCScriptsImages::get().getFileLoadError();
+    }
+
 Q_SIGNALS:
     void receivedStreamSupported(bool supp);
     void receivedStreamURL(QString url);

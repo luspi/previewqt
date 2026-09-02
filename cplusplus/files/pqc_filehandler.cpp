@@ -372,6 +372,35 @@ QStringList PQCFileHandler::getContent(QString plugin, QString path) {
     return {};
 }
 
+const QStringList PQCFileHandler::getPossiblePluginsFor(QString path) {
+
+    qDebug() << "args: path =" << path;
+
+    const QString suffix1 = QFileInfo(path).suffix().toLower();
+    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+    QMimeDatabase db;
+    const QString mimetype = db.mimeTypeForFile(path).name();
+
+    QStringList ret;
+
+    for(const QString &name : std::as_const(m_pluginOrder)) {
+
+        if(!m_plugins.contains(name)) continue;
+
+        PQCFilePlugin *plugin = m_plugins[name];
+
+        const QSet<QString> mim = plugin->getMimetypes();
+        const QSet<QString> suf = plugin->getSuffixes();
+
+        if(suf.contains(suffix1) || suf.contains(suffix2) || mim.contains(mimetype))
+            ret.append(name);
+
+    }
+
+    return ret;
+
+}
+
 QSet<int> PQCFileHandler::getFormats(QString category) {
 
     if(category == "all") return m_enabledIds;

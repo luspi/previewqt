@@ -172,7 +172,7 @@ bool PQCScriptsFilesPaths::isFileSupported(QString path) {
 
     QMimeDatabase db;
     const QString mimetype = db.mimeTypeForFile(path).name();
-    if(PQCFileHandler::get().getMimetypes().contains(mimetype)) {
+    if(PQCFileHandler::get().getMimetypes().contains(mimetype) || mimetype.startsWith("text/")) {
         qDebug() << "Supported mime-type detected.";
         return true;
     } else

@@ -80,8 +80,10 @@ Item {
                     PQCNotify.updateWindowSize(PQCConstants.imagePaintedSize.width+10, PQCConstants.imagePaintedSize.height+10)
                 }
                 loading.hide()
-            } else if(PQCConstants.imageStatus === Image.Error)
-                loading.hide()
+            } else if(PQCConstants.imageStatus === Image.Error) {
+                possiblePluginIndex += 1
+                tryLoadWithNextPlugin()
+            }
         }
 
     }
@@ -146,6 +148,35 @@ Item {
         opacity = 1
     }
 
+    // this contains all plugins from PQCFileHandler + all additional checks below
+    readonly property list<string> allPossiblePluginsInOrder: [
+        "url",
+        "pdf",
+        "libreoffice",
+        "ebook",
+        "pqt",
+        "libarchive",
+        "libmpv",
+        "video",
+        "animatedimage",
+        "photosphere",
+        "resvg",
+        "svg",
+        "text",
+        "audio",
+        "package",
+        "musescore",
+        "openslide",
+        "qt",
+        "libraw",
+        "libsai",
+        "magick",
+        "libvips",
+        "devil"
+    ]
+    property list<string> possiblePlugins: []
+    property int possiblePluginIndex: 0
+
     // load a new image
     function loadImage(path : string) {
 
@@ -173,60 +204,154 @@ Item {
 
         PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(PQCConstants.currentSource)
 
-        if(PQCScriptsImages.isURL(PQCConstants.currentSource)) {
+        // - check for all plugins
+        // - combine all image plugins into one
+        // - if image plugin found, also check for: animated, photosphere, svg
+        // - check for URL
+        // - check for text document
+
+        var tempPlugins = PQCFileHandler.getPossiblePluginsFor(PQCConstants.currentSource)
+        var foundImage = false
+        const imagePluginList = ["resvg", "openslide", "qt", "libraw", "libsai", "magick", "libvips", "devil"]
+        for(let i = 0; i < imagePluginList.length; ++i) {
+            if(tempPlugins.includes(imagePluginList[i])) {
+                foundImage = true
+                break
+            }
+        }
+        if(foundImage) {
+            possiblePlugins = ["image2"]
+            if(!("resvg" in possiblePlugins) && PQCScriptsImages.isSVG(PQCConstants.currentSource))
+                possiblePlugins.push("svg")
+            if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource))
+                possiblePlugins = ["animatedimage"]
+            if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource))
+                possiblePlugins = ["photosphere"]
+        }
+
+        if(PQCScriptsImages.isURL(PQCConstants.currentSource)) possiblePlugins.push("url")
+
+        // we also support any sort of text document, even if not explicitely listed
+        // we can detect that by checking whether the mime type checks with text/
+        // this is done in this function
+        if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource))
+            possiblePlugins.push("text")
+
+        // sort all plugins according to the sample order above
+        possiblePlugins = resortPlugins()
+
+        console.log("checking possible plugins:", possiblePlugins)
+
+        // start with first entry
+        possiblePluginIndex = 0
+        tryLoadWithNextPlugin()
+
+    }
+
+    function resortPlugins() {
+        const order = new Map()
+        allPossiblePluginsInOrder.forEach((item, index) => { order.set(item, index) })
+        return possiblePlugins.slice().sort((a, b) => { return order.get(a) - order.get(b) })
+    }
+
+    function tryLoadWithNextPlugin() {
+
+        console.log("possiblePluginIndex:", possiblePluginIndex)
+
+        if(possiblePluginIndex >= possiblePlugins.length) {
+            PQCConstants.currentType = "err"
+            imageloader.sourceComponent = comp_error
+            console.warn("Failed to load image: " + PQCScriptsImages.getFileLoadError())
+            return
+        }
+
+        const plugin = possiblePlugins[possiblePluginIndex]
+
+        if(plugin === "url") {
+
             PQCConstants.currentType = "url"
             imageloader.sourceComponent = comp_url
-        } else if(PQCScriptsImages.isPDFDocument(PQCConstants.currentSource)) {
+
+        } else if(plugin === "pdf") {
+
             PQCConstants.currentType = "doc"
             imageloader.sourceComponent = comp_doc
-        } else if(PQCScriptsImages.isOfficeDocument(PQCConstants.currentSource)) {
+
+        } else if(plugin === "libreoffice") {
+
             PQCConstants.currentType = "off"
             imageloader.sourceComponent = comp_off
-        } else if(PQCScriptsImages.isEpub(PQCConstants.currentSource)) {
+
+        } else if(plugin === "ebook") {
+
             PQCConstants.currentType = "bok"
             imageloader.sourceComponent = comp_bok
-        } else if(PQCScriptsImages.isPQT(PQCConstants.currentSource)) {
+
+        } else if(plugin === "pqt") {
+
             PQCConstants.currentType = "arc"
             imageloader.sourceComponent = comp_pqt
-        } else if(PQCScriptsImages.isArchive(PQCConstants.currentSource)) {
+
+        } else if(plugin === "libarchive") {
+
             PQCConstants.currentType = "arc"
             imageloader.sourceComponent = comp_arc
-        } else if(PQCScriptsImages.isMpvVideo(PQCConstants.currentSource)) {
+
+        } else if(plugin === "libmpv") {
+
             PQCConstants.currentType = "mpv"
             imageloader.sourceComponent = comp_mpv
-        } else if(PQCScriptsImages.isQtVideo(PQCConstants.currentSource)) {
+
+        } else if(plugin === "video") {
+
             PQCConstants.currentType = "vid"
             imageloader.sourceComponent = comp_vid
-        } else if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource)) {
+
+        } else if(plugin === "animatedimage") {
+
             PQCConstants.currentType = "ani"
             imageloader.sourceComponent = comp_ani
-        } else if(PQCScriptsImages.isPhotoSphere(PQCConstants.currentSource)) {
+
+        } else if(plugin === "photosphere") {
+
             PQCConstants.currentType = "sph"
             imageloader.sourceComponent = comp_sph
-        } else if(PQCScriptsImages.isSVG(PQCConstants.currentSource)) {
+
+        } else if(plugin === "svg" || plugin === "resvg") {
+
             PQCConstants.currentType = "svg"
             imageloader.sourceComponent = comp_svg
-        } else if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource)) {
+
+        } else if(plugin === "text") {
+
             PQCConstants.currentType = "txt"
             imageloader.sourceComponent = comp_txt
-        } else if(PQCScriptsImages.isAudio(PQCConstants.currentSource)) {
+
+        } else if(plugin === "audio") {
+
             PQCConstants.currentType = "aud"
             imageloader.sourceComponent = comp_aud
-        } else if(PQCScriptsImages.isPackage(PQCConstants.currentSource)) {
+
+        } else if(plugin === "package") {
+
             PQCConstants.currentType = "pak"
             imageloader.sourceComponent = comp_pak
-        } else if(PQCScriptsImages.isMuseScore(PQCConstants.currentSource)) {
+
+        } else if(plugin === "musescore") {
+
             PQCConstants.currentType = "msc"
             imageloader.sourceComponent = comp_mscz
+
         } else {
+
             PQCConstants.currentType = "img"
             imageloader.sourceComponent = comp_img
+
         }
-        console.log("detected type:", PQCConstants.currentType)
 
         // we wait to activate a sphere UNTIL the texture limit has been detected
         // if this functionality is not enabled, then the texture limit is set to 0 and this check is skipped
-        if(PQCConstants.currentType === "sph" && PQCScriptsImages.getMaxTextureLimit() < 0)
+        if(plugin === "photosphere" && PQCScriptsImages.getMaxTextureLimit() < 0)
             sphereWaitForTextureLimit.restart()
         else
             imageloader.active = true
@@ -248,6 +373,11 @@ Item {
     Component {
         id: comp_empty
         Item{}
+    }
+
+    Component {
+        id: comp_error
+        PQErrorLoading {}
     }
 
     Component {

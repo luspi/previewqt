@@ -91,6 +91,7 @@ PQCScriptsImages::PQCScriptsImages() {
 #else
     m_maxTextureLimit = 0;
 #endif
+    m_fileLoadError = "";
 }
 
 PQCScriptsImages::~PQCScriptsImages() {}

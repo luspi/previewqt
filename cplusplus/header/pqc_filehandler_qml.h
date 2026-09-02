@@ -77,6 +77,10 @@ public:
         return PQCFileHandler::get().getMimetypes(category);
     }
 
+    Q_INVOKABLE const QStringList getPossiblePluginsFor(QString path) {
+        return PQCFileHandler::get().getPossiblePluginsFor(path);
+    }
+
 Q_SIGNALS:
     void formatsUpdated();
 

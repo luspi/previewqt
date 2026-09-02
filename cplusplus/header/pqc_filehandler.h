@@ -53,6 +53,7 @@ public:
 
     const QStringList getPluginList() { return m_pluginOrder; }
     const QString getPluginName(const QString plugin) { if(m_plugins.contains(plugin)) return m_plugins.value(plugin)->name(); else return "Unknown plugin"; }
+    const QStringList getPossiblePluginsFor(QString path);
 
     QSet<int> getFormats(QString category = "all");
     QSet<QString> getSuffixes(QString category = "all");

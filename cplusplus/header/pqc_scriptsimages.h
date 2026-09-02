@@ -77,9 +77,14 @@ public:
     void setMaxTextureLimit(int lmt) { m_maxTextureLimit = lmt; }
     int getMaxTextureLimit() { return m_maxTextureLimit; }
 
+    void setFileLoadError(QString err) { m_fileLoadError = err; }
+    QString getFileLoadError() { return m_fileLoadError; }
+
 private:
     PQCScriptsImages();
 
     int m_maxTextureLimit;
+
+    QString m_fileLoadError;
 
 };
