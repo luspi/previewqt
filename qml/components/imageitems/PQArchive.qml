@@ -79,9 +79,11 @@ Item {
                         (rotation%180===0 ? Qt.size(PQCConstants.imageAvailableSizeDelay.width, PQCConstants.imageAvailableSizeDelay.height) : Qt.size(PQCConstants.imageAvailableSizeDelay.height, PQCConstants.imageAvailableSizeDelay.width))
 
         onStatusChanged: {
-            PQCConstants.imageStatus = status
             if(status == Image.Ready && source !== "")
                 asynchronous = false
+            else if(status == Image.Error)
+                PQCScriptsImages.addFileLoadError("Failed to load archive.\n")
+            PQCConstants.imageStatus = status
         }
 
     }

@@ -182,6 +182,8 @@ Item {
 
         console.log("args: path =", path)
 
+        PQCScriptsImages.setFileLoadError("")
+
         loading.startTimer()
 
         PQCConstants.mainwindowManuallyResized = false
@@ -200,27 +202,22 @@ Item {
         }
 
         PQCConstants.currentSource = PQCScriptsFilesPaths.cleanPath(path)
-        PQCConstants.imageStatus = Image.Loading
 
         PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(PQCConstants.currentSource)
 
-        // - check for all plugins
-        // - combine all image plugins into one
-        // - if image plugin found, also check for: animated, photosphere, svg
-        // - check for URL
-        // - check for text document
-
+        // FIRST we load all possible plugins
         var tempPlugins = PQCFileHandler.getPossiblePluginsFor(PQCConstants.currentSource)
+
+        // SECOND we combine all image plugins into a single entry
         var foundImage = false
         const imagePluginList = ["resvg", "openslide", "qt", "libraw", "libsai", "magick", "libvips", "devil"]
         for(let i = 0; i < imagePluginList.length; ++i) {
-            if(tempPlugins.includes(imagePluginList[i])) {
+            if(tempPlugins.includes(imagePluginList[i]))
                 foundImage = true
-                break
-            }
         }
         if(foundImage) {
-            possiblePlugins = ["image2"]
+            possiblePlugins = ["image"]
+            // THIRD check for SVG, animated images, or photo spheres
             if(!("resvg" in possiblePlugins) && PQCScriptsImages.isSVG(PQCConstants.currentSource))
                 possiblePlugins.push("svg")
             if(PQCScriptsImages.isItAnimated(PQCConstants.currentSource))
@@ -229,17 +226,26 @@ Item {
                 possiblePlugins = ["photosphere"]
         }
 
+        // FOURTH add all non-image plugins
+        for(let j = 0; j < tempPlugins.length; ++j) {
+            const cur = tempPlugins[j]
+            if(!imagePluginList.includes(cur))
+                possiblePlugins.push(cur)
+        }
+
+        // FIFTH check whether we have an URL
         if(PQCScriptsImages.isURL(PQCConstants.currentSource)) possiblePlugins.push("url")
 
-        // we also support any sort of text document, even if not explicitely listed
+        // SIXTH we also support any sort of text document, even if not explicitely listed
         // we can detect that by checking whether the mime type checks with text/
         // this is done in this function
         if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource))
             possiblePlugins.push("text")
 
-        // sort all plugins according to the sample order above
+        // SEVENTH sort all plugins according to the sample order above
         possiblePlugins = resortPlugins()
 
+        // debug message
         console.log("checking possible plugins:", possiblePlugins)
 
         // start with first entry
@@ -261,9 +267,12 @@ Item {
         if(possiblePluginIndex >= possiblePlugins.length) {
             PQCConstants.currentType = "err"
             imageloader.sourceComponent = comp_error
-            console.warn("Failed to load image: " + PQCScriptsImages.getFileLoadError())
+            console.warn("FAILED TO LOAD PREVIEW:\n\n" + PQCScriptsImages.getFileLoadError() + "\n")
             return
         }
+
+        imageloader.active = false
+        PQCConstants.imageStatus = Image.Loading
 
         const plugin = possiblePlugins[possiblePluginIndex]
 

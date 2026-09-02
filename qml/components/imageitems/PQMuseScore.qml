@@ -107,12 +107,14 @@ Item {
         height: rotation%180===0 ? PQCConstants.imageAvailableSize.height : PQCConstants.imageAvailableSize.width
         sourceSize: rotation%180===0 ? Qt.size(PQCConstants.imageAvailableSizeDelay.width,
                                                PQCConstants.imageAvailableSizeDelay.height) : Qt.size(PQCConstants.imageAvailableSizeDelay.height,
-                                                                                                 PQCConstants.imageAvailableSizeDelay.width)
+                                                                                                      PQCConstants.imageAvailableSizeDelay.width)
 
         onStatusChanged: {
-            PQCConstants.imageStatus = status
             if(status == Image.Ready && source !== "")
                 asynchronous = false
+            else if(status == Image.Error)
+                PQCScriptsImages.addFileLoadError("MuseScore failed to parse score.\n")
+            PQCConstants.imageStatus = status
         }
 
     }

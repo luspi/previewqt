@@ -57,7 +57,7 @@ QImage PQCImageProviderFull::requestImage(const QString &url, QSize *origSize, c
 
     // if returned image is not a valid image
     if(ret.isNull()) {
-        PQCScriptsImages::get().setFileLoadError(error);
+        PQCScriptsImages::get().addFileLoadError(error);
         return ret;
     }
 

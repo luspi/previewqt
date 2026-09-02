@@ -103,7 +103,20 @@ Rectangle {
 
                 Component.onCompleted: {
                     PQCConstants.imageStatus = Image.Ready
-                    PQCNotify.updateWindowSize(PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight)
+
+                    var wToSet = PQCConstants.imagePaintedSize.width
+                    var hToSet = PQCConstants.imagePaintedSize.height
+                    var toUpd = false
+                    if(wToSet < 1200) {
+                        wToSet = 1200
+                        toUpd = true
+                    }
+                    if(hToSet < 800) {
+                        hToSet = 800
+                        toUpd = true
+                    }
+                    if(toUpd) PQCNotify.updateWindowSize(wToSet, hToSet)
+
                     imageitem.forceActiveFocus()
                 }
 

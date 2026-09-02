@@ -142,6 +142,14 @@ public:
         return PQCScriptsImages::get().getMaxTextureLimit();
     }
 
+    Q_INVOKABLE void setFileLoadError(QString err) {
+               PQCScriptsImages::get().setFileLoadError(err);
+    }
+
+    Q_INVOKABLE void addFileLoadError(QString err) {
+               PQCScriptsImages::get().addFileLoadError(err);
+    }
+
     Q_INVOKABLE QString getFileLoadError() {
         return PQCScriptsImages::get().getFileLoadError();
     }
