@@ -150,6 +150,15 @@ Flickable {
             }
         }
 
+        Text {
+            text: qsTr("NOTE: Changing the path to LibreOffice requires a restart of PreviewQt.")
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            width: parent.width
+            color: palette.text
+            font.pointSize: 9
+            font.italic: true
+        }
+
         /************************************/
 
         Rectangle {

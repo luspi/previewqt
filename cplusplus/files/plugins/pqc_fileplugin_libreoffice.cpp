@@ -63,27 +63,6 @@ PQCFilePluginLibreOffice::PQCFilePluginLibreOffice() {
 
     m_suffixesWithNoFixedSize << "ods" << "xls" << "xlsx" << "xlsm" << "xlst" << "xltx";
 
-    resetLibreOffice();
-
-#endif
-
-    connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::settingsReloaded, this, [this]() {
-        delete office;
-        resetLibreOffice();
-    });
-
-}
-
-PQCFilePluginLibreOffice::~PQCFilePluginLibreOffice() {
-#ifdef PQMLIBREOFFICE
-    delete office;
-#endif
-}
-
-void PQCFilePluginLibreOffice::resetLibreOffice() {
-
-#ifdef PQMLIBREOFFICE
-
     if(PQCSettingsCPP::get().getCustomLibreOffice() && QFile::exists(PQCSettingsCPP::get().getCustomLibreOfficePath() % "/program")) {
 
         office = lok::lok_cpp_init(PQCSettingsCPP::get().getCustomLibreOfficePath().toStdString().c_str());
@@ -112,6 +91,12 @@ void PQCFilePluginLibreOffice::resetLibreOffice() {
 
 }
 
+PQCFilePluginLibreOffice::~PQCFilePluginLibreOffice() {
+#ifdef PQMLIBREOFFICE
+    delete office;
+#endif
+}
+
 const int PQCFilePluginLibreOffice::loadNumPages(QString path) {
 
 #ifdef PQMLIBREOFFICE
@@ -134,10 +119,9 @@ const int PQCFilePluginLibreOffice::loadNumPages(QString path) {
         return 0;
     }
 
-    const int num = lodoc->getParts();
-    delete lodoc;
+    // a delete of lodoc here might cause a CRASH!
 
-    return num;
+    return lodoc->getParts();
 
 #endif
 
@@ -221,7 +205,7 @@ const QImage PQCFilePluginLibreOffice::loadImage(QString path, QSize requestedSi
     lodoc->setClientZoom(100, 100, requestedSize.width(), requestedSize.height());
 
     int pageX = 0, pageY = 0;
-    long pageWidthTwips, pageHeightTwips;
+    long pageWidthTwips = 0, pageHeightTwips = 0;
 
     if(m_suffixesWithNoFixedSize.contains(suffix)) {
 
