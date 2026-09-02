@@ -48,6 +48,9 @@ public:
     int getNumPages(QString plugin, QString path);
     QStringList getContent(QString plugin, QString path);
 
+    // this is called by `--process-only` and returns a JSON string with the result
+    QJsonObject getJSON(QString path, QStringList extraArguments = {});
+
     int getNumFormats() { return m_numEnabled; }
     int getNumFormatsFormats() { return m_numEnabledFormats; }
 

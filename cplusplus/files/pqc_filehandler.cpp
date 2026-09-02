@@ -46,6 +46,7 @@
 #include <fileplugins/pqc_fileplugin_ebook.h>
 
 #include <QMimeDatabase>
+#include <QJsonObject>
 
 PQCFileHandler::PQCFileHandler() {
 
@@ -370,6 +371,27 @@ QStringList PQCFileHandler::getContent(QString plugin, QString path) {
     if(m_imagePluginOrder.contains(plugin))
         return m_plugins.value(plugin)->loadContent(path);
     return {};
+}
+
+QJsonObject PQCFileHandler::getJSON(QString path, QStringList extraArguments) {
+
+    for(const QString &name : std::as_const(m_pluginOrder)) {
+
+        if(!m_plugins.contains(name)) continue;
+
+        PQCFilePlugin *plugin = m_plugins[name];
+
+        QJsonObject json = plugin->loadJSON(path);
+        if(!json.isEmpty())
+            return json;
+
+    }
+
+    QJsonObject json;
+    json["supported"] = false;
+
+    return json;
+
 }
 
 const QStringList PQCFileHandler::getPossiblePluginsFor(QString path) {

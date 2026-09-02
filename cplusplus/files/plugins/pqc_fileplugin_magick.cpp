@@ -28,6 +28,7 @@
 
 #include <QFile>
 #include <QtDebug>
+#include <QMimeDatabase>
 
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
 #include <Magick++/CoderInfo.h>
@@ -475,5 +476,30 @@ const QImage PQCFilePluginMagick::loadImage(QString path, QSize requestedSize, Q
 #endif
 
     return QImage();
+
+}
+
+const QJsonObject PQCFilePluginMagick::loadJSON(QString path) {
+
+    const QString suffix1 = QFileInfo(path).suffix().toLower();
+    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+    QMimeDatabase db;
+    QString mime = db.mimeTypeForFile(path).name();
+
+    if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
+        return {};
+
+    QJsonObject typeJson;
+    typeJson["original"] = "image";
+    typeJson["preview"] = "image";
+
+    QJsonObject json;
+    json["supported"] = true;
+    json["filename"] = QFileInfo(path).fileName();
+    json["type"] = typeJson;
+    json["mimetype"] = mime;
+    json["loadpath"] = path;
+
+    return json;
 
 }

@@ -134,6 +134,9 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     // only process and provide generic way to access rendered file
     if(processonly) {
 
+        QJsonObject json = PQCFileHandler::get().getJSON(file);
+        std::cout << QJsonDocument(json).toJson().toStdString();
+
         if(QFileInfo::exists(PQCScriptsFilesPaths::get().cleanPath(file)))
             PQCSpecialActions::processOnly(file, fileNumInside);
         else

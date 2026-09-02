@@ -23,7 +23,6 @@
 
 #include <fileplugins/pqc_fileplugin.h>
 #include <QSet>
-#include <QMutex>
 
 class PQCFilePluginDevIL : public PQCFilePlugin {
 
@@ -36,6 +35,7 @@ public:
     const QVariantList loadData(QString path) override { return {}; }
     const int loadNumPages(QString path) override { return 1; }
     const QStringList loadContent(QString path) override { return {path}; }
+    const QJsonObject loadJSON(QString path) override { return {}; }
 
 private:
 #ifdef PQMDEVIL

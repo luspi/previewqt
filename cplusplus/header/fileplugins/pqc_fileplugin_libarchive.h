@@ -35,6 +35,7 @@ public:
     const QVariantList loadData(QString path) override { return {}; }
     const int loadNumPages(QString path) override;
     const QStringList loadContent(QString path) override;
+    const QJsonObject loadJSON(QString path) override { return {}; }
 
 private:
     QString m_cachePath;

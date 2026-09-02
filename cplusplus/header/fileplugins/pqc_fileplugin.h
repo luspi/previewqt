@@ -27,6 +27,7 @@
 #include <QSet>
 #include <QImage>
 #include <QFileInfo>
+#include <QJsonObject>
 
 class QTimer;
 
@@ -60,6 +61,10 @@ public:
     // Load all files contained in the provided file
     // For normal images this is just the path itself
     virtual const QStringList loadContent(QString path) = 0;
+
+    // This processes the input (if possible) and returns a JSON structure
+    // describing the result
+    virtual const QJsonObject loadJSON(QString path) = 0;
 
     /****************************************************/
     /****************************************************/
