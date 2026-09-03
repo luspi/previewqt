@@ -49,7 +49,7 @@ const QVariantList PQCFilePluginPQT::loadData(QString path) {
 
     if(suffix == "pqe") {
 
-        QVariantList ret = PQCHelper::extractFileFromArchive(path, "", "", "definition.yml");
+        QVariantList ret = PQCHelper::extractFileFromArchive(path, "", "", "manifest.yml");
 
         if(!ret.length())
             return {false, "No data found"};
