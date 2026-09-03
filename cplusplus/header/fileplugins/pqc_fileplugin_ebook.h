@@ -37,5 +37,6 @@ public:
     const QVariantList loadData(QString path) override { return {}; }
     const int loadNumPages(QString path) override { return 1; }
     const QStringList loadContent(QString path) override { return {path}; }
+    const QJsonObject loadJSON(QString path, QVariantMap extraArguments) override;
 
 };

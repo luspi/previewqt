@@ -240,3 +240,16 @@ const QImage PQCFilePluginPDF::loadImage(QString path, QSize requestedSize, QSiz
     return QImage();
 
 }
+
+const QJsonObject PQCFilePluginPDF::loadJSON(QString path, QVariantMap extraArguments) {
+
+    QJsonObject json = loadJSON_image(path, extraArguments);
+
+    if(json.isEmpty()) return json;
+
+    json["type"] = "document";
+    json["pageCount"] = loadNumPages(path);
+
+    return json;
+
+}

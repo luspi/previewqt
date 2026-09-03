@@ -384,3 +384,7 @@ const QImage PQCFilePluginLibraw::loadImage(QString path, QSize requestedSize, Q
     return QImage();
 
 }
+
+const QJsonObject PQCFilePluginLibraw::loadJSON(QString path, QVariantMap extraArguments) {
+    return loadJSON_image(path, extraArguments);
+}

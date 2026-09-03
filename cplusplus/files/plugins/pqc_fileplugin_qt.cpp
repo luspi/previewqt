@@ -32,6 +32,7 @@
 #include <QImageWriter>
 #include <QSvgRenderer>
 #include <QPainter>
+#include <QMimeDatabase>
 
 PQCFilePluginQt::PQCFilePluginQt() {
 
@@ -336,4 +337,8 @@ const QImage PQCFilePluginQt::loadImage(QString path, QSize requestedSize, QSize
 
     }
 
+}
+
+const QJsonObject PQCFilePluginQt::loadJSON(QString path, QVariantMap extraArguments) {
+    return loadJSON_image(path, extraArguments);
 }

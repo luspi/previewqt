@@ -225,3 +225,7 @@ const QImage PQCFilePluginLibVips::loadImage(QString path, QSize requestedSize, 
     return QImage();
 
 }
+
+const QJsonObject PQCFilePluginLibVips::loadJSON(QString path, QVariantMap extraArguments) {
+    return loadJSON_image(path, extraArguments);
+}

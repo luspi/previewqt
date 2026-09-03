@@ -260,3 +260,47 @@ const QImage PQCFilePluginLibreOffice::loadImage(QString path, QSize requestedSi
     return QImage();
 
 }
+
+const QJsonObject PQCFilePluginLibreOffice::loadJSON(QString path, QVariantMap extraArguments) {
+
+    const QString suffix1 = QFileInfo(path).suffix().toLower();
+    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+    QMimeDatabase db;
+    QString mime = db.mimeTypeForFile(path).name();
+
+    if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime)) {
+        return {};
+    }
+
+    const QString targetFormat = extraArguments["targetFormat"].toString();
+
+    QString returnPath = path;
+
+    if(targetFormat != "UNCHANGED" && QFileInfo(path).suffix().toLower() != targetFormat) {
+
+        returnPath = PQCConfigFiles::get().CACHE_DIR() % "/processed." % targetFormat.toLower();
+
+        QSize orig;
+        QString err;
+        // we need to use a requested size here as otherwise the loader will fail
+        QImage img = loadImage(path, QSize(2000,2000), orig, err);
+
+        if(img.isNull())
+            return {};
+
+        QImageWriter writer(returnPath);
+        writer.write(img);
+
+    }
+
+    QJsonObject json;
+    json["supported"] = true;
+    json["filename"] = QFileInfo(path).fileName();
+    json["type"] = "office";
+    json["mimetype"] = mime;
+    json["loadpath"] = returnPath;
+    json["pageCount"] = loadNumPages(path);
+
+    return json;
+
+}

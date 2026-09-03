@@ -573,3 +573,17 @@ const QImage PQCFilePluginLibarchive::loadImage(QString path, QSize requestedSiz
     return QImage();
 
 }
+
+const QJsonObject PQCFilePluginLibarchive::loadJSON(QString path, QVariantMap extraArguments) {
+
+    QJsonObject json = loadJSON_image(path, extraArguments);
+
+    if(json.isEmpty()) return json;
+
+    json["type"] = "archive";
+    json["fileCount"] = loadNumPages(path);
+    json["files"] = loadContent(path).join(":");
+
+    return json;
+
+}

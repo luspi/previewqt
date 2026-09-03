@@ -28,6 +28,8 @@
 
 #include <QFile>
 #include <QtDebug>
+#include <QMimeDatabase>
+#include <QImageWriter>
 
 #ifdef PQMOPENSLIDE
 #include <openslide/openslide.h>
@@ -252,4 +254,8 @@ const QImage PQCFilePluginOpenSlide::loadImage(QString path, QSize requestedSize
 
     return QImage();
 
+}
+
+const QJsonObject PQCFilePluginOpenSlide::loadJSON(QString path, QVariantMap extraArguments) {
+    return loadJSON_image(path, extraArguments);
 }

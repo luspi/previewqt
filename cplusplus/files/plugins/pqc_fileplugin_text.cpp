@@ -53,3 +53,37 @@ PQCFilePluginText::PQCFilePluginText() {
           {{"Desktop file"}, {"desktop"}, {"application/x-desktop"}}}});
 
 }
+
+const QJsonObject PQCFilePluginText::loadJSON(QString path, QVariantMap extraArguments) {
+
+    const QString suffix1 = QFileInfo(path).suffix().toLower();
+    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+    QMimeDatabase db;
+    QString mime = db.mimeTypeForFile(path).name();
+
+    if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
+        return {};
+
+    QJsonObject typeJson;
+    typeJson["original"] = "text";
+    typeJson["preview"] = "text";
+
+    QJsonObject json;
+    json["supported"] = true;
+    json["filename"] = QFileInfo(path).fileName();
+    json["type"] = typeJson;
+    json["mimetype"] = mime;
+    json["loadpath"] = path;
+
+    QFile file(path);
+    if(!file.open(QIODevice::ReadOnly)) {
+        json["data"] = "(failed to open file)";
+        return json;
+    }
+
+    QTextStream in(&file);
+    json["data"] = in.readAll();
+
+    return json;
+
+}

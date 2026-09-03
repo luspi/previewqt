@@ -28,6 +28,8 @@
 
 #include <QFile>
 #include <QtDebug>
+#include <QMimeDatabase>
+#include <QImageWriter>
 
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
 #include <Magick++/CoderInfo.h>
@@ -476,4 +478,8 @@ const QImage PQCFilePluginMagick::loadImage(QString path, QSize requestedSize, Q
 
     return QImage();
 
+}
+
+const QJsonObject PQCFilePluginMagick::loadJSON(QString path, QVariantMap extraArguments) {
+    return loadJSON_image(path, extraArguments);
 }

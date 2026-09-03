@@ -42,11 +42,20 @@
 #include <pqc_specialactions.h>
 #include <pqc_filehandler.h>
 
+#ifdef PQMDEVIL
+#include <IL/il.h>
+#endif
+
+#ifdef PQMLIBVIPS
+#include <vips/vips.h>
+#endif
+
 PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(argc, argv) {
 
     // some possible parameter handling
     QString file = "";
     bool processonly = false;
+    QString processonlyTargetFormat = "JPG";
     bool loadselected = false;
     int fileNumInside = 0;
     bool setDebug = false;
@@ -99,6 +108,19 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
             processonly = true;
 
+        } else if(arg == "--process-only-target-format" && i < argc-1) {
+
+            processonlyTargetFormat = argv[++i];
+            if(processonlyTargetFormat != "JPG" && processonlyTargetFormat != "PNG" && processonlyTargetFormat != "UNCHANGED") {
+                std::cout << std::endl
+                          << " ** Invalid format specified! **"
+                          << std::endl << std::endl
+                          << "  Possible options are: JPG, PNG, UNCHANGED"
+                          << std::endl << std::endl;;
+                std::exit(0);
+                return;
+            }
+
 #ifdef Q_OS_UNIX
         } else if(arg == "--load-selected-file") {
 
@@ -134,10 +156,23 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     // only process and provide generic way to access rendered file
     if(processonly) {
 
-        if(QFileInfo::exists(PQCScriptsFilesPaths::get().cleanPath(file)))
-            PQCSpecialActions::processOnly(file, fileNumInside);
-        else
-            std::cout << std::endl << "Not sure how to process this file... exiting." << std::endl << std::endl;
+        // some plugins require special init/shutdown
+        // we need to make sure to do this here to avoid potential issues
+
+#ifdef PQMDEVIL
+        ilInit();
+#endif
+#ifdef PQMLIBVIPS
+        // If the libvips plugin is enabled we need
+        VIPS_INIT(argv[0]);
+#endif
+
+        QJsonObject json = PQCFileHandler::get().getJSON(file, {{"targetFormat", processonlyTargetFormat}});
+        std::cout << QJsonDocument(json).toJson().toStdString();
+
+#ifdef PQMLIBVIPS
+        vips_shutdown();
+#endif
 
         std::exit(0);
         return;
@@ -253,6 +288,7 @@ void PQCSingleInstance::showHelpMessage() {
     std::cout << std::setw(15) << std::right << "  --show-info" << "   " << "Show configuration overview." << std::endl;
     std::cout << std::setw(15) << std::right << "  --debug" << "   " << "Show debug messages." << std::endl;
     std::cout << std::setw(15) << std::right << "  --process-only" << "   " << "Process file, provide path to processed file, and print some information." << std::endl;
+    std::cout << std::setw(15) << std::right << "  --process-only-target-format" << "   " << "If processing results in an image file, specify a requested target format (*JPG*, PNG, UNCHANGED)" << std::endl;
 #ifdef Q_OS_UNIX
     std::cout << std::setw(15) << std::right << "  --load-selected-file" << "   " << "Load any file selected in the currently active file manager." << std::endl;
 #endif

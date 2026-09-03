@@ -233,3 +233,7 @@ QString PQCFilePluginDevIL::checkForError() {
     return errormsg;
 }
 #endif
+
+const QJsonObject PQCFilePluginDevIL::loadJSON(QString path, QVariantMap extraArguments) {
+    return loadJSON_image(path, extraArguments);
+}

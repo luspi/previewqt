@@ -21,6 +21,7 @@
  **************************************************************************/
 
 #include <fileplugins/pqc_fileplugin_musescore.h>
+#include <pqc_filehandler.h>
 #include <pqc_settingscpp.h>
 #include <QtDebug>
 #include <QProcess>
@@ -144,4 +145,59 @@ const QVariantList PQCFilePluginMuseScore::loadData(QString path) {
 
 const int PQCFilePluginMuseScore::loadNumPages(QString path) {
     return QDir(musescoreTempDir).entryList({"*.svg"}, QDir::Files).count();
+}
+
+const QJsonObject PQCFilePluginMuseScore::loadJSON(QString path, QVariantMap extraArguments) {
+
+    const QString suffix1 = QFileInfo(path).suffix().toLower();
+    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+    QMimeDatabase db;
+    QString mime = db.mimeTypeForFile(path).name();
+
+    if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime)) {
+        return {};
+    }
+
+    QVariantList data = loadData(path);
+
+    if(!data[0].toBool())
+        return {};
+
+    QString loadPath = data[1].toString() % "/page-1.svg";
+
+    const QString targetFormat = extraArguments["targetFormat"].toString();
+
+    QString returnPath = loadPath;
+
+    if(targetFormat != "UNCHANGED") {
+
+        returnPath = PQCConfigFiles::get().CACHE_DIR() % "/processed." % targetFormat.toLower();
+
+        QSize orig;
+        QString err;
+        // we need to use a requested size here as otherwise the loader will fail
+        QImage img = PQCFileHandler::get().getImage(loadPath, QSize(-1,-1), orig, err);
+
+        if(img.isNull())
+            return {};
+
+        QImageWriter writer(returnPath);
+        writer.write(img);
+
+    }
+
+    QJsonObject typeJson;
+    typeJson["original"] = "musescore";
+    typeJson["preview"] = "image";
+
+    QJsonObject json;
+    json["supported"] = true;
+    json["filename"] = QFileInfo(path).fileName();
+    json["type"] = typeJson;
+    json["mimetype"] = mime;
+    json["loadpath"] = returnPath;
+    json["pageCount"] = loadNumPages(path);
+
+    return json;
+
 }
