@@ -186,14 +186,10 @@ const QJsonObject PQCFilePluginMuseScore::loadJSON(QString path, QVariantMap ext
 
     }
 
-    QJsonObject typeJson;
-    typeJson["original"] = "musescore";
-    typeJson["preview"] = "image";
-
     QJsonObject json;
     json["supported"] = true;
     json["filename"] = QFileInfo(path).fileName();
-    json["type"] = typeJson;
+    json["type"] = "musescore";
     json["mimetype"] = mime;
     json["loadpath"] = returnPath;
     json["pageCount"] = loadNumPages(path);

@@ -64,14 +64,10 @@ const QJsonObject PQCFilePluginText::loadJSON(QString path, QVariantMap extraArg
     if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
         return {};
 
-    QJsonObject typeJson;
-    typeJson["original"] = "text";
-    typeJson["preview"] = "text";
-
     QJsonObject json;
     json["supported"] = true;
     json["filename"] = QFileInfo(path).fileName();
-    json["type"] = typeJson;
+    json["type"] = "text";
     json["mimetype"] = mime;
     json["loadpath"] = path;
 

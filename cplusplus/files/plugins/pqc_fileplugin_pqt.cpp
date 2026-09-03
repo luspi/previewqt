@@ -149,14 +149,10 @@ const QJsonObject PQCFilePluginPQT::loadJSON(QString path, QVariantMap extraArgu
     if(!data.length() || !data[0].toBool())
         return {};
 
-    QJsonObject typeJson;
-    typeJson["original"] = "photoqt";
-    typeJson["preview"] = "photoqt";
-
     QJsonObject json;
     json["supported"] = true;
     json["filename"] = QFileInfo(path).fileName();
-    json["type"] = typeJson;
+    json["type"] = "photoqt";
     json["mimetype"] = mime;
     json["loadpath"] = path;
 
