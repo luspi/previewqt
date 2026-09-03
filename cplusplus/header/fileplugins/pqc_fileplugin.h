@@ -106,6 +106,7 @@ public:
         json["type"] = "image";
         json["mimetype"] = mime;
         json["loadpath"] = returnPath;
+        json["animated"] = false;
 
         return json;
 

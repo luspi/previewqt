@@ -23,6 +23,7 @@
 #include <fileplugins/pqc_fileplugin_qt.h>
 #include <pqc_settingscpp.h>
 #include <pqc_scriptsother.h>
+#include <pqc_scriptsimages.h>
 #include <pqc_helper.h>
 
 #include <QFile>
@@ -340,5 +341,8 @@ const QImage PQCFilePluginQt::loadImage(QString path, QSize requestedSize, QSize
 }
 
 const QJsonObject PQCFilePluginQt::loadJSON(QString path, QVariantMap extraArguments) {
-    return loadJSON_image(path, extraArguments);
+    QJsonObject json = loadJSON_image(path, extraArguments);
+    if(json.isEmpty()) return {};
+    json["animated"] = PQCScriptsImages::get().isItAnimated(path);
+    return json;
 }
