@@ -139,7 +139,7 @@ const QVariantList PQCFilePluginSQLite::loadData(QString path) {
     };
 
 
-    return {false, dat};
+    return {true, dat};
 }
 
 bool PQCFilePluginSQLite::execute(const QString sql, std::function<bool(QSqlQuery &)> callback) {
@@ -375,4 +375,106 @@ bool PQCFilePluginSQLite::inspectTriggers(DatabaseInfo &info) {
     }
 
     return true;
+}
+
+const QJsonObject PQCFilePluginSQLite::loadJSON(QString path, QVariantMap extraArguments) {
+
+    const QString suffix1 = QFileInfo(path).suffix().toLower();
+    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+    QMimeDatabase db;
+    QString mime = db.mimeTypeForFile(path).name();
+
+    if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
+        return {};
+
+    QVariantList data = loadData(path);
+    if(!data.length() || !data[0].toBool())
+        return {};
+
+    QJsonObject json;
+    json["supported"] = true;
+    json["filename"] = QFileInfo(path).fileName();
+    json["type"] = "sqlite";
+    json["mimetype"] = mime;
+    json["loadpath"] = path;
+
+    QJsonObject metadata;
+
+    QVariantMap dataMap = data[1].toMap();
+    QMapIterator<QString, QVariant> i(dataMap);
+    while(i.hasNext()) {
+        i.next();
+        if(i.key() == "tableNames")
+            metadata[i.key()] = QJsonValue::fromVariant(i.value().toStringList());
+        else if(i.key() == "tables") {
+            const QStringList allTablenames = dataMap["tableNames"].toStringList();
+            const QVariantList allTables = i.value().toList();
+            QJsonObject jsonAllTables;
+            for(int k = 0; k < allTables.length(); ++k) {
+                QVariant tab = allTables[k];
+                QJsonObject jsonTab;
+                const QVariantMap cur = tab.toMap();
+                QMapIterator<QString, QVariant> j(cur);
+                while(j.hasNext()) {
+                    j.next();
+
+                    if(j.key() == "columns") {
+                        QStringList composedColumns;
+                        QVariantList allColumns = j.value().toList();
+                        for(int c = 0; c < allColumns.length(); ++c) {
+                            QVariantMap colMap = allColumns[c].toMap();
+                            composedColumns.append(colMap["name"].toString() % " " % colMap["type"].toString() %
+                                                       (colMap["primaryKey"].toBool() ? " [PK]" : "") %
+                                                       (colMap["notNull"].toBool() ? " [NOT NULL]" : "") %
+                                                       (colMap["generated"].toBool() ? " [GENERATED]" : "") %
+                                                       (colMap["defaultValue"].toString()!="" ? (" DEFAULT " + colMap["defaultValue"].toString()) : ""));
+                        }
+                        jsonTab["columns"] = QJsonValue::fromVariant(composedColumns);
+
+                    } else if(j.key() == "foreignKeys") {
+
+                        QStringList composedForeign;
+                        QVariantList allForeigns = j.value().toList();
+                        for(int c = 0; c < allForeigns.length(); ++c) {
+                            QVariantMap forMap = allForeigns[c].toMap();
+                            composedForeign.append(forMap["from"].toString() % " -> " % forMap["to"].toString() %
+                                                   " [" % forMap["onUpdate"].toString() % " / " % forMap["onDelete"].toString() % "]");
+                        }
+                        jsonTab["foreignKeys"] = QJsonValue::fromVariant(composedForeign);
+
+                    } else if(j.key() == "indexes") {
+
+                        QStringList composedIndex;
+                        QVariantList allIndexes = j.value().toList();
+                        for(int c = 0; c < allIndexes.length(); ++c) {
+                            QVariantMap indMap = allIndexes[c].toMap();
+                            composedIndex.append(indMap["name"].toString() % " " % indMap["columns"].toStringList().join(", ") %
+                                                 (indMap["unique"].toBool() ? " [UNIQUE]" : ""));
+                        }
+                        jsonTab["indexes"] = QJsonValue::fromVariant(composedIndex);
+
+                    } else
+                        jsonTab[j.key()] = j.value().toString();
+                }
+                jsonAllTables[allTablenames[k]] = jsonTab;
+            }
+            metadata["tables"] = jsonAllTables;
+        } else if(i.key() == "triggers") {
+
+            QStringList composedTriggers;
+            QVariantList allTriggers = i.value().toList();
+            for(int c = 0; c < allTriggers.length(); ++c) {
+                QVariantMap triMap = allTriggers[c].toMap();
+                composedTriggers.append(triMap["name"].toString() % " -> " % triMap["table"].toString());
+            }
+            metadata["triggers"] = QJsonValue::fromVariant(composedTriggers);
+
+        } else
+            metadata[i.key()] = i.value().toString();
+    }
+
+    json["data"] = metadata;
+
+    return json;
+
 }
