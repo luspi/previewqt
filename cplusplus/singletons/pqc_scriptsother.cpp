@@ -341,17 +341,17 @@ bool PQCScriptsOther::applyEmbeddedColorProfile(QImage &img) {
     int lcms2targetFormat = toLcmsFormat(img.format());
 
     if(lcms2SourceFormat == 0 || lcms2targetFormat == 0) {
-        qWarning() << "Unknown image format. Attempting to convert image to format known to LCMS2.";
+        qDebug() << "Unknown image format. Attempting to convert image to format known to LCMS2.";
         img.convertTo(QImage::Format_ARGB32);
         targetFormat = QImage::Format_RGB32;
         lcms2SourceFormat = toLcmsFormat(img.format());
         lcms2targetFormat = lcms2SourceFormat;
         if(img.isNull()) {
-            qWarning() << "Error converting image to ARGB32. Not applying color profile.";
+            qDebug() << "Error converting image to ARGB32. Not applying color profile.";
             return false;
         }
         if(lcms2targetFormat == 0) {
-            qWarning() << "Unable to 'fix' image format. Not applying color profile.";
+            qDebug() << "Unable to 'fix' image format. Not applying color profile.";
             return false;
         }
     }
@@ -364,7 +364,7 @@ bool PQCScriptsOther::applyEmbeddedColorProfile(QImage &img) {
     if (!transform) {
         // Handle error, maybe close profile and return original image or null image
         cmsCloseProfile(targetProfile);
-        qWarning() << "Error creating transform for external color profile";
+        qDebug() << "Error creating transform for external color profile";
         return false;
     } else {
 
@@ -378,7 +378,7 @@ bool PQCScriptsOther::applyEmbeddedColorProfile(QImage &img) {
 
         // transform failed returning null image
         if(ret.isNull()) {
-            qWarning() << "Failed to apply external color profile, null image returned";
+            qDebug() << "Failed to apply external color profile, null image returned";
             return false;
         }
 
@@ -397,7 +397,7 @@ bool PQCScriptsOther::applyEmbeddedColorProfile(QImage &img) {
         }
 
         if(allblack) {
-            qWarning() << "Failed to apply external color profile, image completely black";
+            qDebug() << "Failed to apply external color profile, image completely black";
             return false;
         }
 
