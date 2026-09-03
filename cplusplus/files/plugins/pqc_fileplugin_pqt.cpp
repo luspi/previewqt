@@ -134,3 +134,45 @@ const QVariantList PQCFilePluginPQT::loadData(QString path) {
     return {false, "Unsupported file type. How did you get here?"};
 
 }
+
+const QJsonObject PQCFilePluginPQT::loadJSON(QString path, QVariantMap extraArguments) {
+
+    const QString suffix1 = QFileInfo(path).suffix().toLower();
+    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+    QMimeDatabase db;
+    QString mime = db.mimeTypeForFile(path).name();
+
+    if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
+        return {};
+
+    QVariantList data = loadData(path);
+    if(!data.length() || !data[0].toBool())
+        return {};
+
+    QJsonObject typeJson;
+    typeJson["original"] = "photoqt";
+    typeJson["preview"] = "photoqt";
+
+    QJsonObject json;
+    json["supported"] = true;
+    json["filename"] = QFileInfo(path).fileName();
+    json["type"] = typeJson;
+    json["mimetype"] = mime;
+    json["loadpath"] = path;
+
+    QJsonObject metadata;
+
+    QMapIterator<QString, QVariant> i(data[1].toMap());
+    while(i.hasNext()) {
+        i.next();
+        if(i.key() == "filelist")
+            metadata[i.key()] = i.value().toStringList().join(":");
+        else
+            metadata[i.key()] = i.value().toString();
+    }
+
+    json["data"] = metadata;
+
+    return json;
+
+}

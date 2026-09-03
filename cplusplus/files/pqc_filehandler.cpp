@@ -373,7 +373,7 @@ QStringList PQCFileHandler::getContent(QString plugin, QString path) {
     return {};
 }
 
-QJsonObject PQCFileHandler::getJSON(QString path, QStringList extraArguments) {
+QJsonObject PQCFileHandler::getJSON(QString path, QVariantMap extraArguments) {
 
     for(const QString &name : std::as_const(m_pluginOrder)) {
 
@@ -381,7 +381,7 @@ QJsonObject PQCFileHandler::getJSON(QString path, QStringList extraArguments) {
 
         PQCFilePlugin *plugin = m_plugins[name];
 
-        QJsonObject json = plugin->loadJSON(path);
+        QJsonObject json = plugin->loadJSON(path, extraArguments);
         if(!json.isEmpty())
             return json;
 

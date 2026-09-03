@@ -243,6 +243,10 @@ const QImage PQCFilePluginLibsai::loadImage(QString path, QSize requestedSize, Q
 
 }
 
+const QJsonObject PQCFilePluginLibsai::loadJSON(QString path, QVariantMap extraArguments) {
+    return loadJSON_image(path, extraArguments);
+}
+
 #ifdef PQMLIBSAI
 
 /*********************************************************************/

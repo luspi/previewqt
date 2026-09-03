@@ -165,3 +165,7 @@ const QImage PQCFilePluginResvg::loadImage(QString path, QSize requestedSize, QS
     return QImage();
 
 }
+
+const QJsonObject PQCFilePluginResvg::loadJSON(QString path, QVariantMap extraArguments) {
+    return loadJSON_image(path, extraArguments);
+}

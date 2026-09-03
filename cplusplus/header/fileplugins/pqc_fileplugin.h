@@ -28,6 +28,8 @@
 #include <QImage>
 #include <QFileInfo>
 #include <QJsonObject>
+#include <QMimeDatabase>
+#include <QImageWriter>
 
 class QTimer;
 
@@ -64,7 +66,50 @@ public:
 
     // This processes the input (if possible) and returns a JSON structure
     // describing the result
-    virtual const QJsonObject loadJSON(QString path) = 0;
+    virtual const QJsonObject loadJSON(QString path, QVariantMap extraArguments) = 0;
+
+    // images are all loaded with the exact same methods, so we define that code here once and call it
+    // in the respective plugins
+    virtual const QJsonObject loadJSON_image(QString path, QVariantMap extraArguments) {
+
+        const QString suffix1 = QFileInfo(path).suffix().toLower();
+        const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+        QMimeDatabase db;
+        QString mime = db.mimeTypeForFile(path).name();
+
+        if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
+            return {};
+
+        const QString targetFormat = extraArguments["targetFormat"].toString();
+
+        QString returnPath = path;
+
+        if(targetFormat != "UNCHANGED" && QFileInfo(path).suffix().toLower() != targetFormat) {
+
+            returnPath = PQCConfigFiles::get().CACHE_DIR() % "/processed." % targetFormat.toLower();
+
+            QSize orig;
+            QString err;
+            QImage img = loadImage(path, QSize(-1,-1), orig, err);
+
+            if(img.isNull())
+                return {};
+
+            QImageWriter writer(returnPath);
+            writer.write(img);
+
+        }
+
+        QJsonObject json;
+        json["supported"] = true;
+        json["filename"] = QFileInfo(path).fileName();
+        json["type"] = "image";
+        json["mimetype"] = mime;
+        json["loadpath"] = returnPath;
+
+        return json;
+
+    };
 
     /****************************************************/
     /****************************************************/

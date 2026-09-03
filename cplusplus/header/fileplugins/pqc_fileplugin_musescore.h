@@ -38,7 +38,7 @@ public:
     const QVariantList loadData(QString path) override;
     const int loadNumPages(QString path) override;
     const QStringList loadContent(QString path) override { return {}; };
-    const QJsonObject loadJSON(QString path) override { return {}; }
+    const QJsonObject loadJSON(QString path, QVariantMap extraArguments) override;
 
 private:
     QProcess *musescoreProcess;
