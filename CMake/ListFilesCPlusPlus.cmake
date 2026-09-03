@@ -30,6 +30,7 @@ SET(previewqt_SRC cplusplus/main.cpp
                   cplusplus/files/plugins/pqc_fileplugin_openslide.cpp
                   cplusplus/files/plugins/pqc_fileplugin_musescore.cpp
                   cplusplus/files/plugins/pqc_fileplugin_pqt.cpp
+                  cplusplus/files/plugins/pqc_fileplugin_sqlite.cpp
 
                   cplusplus/files/pqc_filehandler.cpp
                   cplusplus/files/pqc_imageproviderfull.cpp
@@ -82,6 +83,7 @@ SET(previewqt_SRC cplusplus/main.cpp
                   cplusplus/header/fileplugins/pqc_fileplugin_openslide.h
                   cplusplus/header/fileplugins/pqc_fileplugin_musescore.h
                   cplusplus/header/fileplugins/pqc_fileplugin_pqt.h
+                  cplusplus/header/fileplugins/pqc_fileplugin_sqlite.h
 )
 
 if(WITH_LIBMPV)

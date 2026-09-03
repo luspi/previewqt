@@ -61,6 +61,7 @@ public:
     bool isPackage(QString path);
     bool isMuseScore(QString path);
     bool isPQT(QString path);
+    bool isSQLite(QString path);
 
     QString findCoverImageNextToFile(QString path);
 

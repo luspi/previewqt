@@ -114,6 +114,10 @@ public:
         return PQCScriptsImages::get().isPQT(path);
     }
 
+    Q_INVOKABLE bool isSQLite(QString path) {
+        return PQCScriptsImages::get().isSQLite(path);
+    }
+
     Q_INVOKABLE QString findCoverImageNextToFile(QString path) {
         return PQCScriptsImages::get().findCoverImageNextToFile(path);
     }

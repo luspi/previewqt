@@ -45,6 +45,7 @@ Q_SIGNALS:
     void mainwindowKeyPress(int modifiers, int keycode);
     void mainwindowClose();
     void updateWindowSize(int w, int h);
+    void updateWindowSizeDefault();
 
     void closeAllMenus();
     void trayiconShowNotification(QString title, QString txt);

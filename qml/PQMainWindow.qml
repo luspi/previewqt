@@ -690,6 +690,23 @@ ApplicationWindow {
 
         }
 
+        function onUpdateWindowSizeDefault() {
+
+            var wToSet = PQCConstants.imagePaintedSize.width
+            var hToSet = PQCConstants.imagePaintedSize.height
+            var toUpd = false
+            if(Math.abs(wToSet-1200) > 10) {
+                wToSet = 1200
+                toUpd = true
+            }
+            if(Math.abs(hToSet-800) > 10) {
+                hToSet = 800
+                toUpd = true
+            }
+            if(toUpd) PQCNotify.updateWindowSize(wToSet, hToSet)
+
+        }
+
         function onMainwindowKeyPress(modifiers : int, keycode : int) {
             toplevel.processKeyEvent(modifiers, keycode)
         }

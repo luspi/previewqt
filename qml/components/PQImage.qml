@@ -153,6 +153,7 @@ Item {
         "url",
         "pdf",
         "libreoffice",
+        "sqlite",
         "ebook",
         "pqt",
         "libarchive",
@@ -166,13 +167,7 @@ Item {
         "audio",
         "package",
         "musescore",
-        "openslide",
-        "qt",
-        "libraw",
-        "libsai",
-        "magick",
-        "libvips",
-        "devil"
+        "image"
     ]
     property list<string> possiblePlugins: []
     property int possiblePluginIndex: 0
@@ -351,6 +346,11 @@ Item {
             PQCConstants.currentType = "msc"
             imageloader.sourceComponent = comp_mscz
 
+        } else if(plugin === "sqlite") {
+
+            PQCConstants.currentType = "dat"
+            imageloader.sourceComponent = comp_sql
+
         } else {
 
             PQCConstants.currentType = "img"
@@ -467,6 +467,11 @@ Item {
     Component {
         id: comp_mscz
         PQMuseScore {}
+    }
+
+    Component {
+        id: comp_sql
+        PQSQLite {}
     }
 
     // LOADING indicator

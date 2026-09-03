@@ -672,6 +672,21 @@ bool PQCScriptsImages::isPQT(QString path) {
 
 }
 
+bool PQCScriptsImages::isSQLite(QString path) {
+
+    const QSet<QString> suffixes = PQCFileHandler::get().getSuffixes("sqlite");
+    QFileInfo info(path);
+    if(suffixes.contains(info.suffix().toLower()) || suffixes.contains(info.completeSuffix().toLower()))
+        return true;
+
+    QMimeDatabase db;
+    if(PQCFileHandler::get().getMimetypes("sqlite").contains(db.mimeTypeForFile(path).name()))
+        return true;
+
+    return false;
+
+}
+
 QString PQCScriptsImages::findCoverImageNextToFile(QString path) {
 
     QStringList possibleSuffix = {"jpg", "jpeg", "png"};

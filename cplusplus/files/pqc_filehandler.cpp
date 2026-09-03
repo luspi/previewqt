@@ -40,6 +40,7 @@
 #include <fileplugins/pqc_fileplugin_openslide.h>
 #include <fileplugins/pqc_fileplugin_musescore.h>
 #include <fileplugins/pqc_fileplugin_pqt.h>
+#include <fileplugins/pqc_fileplugin_sqlite.h>
 
 #include <fileplugins/pqc_fileplugin_audio.h>
 #include <fileplugins/pqc_fileplugin_text.h>
@@ -91,6 +92,7 @@ PQCFileHandler::PQCFileHandler() {
         << "libmpv"
 #endif
         << "musescore"
+        << "sqlite"
     ;
 
     m_pluginOrder = m_imagePluginOrder;
@@ -156,6 +158,7 @@ PQCFileHandler::PQCFileHandler() {
 #endif
     m_plugins.insert("musescore", new PQCFilePluginMuseScore);
     m_plugins.insert("pqt", new PQCFilePluginPQT);
+    m_plugins.insert("sqlite", new PQCFilePluginSQLite);
 
     /*******************************************************/
 
