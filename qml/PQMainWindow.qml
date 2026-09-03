@@ -675,6 +675,10 @@ ApplicationWindow {
                     PQCConstants.mainwindowIsFullscreen || PQCConstants.mainwindowManuallyResized)
                 return
 
+            // we add a small padding
+            w += 10
+            h += 10
+
             var fitsize = PQCScriptsOther.fitSizeInsideSize(w, h, PQCSettings.defaultWindowWidth, PQCSettings.defaultWindowHeight)
 
             toplevelAni.stop()

@@ -115,6 +115,7 @@ Item {
         onMediaStatusChanged: {
             if(mediaStatus == MediaPlayer.LoadedMedia) {
                 PQCConstants.imageStatus = Image.Ready
+                PQCNotify.updateWindowSizeDefault()
                 musicPlayer.play()
                 PQCConstants.mediainfoIsAudio = true
             } else if(mediaStatus == MediaPlayer.InvalidMedia) {

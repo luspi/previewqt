@@ -157,6 +157,7 @@ Video {
         PQCConstants.imagePaintedSize.width = width
         if(width > 15 && height > 15) {
             PQCConstants.imageStatus = Image.Ready
+            PQCNotify.updateWindowSize(video.width, video.height)
         }
     }
 
@@ -164,6 +165,7 @@ Video {
         PQCConstants.imagePaintedSize.height = height
         if(width > 15 && height > 15) {
             PQCConstants.imageStatus = Image.Ready
+            PQCNotify.updateWindowSize(video.width, video.height)
         }
     }
 

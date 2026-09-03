@@ -81,7 +81,10 @@ Item {
     Timer {
         id: setStatusWithDelay
         interval: 100
-        onTriggered: PQCConstants.imageStatus = Image.Ready
+        onTriggered: {
+            PQCConstants.imageStatus = Image.Ready
+            PQCNotify.updateWindowSize(video.width, video.height)
+        }
     }
 
     PQCMPVObject {

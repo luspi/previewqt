@@ -77,9 +77,10 @@ Item {
                                                                                                  PQCConstants.imageAvailableSizeDelay.width)
 
         onStatusChanged: {
-            if(status == Image.Ready && source !== "")
+            if(status == Image.Ready && source !== "") {
                 asynchronous = false
-            else if(status == Image.Error)
+                PQCNotify.updateWindowSize(imageitem.paintedWidth, imageitem.paintedHeight)
+            } else if(status == Image.Error)
                 PQCScriptsImages.addFileLoadError("Document failed to load.")
             PQCConstants.imageStatus = status
         }

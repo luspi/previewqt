@@ -133,6 +133,7 @@ Item {
 
             Component.onCompleted: {
                 PQCConstants.imageStatus = Image.Ready
+                PQCNotify.updateWindowSizeDefault()
             }
 
         }

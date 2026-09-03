@@ -150,6 +150,8 @@ Item {
 
         PQCConstants.imagePaintedSize = Qt.binding(function() { return Qt.size(sphere_top.width, sphere_top.height) })
         PQCConstants.imageStatus = Image.Ready
+        PQCNotify.updateWindowSizeDefault()
+
     }
 
     // these are not handled with the behavior above because key events are handled smoother than mouse events

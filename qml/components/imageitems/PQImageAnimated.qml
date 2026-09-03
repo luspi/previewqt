@@ -58,8 +58,10 @@ Item {
 
         onStatusChanged: {
             PQCConstants.imageStatus = status
-            if(status == Image.Ready)
+            if(status == Image.Ready) {
                 imageitem.asynchronous = false
+                PQCNotify.updateWindowSize(imageitem.paintedWidth, imageitem.paintedHeight)
+            }
         }
 
         onPlayingChanged: {

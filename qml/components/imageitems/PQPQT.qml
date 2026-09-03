@@ -242,20 +242,8 @@ Rectangle {
         else if(suf === "pqt")
             pqt_top.isPQT = true
 
-        var wToSet = PQCConstants.imagePaintedSize.width
-        var hToSet = PQCConstants.imagePaintedSize.height
-        var toUpd = false
-        if(wToSet < 1000) {
-            wToSet = 1000
-            toUpd = true
-        }
-        if(hToSet < 700) {
-            hToSet = 700
-            toUpd = true
-        }
-        if(toUpd) PQCNotify.updateWindowSize(wToSet, hToSet)
-
         PQCConstants.imageStatus = Image.Ready
+        PQCNotify.updateWindowSizeDefault()
 
     }
 

@@ -76,9 +76,6 @@ Item {
 
         function onImageStatusChanged() {
             if(PQCConstants.imageStatus === Image.Ready) {
-                if(imageloader.item != null && PQCConstants.currentType !== "aud") {
-                    PQCNotify.updateWindowSize(PQCConstants.imagePaintedSize.width+10, PQCConstants.imagePaintedSize.height+10)
-                }
                 loading.hide()
             } else if(PQCConstants.imageStatus === Image.Error) {
                 possiblePluginIndex += 1

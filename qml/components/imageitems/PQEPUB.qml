@@ -241,8 +241,10 @@ Item {
                         Qt.size(PQCConstants.imageAvailableSizeDelay.width, PQCConstants.imageAvailableSizeDelay.height)
 
         onStatusChanged: {
-            if(status == Image.Ready)
+            if(status == Image.Ready) {
                 PQCConstants.imageStatus = Image.Ready
+                PQCNotify.updateWindowSize(coverimage.paintedWidth, coverimage.paintedHeight)
+            }
         }
 
     }
