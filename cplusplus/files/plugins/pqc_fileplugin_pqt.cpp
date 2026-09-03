@@ -162,7 +162,7 @@ const QJsonObject PQCFilePluginPQT::loadJSON(QString path, QVariantMap extraArgu
     while(i.hasNext()) {
         i.next();
         if(i.key() == "filelist")
-            metadata[i.key()] = i.value().toStringList().join(":");
+            metadata[i.key()] = QJsonValue::fromVariant(i.value().toStringList());
         else
             metadata[i.key()] = i.value().toString();
     }

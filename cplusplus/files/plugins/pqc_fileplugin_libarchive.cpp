@@ -582,7 +582,7 @@ const QJsonObject PQCFilePluginLibarchive::loadJSON(QString path, QVariantMap ex
 
     json["type"] = "archive";
     json["fileCount"] = loadNumPages(path);
-    json["files"] = loadContent(path).join(":");
+    json["files"] = QJsonValue::fromVariant(loadContent(path));
 
     return json;
 

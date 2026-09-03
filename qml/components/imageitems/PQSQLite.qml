@@ -406,7 +406,7 @@ Rectangle {
                                             const cur = delegTables.tableData["indexes"][i]
                                             txt.push(cur["name"] + " " +
                                                      "<i>" + cur["columns"].join(", ") + "</i>" +
-                                                     (cur["unique"] ? " [UNIQUE] " : ""))
+                                                     (cur["unique"] ? " [UNIQUE]" : ""))
                                         }
                                         return txt.join(", ")
                                     })()
