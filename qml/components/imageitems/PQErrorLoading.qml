@@ -103,10 +103,8 @@ Rectangle {
 
                 Component.onCompleted: {
                     PQCConstants.imageStatus = Image.Ready
-
                     PQCNotify.updateWindowSizeDefault()
-
-                    imageitem.forceActiveFocus()
+                    PQCNotify.resetFocus()
                 }
 
                 Component.onDestruction: {
