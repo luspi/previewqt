@@ -243,12 +243,49 @@ const QImage PQCFilePluginPDF::loadImage(QString path, QSize requestedSize, QSiz
 
 const QJsonObject PQCFilePluginPDF::loadJSON(QString path, QVariantMap extraArguments) {
 
-    QJsonObject json = loadJSON_image(path, extraArguments);
+    const QString suffix1 = QFileInfo(path).suffix().toLower();
+    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+    QMimeDatabase db;
+    QString mime = db.mimeTypeForFile(path).name();
 
-    if(json.isEmpty()) return json;
+    if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
+        return {};
 
+    const QString targetFormat = extraArguments["targetFormat"].toString();
+
+    const int maxPage = loadNumPages(path);
+
+    int page = (extraArguments.contains("fileNum") ? extraArguments["fileNum"].toInt() : 0);
+    if(page >= maxPage) page = maxPage-1;
+
+    QString returnPath = path;
+
+    if(targetFormat != "UNCHANGED" && QFileInfo(path).suffix().toLower() != targetFormat) {
+
+        returnPath = PQCConfigFiles::get().CACHE_DIR() % "/processed." % targetFormat.toLower();
+
+        QSize orig;
+        QString err;
+        QImage img = loadImage(QString::number(page) % "::PDF::" % path, QSize(-1,-1), orig, err);
+
+        if(img.isNull())
+            return {};
+
+        QImageWriter writer(returnPath);
+        writer.write(img);
+
+    }
+
+    QJsonObject json;
+    json["supported"] = true;
+    json["filename"] = QFileInfo(path).fileName();
     json["type"] = "document";
-    json["pageCount"] = loadNumPages(path);
+    json["mimetype"] = mime;
+    json["loadpath"] = returnPath;
+    json["animated"] = false;
+    json["pageCount"] = maxPage;
+    if(targetFormat != "UNCHANGED")
+        json["pageLoaded"] = page+1;
 
     return json;
 

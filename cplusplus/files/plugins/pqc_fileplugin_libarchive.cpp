@@ -576,13 +576,87 @@ const QImage PQCFilePluginLibarchive::loadImage(QString path, QSize requestedSiz
 
 const QJsonObject PQCFilePluginLibarchive::loadJSON(QString path, QVariantMap extraArguments) {
 
-    QJsonObject json = loadJSON_image(path, extraArguments);
+    const QString suffix1 = QFileInfo(path).suffix().toLower();
+    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+    QMimeDatabase db;
+    QString mime = db.mimeTypeForFile(path).name();
 
-    if(json.isEmpty()) return json;
+    if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
+        return {};
 
+    const QStringList cont = loadContent(path);
+
+    const QString targetFormat = extraArguments["targetFormat"].toString();
+
+    QString fileInside = (extraArguments.contains("fileName") ? extraArguments["fileName"].toString() : "");
+    QString returnPath = path;
+
+    if(targetFormat != "UNCHANGED" && QFileInfo(path).suffix().toLower() != targetFormat) {
+
+        returnPath = PQCConfigFiles::get().CACHE_DIR() % "/processed." % targetFormat.toLower();
+
+        // find full path of inside file
+        if(fileInside != "") {
+            QString fileFound = "";
+            if(fileInside.startsWith("*") && fileInside.endsWith("*")) {
+                fileInside = fileInside.sliced(1, fileInside.length()-2);
+                for(const QString &c : cont) {
+                    if(c.contains(fileInside)) {
+                        fileFound = c;
+                        break;
+                    }
+                }
+            } else if(fileInside.startsWith("*")) {
+                fileInside = fileInside.sliced(1);
+                for(const QString &c : cont) {
+                    if(c.endsWith(fileInside)) {
+                        fileFound = c;
+                        break;
+                    }
+                }
+            } else if(fileInside.endsWith("*")) {
+                fileInside = fileInside.sliced(0, fileInside.length()-1);
+                for(const QString &c : cont) {
+                    if(c.startsWith(fileInside)) {
+                        fileFound = c;
+                        break;
+                    }
+                }
+            } else {
+                for(const QString &c : cont) {
+                    if(c == fileInside) {
+                        fileFound = c;
+                        break;
+                    }
+                }
+            }
+            // we take this detour in order to set fileInside to "" if no match is found
+            fileInside = fileFound;
+        }
+
+        QSize orig;
+        QString err;
+        QImage img = loadImage(fileInside=="" ? path : (fileInside % "::ARC::" % path), QSize(-1,-1), orig, err);
+
+        if(img.isNull())
+            return {};
+
+        QImageWriter writer(returnPath);
+        writer.write(img);
+
+    }
+
+    QJsonObject json;
+    json["supported"] = true;
+    json["filename"] = QFileInfo(path).fileName();
     json["type"] = "archive";
+    json["mimetype"] = mime;
+    json["loadpath"] = returnPath;
+    json["animated"] = false;
     json["fileCount"] = loadNumPages(path);
-    json["files"] = QJsonValue::fromVariant(loadContent(path));
+    json["files"] = QJsonValue::fromVariant(cont);
+    if(targetFormat != "UNCHANGED")
+        json["fileLoaded"] = fileInside;
 
     return json;
 

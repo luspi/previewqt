@@ -59,6 +59,7 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     QString processonlyTargetFormat = "JPG";
     bool loadselected = false;
     int fileNumInside = 0;
+    QString fileNameInside = "";
     bool setDebug = false;
     bool quitRemote = false;
 
@@ -131,6 +132,10 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
 
             fileNumInside = atoi(argv[++i]);
 
+        } else if(arg == "--file-name" && i < argc-1) {
+
+            fileNameInside = argv[++i];
+
         } else if(arg == "--debug") {
 
             setDebug = true;
@@ -168,7 +173,9 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
         VIPS_INIT(argv[0]);
 #endif
 
-        QJsonObject json = PQCFileHandler::get().getJSON(file, {{"targetFormat", processonlyTargetFormat}});
+        QJsonObject json = PQCFileHandler::get().getJSON(file, {{"targetFormat", processonlyTargetFormat},
+                                                                {"fileNum", fileNumInside},
+                                                                {"fileName", fileNameInside}});
         std::cout << QJsonDocument(json).toJson().toStdString();
 
 #ifdef PQMLIBVIPS
@@ -293,7 +300,8 @@ void PQCSingleInstance::showHelpMessage() {
 #ifdef Q_OS_UNIX
     std::cout << std::setw(15) << std::right << "  --load-selected-file" << "   " << "Load any file selected in the currently active file manager." << std::endl;
 #endif
-    std::cout << std::setw(15) << std::right << "  --file-num <num>" << "   " << "Which file/page to load inside of a document/archive." << std::endl;
+    std::cout << std::setw(15) << std::right << "  --file-num <num>" << "   " << "Which page to load inside of a document." << std::endl;
+    std::cout << std::setw(15) << std::right << "  --file-name <name>" << "   " << "Which file to load inside of an archive." << std::endl;
     std::cout << std::endl;
     std::cout << "Arguments:" << std::endl;
     std::cout << std::setw(15) << std::right << "  [filename]" << "   " << "Image file to open." << std::endl;
