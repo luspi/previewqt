@@ -33,6 +33,7 @@
 #include <QMimeDatabase>
 #include <QImageReader>
 #include <QClipboard>
+#include <QJsonDocument>
 
 #include <pqc_singleinstance.h>
 #include <pqc_scriptsimages.h>
