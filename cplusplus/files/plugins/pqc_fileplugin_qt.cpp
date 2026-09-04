@@ -33,7 +33,6 @@
 #include <QImageWriter>
 #include <QSvgRenderer>
 #include <QPainter>
-#include <QMimeDatabase>
 
 PQCFilePluginQt::PQCFilePluginQt() {
 

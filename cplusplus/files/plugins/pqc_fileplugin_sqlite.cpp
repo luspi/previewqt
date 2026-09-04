@@ -379,12 +379,8 @@ bool PQCFilePluginSQLite::inspectTriggers(DatabaseInfo &info) {
 
 const QJsonObject PQCFilePluginSQLite::loadJSON(QString path, QVariantMap extraArguments) {
 
-    const QString suffix1 = QFileInfo(path).suffix().toLower();
-    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
-    QMimeDatabase db;
-    QString mime = db.mimeTypeForFile(path).name();
-
-    if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
+    const QString mime = mimetypeForSupportedFile(path);
+    if(mime.isEmpty())
         return {};
 
     QVariantList data = loadData(path);

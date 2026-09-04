@@ -21,6 +21,7 @@ set(previewqt_QML qml/PQMainWindow.qml
                   qml/components/imageitems/PQPQT.qml
                   qml/components/imageitems/PQErrorLoading.qml
                   qml/components/imageitems/PQSQLite.qml
+                  qml/components/imageitems/PQDLLExe.qml
 
                   qml/windows/PQAbout.qml
                   qml/windows/PQHelp.qml

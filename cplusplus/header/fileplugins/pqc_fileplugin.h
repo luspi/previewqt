@@ -68,16 +68,15 @@ public:
     // describing the result
     virtual const QJsonObject loadJSON(QString path, QVariantMap extraArguments) = 0;
 
+    /****************************************************/
+    /****************************************************/
+
     // images are all loaded with the exact same methods, so we define that code here once and call it
     // in the respective plugins
-    virtual const QJsonObject loadJSON_image(QString path, QVariantMap extraArguments) {
+    const QJsonObject loadJSON_image(QString path, QVariantMap extraArguments) {
 
-        const QString suffix1 = QFileInfo(path).suffix().toLower();
-        const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
-        QMimeDatabase db;
-        QString mime = db.mimeTypeForFile(path).name();
-
-        if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
+        const QString mime = mimetypeForSupportedFile(path);
+        if(mime.isEmpty())
             return {};
 
         const QString targetFormat = extraArguments["targetFormat"].toString();
@@ -111,6 +110,21 @@ public:
         return json;
 
     };
+
+    /****************************************************/
+    /****************************************************/
+
+    // this will return an empty string if the file is NOT supported by the current plugin
+    QString mimetypeForSupportedFile(QString path) {
+
+        const QString suffix1 = QFileInfo(path).suffix().toLower();
+        const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
+        QMimeDatabase db;
+        QString mime = db.mimeTypeForFile(path).name();
+
+        return (getSuffixes().contains(suffix1) || getSuffixes().contains(suffix2) || getMimetypes().contains(mime)) ? mime : QString();
+
+    }
 
     /****************************************************/
     /****************************************************/

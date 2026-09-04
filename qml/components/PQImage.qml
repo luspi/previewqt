@@ -151,6 +151,7 @@ Item {
         "pdf",
         "libreoffice",
         "sqlite",
+        "dllexe",
         "ebook",
         "pqt",
         "libarchive",
@@ -196,6 +197,9 @@ Item {
         PQCConstants.currentSource = PQCScriptsFilesPaths.cleanPath(path)
 
         PQCSettings.filedialogLocation = PQCScriptsFilesPaths.getDir(PQCConstants.currentSource)
+
+        // we need to clear the old list first
+        possiblePlugins = []
 
         // FIRST we load all possible plugins
         var tempPlugins = PQCFileHandler.getPossiblePluginsFor(PQCConstants.currentSource)
@@ -348,6 +352,11 @@ Item {
             PQCConstants.currentType = "dat"
             imageloader.sourceComponent = comp_sql
 
+        } else if(plugin === "dllexe") {
+
+            PQCConstants.currentType = "dat"
+            imageloader.sourceComponent = comp_dll
+
         } else {
 
             PQCConstants.currentType = "img"
@@ -469,6 +478,11 @@ Item {
     Component {
         id: comp_sql
         PQSQLite {}
+    }
+
+    Component {
+        id: comp_dll
+        PQDLLExe {}
     }
 
     // LOADING indicator

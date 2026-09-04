@@ -28,7 +28,6 @@
 
 #include <QFile>
 #include <QtDebug>
-#include <QMimeDatabase>
 #include <QImageWriter>
 
 #ifdef PQMOPENSLIDE

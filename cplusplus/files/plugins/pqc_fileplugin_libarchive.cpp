@@ -84,6 +84,10 @@ const int PQCFilePluginLibarchive::loadNumPages(QString path) {
 }
 
 const QStringList PQCFilePluginLibarchive::loadContent(QString path) {
+    return loadContent(path, false);
+}
+
+const QStringList PQCFilePluginLibarchive::loadContent(QString path, bool dontCheckSupported) {
 
     if(m_cachePath == path)
         return m_cache;
@@ -120,9 +124,13 @@ const QStringList PQCFilePluginLibarchive::loadContent(QString path) {
 
                     allfiles.sort();
 
-                    for(const QString &f : std::as_const(allfiles)) {
-                        if(supportedSuffixes.contains(QFileInfo(f).suffix()))
-                            ret.append(f);
+                    if(dontCheckSupported) {
+                        ret = allfiles;
+                    } else {
+                        for(const QString &f : std::as_const(allfiles)) {
+                            if(supportedSuffixes.contains(QFileInfo(f).suffix()))
+                                ret.append(f);
+                        }
                     }
 
                 }
@@ -176,10 +184,14 @@ const QStringList PQCFilePluginLibarchive::loadContent(QString path) {
             if(!wpath) continue;
             QString filenameinside = QString::fromWCharArray(wpath);
 
-            // If supported file format, append to list
-            QFileInfo info(filenameinside);
-            if(!PQCScriptsImages::get().isArchive(filenameinside, true) && (supportedSuffixes.contains(info.suffix().toLower()) || supportedSuffixes.contains(info.completeSuffix().toLower())))
+            if(dontCheckSupported) {
                 ret.append(filenameinside);
+            } else {
+                // If supported file format, append to list
+                QFileInfo info(filenameinside);
+                if(!PQCScriptsImages::get().isArchive(filenameinside, true) && (supportedSuffixes.contains(info.suffix().toLower()) || supportedSuffixes.contains(info.completeSuffix().toLower())))
+                    ret.append(filenameinside);
+            }
 
         }
 
@@ -576,15 +588,11 @@ const QImage PQCFilePluginLibarchive::loadImage(QString path, QSize requestedSiz
 
 const QJsonObject PQCFilePluginLibarchive::loadJSON(QString path, QVariantMap extraArguments) {
 
-    const QString suffix1 = QFileInfo(path).suffix().toLower();
-    const QString suffix2 = QFileInfo(path).completeSuffix().toLower();
-    QMimeDatabase db;
-    QString mime = db.mimeTypeForFile(path).name();
-
-    if(!getSuffixes().contains(suffix1) && !getSuffixes().contains(suffix2) && !getMimetypes().contains(mime))
+    const QString mime = mimetypeForSupportedFile(path);
+    if(mime.isEmpty())
         return {};
 
-    const QStringList cont = loadContent(path);
+    const QStringList cont = loadContent(path, true);
 
     const QString targetFormat = extraArguments["targetFormat"].toString();
 

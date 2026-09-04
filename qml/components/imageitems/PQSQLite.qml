@@ -480,6 +480,11 @@ Rectangle {
     Component.onCompleted: {
 
         const dat = PQCFileHandler.getDataWithPlugin("sqlite", PQCConstants.currentSource)
+        if(dat.length !== 2 || !dat[0]) {
+            PQCConstants.imageStatus = Image.Error
+            return;
+        }
+
         sqlite_top.currentData = dat[1]
 
         PQCNotify.updateWindowSizeDefault()
