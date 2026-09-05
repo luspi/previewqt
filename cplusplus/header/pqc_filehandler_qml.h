@@ -43,7 +43,13 @@ class PQCFileHandlerQML : public QObject {
     QML_NAMED_ELEMENT(PQCFileHandler)
 
 public:
-    PQCFileHandlerQML() {}
+    PQCFileHandlerQML() {
+        m_activePlugin = "";
+        QObject::connect(&PQCFileHandler::get(), &PQCFileHandler::activePluginChanged, this, [=]() {
+            m_activePlugin = PQCFileHandler::get().getActivePlugin();
+            Q_EMIT activePluginChanged();
+        });
+    }
 
     Q_INVOKABLE QSize getSize(QString path) {
         return PQCFileHandler::get().getSize(path);
@@ -81,7 +87,13 @@ public:
         return PQCFileHandler::get().getPossiblePluginsFor(path);
     }
 
+    Q_PROPERTY(QString activePlugin MEMBER m_activePlugin NOTIFY activePluginChanged)
+
+private:
+    QString m_activePlugin;
+
 Q_SIGNALS:
     void formatsUpdated();
+    void activePluginChanged();
 
 };

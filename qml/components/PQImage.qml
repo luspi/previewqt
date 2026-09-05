@@ -77,6 +77,7 @@ Item {
         function onImageStatusChanged() {
             if(PQCConstants.imageStatus === Image.Ready) {
                 loading.hide()
+                plugin_loading.visible = false
             } else if(PQCConstants.imageStatus === Image.Error) {
                 possiblePluginIndex += 1
                 tryLoadWithNextPlugin()
@@ -135,6 +136,19 @@ Item {
         }
     }
 
+    Text {
+        id: plugin_loading
+        y: parent.height/4
+        width: parent.width
+        font.pointSize: 12
+        text: qsTr("Trying to load with plugin:") + "<br><b>" + PQCFileHandler.activePlugin + "</b>"
+        visible: false
+        textFormat: Text.RichText
+        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+        horizontalAlignment: Text.AlignHCenter
+        color: "white"
+    }
+
     // the actual image
     Loader {
         id: imageloader
@@ -191,8 +205,11 @@ Item {
             imageloader.sourceComponent = comp_empty
             PQCConstants.imageStatus = Image.Null
             loading.hide()
+            plugin_loading.visible = false
             return
         }
+
+        plugin_loading.visible = true
 
         PQCConstants.currentSource = PQCScriptsFilesPaths.cleanPath(path)
 
@@ -263,7 +280,8 @@ Item {
         if(possiblePluginIndex >= possiblePlugins.length) {
             PQCConstants.currentType = "err"
             imageloader.sourceComponent = comp_error
-            console.warn("FAILED TO LOAD PREVIEW:\n\n" + PQCScriptsImages.getFileLoadError() + "\n")
+            console.warn("FAILED TO LOAD PREVIEW: " + PQCScriptsImages.getFileLoadError())
+            plugin_loading.visible = false
             return
         }
 

@@ -62,6 +62,8 @@ public:
     QSet<QString> getSuffixes(QString category = "all");
     QSet<QString> getMimetypes(QString category = "all");
 
+    QString getActivePlugin() { return m_activePlugin; }
+
 private:
     PQCFileHandler();
 
@@ -78,5 +80,10 @@ private:
 
     QHash<QString, int> m_suffix2id;
     QHash<QString, int> m_desc2id;
+
+    QString m_activePlugin;
+
+Q_SIGNALS:
+    void activePluginChanged();
 
 };

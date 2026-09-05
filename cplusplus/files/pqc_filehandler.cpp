@@ -179,6 +179,8 @@ PQCFileHandler::PQCFileHandler() {
     m_numEnabled = m_enabledSuffixes.size();
     m_numEnabledFormats = m_enabledIds.size();
 
+    m_activePlugin = "";
+
 }
 
 QSize PQCFileHandler::getSize(QString path) {
@@ -247,6 +249,9 @@ QImage PQCFileHandler::getImage(QString path, QSize requestedSize, QSize &origSi
 
         PQCFilePlugin *plugin = m_plugins[name];
 
+        m_activePlugin = plugin->name();
+        Q_EMIT activePluginChanged();
+
         QSet<QString> suf = plugin->getSuffixes();
         if(suf.contains(suffix1) || suf.contains(suffix2)) {
 
@@ -267,6 +272,9 @@ QImage PQCFileHandler::getImage(QString path, QSize requestedSize, QSize &origSi
         if(!m_plugins.contains(name)) continue;
 
         PQCFilePlugin *plugin = m_plugins[name];
+
+        m_activePlugin = plugin->name();
+        Q_EMIT activePluginChanged();
 
         QSet<QString> mim = plugin->getMimetypes();
         if(mim.contains(mimetype)) {
@@ -298,7 +306,11 @@ QImage PQCFileHandler::getImageWithPlugin(QString plugin, QString path, QSize re
         return QImage();
     }
 
-    return m_plugins.value(plugin)->loadImage(path, requestedSize, origSize, error);
+    PQCFilePlugin *pl = m_plugins.value(plugin);
+    m_activePlugin = pl->name();
+    Q_EMIT activePluginChanged();
+
+    return pl->loadImage(path, requestedSize, origSize, error);
 
 }
 
@@ -321,6 +333,9 @@ QVariantList PQCFileHandler::getData(QString path) {
 
         PQCFilePlugin *plugin = m_plugins[name];
 
+        m_activePlugin = plugin->name();
+        Q_EMIT activePluginChanged();
+
         QSet<QString> suf = plugin->getSuffixes();
         if(suf.contains(suffix1) || suf.contains(suffix2)) {
 
@@ -340,6 +355,9 @@ QVariantList PQCFileHandler::getData(QString path) {
         if(!m_plugins.contains(name)) continue;
 
         PQCFilePlugin *plugin = m_plugins[name];
+
+        m_activePlugin = plugin->name();
+        Q_EMIT activePluginChanged();
 
         QSet<QString> mim = plugin->getMimetypes();
         if(mim.contains(mimetype)) {
@@ -363,7 +381,11 @@ QVariantList PQCFileHandler::getDataWithPlugin(QString plugin, QString path) {
         return {};
     }
 
-    return m_plugins.value(plugin)->loadData(path);
+    PQCFilePlugin *pl = m_plugins.value(plugin);
+    m_activePlugin = pl->name();
+    Q_EMIT activePluginChanged();
+
+    return pl->loadData(path);
 
 }
 
