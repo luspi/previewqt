@@ -22,17 +22,21 @@
 
 #include <fileplugins/pqc_fileplugin_libreoffice.h>
 
-#ifdef PQMLIBREOFFICE
+#ifdef PQMLIBREOFFICEKIT
 #define LOK_USE_UNSTABLE_API
 #include <LibreOfficeKit/LibreOfficeKit.hxx>
 #include <LibreOfficeKit/LibreOfficeKitEnums.h>
 #include <QMessageBox>
 #endif
+#ifdef PQMLIBREOFFICE
+#include <QProcess>
+#include <pqc_filehandler.h>
+#endif
 #include <pqc_settingscpp.h>
 
 PQCFilePluginLibreOffice::PQCFilePluginLibreOffice() {
 
-#ifdef PQMLIBREOFFICE
+#if defined(PQMLIBREOFFICEKIT) || defined(PQMLIBREOFFICE)
     setData({
         {99975, {{"Microsoft Word 97–2003"}, {"doc"}, {"application/msword"}}},
         {99974, {{"Microsoft Word"}, {"docx"}, {"application/vnd.openxmlformats-officedocument.wordprocessingml.document"}}},
@@ -63,6 +67,7 @@ PQCFilePluginLibreOffice::PQCFilePluginLibreOffice() {
 
     m_suffixesWithNoFixedSize << "ods" << "xls" << "xlsx" << "xlsm" << "xlst" << "xltx";
 
+#ifdef PQMLIBREOFFICEKIT
     if(PQCSettingsCPP::get().getCustomLibreOffice() && QFile::exists(PQCSettingsCPP::get().getCustomLibreOfficePath() % "/program")) {
 
         office = lok::lok_cpp_init(PQCSettingsCPP::get().getCustomLibreOfficePath().toStdString().c_str());
@@ -82,24 +87,30 @@ PQCFilePluginLibreOffice::PQCFilePluginLibreOffice() {
 
         office = lok::lok_cpp_init(qgetenv("LibreOffice_LOPATH"));
 #else
-        office = lok::lok_cpp_init(PQMLIBREOFFICE_LOPATH);
+        office = lok::lok_cpp_init(PQMLIBREOFFICEKIT_LOPATH);
 #endif
 
     }
+#endif
 
+#endif
+
+#ifdef PQMLIBREOFFICE
+    m_tempDocumentPath = PQCConfigFiles::get().CACHE_DIR() % "/libreoffice/";
+    m_currentDocument = "";
 #endif
 
 }
 
 PQCFilePluginLibreOffice::~PQCFilePluginLibreOffice() {
-#ifdef PQMLIBREOFFICE
+#ifdef PQMLIBREOFFICEKIT
     delete office;
 #endif
 }
 
 const int PQCFilePluginLibreOffice::loadNumPages(QString path) {
 
-#ifdef PQMLIBREOFFICE
+#ifdef PQMLIBREOFFICEKIT
 
     // extract page and totalpage value from path (prepended to path (after filepath))
     const int idx = path.indexOf("::DOC::");
@@ -125,13 +136,29 @@ const int PQCFilePluginLibreOffice::loadNumPages(QString path) {
 
 #endif
 
+#ifdef PQMLIBREOFFICE
+
+    if(!loadDocument(path))
+        return 0;
+
+    int page = 0;
+    const int idx = path.indexOf("::DOC::");
+    if(idx != -1) {
+        page = path.mid(0,idx).toInt();
+        path = path.mid(idx+7);
+    }
+
+    return PQCFileHandler::get().getNumPages("pdf", QString::number(page) % "::PDF::" % m_tempDocumentPath % "/" % QFileInfo(path).baseName() % ".pdf");
+
+#endif
+
     return 1;
 
 }
 
 const QSize PQCFilePluginLibreOffice::loadSize(QString path) {
 
-#ifdef PQMLIBREOFFICE
+#ifdef PQMLIBREOFFICEKIT
 
     QSize sze;
     if(loadSizeFromCache(path, sze))
@@ -164,13 +191,31 @@ const QSize PQCFilePluginLibreOffice::loadSize(QString path) {
 
 #endif
 
+#ifdef PQMLIBREOFFICE
+
+    if(!loadDocument(path))
+        return QSize();
+
+    int page = 0;
+    const int idx = path.indexOf("::DOC::");
+    if(idx != -1) {
+        page = path.mid(0,idx).toInt();
+        path = path.mid(idx+7);
+    }
+
+    QSize orig;
+    QString err;
+    return PQCFileHandler::get().getImageWithPlugin("pdf", QString::number(page) % "::PDF::" % m_tempDocumentPath % "/" % QFileInfo(path).baseName() % ".pdf", QSize(), orig, err).size();
+
+#endif
+
     return QSize();
 
 }
 
 const QImage PQCFilePluginLibreOffice::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
-#ifdef PQMLIBREOFFICE
+#ifdef PQMLIBREOFFICEKIT
 
     const QString origPath = path;
 
@@ -257,11 +302,30 @@ const QImage PQCFilePluginLibreOffice::loadImage(QString path, QSize requestedSi
 
 #endif
 
+#ifdef PQMLIBREOFFICE
+
+    if(!loadDocument(path))
+        return QImage();
+
+    int page = 0;
+    const int idx = path.indexOf("::DOC::");
+    if(idx != -1) {
+        page = path.mid(0,idx).toInt();
+        path = path.mid(idx+7);
+    }
+
+    return PQCFileHandler::get().getImageWithPlugin("pdf", QString::number(page) % "::PDF::" % m_tempDocumentPath % "/" % QFileInfo(path).baseName() % ".pdf", requestedSize, origSize, error);
+
+
+#endif
+
     return QImage();
 
 }
 
 const QJsonObject PQCFilePluginLibreOffice::loadJSON(QString path, QVariantMap extraArguments) {
+
+#if defined(PQMLIBREOFFICEKIT) || defined(PQMLIBREOFFICE)
 
     const QString mime = mimetypeForSupportedFile(path);
     if(mime.isEmpty())
@@ -298,4 +362,46 @@ const QJsonObject PQCFilePluginLibreOffice::loadJSON(QString path, QVariantMap e
 
     return json;
 
+#endif
+
+    return {};
+
 }
+
+#ifdef PQMLIBREOFFICE
+bool PQCFilePluginLibreOffice::loadDocument(QString path) {
+
+    if(path.contains("::DOC::"))
+        path = path.split("::DOC::")[1];
+
+    if(m_currentDocument == path)
+        return true;
+
+    if(QFile::exists(m_tempDocumentPath)) {
+        QDir dir(m_tempDocumentPath);
+        dir.removeRecursively();
+    }
+
+    QProcess proc;
+    proc.start("libreoffice", {"--convert-to", "pdf", "--outdir", m_tempDocumentPath, path});
+
+    if(!proc.waitForStarted()) {
+        const QString msg = "LibreOffice process failed to start";
+        qWarning() << msg;
+        return false;
+    }
+
+    if(!proc.waitForFinished()) {
+        const QString msg = "LibreOffice process failed to finish";
+        qWarning() << msg;
+        return false;
+    }
+
+    qDebug() << "Document successfully converted to PDF!";
+
+    m_currentDocument = path;
+
+    return true;
+
+}
+#endif

@@ -26,7 +26,9 @@
 #include <QSize>
 #include <QImage>
 
+#ifdef PQMLIBREOFFICEKIT
 namespace lok { class Office; }
+#endif
 
 class PQCFilePluginLibreOffice : public PQCFilePlugin {
 
@@ -43,7 +45,15 @@ public:
     const QJsonObject loadJSON(QString path, QVariantMap extraArguments) override;
 
 private:
+#ifdef PQMLIBREOFFICEKIT
     lok::Office *office;
+#endif
+
+#ifdef PQMLIBREOFFICE
+    QString m_tempDocumentPath;
+    QString m_currentDocument;
+    bool loadDocument(QString path);
+#endif
 
     QStringList m_suffixesWithNoFixedSize;
 
