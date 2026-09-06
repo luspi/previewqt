@@ -66,8 +66,7 @@ public:
     const QJsonObject loadJSON(QString path, QVariantMap extraArguments) override { return {}; };
 
 private:
-    QVariantMap parsePEHeaders(QString path);
-    QVariantMap parseWindowsMetadata(const QString path);
+    QVariantMap parseDLLMetadata(const QString path);
 
     static bool readUInt16LE(QFile& file, quint16& value);
     static bool readUInt32LE(QFile& file, quint32& value);
@@ -80,5 +79,7 @@ private:
 
     static bool readBytes(QFile& file, qsizetype size, QByteArray& data);
     static bool skipBytes(QFile& file, qsizetype size);
+
+    static bool parseVersionBlock(QFile& file, quint64 blockOffset, quint64 availableSize, QVariantMap& ret, quint32 languageId, quint32 codePage);
 
 };

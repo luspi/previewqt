@@ -119,8 +119,15 @@ Rectangle {
             return;
         }
         dllexe_top.currentData = dat[1]
-        for(let i in dllexe_top.currentData)
-            console.warn(">>>", i, dllexe_top.currentData[i])
+        for(let i in dllexe_top.currentData) {
+            if(i === "VersionInfo") {
+                console.warn(">>> VersionInfo")
+                for(let j in dllexe_top.currentData[i])
+                    console.warn("      **", j, dllexe_top.currentData[i][j])
+
+            } else
+                console.warn(">>>", i, dllexe_top.currentData[i])
+        }
 
         PQCNotify.updateWindowSizeDefault()
 
