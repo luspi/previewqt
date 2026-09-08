@@ -198,7 +198,7 @@ Rectangle {
         }
 
         var main = "<br>"
-        var vinfo = "<br><hr><h3>" + LOCALIZED["VersionInfo"] + "</h3><ul>"
+        var vinfo = "<h3>" + LOCALIZED["VersionInfo"] + ":</h3><ul>"
 
         for(let i in mainorder) {
             const m = mainorder[i]
