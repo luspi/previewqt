@@ -131,30 +131,31 @@ public:
 private:
     QVariantMap parseDLLMetadata(const QString path);
 
-    static bool readUInt16LE(QFile& file, quint16& value);
-    static bool readUInt32LE(QFile& file, quint32& value);
-    static bool readUInt64LE(QFile& file, quint64& value);
-    static quint64 align4(quint64 value);
-    static bool readUtf16String(QFile& file, QString& value);
-    static bool rvaToFileOffset(quint32 rva, const QList<PESection>& sections, quint64& fileOffset);
-    static bool readResourceDirectoryEntries(QFile& file, quint64 offset, QList<ResourceEntry>& entries);
+    inline bool readUInt16LE(QFile& file, quint16& value);
+    inline bool readUInt32LE(QFile& file, quint32& value);
+    inline bool readUInt64LE(QFile& file, quint64& value);
+    inline quint64 align4(quint64 value);
+    inline bool readUtf16String(QFile& file, QString& value);
+    inline bool rvaToFileOffset(quint32 rva, const QList<PESection>& sections, quint64& fileOffset);
+    inline bool readResourceDirectoryEntries(QFile& file, quint64 offset, QList<ResourceEntry>& entries);
 
-    static bool readBytes(QFile& file, qsizetype size, QByteArray& data);
-    static bool skipBytes(QFile& file, qsizetype size);
+    inline bool readBytes(QFile& file, qsizetype size, QByteArray& data);
+    inline bool skipBytes(QFile& file, qsizetype size);
 
-    static QString formatVersion(quint32 ms, quint32 ls);
-    static QString formatFileFlags(quint32 fileFlags);
-    static QString formatFileFlagsMask(quint32 fileFlagsMask);
-    static QString formatFileOs(quint32 fileos);
-    static QString formatFileType(quint32 filetype);
-    static QString formatFileSubtype(quint32 type, quint32 subtype);
-    static QString formatFileDate(quint32 filedateMS, quint32 filedateLS);
-    static QString formatStructureVersion(quint32 strucver);
-    static QString formatLanguageName(quint16 langId);
-    static QString formatCodePage(quint16 codepage);
+    inline QString formatVersion(quint32 ms, quint32 ls);
+    inline QString formatFileFlags(quint32 fileFlags);
+    inline QString formatFileFlagsMask(quint32 fileFlagsMask);
+    inline QString formatFileOs(quint32 fileos);
+    inline QString formatFileType(quint32 filetype);
+    inline QString formatFileSubtype(quint32 type, quint32 subtype);
+    inline QString formatFileDate(quint32 filedateMS, quint32 filedateLS);
+    inline QString formatStructureVersion(quint32 strucver);
+    QString formatLanguageName(quint16 langId);
+    inline QString formatCodePage(quint16 codepage);
 
-    static QString convertLanguageCodeToString(QString code);
+    QHash<int,QString> langId2Code;
+    inline QString convertLanguageCodeToString(QString code);
 
-    static bool parseVersionBlock(QFile& file, quint64 blockOffset, quint64 availableSize, QVariantMap& ret, quint32 languageId, quint32 codePage);
+    inline bool parseVersionBlock(QFile& file, quint64 blockOffset, quint64 availableSize, QVariantMap& ret, quint32 languageId, quint32 codePage);
 
 };
