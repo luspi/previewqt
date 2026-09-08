@@ -99,6 +99,15 @@ Rectangle {
                     visible: false
                 }
 
+                TextEdit {
+                    id: textedit
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    font.pointSize: 11
+                    readOnly: true
+                    textFormat: Text.RichText
+                    color: palette.text
+                    width: col.width
+                }
 
                 Item {
                     width: 1
@@ -119,15 +128,94 @@ Rectangle {
             return;
         }
         dllexe_top.currentData = dat[1]
-        for(let i in dllexe_top.currentData) {
-            if(i === "VersionInfo") {
-                console.warn(">>> VersionInfo")
-                for(let j in dllexe_top.currentData[i])
-                    console.warn("      **", j, dllexe_top.currentData[i][j])
 
-            } else
-                console.warn(">>>", i, dllexe_top.currentData[i])
+        const mainorder = [
+            "FileName",
+            "FileSize",
+            "TimeCreated",
+            "TimeModified",
+            "SHA256"
+        ] // VersionInfo is automatically added at the end
+
+        const versionorder = [
+            "Comments",
+            "CompanyName",
+            "FileDescription",
+            "LegalCopyright",
+            "---",
+            "ProductName",
+            "OriginalFilename",
+            "Architecture",
+            "Timestamp",
+            "Sections",
+            "---",
+            "FileVersion",
+            "ProductVersion",
+            "FileFlagsMask",
+            "FileFlags",
+            "FileOS",
+            "FileType",
+            "FileSubtype",
+            "---",
+            "StructureVersion",
+            "VersionLanguage",
+            "VersionCodePage",
+            "FileDate"
+        ]
+
+        const LOCALIZED = {
+            "VersionInfo": qsTr("Version information") + " (VERSIONINFO)",
+
+            "FileName": qsTr("Filename"),
+            "FileSize": qsTr("Filesize"),
+            "TimeCreated": qsTr("Time created"),
+            "TimeModified": qsTr("Time modified"),
+            "SHA256": "SHA256",
+
+            "Comments": qsTr("Comments"),
+            "CompanyName": qsTr("Company name"),
+            "FileDescription": qsTr("Description"),
+            "LegalCopyright": qsTr("Copyright"),
+
+            "ProductName": qsTr("Product name"),
+            "OriginalFilename": qsTr("Original filename"),
+            "Architecture": qsTr("Architecture"),
+            "Timestamp": qsTr("Timestamp"),
+            "Sections": qsTr("Sections"),
+
+            "FileVersion": qsTr("File version"),
+            "ProductVersion": qsTr("Product version"),
+            "FileFlagsMask": qsTr("File flags (mask)"),
+            "FileFlags": qsTr("File flags"),
+            "FileOS": qsTr("File OS"),
+            "FileType": qsTr("Filetype"),
+            "FileSubtype": qsTr("Filesubtype"),
+
+            "StructureVersion": qsTr("Structure version"),
+            "VersionLanguage": qsTr("Language"),
+            "VersionCodePage": qsTr("Code page"),
+            "FileDate": qsTr("File date")
         }
+
+        var main = "<br>"
+        var vinfo = "<br><hr><h3>" + LOCALIZED["VersionInfo"] + "</h3><ul>"
+
+        for(let i in mainorder) {
+            const m = mainorder[i]
+            if(m in dllexe_top.currentData) {
+                if(main != "<br>") main += "<br>"
+                main += "<b>" + LOCALIZED[m] + "</b>: " + dllexe_top.currentData[m];
+            }
+        }
+
+        for(let j in versionorder) {
+            const v = versionorder[j]
+            if(v in dllexe_top.currentData["VersionInfo"]) {
+                vinfo += "<li><b>" + LOCALIZED[v] + "</b>: " + dllexe_top.currentData["VersionInfo"][v] + "</li>"
+            }
+        }
+
+        textedit.text = main + vinfo + "</ul><br><br><br><br><br>"
 
         PQCNotify.updateWindowSizeDefault()
 

@@ -42,6 +42,7 @@ const QVariantList PQCFilePluginDLLExe::loadData(QString path) {
         return {};
 
     QVariantMap data;
+    data["FileName"] = info.fileName();
     data["Filesize"] = info.size();
     data["TimeCreated"] = info.birthTime().toString();
     data["TimeModified"] = info.lastModified().toString();
