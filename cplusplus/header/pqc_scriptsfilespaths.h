@@ -44,6 +44,7 @@ public:
     QString getFilename(QString path);
     QString getDir(QString fullpath);
     QString getSuffix(QString path);
+    QString getSuffixLowerCase(QString path);
     QString getCompleteSuffix(QString path);
     QString getMimetype(QString path);
     QString toPercentEncoding(QString str);

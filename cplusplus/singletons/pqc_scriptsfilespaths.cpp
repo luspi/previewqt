@@ -116,7 +116,7 @@ QString PQCScriptsFilesPaths::getSuffix(QString path) {
     if(path.isEmpty())
         return "";
 
-    return QFileInfo(path).suffix();
+    return QFileInfo(path).suffix().toLower();
 
 }
 

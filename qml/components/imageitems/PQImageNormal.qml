@@ -102,68 +102,61 @@ Item {
 
                     if(src != "") {
 
-                        // HEIF/HEIC images are a little trickier with their orientation handling
-                        // We need to ignore this value as the Exif orientation might not be correct
-                        // See also: https://github.com/Exiv2/exiv2/issues/2958
-                        var suf = PQCScriptsFilesPaths.getSuffix(PQCConstants.currentSource).toLowerCase()
-                        if(suf !== "heic" && suf !== "heif") {
+                        var orientation = PQCScriptsImages.getExifOrientation(PQCConstants.currentSource)
+                        switch(orientation) {
 
-                            var orientation = PQCScriptsImages.getExifOrientation(PQCConstants.currentSource)
-                            switch(orientation) {
-
-                            case 1:
-                                // no rotation, no mirror
-                                videoloader.forceRotation = 0
-                                videoloader.forceMirror = false
-                                break;
-                            case 2:
-                                // no rotation, horizontal mirror
-                                videoloader.forceRotation = 0
-                                videoloader.forceMirror = true
-                                break;
-                            case 3:
-                                // 180 degree rotation, no mirror
-                                videoloader.forceRotation = 180
-                                videoloader.forceMirror = false
-                                break;
-                            case 4:
-                                // 180 degree rotation, horizontal mirror
-                                videoloader.forceRotation = 180
-                                videoloader.forceMirror = true
-                                break;
-                            case 5:
-                                // 90 degree rotation, horizontal mirror
-                                videoloader.forceRotation = 90
-                                videoloader.forceMirror = true
-                                break;
-                            case 6:
-                                // 90 degree rotation, no mirror
-                                videoloader.forceRotation = 90
-                                videoloader.forceMirror = false
-                                break;
-                            case 7:
-                                // 270 degree rotation, horizontal mirror
-                                videoloader.forceRotation = 270
-                                videoloader.forceMirror = true
-                                break;
-                            case 8:
-                                // 270 degree rotation, no mirror
-                                videoloader.forceRotation = 270
-                                videoloader.forceMirror = false
-                                break;
-                            default:
-                                console.warn("Unexpected orientation value received:", orientation)
-                                break;
-
-                            }
+                        case 1:
+                            // no rotation, no mirror
+                            videoloader.forceRotation = 0
+                            videoloader.forceMirror = false
+                            break;
+                        case 2:
+                            // no rotation, horizontal mirror
+                            videoloader.forceRotation = 0
+                            videoloader.forceMirror = true
+                            break;
+                        case 3:
+                            // 180 degree rotation, no mirror
+                            videoloader.forceRotation = 180
+                            videoloader.forceMirror = false
+                            break;
+                        case 4:
+                            // 180 degree rotation, horizontal mirror
+                            videoloader.forceRotation = 180
+                            videoloader.forceMirror = true
+                            break;
+                        case 5:
+                            // 90 degree rotation, horizontal mirror
+                            videoloader.forceRotation = 90
+                            videoloader.forceMirror = true
+                            break;
+                        case 6:
+                            // 90 degree rotation, no mirror
+                            videoloader.forceRotation = 90
+                            videoloader.forceMirror = false
+                            break;
+                        case 7:
+                            // 270 degree rotation, horizontal mirror
+                            videoloader.forceRotation = 270
+                            videoloader.forceMirror = true
+                            break;
+                        case 8:
+                            // 270 degree rotation, no mirror
+                            videoloader.forceRotation = 270
+                            videoloader.forceMirror = false
+                            break;
+                        default:
+                            console.warn("Unexpected orientation value received:", orientation)
+                            break;
 
                         }
 
-                        videoloader.active = false
-                        videoloader.mediaSrc = src
-                        videoloader.active = true
-                        return
                     }
+
+                    videoloader.active = false
+                    videoloader.mediaSrc = src
+                    videoloader.active = true
+                    return
 
                 }
 
@@ -233,14 +226,11 @@ Item {
 
             id: motionphoto_img
 
-
-            x: (forceRotation%180==0 ? 0 : -(img_top.height-img_top.width)/2)
-            y: (forceRotation%180==0 ? 0 : -(img_top.height-img_top.width)/2)
-            width: img_top.width + (forceRotation%180==0 ? 0 : -2*x)
-            height: img_top.height + (forceRotation%180==0 ? 0 : -2*y)
-
-            sourceCache: (PQCScriptsConfigQML.isQtAtLeast6_5() ? "file:/" : "file://") + videoloader.mediaSrc
+            width: imageitem.width
+            height: imageitem.height
+            forcedMirror: videoloader.forceMirror
             forceRotation: videoloader.forceRotation
+            sourceCache: (PQCScriptsConfigQML.isQtAtLeast6_5() ? "file:/" : "file://") + videoloader.mediaSrc
 
             onVideoIsPlayingChanged:
                 img_top.motionPhotoVideoIsPlaying = videoIsPlaying
@@ -264,13 +254,8 @@ Item {
 
             id: motionphoto_img
 
-            x: (forceRotation%180==0 ? 0 : -(img_top.height-img_top.width)/2)
-            y: (forceRotation%180==0 ? 0 : -(img_top.height-img_top.width)/2)
-            width: img_top.width + (forceRotation%180==0 ? 0 : -2*x)
-            height: img_top.height + (forceRotation%180==0 ? 0 : -2*y)
-
-            sourceCache: videoloader.mediaSrc
-            forceRotation: videoloader.forceRotation
+            width: image.width
+            height: image.height
 
             transform:
                 Rotation {
@@ -278,6 +263,9 @@ Item {
                     axis { x: 0; y: 1; z: 0 }
                     angle: videoloader.forceMirror ? 180 : 0
                 }
+
+            sourceCache: videoloader.mediaSrc
+            forceRotation: videoloader.forceRotation
 
             onVideoIsPlayingChanged:
                 img_top.motionPhotoVideoIsPlaying = videoIsPlaying

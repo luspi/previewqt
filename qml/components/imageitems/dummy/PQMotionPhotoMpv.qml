@@ -26,6 +26,8 @@ import PreviewQt
 Item {
     property string sourceCache: ""
     property int forceRotation: 0
+    property int forcedMirror: 0
     property bool videoIsPlaying: false
+    property bool videoFileLoaded: false
     function togglePlayback() {}
 }
