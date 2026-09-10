@@ -22,6 +22,7 @@
 
 #include <fileplugins/pqc_fileplugin_dllexe.h>
 #include <QCryptographicHash>
+#include <QBuffer>
 
 PQCFilePluginDLLExe::PQCFilePluginDLLExe() {
 
@@ -36,7 +37,7 @@ PQCFilePluginDLLExe::PQCFilePluginDLLExe() {
     // based on Microsoft's current LCID/LANGID tables
     // returns BCP-47-style locale name as those are unambiguous
     // see: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/63d3d639-7fd2-4afb-abbe-0d5b5551eef8
-    // entries starting with a colon (':') will be returned unchanged (but without colon)
+    // entries starting with a colon (':') will be returned unchanged (and without colon)
     langId2Code = {
 
         // neutral / special
@@ -854,23 +855,16 @@ QVariantMap PQCFilePluginDLLExe::parseDLLMetadata(const QString path) {
     /******************************************************/
     // architecture
 
-    switch(machine) {
-        case 0x014C:
-            ret["Architecture"] = "x86 (32-bit)";
-            break;
-        case 0x8664:
-            ret["Architecture"] = "x86_64 (64-bit)";
-            break;
-        case 0x01C0:
-            ret["Architecture"] = "ARM (32-bit)";
-            break;
-        case 0xAA64:
-            ret["Architecture"] = "ARM64 (64-bit)";
-            break;
-        default:
-            ret["Architecture"] = QString("Unknown (Machine: %1)").arg(machine, 0, 16);
-            break;
-    }
+    if(machine == 0x014C)
+        ret["Architecture"] = "x86 (32-bit)";
+    else if(machine == 0x8664)
+        ret["Architecture"] = "x86_64 (64-bit)";
+    else if(machine == 0x01C0)
+        ret["Architecture"] = "ARM (32-bit)";
+    else if(machine == 0xAA64)
+        ret["Architecture"] = "ARM64 (64-bit)";
+    else
+        ret["Architecture"] = QString("Unknown (Machine: %1)").arg(machine, 0, 16);
 
     ret["Timestamp"] = QDateTime::fromSecsSinceEpoch(timeDateStamp).toString();
 
@@ -895,29 +889,26 @@ QVariantMap PQCFilePluginDLLExe::parseDLLMetadata(const QString path) {
     quint64 imageBase = 0;
     quint64 dataDirectoryOffset = 0;
 
-    switch(optionalMagic) {
+    // PE32
+    if(optionalMagic == 0x10B) {
 
-        case 0x10B: { // PE32
-
-            if(!file.seek(optionalHeaderOffset + 16) || !readUInt32LE(file, entryPoint)) {
-                qDebug() << "unable to read entry_point";
-                return ret;
-            }
-
-            quint32 imageBase32 = 0;
-
-            if(!file.seek(optionalHeaderOffset + 28) || !readUInt32LE(file, imageBase32)) {
-                qDebug() << "unable to read image_base (32)";
-                return ret;
-            }
-
-            // IMAGE_DATA_DIRECTORY starts at +96 for PE32
-            dataDirectoryOffset = 96;
-
-            break;
+        if(!file.seek(optionalHeaderOffset + 16) || !readUInt32LE(file, entryPoint)) {
+            qDebug() << "unable to read entry_point";
+            return ret;
         }
 
-        case 0x20B: { // PE32+
+        quint32 imageBase32 = 0;
+
+        if(!file.seek(optionalHeaderOffset + 28) || !readUInt32LE(file, imageBase32)) {
+            qDebug() << "unable to read image_base (32)";
+            return ret;
+        }
+
+        // IMAGE_DATA_DIRECTORY starts at +96 for PE32
+        dataDirectoryOffset = 96;
+
+    // PE32+
+    } else if(optionalMagic == 0x20B) {
 
             if(!file.seek(optionalHeaderOffset + 16) || !readUInt32LE(file, entryPoint)) {
                 qDebug() << "unable to read entry_point";
@@ -932,10 +923,8 @@ QVariantMap PQCFilePluginDLLExe::parseDLLMetadata(const QString path) {
             // IMAGE_DATA_DIRECTORY starts at +112 for PE32+
             dataDirectoryOffset = 112;
 
-            break;
-        }
+    } else {
 
-        default:
             qDebug() << "unknown PE optional header:" << Qt::hex << optionalMagic;
             return ret;
 
@@ -1035,7 +1024,7 @@ QVariantMap PQCFilePluginDLLExe::parseDLLMetadata(const QString path) {
     // find VERSION resource
 
     if(resourceRva == 0 || resourceSize == 0) {
-        qDebug() << "bo VERSION resource found";
+        qDebug() << "no VERSION resource found";
         return ret;
     }
 
@@ -1051,6 +1040,29 @@ QVariantMap PQCFilePluginDLLExe::parseDLLMetadata(const QString path) {
     if(!readResourceDirectoryEntries(file, resourceFileOffset, rootEntries)) {
         qDebug() << "call to readResourceDirectoryEntries failed";
         return ret;
+    }
+
+    /******************************************************/
+    // find any embedded icon
+
+    QImage icon;
+
+    if(!extractBestIcon(file, resourceFileOffset, rootEntries, sections, icon))
+        qDebug() << "no usable icon found";
+    else {
+
+        QByteArray bytes;
+        QBuffer buffer(&bytes);
+
+        if(!buffer.open(QIODevice::WriteOnly)) {
+            qDebug() << "Unable to open buffer for icon";
+        } else {
+            if(!icon.save(&buffer, "PNG"))
+                qDebug() << "unable to save icon as png to buffer";
+            else
+                ret["Icon"] = QString::fromLatin1(bytes.toBase64());
+        }
+
     }
 
     /******************************************************/
@@ -1373,6 +1385,312 @@ bool PQCFilePluginDLLExe::parseVersionBlock(QFile& file, quint64 blockOffset, qu
 
 }
 
+bool PQCFilePluginDLLExe::extractBestIcon(QFile& file, quint64 resourceFileOffset, const QList<ResourceEntry>& rootEntries, const QList<PESection>& sections, QImage& icon) {
+
+    /******************************************************/
+    // locate RT_GROUP_ICON (resource ID 14)
+
+    ResourceEntry groupIconType;
+    bool foundGroupIconType = false;
+
+    for(const ResourceEntry& entry : rootEntries) {
+        if(!entry.isNamed() && entry.id() == 14 && entry.isDirectory()) {
+            groupIconType = entry;
+            foundGroupIconType = true;
+            break;
+        }
+    }
+
+    if(!foundGroupIconType) {
+        qDebug() << "RT_GROUP_ICON not found";
+        return false;
+    }
+
+    QList<ResourceEntry> groupNameEntries;
+
+    if(!readResourceDirectoryEntries(file, resourceFileOffset + groupIconType.directoryOffset(), groupNameEntries) || groupNameEntries.isEmpty()) {
+        qDebug() << "no RT_GROUP_ICON name entries found";
+        return false;
+    }
+
+    // take first icon group
+    // most exe/dll files only ship one
+    const ResourceEntry groupName = groupNameEntries.first();
+
+    if(!groupName.isDirectory()) {
+        qDebug() << "RT_GROUP_ICON name entry is not a directory";
+        return false;
+    }
+
+    QList<ResourceEntry> groupLanguageEntries;
+
+    if(!readResourceDirectoryEntries(file, resourceFileOffset + groupName.directoryOffset(), groupLanguageEntries) || groupLanguageEntries.isEmpty()) {
+        qDebug() << "no RT_GROUP_ICON language entries found";
+        return false;
+    }
+
+    const ResourceEntry groupLanguage = groupLanguageEntries.first();
+
+    if(groupLanguage.isDirectory()) {
+        qDebug() << "RT_GROUP_ICON language entry is a directory";
+        return false;
+    }
+
+    /******************************************************/
+    // IMAGE_RESOURCE_DATA_ENTRY for the icon group (GRPICONDIR)
+
+    if(!file.seek(resourceFileOffset + groupLanguage.offset)) {
+        qDebug() << "failed to seek to RT_GROUP_ICON data entry";
+        return false;
+    }
+
+    quint32 groupRva = 0;
+    quint32 groupSize = 0;
+    quint32 groupCodePage = 0;
+    quint32 groupReserved = 0;
+
+    if(!readUInt32LE(file, groupRva) || !readUInt32LE(file, groupSize) || !readUInt32LE(file, groupCodePage) || !readUInt32LE(file, groupReserved)) {
+        qDebug() << "failed to read RT_GROUP_ICON data info";
+        return false;
+    }
+
+    Q_UNUSED(groupCodePage);
+    Q_UNUSED(groupReserved);
+
+    if(groupSize < 6) {
+        qDebug() << "GRPICONDIR too small:" << groupSize;
+        return false;
+    }
+
+    quint64 groupFileOffset = 0;
+
+    if(!rvaToFileOffset(groupRva, sections, groupFileOffset)) {
+        qDebug() << "call to rvaToFileOffset failed for GRPICONDIR";
+        return false;
+    }
+
+    if(!file.seek(groupFileOffset)) {
+        qDebug() << "failed to seek to GRPICONDIR";
+        return false;
+    }
+
+    /******************************************************/
+    // GRPICONDIR header (== NEWHEADER)
+
+    quint16 giReserved = 0;
+    quint16 giType = 0;
+    quint16 giCount = 0;
+
+    if(!readUInt16LE(file, giReserved) || !readUInt16LE(file, giType) || !readUInt16LE(file, giCount)) {
+        qDebug() << "failed to read GRPICONDIR header";
+        return false;
+    }
+
+    if(giType != 1 || giCount == 0) {
+        qDebug() << "invalid GRPICONDIR header, type/count:" << giType << giCount;
+        return false;
+    }
+
+    /******************************************************/
+    // GRPICONDIRENTRY array
+
+    // we pick the entry with the largest area or, if more than one found,
+    // pick the one with the highest bit depth
+
+    const quint64 maxEntries = (quint64(groupSize) - 6) / 14;
+    const quint16 entryCount = quint16(qMin<quint64>(giCount, maxEntries));
+
+    quint16 bestId = 0;
+    quint64 bestScore = 0;
+    bool haveBest = false;
+
+    for(quint16 i = 0; i < entryCount; ++i) {
+
+        QByteArray header;
+
+        if(!readBytes(file, 4, header)) {
+            qDebug() << "failed to read GRPICONDIRENTRY header" << i;
+            return false;
+        }
+
+        const quint8 width  = quint8(header.at(0));
+        const quint8 height = quint8(header.at(1));
+
+        quint16 planes = 0;
+        quint16 bitCount = 0;
+        quint32 bytesInRes = 0;
+        quint16 id = 0;
+
+        if(!readUInt16LE(file, planes) || !readUInt16LE(file, bitCount) || !readUInt32LE(file, bytesInRes) || !readUInt16LE(file, id)) {
+            qDebug() << "failed to read GRPICONDIRENTRY" << i;
+            return false;
+        }
+
+        Q_UNUSED(planes);
+        Q_UNUSED(bytesInRes);
+
+        const quint64 realWidth  = (width  == 0 ? 256 : width);
+        const quint64 realHeight = (height == 0 ? 256 : height);
+        const quint64 score = realWidth * realHeight * quint64(qMax<quint16>(bitCount, 1));
+
+        if(!haveBest || score > bestScore) {
+            bestScore = score;
+            bestId = id;
+            haveBest = true;
+        }
+    }
+
+    if(!haveBest) {
+        qDebug() << "no usable GRPICONDIRENTRY found";
+        return false;
+    }
+
+    /******************************************************/
+    // find the matching RT_ICON (resource ID 3) entry
+
+    ResourceEntry iconType;
+    bool foundIconType = false;
+
+    for(const ResourceEntry& entry : rootEntries) {
+        if(!entry.isNamed() && entry.id() == 3 && entry.isDirectory()) {
+            iconType = entry;
+            foundIconType = true;
+            break;
+        }
+    }
+
+    if(!foundIconType) {
+        qDebug() << "RT_ICON not found";
+        return false;
+    }
+
+    QList<ResourceEntry> iconNameEntries;
+
+    if(!readResourceDirectoryEntries(file, resourceFileOffset + iconType.directoryOffset(), iconNameEntries)) {
+        qDebug() << "failed to read RT_ICON name entries";
+        return false;
+    }
+
+    ResourceEntry iconName;
+    bool foundIconName = false;
+
+    for(const ResourceEntry& entry : std::as_const(iconNameEntries)) {
+        if(!entry.isNamed() && entry.id() == bestId && entry.isDirectory()) {
+            iconName = entry;
+            foundIconName = true;
+            break;
+        }
+    }
+
+    if(!foundIconName) {
+        qDebug() << "matching RT_ICON id not found:" << bestId;
+        return false;
+    }
+
+    QList<ResourceEntry> iconLanguageEntries;
+
+    if(!readResourceDirectoryEntries(file, resourceFileOffset + iconName.directoryOffset(), iconLanguageEntries) ||
+        iconLanguageEntries.isEmpty()) {
+        qDebug() << "no RT_ICON language entries found";
+        return false;
+    }
+
+    const ResourceEntry iconLanguage = iconLanguageEntries.first();
+
+    if(iconLanguage.isDirectory()) {
+        qDebug() << "RT_ICON language entry is a directory";
+        return false;
+    }
+
+    /******************************************************/
+    // IMAGE_RESOURCE_DATA_ENTRY for the actual icon image
+
+    if(!file.seek(resourceFileOffset + iconLanguage.offset)) {
+        qDebug() << "failed to seek to RT_ICON data entry";
+        return false;
+    }
+
+    quint32 iconRva = 0;
+    quint32 iconSize = 0;
+    quint32 iconCodePage = 0;
+    quint32 iconReserved = 0;
+
+    if(!readUInt32LE(file, iconRva) || !readUInt32LE(file, iconSize) || !readUInt32LE(file, iconCodePage) || !readUInt32LE(file, iconReserved)) {
+        qDebug() << "failed to read RT_ICON data info";
+        return false;
+    }
+
+    Q_UNUSED(iconCodePage);
+    Q_UNUSED(iconReserved);
+
+    if(iconSize == 0) {
+        qDebug() << "RT_ICON image data is empty";
+        return false;
+    }
+
+    quint64 iconFileOffset = 0;
+
+    if(!rvaToFileOffset(iconRva, sections, iconFileOffset)) {
+        qDebug() << "call to rvaToFileOffset failed for icon image data";
+        return false;
+    }
+
+    if(!file.seek(iconFileOffset)) {
+        qDebug() << "failed to seek to icon image data";
+        return false;
+    }
+
+    QByteArray iconData;
+
+    if(!readBytes(file, qsizetype(iconSize), iconData)) {
+        qDebug() << "failed to read icon image data";
+        return false;
+    }
+
+    /******************************************************/
+    // assemble in-memory .ico file
+    // this handles both BMP/DIB icon frame and PNG-encoded frames
+
+    QByteArray icoFile;
+    QDataStream stream(&icoFile, QIODevice::WriteOnly);
+    stream.setByteOrder(QDataStream::LittleEndian);
+
+    // reserved
+    stream << quint16(0);
+    // type: 1 = icon
+    stream << quint16(1);
+    // number of images in this file
+    stream << quint16(1);
+
+    // width (0 == 256; real size is in the image data)
+    stream << quint8(0);
+    // height (0 == 256)
+    stream << quint8(0);
+    // color count
+    stream << quint8(0);
+    // reserved
+    stream << quint8(0);
+    // planes
+    stream << quint16(1);
+    // bit count
+    stream << quint16(32);
+    // size of image data
+    stream << quint32(iconData.size());
+    // offset to image data: 6-byte ICONDIR + 16-byte ICONDIRENTRY
+    stream << quint32(22);
+
+    icoFile.append(iconData);
+
+    icon = QImage::fromData(icoFile, "ICO");
+
+    if(icon.isNull()) {
+        qDebug() << "failed to decode reassembled .ico data";
+        return false;
+    }
+
+    return true;
+}
+
 /***************************************************************/
 
 // various helper functions for the parser above
@@ -1561,74 +1879,49 @@ QString PQCFilePluginDLLExe::formatFileFlagsMask(quint32 fileFlagsMask) {
 
 QString PQCFilePluginDLLExe::formatFileOs(quint32 fileos) {
 
-    switch(fileos) {
-
-        case VersionInfo::OsUnknown:
+    if(fileos == VersionInfo::OsUnknown)
             return "Unknown";
-
-        case VersionInfo::OsDos:
+    if(fileos == VersionInfo::OsDos)
             return "DOS";
-
-        case VersionInfo::OsOs216:
+    if(fileos == VersionInfo::OsOs216)
             return "OS/2 16-bit";
-
-        case VersionInfo::OsOs232:
+    if(fileos == VersionInfo::OsOs232)
             return "OS/2 32-bit";
-
-        case VersionInfo::OsNt:
+    if(fileos == VersionInfo::OsNt)
             return "Windows NT";
-
-        case VersionInfo::OsDosWindows16:
+    if(fileos == VersionInfo::OsDosWindows16)
             return "DOS / Windows 16-bit";
-
-        case VersionInfo::OsDosWindows32:
+    if(fileos == VersionInfo::OsDosWindows32)
             return "DOS / Windows 32-bit";
-
-        case VersionInfo::OsOs216Pm16:
+    if(fileos == VersionInfo::OsOs216Pm16)
             return "OS/2 16-bit / Presentation Manager";
-
-        case VersionInfo::OsOs232Pm32:
+    if(fileos == VersionInfo::OsOs232Pm32)
             return "OS/2 32-bit / Presentation Manager";
-
-        case VersionInfo::OsNtWindows32:
+    if(fileos == VersionInfo::OsNtWindows32)
             return "Windows NT / Windows 32-bit";
 
-        default:
-            return QString("Unknown (0x%1)").arg(fileos, 8, 16, '0');
-
-    }
+    return QString("Unknown (0x%1)").arg(fileos, 8, 16, '0');
 
 }
 
 QString PQCFilePluginDLLExe::formatFileType(quint32 filetype) {
 
-    switch (filetype) {
+    if(filetype == VersionInfo::TypeUnknown)
+        return "Unknown";
+    if(filetype == VersionInfo::TypeApp)
+        return "Application";
+    if(filetype == VersionInfo::TypeDll)
+        return "DLL";
+    if(filetype == VersionInfo::TypeDriver)
+        return "Driver";
+    if(filetype == VersionInfo::TypeFont)
+        return "Font";
+    if(filetype == VersionInfo::TypeVxd)
+        return "VxD";
+    if(filetype == VersionInfo::TypeStaticLib)
+        return "Static library";
 
-        case VersionInfo::TypeUnknown:
-            return "Unknown";
-
-        case VersionInfo::TypeApp:
-            return "Application";
-
-        case VersionInfo::TypeDll:
-            return "DLL";
-
-        case VersionInfo::TypeDriver:
-            return "Driver";
-
-        case VersionInfo::TypeFont:
-            return "Font";
-
-        case VersionInfo::TypeVxd:
-            return "VxD";
-
-        case VersionInfo::TypeStaticLib:
-            return "Static library";
-
-        default:
-            return QString("Unknown (0x%1)").arg(filetype, 8, 16, QLatin1Char('0'));
-
-    }
+    return QString("Unknown (0x%1)").arg(filetype, 8, 16, QLatin1Char('0'));
 
 }
 
@@ -1637,56 +1930,39 @@ QString PQCFilePluginDLLExe::formatFileSubtype(quint32 type, quint32 subtype) {
     if(subtype == VersionInfo::SubtypeUnknown)
         return "Unknown";
 
-    switch (type) {
+    if(type == VersionInfo::TypeDriver) {
 
-        case VersionInfo::TypeDriver:
+        if(subtype == VersionInfo::DriverPrinter)
+            return "Printer";
+        if(subtype == VersionInfo::DriverComm)
+            return "Communications";
+        if(subtype == VersionInfo::DriverLanguage)
+            return "Language";
+        if(subtype == VersionInfo::DriverDisplay)
+            return "Display";
+        if(subtype == VersionInfo::DriverMouse)
+            return "Mouse";
+        if(subtype == VersionInfo::DriverNetwork)
+            return "Network";
+        if(subtype == VersionInfo::DriverSystem)
+            return "System";
+        if(subtype == VersionInfo::DriverInstallable)
+            return "Installable";
+        if(subtype == VersionInfo::DriverSound)
+            return "Sound";
+        if(subtype == VersionInfo::DriverKeyboard)
+            return "Keyboard";
+        if(subtype == VersionInfo::DriverVersionedPrinter)
+            return "Versioned printer";
 
-            switch (subtype) {
-                case VersionInfo::DriverPrinter:
-                    return "Printer";
-                case VersionInfo::DriverComm:
-                    return "Communications";
-                case VersionInfo::DriverLanguage:
-                    return "Language";
-                case VersionInfo::DriverDisplay:
-                    return "Display";
-                case VersionInfo::DriverMouse:
-                    return "Mouse";
-                case VersionInfo::DriverNetwork:
-                    return "Network";
-                case VersionInfo::DriverSystem:
-                    return "System";
-                case VersionInfo::DriverInstallable:
-                    return "Installable";
-                case VersionInfo::DriverSound:
-                    return "Sound";
-                case VersionInfo::DriverKeyboard:
-                    return "Keyboard";
-                case VersionInfo::DriverVersionedPrinter:
-                    return "Versioned printer";
-                default:
-                    break;
-            }
+    } else if(type == VersionInfo::TypeFont) {
 
-            break;
-
-        case VersionInfo::TypeFont:
-
-            switch (subtype) {
-                case VersionInfo::FontRaster:
-                    return "Raster";
-                case VersionInfo::FontVector:
-                    return "Vector";
-                case VersionInfo::FontTrueType:
-                    return "TrueType";
-                default:
-                    break;
-            }
-
-            break;
-
-        default:
-            break;
+        if(subtype == VersionInfo::FontRaster)
+            return "Raster";
+        if(subtype == VersionInfo::FontVector)
+            return "Vector";
+        if(subtype == VersionInfo::FontTrueType)
+            return "TrueType";
 
     }
 
@@ -1731,35 +2007,24 @@ QString PQCFilePluginDLLExe::formatLanguageName(quint16 langId) {
 
 QString PQCFilePluginDLLExe::formatCodePage(quint16 codepage) {
 
-    switch(codepage) {
+    if(codepage == VersionInfo::CodePageUtf16Le)
+        return "UTF-16LE (1200)";
+    if(codepage == VersionInfo::CodePageUtf16Be)
+        return "UTF-16BE (1201)";
+    if(codepage == VersionInfo::CodePageUtf8)
+        return "UTF-8 (65001)";
+    if(codepage == 1250 || codepage == 1251 || codepage == 1252 || codepage == 1253 || codepage == 1254 ||
+       codepage == 1255 || codepage == 1256 || codepage == 1257 || codepage == 1258)
+        return QString("Windows-%1 (%1)").arg(codepage);
+    if(codepage == 932)
+        return "Shift-JIS (932)";
+    if(codepage == 936)
+        return "GBK (936)";
+    if(codepage == 949)
+        return "KS C 5601 (949)";
+    if(codepage == 950)
+        return "Big5 (950)";
 
-        case VersionInfo::CodePageUtf16Le:
-            return "UTF-16LE (1200)";
-        case VersionInfo::CodePageUtf16Be:
-                return "UTF-16BE (1201)";
-        case VersionInfo::CodePageUtf8:
-                return "UTF-8 (65001)";
-        case 1250:
-        case 1251:
-        case 1252:
-        case 1253:
-        case 1254:
-        case 1255:
-        case 1256:
-        case 1257:
-        case 1258:
-            return QString("Windows-%1 (%1)").arg(codepage);
-        case 932:
-            return "Shift-JIS (932)";
-        case 936:
-            return "GBK (936)";
-        case 949:
-            return "KS C 5601 (949)";
-        case 950:
-            return "Big5 (950)";
-        default:
-            return QString("Code page %1").arg(codepage);
-
-    }
+    return QString("Code page %1").arg(codepage);
 
 }

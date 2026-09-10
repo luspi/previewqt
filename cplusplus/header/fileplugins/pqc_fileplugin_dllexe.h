@@ -27,6 +27,7 @@
 #include <QImage>
 
 // VERSIONINFO constants from Win32 Ver.h
+// this is here to avoid having to include that header
 namespace VersionInfo {
 
     // dwFileFlagsMask
@@ -157,5 +158,7 @@ private:
     inline QString convertLanguageCodeToString(QString code);
 
     inline bool parseVersionBlock(QFile& file, quint64 blockOffset, quint64 availableSize, QVariantMap& ret, quint32 languageId, quint32 codePage);
+    inline bool extractBestIcon(QFile& file, quint64 resourceFileOffset, const QList<ResourceEntry>& rootEntries, const QList<PESection>& sections, QImage& icon);
+
 
 };

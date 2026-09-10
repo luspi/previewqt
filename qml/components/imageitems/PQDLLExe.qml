@@ -37,6 +37,8 @@ Rectangle {
 
     property var currentData: ({})
 
+    property bool thisIsAnExe: false
+
     Flickable {
 
         id: content
@@ -77,7 +79,7 @@ Rectangle {
                     horizontalAlignment: Qt.AlignHCenter
                     font.pointSize: 18
                     font.bold: true
-                    text: "Windows DLL"
+                    text: dllexe_top.thisIsAnExe ? "Windows Executable (EXE)" : "Windows DLL"
                     color: palette.text
                 }
 
@@ -99,14 +101,26 @@ Rectangle {
                     visible: false
                 }
 
-                TextEdit {
-                    id: textedit
-                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
-                    font.pointSize: 11
-                    readOnly: true
-                    textFormat: Text.RichText
-                    color: palette.text
-                    width: col.width
+                Row {
+
+                    TextEdit {
+                        id: textedit
+                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                        font.pointSize: 11
+                        readOnly: true
+                        textFormat: Text.RichText
+                        color: palette.text
+                        width: col.width-fileIcon.width
+                    }
+
+                    Image {
+                        id: fileIcon
+                        y: 0
+                        width: 75
+                        height: 75
+                        fillMode: Image.PreserveAspectFit
+                    }
+
                 }
 
                 Item {
@@ -121,6 +135,8 @@ Rectangle {
     }
 
     Component.onCompleted: {
+
+        dllexe_top.thisIsAnExe = (PQCScriptsFilesPaths.getSuffix(PQCConstants.currentSource) === "exe")
 
         const dat = PQCFileHandler.getDataWithPlugin("dllexe", PQCConstants.currentSource)
         if(dat.length !== 2 || !dat[0]) {
@@ -215,7 +231,12 @@ Rectangle {
             }
         }
 
-        textedit.text = main + vinfo + "</ul><br><br><br><br><br>"
+        textedit.text = main + vinfo + "</ul><br><br><br>"
+
+        if("Icon" in dllexe_top.currentData["VersionInfo"]) {
+            fileIcon.source = "data:image/png;base64," + dllexe_top.currentData["VersionInfo"]["Icon"]
+        } else
+            console.log("no embedded icon found")
 
         PQCNotify.updateWindowSizeDefault()
 
