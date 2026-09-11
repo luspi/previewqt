@@ -23,15 +23,13 @@
 
 #include <fileplugins/pqc_fileplugin.h>
 #include <QSet>
-#include <QImage>
 
-class PQCFilePluginQt : public PQCFilePlugin {
+class PQCImagePluginLibVips : public PQCFilePlugin {
 
 public:
-    PQCFilePluginQt();
+    PQCImagePluginLibVips();
 
-    const QString name() override { return "Qt"; }
-
+    const QString name() override { return "libvips"; }
     const QSize loadSize(QString path) override;
     const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override;
     const QVariantList loadData(QString path) override { return {}; }

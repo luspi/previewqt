@@ -23,18 +23,33 @@
 
 #include <fileplugins/pqc_fileplugin.h>
 #include <QSet>
+#include <QImage>
 
-class PQCFilePluginLibVips : public PQCFilePlugin {
+#ifdef PQMLIBSAI
+#if __has_include(<sai.hpp>)
+#include <sai.hpp>
+#elif __has_include(<sai/sai.hpp>)
+#include <sai/sai.hpp>
+#endif
+#endif
+
+class PQCImagePluginLibsai : public PQCFilePlugin {
 
 public:
-    PQCFilePluginLibVips();
+    PQCImagePluginLibsai();
 
-    const QString name() override { return "libvips"; }
+    const QString name() override { return "libsai"; }
     const QSize loadSize(QString path) override;
     const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override;
     const QVariantList loadData(QString path) override { return {}; }
     const int loadNumPages(QString path) override { return 1; }
     const QStringList loadContent(QString path) override { return {path}; }
     const QJsonObject loadJSON(QString path, QVariantMap extraArguments) override;
+
+private:
+#ifdef PQMLIBSAI
+    static std::vector<uint32_t> ReadRasterLayer(const sai::LayerHeader& layerHeader, sai::VirtualFileEntry& layerFile);
+    static void RLEDecompressStride(std::byte* destination, const std::byte* source, std::size_t stride, std::size_t strideCount, std::size_t channel);
+#endif
 
 };

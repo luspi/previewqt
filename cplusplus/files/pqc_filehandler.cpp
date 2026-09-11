@@ -25,19 +25,12 @@
 #include <pqc_scriptsother.h>
 #include <pqc_settingscpp.h>
 
-#include <fileplugins/pqc_fileplugin_qt.h>
-#include <fileplugins/pqc_fileplugin_resvg.h>
+#include <fileplugins/pqc_fileplugin_image.h>
 #include <fileplugins/pqc_fileplugin_pdf.h>
-#include <fileplugins/pqc_fileplugin_libraw.h>
 #include <fileplugins/pqc_fileplugin_libarchive.h>
-#include <fileplugins/pqc_fileplugin_libsai.h>
 #include <fileplugins/pqc_fileplugin_video.h>
-#include <fileplugins/pqc_fileplugin_magick.h>
-#include <fileplugins/pqc_fileplugin_devil.h>
-#include <fileplugins/pqc_fileplugin_libvips.h>
 #include <fileplugins/pqc_fileplugin_libreoffice.h>
 #include <fileplugins/pqc_fileplugin_package.h>
-#include <fileplugins/pqc_fileplugin_openslide.h>
 #include <fileplugins/pqc_fileplugin_musescore.h>
 #include <fileplugins/pqc_fileplugin_pqt.h>
 #include <fileplugins/pqc_fileplugin_sqlite.h>
@@ -54,10 +47,7 @@ PQCFileHandler::PQCFileHandler() {
 
     /*******************************************************/
 
-    m_imagePluginOrder = QStringList()
-#ifdef PQMRESVG
-        << "resvg"
-#endif
+    m_pluginOrder = QStringList()
 #if defined(PQMPOPPLER) || defined(PQMQTPDF)
         << "pdf"
 #endif
@@ -65,28 +55,10 @@ PQCFileHandler::PQCFileHandler() {
         << "libreoffice"
 #endif
         << "pqt"
-#ifdef PQMOPENSLIDE
-        << "openslide"
-#endif
-        << "qt"
-#ifdef PQMRAW
-        << "libraw"
-#endif
 #ifdef PQMLIBARCHIVE
         << "libarchive"
 #endif
-#ifdef PQMLIBSAI
-        << "libsai"
-#endif
-#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
-        << "magick"
-#endif
-#ifdef PQMLIBVIPS
-        << "libvips"
-#endif
-#ifdef PQMDEVIL
-        << "devil"
-#endif
+        << "image"
 #ifdef PQMQTMULTIMEDIA
         << "video"
 #endif
@@ -94,10 +66,6 @@ PQCFileHandler::PQCFileHandler() {
         << "libmpv"
 #endif
         << "musescore"
-    ;
-
-    m_pluginOrder = m_imagePluginOrder;
-    m_pluginOrder
 #if defined(PQMQTMULTIMEDIA) || defined(PQMLIBMPV)
         << "audio"
 #endif
@@ -112,36 +80,18 @@ PQCFileHandler::PQCFileHandler() {
 
     /*******************************************************/
 
-    m_plugins.insert("qt", new PQCFilePluginQt);
-#ifdef PQMRESVG
-    m_plugins.insert("resvg", new PQCFilePluginResvg);
-#endif
+    m_plugins.insert("image", new PQCFilePluginImage);
 #if defined(PQMPOPPLER) || defined(PQMQTPDF)
     m_plugins.insert("pdf", new PQCFilePluginPDF);
 #endif
-#ifdef PQMRAW
-    m_plugins.insert("libraw", new PQCFilePluginLibraw);
-#endif
 #ifdef PQMLIBARCHIVE
     m_plugins.insert("libarchive", new PQCFilePluginLibarchive);
-#endif
-#ifdef PQMLIBSAI
-    m_plugins.insert("libsai", new PQCFilePluginLibsai);
 #endif
 #ifdef PQMQTMULTIMEDIA
     m_plugins.insert("video", new PQCFilePluginVideo(false));
 #endif
 #ifdef PQMLIBMPV
     m_plugins.insert("libmpv", new PQCFilePluginVideo(true));
-#endif
-#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
-    m_plugins.insert("magick", new PQCFilePluginMagick);
-#endif
-#ifdef PQMDEVIL
-    m_plugins.insert("devil", new PQCFilePluginDevIL);
-#endif
-#ifdef PQMLIBVIPS
-    m_plugins.insert("libvips", new PQCFilePluginLibVips);
 #endif
 #if defined(PQMQTMULTIMEDIA) || defined(PQMLIBMPV)
     m_plugins.insert("audio", new PQCFilePluginAudio);
@@ -155,9 +105,6 @@ PQCFileHandler::PQCFileHandler() {
 #endif
 #ifdef PQMLIBARCHIVE
     m_plugins.insert("package", new PQCFilePluginPackage);
-#endif
-#ifdef PQMOPENSLIDE
-    m_plugins.insert("openslide", new PQCFilePluginOpenSlide);
 #endif
     m_plugins.insert("musescore", new PQCFilePluginMuseScore);
     m_plugins.insert("pqt", new PQCFilePluginPQT);
@@ -189,7 +136,7 @@ QSize PQCFileHandler::getSize(QString path) {
     const QString suffix1 = info.suffix().toLower();
     const QString suffix2 = info.completeSuffix().toLower();
 
-    for(const QString &name : std::as_const(m_imagePluginOrder)) {
+    for(const QString &name : std::as_const(m_pluginOrder)) {
 
         if(!m_plugins.contains(name)) continue;
 
@@ -209,7 +156,7 @@ QSize PQCFileHandler::getSize(QString path) {
     QMimeDatabase db;
     const QString mimetype = db.mimeTypeForFile(path).name();
 
-    for(const QString &name : std::as_const(m_imagePluginOrder)) {
+    for(const QString &name : std::as_const(m_pluginOrder)) {
 
         if(!m_plugins.contains(name)) continue;
 
@@ -243,7 +190,7 @@ QImage PQCFileHandler::getImage(QString path, QSize requestedSize, QSize &origSi
     const QString suffix1 = info.suffix().toLower();
     const QString suffix2 = info.completeSuffix().toLower();
 
-    for(const QString &name : std::as_const(m_imagePluginOrder)) {
+    for(const QString &name : std::as_const(m_pluginOrder)) {
 
         if(!m_plugins.contains(name)) continue;
 
@@ -267,7 +214,7 @@ QImage PQCFileHandler::getImage(QString path, QSize requestedSize, QSize &origSi
     QMimeDatabase db;
     const QString mimetype = db.mimeTypeForFile(path).name();
 
-    for(const QString &name : std::as_const(m_imagePluginOrder)) {
+    for(const QString &name : std::as_const(m_pluginOrder)) {
 
         if(!m_plugins.contains(name)) continue;
 
@@ -301,7 +248,7 @@ QImage PQCFileHandler::getImage(QString path, QSize requestedSize, QSize &origSi
 
 QImage PQCFileHandler::getImageWithPlugin(QString plugin, QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
-    if(!m_imagePluginOrder.contains(plugin)) {
+    if(!m_pluginOrder.contains(plugin)) {
         qWarning() << "Requested plugin" << plugin << "not found.";
         return QImage();
     }
@@ -390,13 +337,13 @@ QVariantList PQCFileHandler::getDataWithPlugin(QString plugin, QString path) {
 }
 
 int PQCFileHandler::getNumPages(QString plugin, QString path) {
-    if(m_imagePluginOrder.contains(plugin))
+    if(m_pluginOrder.contains(plugin))
         return m_plugins.value(plugin)->loadNumPages(path);
     return 1;
 }
 
 QStringList PQCFileHandler::getContent(QString plugin, QString path) {
-    if(m_imagePluginOrder.contains(plugin))
+    if(m_pluginOrder.contains(plugin))
         return m_plugins.value(plugin)->loadContent(path);
     return {};
 }

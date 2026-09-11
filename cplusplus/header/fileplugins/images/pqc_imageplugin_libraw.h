@@ -24,10 +24,10 @@
 #include <fileplugins/pqc_fileplugin.h>
 #include <QSet>
 
-class PQCFilePluginLibraw : public PQCFilePlugin {
+class PQCImagePluginLibraw : public PQCFilePlugin {
 
 public:
-    PQCFilePluginLibraw();
+    PQCImagePluginLibraw();
 
     const QString name() override { return "libraw"; }
     const QSize loadSize(QString path) override;

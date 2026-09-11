@@ -20,7 +20,7 @@
  **                                                                      **
  **************************************************************************/
 
-#include <fileplugins/pqc_fileplugin_qt.h>
+#include <fileplugins/images/pqc_imageplugin_qt.h>
 #include <pqc_settingscpp.h>
 #include <pqc_scriptsother.h>
 #include <pqc_scriptsimages.h>
@@ -34,7 +34,7 @@
 #include <QSvgRenderer>
 #include <QPainter>
 
-PQCFilePluginQt::PQCFilePluginQt() {
+PQCImagePluginQt::PQCImagePluginQt() {
 
     setData({
              {53218,
@@ -132,7 +132,7 @@ PQCFilePluginQt::PQCFilePluginQt() {
 
 }
 
-const QSize PQCFilePluginQt::loadSize(QString path) {
+const QSize PQCImagePluginQt::loadSize(QString path) {
 
     QSize sze;
     if(loadSizeFromCache(path, sze))
@@ -196,7 +196,7 @@ const QSize PQCFilePluginQt::loadSize(QString path) {
 
 }
 
-const QImage PQCFilePluginQt::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
+const QImage PQCImagePluginQt::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
     qDebug() << "args: path =" << path;
     qDebug() << "args: requestedSize =" << requestedSize;
@@ -339,7 +339,7 @@ const QImage PQCFilePluginQt::loadImage(QString path, QSize requestedSize, QSize
 
 }
 
-const QJsonObject PQCFilePluginQt::loadJSON(QString path, QVariantMap extraArguments) {
+const QJsonObject PQCImagePluginQt::loadJSON(QString path, QVariantMap extraArguments) {
     QJsonObject json = loadJSON_image(path, extraArguments);
     if(json.isEmpty()) return {};
     json["animated"] = PQCScriptsImages::get().isItAnimated(path);

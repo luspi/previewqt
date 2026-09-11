@@ -20,7 +20,7 @@
  **                                                                      **
  **************************************************************************/
 
-#include <fileplugins/pqc_fileplugin_resvg.h>
+#include <fileplugins/images/pqc_imageplugin_resvg.h>
 #include <pqc_settingscpp.h>
 #include <pqc_scriptsother.h>
 #include <pqc_helper.h>
@@ -35,7 +35,7 @@
 #endif
 #endif
 
-PQCFilePluginResvg::PQCFilePluginResvg() {
+PQCImagePluginResvg::PQCImagePluginResvg() {
 
 #ifdef PQMRESVG
     setData({{26112, {{"SVG: Scalable Vector Graphics"}, {"svg", "svgz"}, {"image/svg+xml"}}}});
@@ -43,7 +43,7 @@ PQCFilePluginResvg::PQCFilePluginResvg() {
 
 }
 
-const QSize PQCFilePluginResvg::loadSize(QString path) {
+const QSize PQCImagePluginResvg::loadSize(QString path) {
 
 #ifdef PQMRESVG
 
@@ -78,7 +78,7 @@ const QSize PQCFilePluginResvg::loadSize(QString path) {
 
 }
 
-const QImage PQCFilePluginResvg::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
+const QImage PQCImagePluginResvg::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
 #ifdef PQMRESVG
 
@@ -166,6 +166,6 @@ const QImage PQCFilePluginResvg::loadImage(QString path, QSize requestedSize, QS
 
 }
 
-const QJsonObject PQCFilePluginResvg::loadJSON(QString path, QVariantMap extraArguments) {
+const QJsonObject PQCImagePluginResvg::loadJSON(QString path, QVariantMap extraArguments) {
     return loadJSON_image(path, extraArguments);
 }

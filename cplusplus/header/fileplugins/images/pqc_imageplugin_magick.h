@@ -24,12 +24,16 @@
 #include <fileplugins/pqc_fileplugin.h>
 #include <QSet>
 
-class PQCFilePluginDevIL : public PQCFilePlugin {
+class PQCImagePluginMagick : public PQCFilePlugin {
 
 public:
-    PQCFilePluginDevIL();
+    PQCImagePluginMagick();
 
-    const QString name() override { return "DevIL"; }
+#ifdef PQMIMAGEMAGICK
+    const QString name() override { return "ImageMagick"; }
+#elif defined(PQMGRAPHICSMAGICK)
+    const QString name() override { return "GraphicsMagick"; }
+#endif
     const QSize loadSize(QString path) override;
     const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override;
     const QVariantList loadData(QString path) override { return {}; }
@@ -38,8 +42,6 @@ public:
     const QJsonObject loadJSON(QString path, QVariantMap extraArguments) override;
 
 private:
-#ifdef PQMDEVIL
-    static QString checkForError();
-#endif
+    QHash<QString,QString> m_suffix2magick;
 
 };

@@ -20,7 +20,7 @@
  **                                                                      **
  **************************************************************************/
 
-#include <fileplugins/pqc_fileplugin_libsai.h>
+#include <fileplugins/images/pqc_imageplugin_libsai.h>
 #include <pqc_settingscpp.h>
 #include <pqc_scriptsother.h>
 #include <pqc_helper.h>
@@ -30,7 +30,7 @@
 #include <QPainter>
 #include <QBitmap>
 
-PQCFilePluginLibsai::PQCFilePluginLibsai() {
+PQCImagePluginLibsai::PQCImagePluginLibsai() {
 
 #ifdef PQMLIBSAI
     setData({
@@ -41,7 +41,7 @@ PQCFilePluginLibsai::PQCFilePluginLibsai() {
 
 }
 
-const QSize PQCFilePluginLibsai::loadSize(QString path) {
+const QSize PQCImagePluginLibsai::loadSize(QString path) {
 
 #ifdef PQMLIBSAI
 
@@ -67,7 +67,7 @@ const QSize PQCFilePluginLibsai::loadSize(QString path) {
 
 }
 
-const QImage PQCFilePluginLibsai::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
+const QImage PQCImagePluginLibsai::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
     qDebug() << "args: path = " << path;
     qDebug() << "args: requestedSize = " << requestedSize;
@@ -243,7 +243,7 @@ const QImage PQCFilePluginLibsai::loadImage(QString path, QSize requestedSize, Q
 
 }
 
-const QJsonObject PQCFilePluginLibsai::loadJSON(QString path, QVariantMap extraArguments) {
+const QJsonObject PQCImagePluginLibsai::loadJSON(QString path, QVariantMap extraArguments) {
     return loadJSON_image(path, extraArguments);
 }
 
@@ -252,7 +252,7 @@ const QJsonObject PQCFilePluginLibsai::loadJSON(QString path, QVariantMap extraA
 /*********************************************************************/
 // This function is based on ReadRasterLayer() function found in:
 // https://github.com/Wunkolo/libsai/blob/main/samples/Document.cpp
-std::vector<std::uint32_t> PQCFilePluginLibsai::ReadRasterLayer(const sai::LayerHeader& layerHeader, sai::VirtualFileEntry& layerFile) {
+std::vector<std::uint32_t> PQCImagePluginLibsai::ReadRasterLayer(const sai::LayerHeader& layerHeader, sai::VirtualFileEntry& layerFile) {
 
     const std::size_t tileSize   = 32u;
     const std::size_t tilePixels = tileSize * tileSize;
@@ -345,7 +345,7 @@ std::vector<std::uint32_t> PQCFilePluginLibsai::ReadRasterLayer(const sai::Layer
 /*********************************************************************/
 // This function is based on RLEDecompressStride() function found in:
 // https://github.com/Wunkolo/libsai/blob/main/samples/Document.cpp
-void PQCFilePluginLibsai::RLEDecompressStride(std::byte* destination, const std::byte* source, std::size_t stride, std::size_t strideCount, std::size_t channel) {
+void PQCImagePluginLibsai::RLEDecompressStride(std::byte* destination, const std::byte* source, std::size_t stride, std::size_t strideCount, std::size_t channel) {
 
     destination += channel;
     std::size_t writeCount = 0;

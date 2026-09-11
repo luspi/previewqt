@@ -13,25 +13,27 @@ SET(previewqt_SRC cplusplus/main.cpp
 
                   cplusplus/files/plugins/pqc_fileplugin.cpp
                   cplusplus/files/plugins/pqc_fileplugin_audio.cpp
-                  cplusplus/files/plugins/pqc_fileplugin_devil.cpp
                   cplusplus/files/plugins/pqc_fileplugin_ebook.cpp
                   cplusplus/files/plugins/pqc_fileplugin_libarchive.cpp
-                  cplusplus/files/plugins/pqc_fileplugin_libraw.cpp
-                  cplusplus/files/plugins/pqc_fileplugin_libsai.cpp
-                  cplusplus/files/plugins/pqc_fileplugin_libvips.cpp
-                  cplusplus/files/plugins/pqc_fileplugin_magick.cpp
                   cplusplus/files/plugins/pqc_fileplugin_pdf.cpp
-                  cplusplus/files/plugins/pqc_fileplugin_qt.cpp
-                  cplusplus/files/plugins/pqc_fileplugin_resvg.cpp
                   cplusplus/files/plugins/pqc_fileplugin_text.cpp
                   cplusplus/files/plugins/pqc_fileplugin_video.cpp
                   cplusplus/files/plugins/pqc_fileplugin_libreoffice.cpp
                   cplusplus/files/plugins/pqc_fileplugin_package.cpp
-                  cplusplus/files/plugins/pqc_fileplugin_openslide.cpp
                   cplusplus/files/plugins/pqc_fileplugin_musescore.cpp
                   cplusplus/files/plugins/pqc_fileplugin_pqt.cpp
                   cplusplus/files/plugins/pqc_fileplugin_sqlite.cpp
                   cplusplus/files/plugins/pqc_fileplugin_dllexe.cpp
+                  cplusplus/files/plugins/pqc_fileplugin_image.cpp
+
+                  cplusplus/files/plugins/images/pqc_imageplugin_devil.cpp
+                  cplusplus/files/plugins/images/pqc_imageplugin_libraw.cpp
+                  cplusplus/files/plugins/images/pqc_imageplugin_libsai.cpp
+                  cplusplus/files/plugins/images/pqc_imageplugin_libvips.cpp
+                  cplusplus/files/plugins/images/pqc_imageplugin_magick.cpp
+                  cplusplus/files/plugins/images/pqc_imageplugin_qt.cpp
+                  cplusplus/files/plugins/images/pqc_imageplugin_resvg.cpp
+                  cplusplus/files/plugins/images/pqc_imageplugin_openslide.cpp
 
                   cplusplus/files/pqc_filehandler.cpp
                   cplusplus/files/pqc_imageproviderfull.cpp
@@ -67,25 +69,28 @@ SET(previewqt_SRC cplusplus/main.cpp
 
                   cplusplus/header/fileplugins/pqc_fileplugin.h
                   cplusplus/header/fileplugins/pqc_fileplugin_audio.h
-                  cplusplus/header/fileplugins/pqc_fileplugin_devil.h
                   cplusplus/header/fileplugins/pqc_fileplugin_ebook.h
                   cplusplus/header/fileplugins/pqc_fileplugin_libarchive.h
-                  cplusplus/header/fileplugins/pqc_fileplugin_libraw.h
-                  cplusplus/header/fileplugins/pqc_fileplugin_libsai.h
-                  cplusplus/header/fileplugins/pqc_fileplugin_libvips.h
-                  cplusplus/header/fileplugins/pqc_fileplugin_magick.h
                   cplusplus/header/fileplugins/pqc_fileplugin_pdf.h
-                  cplusplus/header/fileplugins/pqc_fileplugin_qt.h
-                  cplusplus/header/fileplugins/pqc_fileplugin_resvg.h
                   cplusplus/header/fileplugins/pqc_fileplugin_text.h
                   cplusplus/header/fileplugins/pqc_fileplugin_video.h
                   cplusplus/header/fileplugins/pqc_fileplugin_libreoffice.h
                   cplusplus/header/fileplugins/pqc_fileplugin_package.h
-                  cplusplus/header/fileplugins/pqc_fileplugin_openslide.h
                   cplusplus/header/fileplugins/pqc_fileplugin_musescore.h
                   cplusplus/header/fileplugins/pqc_fileplugin_pqt.h
                   cplusplus/header/fileplugins/pqc_fileplugin_sqlite.h
                   cplusplus/header/fileplugins/pqc_fileplugin_dllexe.h
+                  cplusplus/header/fileplugins/pqc_fileplugin_image.h
+
+                  cplusplus/header/fileplugins/images/pqc_imageplugin_devil.h
+                  cplusplus/header/fileplugins/images/pqc_imageplugin_libraw.h
+                  cplusplus/header/fileplugins/images/pqc_imageplugin_libsai.h
+                  cplusplus/header/fileplugins/images/pqc_imageplugin_libvips.h
+                  cplusplus/header/fileplugins/images/pqc_imageplugin_magick.h
+                  cplusplus/header/fileplugins/images/pqc_imageplugin_qt.h
+                  cplusplus/header/fileplugins/images/pqc_imageplugin_resvg.h
+                  cplusplus/header/fileplugins/images/pqc_imageplugin_openslide.h
+
 )
 
 if(WITH_LIBMPV)

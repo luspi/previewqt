@@ -23,18 +23,24 @@
 
 #include <fileplugins/pqc_fileplugin.h>
 #include <QSet>
+#include <QSize>
+#include <QImage>
 
-class PQCFilePluginResvg : public PQCFilePlugin {
+class PQCFilePluginImage : public PQCFilePlugin {
 
 public:
-    PQCFilePluginResvg();
+    PQCFilePluginImage();
+    ~PQCFilePluginImage();
 
-    const QString name() override { return "reSVG"; }
+    const QString name() override { return "Image"; }
     const QSize loadSize(QString path) override;
     const QImage loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) override;
     const QVariantList loadData(QString path) override { return {}; }
     const int loadNumPages(QString path) override { return 1; }
     const QStringList loadContent(QString path) override { return {path}; }
     const QJsonObject loadJSON(QString path, QVariantMap extraArguments) override;
+
+private:
+    QList<PQCFilePlugin*> m_plugins;
 
 };

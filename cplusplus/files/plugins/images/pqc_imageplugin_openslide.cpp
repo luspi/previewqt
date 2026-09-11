@@ -20,7 +20,7 @@
  **                                                                      **
  **************************************************************************/
 
-#include <fileplugins/pqc_fileplugin_openslide.h>
+#include <fileplugins/images/pqc_imageplugin_openslide.h>
 #include <pqc_settingscpp.h>
 #include <pqc_scriptsother.h>
 #include <pqc_scriptsimages.h>
@@ -34,7 +34,7 @@
 #include <openslide/openslide.h>
 #endif
 
-PQCFilePluginOpenSlide::PQCFilePluginOpenSlide() {
+PQCImagePluginOpenSlide::PQCImagePluginOpenSlide() {
 
 #ifdef PQMOPENSLIDE
 
@@ -68,7 +68,7 @@ PQCFilePluginOpenSlide::PQCFilePluginOpenSlide() {
 
 }
 
-const QSize PQCFilePluginOpenSlide::loadSize(QString path) {
+const QSize PQCImagePluginOpenSlide::loadSize(QString path) {
 
 #ifdef PQMOPENSLIDE
 
@@ -117,7 +117,7 @@ const QSize PQCFilePluginOpenSlide::loadSize(QString path) {
 
 }
 
-const QImage PQCFilePluginOpenSlide::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
+const QImage PQCImagePluginOpenSlide::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
     qDebug() << "args: path = " << path;
     qDebug() << "args: requestedSize = " << requestedSize;
@@ -255,6 +255,6 @@ const QImage PQCFilePluginOpenSlide::loadImage(QString path, QSize requestedSize
 
 }
 
-const QJsonObject PQCFilePluginOpenSlide::loadJSON(QString path, QVariantMap extraArguments) {
+const QJsonObject PQCImagePluginOpenSlide::loadJSON(QString path, QVariantMap extraArguments) {
     return loadJSON_image(path, extraArguments);
 }

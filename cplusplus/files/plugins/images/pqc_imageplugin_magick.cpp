@@ -20,7 +20,7 @@
  **                                                                      **
  **************************************************************************/
 
-#include <fileplugins/pqc_fileplugin_magick.h>
+#include <fileplugins/images/pqc_imageplugin_magick.h>
 #include <pqc_settingscpp.h>
 #include <pqc_scriptsother.h>
 #include <pqc_scriptsimages.h>
@@ -37,7 +37,7 @@
 #include <Magick++/Image.h>
 #endif
 
-PQCFilePluginMagick::PQCFilePluginMagick() {
+PQCImagePluginMagick::PQCImagePluginMagick() {
 
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
 
@@ -313,7 +313,7 @@ PQCFilePluginMagick::PQCFilePluginMagick() {
 
 }
 
-const QSize PQCFilePluginMagick::loadSize(QString path) {
+const QSize PQCImagePluginMagick::loadSize(QString path) {
 
 #if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
 
@@ -366,7 +366,7 @@ const QSize PQCFilePluginMagick::loadSize(QString path) {
 
 }
 
-const QImage PQCFilePluginMagick::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
+const QImage PQCImagePluginMagick::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
     qDebug() << "args: path =" << path;
     qDebug() << "args: requestedSize =" << requestedSize;
@@ -480,6 +480,6 @@ const QImage PQCFilePluginMagick::loadImage(QString path, QSize requestedSize, Q
 
 }
 
-const QJsonObject PQCFilePluginMagick::loadJSON(QString path, QVariantMap extraArguments) {
+const QJsonObject PQCImagePluginMagick::loadJSON(QString path, QVariantMap extraArguments) {
     return loadJSON_image(path, extraArguments);
 }

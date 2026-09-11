@@ -20,7 +20,7 @@
  **                                                                      **
  **************************************************************************/
 
-#include <fileplugins/pqc_fileplugin_devil.h>
+#include <fileplugins/images/pqc_imageplugin_devil.h>
 #include <pqc_settingscpp.h>
 #include <pqc_scriptsother.h>
 #include <pqc_scriptsimages.h>
@@ -33,7 +33,7 @@
 #include <IL/il.h>
 #endif
 
-PQCFilePluginDevIL::PQCFilePluginDevIL() {
+PQCImagePluginDevIL::PQCImagePluginDevIL() {
 
 #ifdef PQMDEVIL
     setData({
@@ -89,7 +89,7 @@ PQCFilePluginDevIL::PQCFilePluginDevIL() {
 
 }
 
-const QSize PQCFilePluginDevIL::loadSize(QString path) {
+const QSize PQCImagePluginDevIL::loadSize(QString path) {
 
 #ifdef PQMDEVIL
 
@@ -130,7 +130,7 @@ const QSize PQCFilePluginDevIL::loadSize(QString path) {
 
 }
 
-const QImage PQCFilePluginDevIL::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
+const QImage PQCImagePluginDevIL::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
     qDebug() << "args: path = " << path;
     qDebug() << "args: requestedSize = " << requestedSize;
@@ -221,7 +221,7 @@ const QImage PQCFilePluginDevIL::loadImage(QString path, QSize requestedSize, QS
 }
 
 #ifdef PQMDEVIL
-QString PQCFilePluginDevIL::checkForError() {
+QString PQCImagePluginDevIL::checkForError() {
     ILenum err_enum = ilGetError();
     QString errormsg = "";
     while(err_enum != IL_NO_ERROR) {
@@ -234,6 +234,6 @@ QString PQCFilePluginDevIL::checkForError() {
 }
 #endif
 
-const QJsonObject PQCFilePluginDevIL::loadJSON(QString path, QVariantMap extraArguments) {
+const QJsonObject PQCImagePluginDevIL::loadJSON(QString path, QVariantMap extraArguments) {
     return loadJSON_image(path, extraArguments);
 }

@@ -24,10 +24,10 @@
 #include <fileplugins/pqc_fileplugin.h>
 #include <QSet>
 
-class PQCFilePluginOpenSlide : public PQCFilePlugin {
+class PQCImagePluginOpenSlide : public PQCFilePlugin {
 
 public:
-    PQCFilePluginOpenSlide();
+    PQCImagePluginOpenSlide();
 
     const QString name() override { return "OpenSlide"; }
     const QSize loadSize(QString path) override;

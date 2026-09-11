@@ -131,6 +131,7 @@ public:
 
     // sets the data for this plugin
     void setData(const QHash<int, QList<QStringList> > dat);
+    const QHash<int, QList<QStringList> > getData() { return m_id2data; }
 
     /****************************************************/
     /****************************************************/

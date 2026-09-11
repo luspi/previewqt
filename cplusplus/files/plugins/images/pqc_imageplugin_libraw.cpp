@@ -20,7 +20,7 @@
  **                                                                      **
  **************************************************************************/
 
-#include <fileplugins/pqc_fileplugin_libraw.h>
+#include <fileplugins/images/pqc_imageplugin_libraw.h>
 #include <pqc_settingscpp.h>
 #include <pqc_scriptsother.h>
 #include <pqc_scriptsimages.h>
@@ -33,7 +33,7 @@
 #include <libraw/libraw.h>
 #endif
 
-PQCFilePluginLibraw::PQCFilePluginLibraw() {
+PQCImagePluginLibraw::PQCImagePluginLibraw() {
 
 #ifdef PQMRAW
     setData({
@@ -99,7 +99,7 @@ PQCFilePluginLibraw::PQCFilePluginLibraw() {
 
 }
 
-const QSize PQCFilePluginLibraw::loadSize(QString path) {
+const QSize PQCImagePluginLibraw::loadSize(QString path) {
 
 #ifdef PQMRAW
 
@@ -125,7 +125,7 @@ const QSize PQCFilePluginLibraw::loadSize(QString path) {
 
 }
 
-const QImage PQCFilePluginLibraw::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
+const QImage PQCImagePluginLibraw::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
     qDebug() << "args: path =" << path;
     qDebug() << "args: requestedSize =" << requestedSize;
@@ -385,6 +385,6 @@ const QImage PQCFilePluginLibraw::loadImage(QString path, QSize requestedSize, Q
 
 }
 
-const QJsonObject PQCFilePluginLibraw::loadJSON(QString path, QVariantMap extraArguments) {
+const QJsonObject PQCImagePluginLibraw::loadJSON(QString path, QVariantMap extraArguments) {
     return loadJSON_image(path, extraArguments);
 }

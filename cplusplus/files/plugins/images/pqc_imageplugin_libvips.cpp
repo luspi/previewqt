@@ -20,7 +20,7 @@
  **                                                                      **
  **************************************************************************/
 
-#include <fileplugins/pqc_fileplugin_libvips.h>
+#include <fileplugins/images/pqc_imageplugin_libvips.h>
 #include <pqc_settingscpp.h>
 #include <pqc_scriptsother.h>
 #include <pqc_scriptsimages.h>
@@ -42,7 +42,7 @@ bool hasSaverForExtension(const QString suffix) {
 }
 #endif
 
-PQCFilePluginLibVips::PQCFilePluginLibVips() {
+PQCImagePluginLibVips::PQCImagePluginLibVips() {
 
 #ifdef PQMLIBVIPS
 
@@ -113,7 +113,7 @@ PQCFilePluginLibVips::PQCFilePluginLibVips() {
 
 }
 
-const QSize PQCFilePluginLibVips::loadSize(QString path) {
+const QSize PQCImagePluginLibVips::loadSize(QString path) {
 
 #ifdef PQMLIBVIPS
 
@@ -145,7 +145,7 @@ const QSize PQCFilePluginLibVips::loadSize(QString path) {
 
 }
 
-const QImage PQCFilePluginLibVips::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
+const QImage PQCImagePluginLibVips::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
     qDebug() << "args: path = " << path;
     qDebug() << "args: requestedSize = " << requestedSize;
@@ -226,6 +226,6 @@ const QImage PQCFilePluginLibVips::loadImage(QString path, QSize requestedSize, 
 
 }
 
-const QJsonObject PQCFilePluginLibVips::loadJSON(QString path, QVariantMap extraArguments) {
+const QJsonObject PQCImagePluginLibVips::loadJSON(QString path, QVariantMap extraArguments) {
     return loadJSON_image(path, extraArguments);
 }
