@@ -23,6 +23,8 @@ set(previewqt_QML qml/PQMainWindow.qml
                   qml/components/imageitems/PQSQLite.qml
                   qml/components/imageitems/PQDLLExe.qml
 
+                  qml/components/imageitems/components/PQFaceTags.qml
+
                   qml/windows/PQAbout.qml
                   qml/windows/PQHelp.qml
                   qml/windows/PQSettings.qml

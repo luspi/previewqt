@@ -78,6 +78,33 @@ Item {
 
     }
 
+    PQFaceTags {
+        id: facetags
+        x: (parent.width-width)/2
+        y: (parent.height-height)/2
+        width: imageitem.paintedWidth
+        height: imageitem.paintedHeight
+    }
+
+    /**************************************************************************/
+
+    // The code below handles people tags
+
+    Timer {
+
+        interval: 200
+        running: true
+
+        onTriggered: {
+            var dat = PQCScriptsImages.getFaceTags(PQCConstants.currentSource)
+            facetags.setFaceTags(dat)
+        }
+
+    }
+
+
+    /**************************************************************************/
+
     // The code below handles motion photos
 
     Timer {

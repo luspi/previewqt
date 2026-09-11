@@ -70,6 +70,7 @@ public:
     void applyExifOrientation(const QString filename, QImage &img);
     QString getTextFileContents(QString path);
     QString prepareSphereFile(QString path);
+    QVariantList getFaceTags(QString filename);
 
     QVariantList loadEPUB(QString path);
     void analyzeEpubMetaData(QString subfolder, QString txt, QString &title, QString &coverId, QMap<QString, QString> &outFileList, QStringList &outIdOrder);

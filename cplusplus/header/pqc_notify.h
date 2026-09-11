@@ -56,4 +56,6 @@ Q_SIGNALS:
 
     void addRotation(int rot);
 
+    void mouseMoved(double x, double y);
+
 };

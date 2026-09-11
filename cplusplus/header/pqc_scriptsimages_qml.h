@@ -138,6 +138,10 @@ public:
         return PQCScriptsImages::get().prepareSphereFile(path);
     }
 
+    Q_INVOKABLE QVariantList getFaceTags(QString filename) {
+        return PQCScriptsImages::get().getFaceTags(filename);
+    }
+
     Q_INVOKABLE QVariantList loadEPUB(QString path) {
         return PQCScriptsImages::get().loadEPUB(path);
     }

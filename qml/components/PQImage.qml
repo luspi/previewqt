@@ -113,6 +113,7 @@ Item {
                 PQCConstants.toprowForceVisible = true
             else
                 PQCConstants.toprowForceVisible = false
+            PQCNotify.mouseMoved(mouse.x, mouse.y)
         }
 
         onDoubleClicked: (mouse) => {
