@@ -218,17 +218,11 @@ Item {
         // we need to clear the old list first
         possiblePlugins = []
 
-        // FIRST we load all possible plugins
+        // first we load all possible plugins
         var tempPlugins = PQCFileHandler.getPossiblePluginsFor(PQCConstants.currentSource)
 
-        // SECOND we combine all image plugins into a single entry
-        var foundImage = false
-        const imagePluginList = ["resvg", "openslide", "qt", "libraw", "libsai", "magick", "libvips", "devil"]
-        for(let i = 0; i < imagePluginList.length; ++i) {
-            if(tempPlugins.includes(imagePluginList[i]))
-                foundImage = true
-        }
-        if(foundImage) {
+        // do some special handling for images
+        if(tempPlugins.includes("image")) {
             possiblePlugins = ["image"]
             // THIRD check for SVG, animated images, or photo spheres
             if(!("resvg" in possiblePlugins) && PQCScriptsImages.isSVG(PQCConstants.currentSource))
@@ -239,23 +233,23 @@ Item {
                 possiblePlugins = ["photosphere"]
         }
 
-        // FOURTH add all non-image plugins
+        // then re-add all others
         for(let j = 0; j < tempPlugins.length; ++j) {
             const cur = tempPlugins[j]
-            if(!imagePluginList.includes(cur))
+            if(cur !== "image")
                 possiblePlugins.push(cur)
         }
 
-        // FIFTH check whether we have an URL
+        // finally check whether we have an URL
         if(PQCScriptsImages.isURL(PQCConstants.currentSource)) possiblePlugins.push("url")
 
-        // SIXTH we also support any sort of text document, even if not explicitely listed
+        // we also support any sort of text document, even if not explicitely listed
         // we can detect that by checking whether the mime type checks with text/
         // this is done in this function
         if(PQCScriptsImages.isTextDocument(PQCConstants.currentSource))
             possiblePlugins.push("text")
 
-        // SEVENTH sort all plugins according to the sample order above
+        // sort all plugins according to the sample order above
         possiblePlugins = resortPlugins()
 
         // debug message
