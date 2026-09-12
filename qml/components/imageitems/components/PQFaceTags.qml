@@ -75,10 +75,12 @@ Item {
                 width: Math.max(100, parent.width)
                 height: nametxt.height+4
                 color: "black"
+                radius: 5
                 Text {
                     id: nametxt
+                    x: 3
                     y: 2
-                    width: parent.width
+                    width: parent.width-6
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     horizontalAlignment: Text.AlignHCenter
                     font.pointSize: 9
