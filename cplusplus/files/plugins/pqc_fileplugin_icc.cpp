@@ -141,7 +141,7 @@ const QVariantList PQCFilePluginICC::loadData(QString path) {
         QFontMetrics mtrcs(font);
 
         // GAMMUT TRIANGLE
-        // fill gammut triangle
+        // draw and fill gammut triangle
         const int refSze = sze-2*brd;
         const int rx =     brd+redXY[0]  .toDouble()*refSze;
         const int ry = sze-brd-redXY[1]  .toDouble()*refSze;
@@ -156,14 +156,7 @@ const QVariantList PQCFilePluginICC::loadData(QString path) {
         path.lineTo(rx, ry);
         QColor col(50,50,50,100);
         painter.fillPath(path, QBrush(col));
-        // draw gammut triangle outline
-        static const QPointF gammutPoints[4] = {
-            QPointF(rx, ry),
-            QPointF(gx, gy),
-            QPointF(bx, by),
-            QPointF(rx, ry),
-        };
-        painter.drawPolyline(gammutPoints, 4);
+        painter.drawPath(path);
 
         // draw RGB points (circles and labels)
         pen.setWidth(1);
@@ -358,6 +351,7 @@ const QString PQCFilePluginICC::colorSpaceClassToString(cmsProfileClassSignature
     if(sign == cmsSigNamedColorClass)
         return "Named Color";
 
+#if LCMS_VERSION >= 2190
     if(sign == cmsSigColorEncodingSpaceClass)
         return "Color Encoding Space";
     if(sign == cmsSigMultiplexIdentificationClass)
@@ -366,6 +360,7 @@ const QString PQCFilePluginICC::colorSpaceClassToString(cmsProfileClassSignature
         return "Multiplex Link";
     if(sign == cmsSigMultiplexVisualizationClass)
         return "Multiplex Visualization";
+#endif
 
     return "";
 
