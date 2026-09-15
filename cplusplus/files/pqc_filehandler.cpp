@@ -239,13 +239,6 @@ QImage PQCFileHandler::getImage(QString path, QSize requestedSize, QSize &origSi
 
     }
 
-#if defined(PQMIMAGEMAGICK) || defined(PQMGRAPHICSMAGICK)
-
-    QImage img = m_plugins["magick"]->loadImage(path, requestedSize, origSize, error);
-    return img;
-
-#endif
-
     return QImage();
 
 }
