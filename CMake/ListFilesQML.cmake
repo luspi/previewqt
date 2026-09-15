@@ -22,6 +22,7 @@ set(previewqt_QML qml/PQMainWindow.qml
                   qml/components/imageitems/PQErrorLoading.qml
                   qml/components/imageitems/PQSQLite.qml
                   qml/components/imageitems/PQDLLExe.qml
+                  qml/components/imageitems/PQIcc.qml
 
                   qml/components/imageitems/components/PQFaceTags.qml
 

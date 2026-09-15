@@ -370,6 +370,11 @@ Item {
             PQCConstants.currentType = "dat"
             imageloader.sourceComponent = comp_dll
 
+        } else if(plugin === "icc") {
+
+            PQCConstants.currentType = "dat"
+            imageloader.sourceComponent = comp_icc
+
         } else {
 
             PQCConstants.currentType = "img"
@@ -496,6 +501,11 @@ Item {
     Component {
         id: comp_dll
         PQDLLExe {}
+    }
+
+    Component {
+        id: comp_icc
+        PQIcc {}
     }
 
     // LOADING indicator

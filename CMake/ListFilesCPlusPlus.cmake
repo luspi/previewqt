@@ -25,6 +25,7 @@ SET(previewqt_SRC cplusplus/main.cpp
                   cplusplus/files/plugins/pqc_fileplugin_sqlite.cpp
                   cplusplus/files/plugins/pqc_fileplugin_dllexe.cpp
                   cplusplus/files/plugins/pqc_fileplugin_image.cpp
+                  cplusplus/files/plugins/pqc_fileplugin_icc.cpp
 
                   cplusplus/files/plugins/images/pqc_imageplugin_devil.cpp
                   cplusplus/files/plugins/images/pqc_imageplugin_libraw.cpp
@@ -81,6 +82,7 @@ SET(previewqt_SRC cplusplus/main.cpp
                   cplusplus/header/fileplugins/pqc_fileplugin_sqlite.h
                   cplusplus/header/fileplugins/pqc_fileplugin_dllexe.h
                   cplusplus/header/fileplugins/pqc_fileplugin_image.h
+                  cplusplus/header/fileplugins/pqc_fileplugin_icc.h
 
                   cplusplus/header/fileplugins/images/pqc_imageplugin_devil.h
                   cplusplus/header/fileplugins/images/pqc_imageplugin_libraw.h

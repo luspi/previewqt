@@ -35,5 +35,6 @@
         <file>textedit.svg</file>
         <file>musicnote.svg</file>
         <file>info.svg</file>
+        <file>gammut.jpg</file>
     </qresource>
 </RCC>

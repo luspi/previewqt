@@ -35,10 +35,10 @@
 #include <fileplugins/pqc_fileplugin_pqt.h>
 #include <fileplugins/pqc_fileplugin_sqlite.h>
 #include <fileplugins/pqc_fileplugin_dllexe.h>
-
 #include <fileplugins/pqc_fileplugin_audio.h>
 #include <fileplugins/pqc_fileplugin_text.h>
 #include <fileplugins/pqc_fileplugin_ebook.h>
+#include <fileplugins/pqc_fileplugin_icc.h>
 
 #include <QMimeDatabase>
 #include <QJsonObject>
@@ -76,6 +76,9 @@ PQCFileHandler::PQCFileHandler() {
         << "ebook"
         << "package"
 #endif
+#ifdef PQMLCMS2
+        << "icc"
+#endif
     ;
 
     /*******************************************************/
@@ -110,6 +113,7 @@ PQCFileHandler::PQCFileHandler() {
     m_plugins.insert("pqt", new PQCFilePluginPQT);
     m_plugins.insert("sqlite", new PQCFilePluginSQLite);
     m_plugins.insert("dllexe", new PQCFilePluginDLLExe);
+    m_plugins.insert("icc", new PQCFilePluginICC);
 
     /*******************************************************/
 

@@ -683,14 +683,17 @@ ApplicationWindow {
 
             toplevelAni.stop()
             toplevelAni.w_from = toplevel.width
-            toplevelAni.w_to = Math.max(fitsize.width, minimumWidth)
+            toplevelAni.w_to = Math.max(fitsize.width, minimumWidth)+PQCConstants.mainwindowExtraW
             toplevelAni.h_from = toplevel.height
-            toplevelAni.h_to = Math.max(fitsize.height + (PQCSettings.topBarAutoHide ? 1 : toprow.height), minimumHeight)
+            toplevelAni.h_to = Math.max(fitsize.height + (PQCSettings.topBarAutoHide ? 1 : toprow.height), minimumHeight) + PQCConstants.mainwindowExtraH
             toplevelAni.x_from = toplevel.x
             toplevelAni.x_to = toplevel.x + (toplevel.width - toplevelAni.w_to)/2
             toplevelAni.y_from = toplevel.y
             toplevelAni.y_to = toplevel.y + (toplevel.height - toplevelAni.h_to)/2
             toplevelAni.start()
+
+            PQCConstants.mainwindowExtraW = 0
+            PQCConstants.mainwindowExtraH = 0
 
         }
 
@@ -707,7 +710,7 @@ ApplicationWindow {
                 hToSet = 800
                 toUpd = true
             }
-            if(toUpd) PQCNotify.updateWindowSize(wToSet, hToSet)
+            if(toUpd || PQCConstants.mainwindowExtraW !== 0 || PQCConstants.mainwindowExtraH !== 0) PQCNotify.updateWindowSize(wToSet, hToSet)
 
         }
 

@@ -46,6 +46,8 @@ public:
         m_toprowForceVisible = false;
         m_menuIsOpen = false;
         m_trayiconShowNotificationWhenReady = {"", ""};
+        m_mainwindowExtraW = 0;
+        m_mainwindowExtraH = 0;
 
         m_windowMainVisible = false;
         m_windowAboutVisible = false;
@@ -95,6 +97,8 @@ public:
     Q_PROPERTY(QString mainwindowOverrideTitleSuffix MEMBER m_mainwindowOverrideTitleSuffix NOTIFY mainwindowOverrideTitleSuffixChanged)
     Q_PROPERTY(bool mainwindowIsFullscreen MEMBER m_mainwindowIsFullscreen NOTIFY mainwindowIsFullscreenChanged)
     Q_PROPERTY(bool mainwindowIsMaximized MEMBER m_mainwindowIsMaximized NOTIFY mainwindowIsMaximizedChanged)
+    Q_PROPERTY(int mainwindowExtraW MEMBER m_mainwindowExtraW NOTIFY mainwindowExtraWChanged)
+    Q_PROPERTY(int mainwindowExtraH MEMBER m_mainwindowExtraH NOTIFY mainwindowExtraHChanged)
 
     Q_PROPERTY(bool windowMainVisible MEMBER m_windowMainVisible NOTIFY windowMainVisibleChanged)
     Q_PROPERTY(bool windowAboutVisible MEMBER m_windowAboutVisible NOTIFY windowAboutVisibleChanged)
@@ -147,6 +151,8 @@ private:
     QString m_mainwindowOverrideTitleSuffix;
     bool m_mainwindowIsFullscreen;
     bool m_mainwindowIsMaximized;
+    int m_mainwindowExtraW;
+    int m_mainwindowExtraH;
 
     bool m_windowMainVisible;
     bool m_windowAboutVisible;
@@ -196,6 +202,8 @@ Q_SIGNALS:
     void mainwindowOverrideTitleSuffixChanged();
     void mainwindowIsFullscreenChanged();
     void mainwindowIsMaximizedChanged();
+    void mainwindowExtraWChanged();
+    void mainwindowExtraHChanged();
     void toprowForceVisibleChanged();
     void menuIsOpenChanged();
     void trayiconShowNotificationWhenReadyChanged();

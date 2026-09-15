@@ -1,0 +1,54 @@
+/**************************************************************************
+ **                                                                      **
+ ** Copyright (C) 2011-2026 Lukas Spies                                  **
+ ** Contact: https://photoqt.org                                         **
+ **                                                                      **
+ ** This file is part of PhotoQt.                                        **
+ **                                                                      **
+ ** PhotoQt is free software: you can redistribute it and/or modify      **
+ ** it under the terms of the GNU General Public License as published by **
+ ** the Free Software Foundation, either version 2 of the License, or    **
+ ** (at your option) any later version.                                  **
+ **                                                                      **
+ ** PhotoQt is distributed in the hope that it will be useful,           **
+ ** but WITHOUT ANY WARRANTY; without even the implied warranty of       **
+ ** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        **
+ ** GNU General Public License for more details.                         **
+ **                                                                      **
+ ** You should have received a copy of the GNU General Public License    **
+ ** along with PhotoQt. If not, see <http://www.gnu.org/licenses/>.      **
+ **                                                                      **
+ **************************************************************************/
+#pragma once
+
+#include <fileplugins/pqc_fileplugin.h>
+#include <QSet>
+#include <QSize>
+#include <QImage>
+
+#ifdef PQMLCMS2
+#include <lcms2.h>
+#endif
+
+class PQCFilePluginICC : public PQCFilePlugin {
+
+public:
+    PQCFilePluginICC();
+
+    const QString name() override { return "ICC"; }
+    const QSize loadSize(QString) override { return QSize(); };
+    const QImage loadImage(QString, QSize, QSize&, QString&) override { return QImage(); };
+    const QVariantList loadData(QString path) override;
+    const int loadNumPages(QString path) override { return 1; }
+    const QStringList loadContent(QString path) override { return {path}; }
+    const QJsonObject loadJSON(QString path, QVariantMap extraArguments) override { return {}; };
+
+private:
+#ifdef PQMLCMS2
+    const QString colorSpaceSignatureToString(cmsColorSpaceSignature &sign);
+    const QString colorSpaceClassToString(cmsProfileClassSignature &sign);
+    const QString renderingIntentsToString(int intent);
+    QVariantList convertXYZ2XY(const cmsCIEXYZ *xyz);
+#endif
+
+};
