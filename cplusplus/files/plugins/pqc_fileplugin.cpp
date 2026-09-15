@@ -46,3 +46,16 @@ void PQCFilePlugin::setData(const QHash<int, QList<QStringList > > dat) {
     }
 
 }
+
+const bool PQCFilePlugin::isSupported(const QString path) {
+
+    QFileInfo info(path);
+    const QString suf1 = info.suffix().toLower();
+    const QString suf2 = info.completeSuffix().toLower();
+
+    QMimeDatabase db;
+    const QString mime = db.mimeTypeForFile(path).name();
+
+    return (m_enabledSuffixes.contains(suf1) || m_enabledSuffixes.contains(suf2) || m_enabledMimetypes.contains(mime));
+
+}

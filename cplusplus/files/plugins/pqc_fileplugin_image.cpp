@@ -72,6 +72,7 @@ PQCFilePluginImage::~PQCFilePluginImage() {
 const QSize PQCFilePluginImage::loadSize(QString path) {
 
     for(PQCFilePlugin *pl : std::as_const(m_plugins)) {
+        if(!pl->isSupported(path)) continue;
         const QSize sze = pl->loadSize(path);
         if(!sze.isEmpty()) return sze;
     }
@@ -82,7 +83,11 @@ const QSize PQCFilePluginImage::loadSize(QString path) {
 
 const QImage PQCFilePluginImage::loadImage(QString path, QSize requestedSize, QSize &origSize, QString &error) {
 
+    qDebug() << "args: path =" << path;
+    qDebug() << "args: requestedSize =" << requestedSize;
+
     for(PQCFilePlugin *pl : std::as_const(m_plugins)) {
+        if(!pl->isSupported(path)) continue;
         const QImage img = pl->loadImage(path, requestedSize, origSize, error);
         if(!img.isNull()) return img;
     }
@@ -94,6 +99,7 @@ const QImage PQCFilePluginImage::loadImage(QString path, QSize requestedSize, QS
 const QJsonObject PQCFilePluginImage::loadJSON(QString path, QVariantMap extraArguments) {
 
     for(PQCFilePlugin *pl : std::as_const(m_plugins)) {
+        if(!pl->isSupported(path)) continue;
         const QJsonObject json = pl->loadJSON(path, extraArguments);
         if(!json.isEmpty()) return json;
     }

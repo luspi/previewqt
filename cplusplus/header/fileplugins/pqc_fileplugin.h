@@ -139,6 +139,7 @@ public:
     const QSet<int> getFormats()    { return m_enabledIds; }
     const QSet<QString> getSuffixes()   { return m_enabledSuffixes; }
     const QSet<QString> getMimetypes()  { return m_enabledMimetypes; }
+    const bool isSupported(const QString path);
 
     /****************************************************/
     /****************************************************/
