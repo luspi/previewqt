@@ -53,6 +53,11 @@ PQCSettings::PQCSettings() {
     opt_vid = {"_default_", "vlc", "mplayer", "photoqt"};
     opt_txt = {"_default_", "kate", "kwrite", "gedit", "sublime"};
     opt_url = {"_default_", "firefox", "chrome", "chromium"};
+    opt_aud = {"_default_", "vlc"};
+    opt_dll = {"_default_", ""};
+    opt_icc = {"_default_", ""};
+    opt_mus = {"_default_", "mscore"};
+    opt_slt = {"_default_", "sqlitebrowser"};
 #else
     // on windows custom tools are needed
     // we need empty entries here to not crash when loading the settings
@@ -65,6 +70,11 @@ PQCSettings::PQCSettings() {
     opt_vid = {"_default_", ""};
     opt_txt = {"_default_", ""};
     opt_url = {"_default_", ""};
+    opt_aud = {"_default_", ""};
+    opt_dll = {"_default_", ""};
+    opt_icc = {"_default_", ""};
+    opt_mus = {"_default_", ""};
+    opt_slt = {"_default_", ""};
 #endif
 
     // do this AFTER setting the above options
@@ -91,6 +101,12 @@ PQCSettings::PQCSettings() {
         m_defaultAppText = "_default_";
         m_defaultAppUrl = "_default_";
 
+        m_defaultAppAudio = "_default_";
+        m_defaultAppDLL = "_default_";
+        m_defaultAppICC = "_default_";
+        m_defaultAppMuseScore = "_default_";
+        m_defaultAppSQLite = "_default_";
+
         // we need to write the settings file on first start as otherwise the file is not created
         // and if the file does not exist then PreviewQt assumes it is a first start.
         saveTimer->start();
@@ -107,6 +123,12 @@ PQCSettings::PQCSettings() {
     if(m_defaultAppVideos         .isEmpty()) m_defaultAppVideos = "_default_";
     if(m_defaultAppText           .isEmpty()) m_defaultAppText = "_default_";
     if(m_defaultAppUrl            .isEmpty()) m_defaultAppUrl = "_default_";
+
+    if(m_defaultAppAudio          .isEmpty()) m_defaultAppAudio = "_default_";
+    if(m_defaultAppDLL            .isEmpty()) m_defaultAppDLL = "_default_";
+    if(m_defaultAppICC            .isEmpty()) m_defaultAppICC = "_default_";
+    if(m_defaultAppMuseScore      .isEmpty()) m_defaultAppMuseScore = "_default_";
+    if(m_defaultAppSQLite         .isEmpty()) m_defaultAppSQLite = "_default_";
 
     connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::versionChanged, this, [this]() { m_version = PQCSettingsCPP::get().getVersion(); Q_EMIT versionChanged(); });
     connect(&PQCSettingsCPP::get(), &PQCSettingsCPP::lastDownloadFolderChanged, this, [this]() { m_lastDownloadFolder = PQCSettingsCPP::get().getLastDownloadFolder(); Q_EMIT lastDownloadFolderChanged(); });
@@ -131,6 +153,13 @@ PQCSettings::PQCSettings() {
     connect(this, &PQCSettings::defaultAppEBooksChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::defaultAppTextChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::defaultAppUrlChanged, this, [this]() { saveTimer->start(); });
+
+    connect(this, &PQCSettings::defaultAppAudioChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppDLLChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppICCChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppMuseScoreChanged, this, [this]() { saveTimer->start(); });
+    connect(this, &PQCSettings::defaultAppSQLiteChanged, this, [this]() { saveTimer->start(); });
+
     connect(this, &PQCSettings::closeAfterDefaultAppChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::filedialogLocationChanged, this, [this]() { saveTimer->start(); });
     connect(this, &PQCSettings::closeWhenLosingFocusChanged, this, [this]() { saveTimer->start(); });
@@ -187,6 +216,13 @@ void PQCSettings::loadSettings() {
     m_defaultAppEBooks = settings->value("defaultAppEBooks", opt_bok[0]).toString();
     m_defaultAppText = settings->value("defaultAppText", opt_txt[0]).toString();
     m_defaultAppUrl = settings->value("defaultAppUrl", opt_url[0]).toString();
+
+    m_defaultAppAudio = settings->value("defaultAppAudio", opt_aud[0]).toString();
+    m_defaultAppDLL = settings->value("defaultAppDLL", opt_dll[0]).toString();
+    m_defaultAppICC = settings->value("defaultAppICC", opt_icc[0]).toString();
+    m_defaultAppMuseScore = settings->value("defaultAppMuseScore", opt_mus[0]).toString();
+    m_defaultAppSQLite = settings->value("defaultAppSQLite", opt_slt[0]).toString();
+
     m_closeAfterDefaultApp = settings->value("closeAfterDefaultApp", true).toBool();
     m_filedialogLocation = settings->value("filedialogLocation", QStandardPaths::standardLocations(QStandardPaths::PicturesLocation)).toString();
     m_closeWhenLosingFocus = settings->value("closeWhenLosingFocus", false).toBool();
@@ -225,6 +261,13 @@ void PQCSettings::loadSettings() {
     Q_EMIT defaultAppEBooksChanged();
     Q_EMIT defaultAppTextChanged();
     Q_EMIT defaultAppUrlChanged();
+
+    Q_EMIT defaultAppAudioChanged();
+    Q_EMIT defaultAppDLLChanged();
+    Q_EMIT defaultAppICCChanged();
+    Q_EMIT defaultAppMuseScoreChanged();
+    Q_EMIT defaultAppSQLiteChanged();
+
     Q_EMIT closeAfterDefaultAppChanged();
     Q_EMIT filedialogLocationChanged();
     Q_EMIT closeWhenLosingFocusChanged();
@@ -263,6 +306,13 @@ void PQCSettings::saveSettings() {
     settings->setValue("defaultAppEBooks", m_defaultAppEBooks);
     settings->setValue("defaultAppText", m_defaultAppText);
     settings->setValue("defaultAppUrl", m_defaultAppUrl);
+
+    settings->setValue("defaultAppAudio", m_defaultAppAudio);
+    settings->setValue("defaultAppDLL", m_defaultAppDLL);
+    settings->setValue("defaultAppICC", m_defaultAppICC);
+    settings->setValue("defaultAppMuseScore", m_defaultAppMuseScore);
+    settings->setValue("defaultAppSQLite", m_defaultAppSQLite);
+
     settings->setValue("closeAfterDefaultApp", m_closeAfterDefaultApp);
     settings->setValue("filedialogLocation", m_filedialogLocation);
     settings->setValue("closeWhenLosingFocus", m_closeWhenLosingFocus);

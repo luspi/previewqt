@@ -59,6 +59,21 @@ Flickable {
     property list<string> urloptions_key: ["[system default]", "Firefox", "chrome", "chromium", "(custom)"]
     property list<string> urloptions_val: ["_default_", "firefox", "chrome", "chromium", ""]
 
+    property list<string> audoptions_key: ["[system default]", "VLC", "(custom)"]
+    property list<string> audoptions_val: ["_default_", "vlc", ""]
+
+    property list<string> dlloptions_key: ["[system default]", "(custom)"]
+    property list<string> dlloptions_val: ["_default_", ""]
+
+    property list<string> iccoptions_key: ["[system default]", "(custom)"]
+    property list<string> iccoptions_val: ["_default_", ""]
+
+    property list<string> musoptions_key: ["[system default]", "MuseScore", "(custom)"]
+    property list<string> musoptions_val: ["_default_", "mscore", ""]
+
+    property list<string> sltoptions_key: ["[system default]", "SQLiteBrowser", "(custom)"]
+    property list<string> sltoptions_val: ["_default_", "sqlitebrowser", ""]
+
     clip: true
 
     contentHeight: appcol.height
@@ -116,6 +131,26 @@ Flickable {
         var urlindex = Object.values(urloptions_val).indexOf(PQCSettings.defaultAppUrl)
         custom_url.checked = (urlindex !== 0)
         urlcombo.currentIndex = (urlindex===-1 ? urlcombo.currentIndex=urlcombo.model.length-1 : urlindex)
+
+        var audindex = Object.values(audoptions_val).indexOf(PQCSettings.defaultAppAudio)
+        custom_aud.checked = (audindex !== 0)
+        audcombo.currentIndex = (audindex===-1 ? audcombo.currentIndex=audcombo.model.length-1 : audindex)
+
+        var dllindex = Object.values(dlloptions_val).indexOf(PQCSettings.defaultAppDLL)
+        custom_dll.checked = (dllindex !== 0)
+        dllcombo.currentIndex = (dllindex===-1 ? dllcombo.currentIndex=dllcombo.model.length-1 : dllindex)
+
+        var iccindex = Object.values(iccoptions_val).indexOf(PQCSettings.defaultAppICC)
+        custom_icc.checked = (iccindex !== 0)
+        icccombo.currentIndex = (iccindex===-1 ? icccombo.currentIndex=icccombo.model.length-1 : iccindex)
+
+        var musindex = Object.values(musoptions_val).indexOf(PQCSettings.defaultAppMuseScore)
+        custom_mus.checked = (musindex !== 0)
+        muscombo.currentIndex = (musindex===-1 ? muscombo.currentIndex=muscombo.model.length-1 : musindex)
+
+        var sltindex = Object.values(sltoptions_val).indexOf(PQCSettings.defaultAppSQLite)
+        custom_slt.checked = (sltindex !== 0)
+        sltcombo.currentIndex = (sltindex===-1 ? sltcombo.currentIndex=sltcombo.model.length-1 : sltindex)
 
     }
 
@@ -800,6 +835,331 @@ Flickable {
 
         }
 
+        CheckBox {
+            id: custom_aud
+            text: "Use custom application for Audio files"
+            onCheckedChanged: {
+                if(!defaultappsettings.optionsLoaded) return
+                if(!checked) PQCSettings.defaultAppAudio = "_default_"
+                else PQCSettings.defaultAppAudio = defaultappsettings.audoptions_val[audcombo.currentIndex]
+            }
+        }
+
+        Item {
+
+            width: parent.width
+            height: custom_aud.checked ? audcol.height : 0
+            Behavior on height { NumberAnimation { duration: 200 } }
+            clip: true
+
+            Column {
+
+                id: audcol
+
+                ComboBox {
+                    id: audcombo
+                    x: (defaultappsettings.usableWidth-width)/2
+                    width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                    model: defaultappsettings.audoptions_key
+                    visible: !PQCScriptsConfig.amIOnWindows()
+                    onCurrentIndexChanged: {
+                        if(!defaultappsettings.optionsLoaded) return
+                        defaultappsettings.resetFocus()
+                        if(currentIndex < audcombo.model.length-1) {
+                            PQCSettings.defaultAppAudio = defaultappsettings.audoptions_val[currentIndex]
+                        } else {
+                            audedit.text = PQCSettings.defaultAppAudio
+                        }
+                    }
+                }
+
+                Row {
+                    spacing: 5
+                    visible: audcombo.currentIndex === audcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                    TextField {
+                        id: audedit
+                        y: (audbut.height-height)/2
+                        width: defaultappsettings.usableWidth-audbut.width-5
+                        text: PQCSettings.defaultAppAudio
+                        onTextChanged: {
+                            if(text !== PQCSettings.defaultAppAudio)
+                                PQCSettings.defaultAppAudio = text
+                        }
+                    }
+                    Button {
+                        id: audbut
+                        text: "..."
+                        onClicked: {
+                            selectExe.category = "aud"
+                            selectExe.prevexe = audedit.text
+                            selectExe.open()
+                        }
+                    }
+                }
+            }
+
+        }
+
+        CheckBox {
+            id: custom_dll
+            text: "Use custom application for DLL files"
+            onCheckedChanged: {
+                if(!defaultappsettings.optionsLoaded) return
+                if(!checked) PQCSettings.defaultAppDLL = "_default_"
+                else PQCSettings.defaultAppDLL = defaultappsettings.dlloptions_val[dllcombo.currentIndex]
+            }
+        }
+
+        Item {
+
+            width: parent.width
+            height: custom_dll.checked ? dllcol.height : 0
+            Behavior on height { NumberAnimation { duration: 200 } }
+            clip: true
+
+            Column {
+
+                id: dllcol
+
+                ComboBox {
+                    id: dllcombo
+                    x: (defaultappsettings.usableWidth-width)/2
+                    width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                    model: defaultappsettings.dlloptions_key
+                    visible: !PQCScriptsConfig.amIOnWindows()
+                    onCurrentIndexChanged: {
+                        if(!defaultappsettings.optionsLoaded) return
+                        defaultappsettings.resetFocus()
+                        if(currentIndex < dllcombo.model.length-1) {
+                            PQCSettings.defaultAppDLL = defaultappsettings.dlloptions_val[currentIndex]
+                        } else {
+                            dlledit.text = PQCSettings.defaultAppDLL
+                        }
+                    }
+                }
+
+                Row {
+                    spacing: 5
+                    visible: dllcombo.currentIndex === dllcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                    TextField {
+                        id: dlledit
+                        y: (dllbut.height-height)/2
+                        width: defaultappsettings.usableWidth-dllbut.width-5
+                        text: PQCSettings.defaultAppDLL
+                        onTextChanged: {
+                            if(text !== PQCSettings.defaultAppDLL)
+                                PQCSettings.defaultAppDLL = text
+                        }
+                    }
+                    Button {
+                        id: dllbut
+                        text: "..."
+                        onClicked: {
+                            selectExe.category = "dll"
+                            selectExe.prevexe = dlledit.text
+                            selectExe.open()
+                        }
+                    }
+                }
+            }
+
+        }
+
+        CheckBox {
+            id: custom_icc
+            text: "Use custom application for ICC color profiles"
+            onCheckedChanged: {
+                if(!defaultappsettings.optionsLoaded) return
+                if(!checked) PQCSettings.defaultAppICC = "_default_"
+                else PQCSettings.defaultAppICC = defaultappsettings.iccoptions_val[icccombo.currentIndex]
+            }
+        }
+
+        Item {
+
+            width: parent.width
+            height: custom_icc.checked ? icccol.height : 0
+            Behavior on height { NumberAnimation { duration: 200 } }
+            clip: true
+
+            Column {
+
+                id: icccol
+
+                ComboBox {
+                    id: icccombo
+                    x: (defaultappsettings.usableWidth-width)/2
+                    width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                    model: defaultappsettings.iccoptions_key
+                    visible: !PQCScriptsConfig.amIOnWindows()
+                    onCurrentIndexChanged: {
+                        if(!defaultappsettings.optionsLoaded) return
+                        defaultappsettings.resetFocus()
+                        if(currentIndex < icccombo.model.length-1) {
+                            PQCSettings.defaultAppICC = defaultappsettings.iccoptions_val[currentIndex]
+                        } else {
+                            iccedit.text = PQCSettings.defaultAppICC
+                        }
+                    }
+                }
+
+                Row {
+                    spacing: 5
+                    visible: icccombo.currentIndex === icccombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                    TextField {
+                        id: iccedit
+                        y: (iccbut.height-height)/2
+                        width: defaultappsettings.usableWidth-iccbut.width-5
+                        text: PQCSettings.defaultAppICC
+                        onTextChanged: {
+                            if(text !== PQCSettings.defaultAppICC)
+                                PQCSettings.defaultAppICC = text
+                        }
+                    }
+                    Button {
+                        id: iccbut
+                        text: "..."
+                        onClicked: {
+                            selectExe.category = "icc"
+                            selectExe.prevexe = iccedit.text
+                            selectExe.open()
+                        }
+                    }
+                }
+            }
+
+        }
+
+        CheckBox {
+            id: custom_mus
+            text: "Use custom application for MuseScore score sheets"
+            onCheckedChanged: {
+                if(!defaultappsettings.optionsLoaded) return
+                if(!checked) PQCSettings.defaultAppMuseScore = "_default_"
+                else PQCSettings.defaultAppMuseScore = defaultappsettings.musoptions_val[muscombo.currentIndex]
+            }
+        }
+
+        Item {
+
+            width: parent.width
+            height: custom_mus.checked ? muscol.height : 0
+            Behavior on height { NumberAnimation { duration: 200 } }
+            clip: true
+
+            Column {
+
+                id: muscol
+
+                ComboBox {
+                    id: muscombo
+                    x: (defaultappsettings.usableWidth-width)/2
+                    width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                    model: defaultappsettings.musoptions_key
+                    visible: !PQCScriptsConfig.amIOnWindows()
+                    onCurrentIndexChanged: {
+                        if(!defaultappsettings.optionsLoaded) return
+                        defaultappsettings.resetFocus()
+                        if(currentIndex < muscombo.model.length-1) {
+                            PQCSettings.defaultAppMuseScore = defaultappsettings.musoptions_val[currentIndex]
+                        } else {
+                            musedit.text = PQCSettings.defaultAppMuseScore
+                        }
+                    }
+                }
+
+                Row {
+                    spacing: 5
+                    visible: muscombo.currentIndex === muscombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                    TextField {
+                        id: musedit
+                        y: (musbut.height-height)/2
+                        width: defaultappsettings.usableWidth-musbut.width-5
+                        text: PQCSettings.defaultAppMuseScore
+                        onTextChanged: {
+                            if(text !== PQCSettings.defaultAppMuseScore)
+                                PQCSettings.defaultAppMuseScore = text
+                        }
+                    }
+                    Button {
+                        id: musbut
+                        text: "..."
+                        onClicked: {
+                            selectExe.category = "mus"
+                            selectExe.prevexe = musedit.text
+                            selectExe.open()
+                        }
+                    }
+                }
+            }
+
+        }
+
+        CheckBox {
+            id: custom_slt
+            text: "Use custom application for SQLite files"
+            onCheckedChanged: {
+                if(!defaultappsettings.optionsLoaded) return
+                if(!checked) PQCSettings.defaultAppSQLite = "_default_"
+                else PQCSettings.defaultAppSQLite = defaultappsettings.sltoptions_val[sltcombo.currentIndex]
+            }
+        }
+
+        Item {
+
+            width: parent.width
+            height: custom_slt.checked ? sltcol.height : 0
+            Behavior on height { NumberAnimation { duration: 200 } }
+            clip: true
+
+            Column {
+
+                id: sltcol
+
+                ComboBox {
+                    id: sltcombo
+                    x: (defaultappsettings.usableWidth-width)/2
+                    width: Math.min(300, defaultappsettings.usableWidth*0.8)
+                    model: defaultappsettings.sltoptions_key
+                    visible: !PQCScriptsConfig.amIOnWindows()
+                    onCurrentIndexChanged: {
+                        if(!defaultappsettings.optionsLoaded) return
+                        defaultappsettings.resetFocus()
+                        if(currentIndex < sltcombo.model.length-1) {
+                            PQCSettings.defaultAppSQLite = defaultappsettings.sltoptions_val[currentIndex]
+                        } else {
+                            sltedit.text = PQCSettings.defaultAppSQLite
+                        }
+                    }
+                }
+
+                Row {
+                    spacing: 5
+                    visible: sltcombo.currentIndex === sltcombo.model.length-1 || PQCScriptsConfig.amIOnWindows()
+                    TextField {
+                        id: sltedit
+                        y: (sltbut.height-height)/2
+                        width: defaultappsettings.usableWidth-sltbut.width-5
+                        text: PQCSettings.defaultAppSQLite
+                        onTextChanged: {
+                            if(text !== PQCSettings.defaultAppSQLite)
+                                PQCSettings.defaultAppSQLite = text
+                        }
+                    }
+                    Button {
+                        id: sltbut
+                        text: "..."
+                        onClicked: {
+                            selectExe.category = "slt"
+                            selectExe.prevexe = sltedit.text
+                            selectExe.open()
+                        }
+                    }
+                }
+            }
+
+        }
+
         /************************************/
         Item {
             width: 1
@@ -846,6 +1206,16 @@ Flickable {
                 txtedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "url")
                 urledit.text = PQCScriptsFilesPaths.cleanPath(file)
+            else if(category == "aud")
+                urledit.text = PQCScriptsFilesPaths.cleanPath(file)
+            else if(category == "dll")
+                dlledit.text = PQCScriptsFilesPaths.cleanPath(file)
+            else if(category == "icc")
+                iccedit.text = PQCScriptsFilesPaths.cleanPath(file)
+            else if(category == "mus")
+                musedit.text = PQCScriptsFilesPaths.cleanPath(file)
+            else if(category == "slt")
+                sltedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else
                 console.warn("Unknown category:", category)
 

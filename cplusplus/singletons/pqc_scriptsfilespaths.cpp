@@ -262,6 +262,26 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
 
             exe = PQCSettingsCPP::get().getDefaultAppText();
 
+        } else if(PQCFileHandler::get().getSuffixes("audio").contains(suffix)) {
+
+            exe = PQCSettingsCPP::get().getDefaultAppAudio();
+
+        } else if(PQCFileHandler::get().getSuffixes("dllexe").contains(suffix)) {
+
+            exe = PQCSettingsCPP::get().getDefaultAppDLL();
+
+        } else if(PQCFileHandler::get().getSuffixes("icc").contains(suffix)) {
+
+            exe = PQCSettingsCPP::get().getDefaultAppICC();
+
+        } else if(PQCFileHandler::get().getSuffixes("musescore").contains(suffix)) {
+
+            exe = PQCSettingsCPP::get().getDefaultAppMuseScore();
+
+        } else if(PQCFileHandler::get().getSuffixes("sqlite").contains(suffix)) {
+
+            exe = PQCSettingsCPP::get().getDefaultAppSQLite();
+
         } else if(PQCFileHandler::get().getSuffixes().contains(suffix)) {
 
             exe = PQCSettingsCPP::get().getDefaultAppImages();
@@ -299,6 +319,26 @@ bool PQCScriptsFilesPaths::openInDefault(QString path) {
             } else if(PQCFileHandler::get().getMimetypes("text").contains(mimetype)) {
 
                 exe = PQCSettingsCPP::get().getDefaultAppText();
+
+            } else if(PQCFileHandler::get().getMimetypes("audio").contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppAudio();
+
+            } else if(PQCFileHandler::get().getMimetypes("dllexe").contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppDLL();
+
+            } else if(PQCFileHandler::get().getMimetypes("icc").contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppICC();
+
+            } else if(PQCFileHandler::get().getMimetypes("musescore").contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppMuseScore();
+
+            } else if(PQCFileHandler::get().getMimetypes("sqlite").contains(mimetype)) {
+
+                exe = PQCSettingsCPP::get().getDefaultAppSQLite();
 
             } else if(PQCFileHandler::get().getMimetypes().contains(mimetype)) {
 

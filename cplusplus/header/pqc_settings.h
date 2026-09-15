@@ -57,6 +57,13 @@ public:
     Q_PROPERTY(QString defaultAppEBooks MEMBER m_defaultAppEBooks NOTIFY defaultAppEBooksChanged)
     Q_PROPERTY(QString defaultAppText MEMBER m_defaultAppText NOTIFY defaultAppTextChanged)
     Q_PROPERTY(QString defaultAppUrl MEMBER m_defaultAppUrl NOTIFY defaultAppUrlChanged)
+
+    Q_PROPERTY(QString defaultAppAudio MEMBER m_defaultAppAudio NOTIFY defaultAppAudioChanged)
+    Q_PROPERTY(QString defaultAppDLL MEMBER m_defaultAppDLL NOTIFY defaultAppDLLChanged)
+    Q_PROPERTY(QString defaultAppICC MEMBER m_defaultAppICC NOTIFY defaultAppICCChanged)
+    Q_PROPERTY(QString defaultAppMuseScore MEMBER m_defaultAppMuseScore NOTIFY defaultAppMuseScoreChanged)
+    Q_PROPERTY(QString defaultAppSQLite MEMBER m_defaultAppSQLite NOTIFY defaultAppSQLiteChanged)
+
     Q_PROPERTY(bool closeAfterDefaultApp MEMBER m_closeAfterDefaultApp NOTIFY closeAfterDefaultAppChanged)
     Q_PROPERTY(QString filedialogLocation MEMBER m_filedialogLocation NOTIFY filedialogLocationChanged)
     Q_PROPERTY(bool closeWhenLosingFocus MEMBER m_closeWhenLosingFocus NOTIFY closeWhenLosingFocusChanged)
@@ -94,6 +101,13 @@ private:
     QString m_defaultAppEBooks;
     QString m_defaultAppText;
     QString m_defaultAppUrl;
+
+    QString m_defaultAppAudio;
+    QString m_defaultAppDLL;
+    QString m_defaultAppICC;
+    QString m_defaultAppMuseScore;
+    QString m_defaultAppSQLite;
+
     bool m_closeAfterDefaultApp;
     QString m_filedialogLocation;
     bool m_closeWhenLosingFocus;
@@ -125,6 +139,12 @@ private:
     QStringList opt_txt;
     QStringList opt_url;
 
+    QStringList opt_aud;
+    QStringList opt_dll;
+    QStringList opt_icc;
+    QStringList opt_mus;
+    QStringList opt_slt;
+
     QString m_lastDownloadFolder;
     QString m_executableYtDlp;
 
@@ -152,6 +172,13 @@ Q_SIGNALS:
     void defaultAppEBooksChanged();
     void defaultAppTextChanged();
     void defaultAppUrlChanged();
+
+    void defaultAppAudioChanged();
+    void defaultAppDLLChanged();
+    void defaultAppICCChanged();
+    void defaultAppMuseScoreChanged();
+    void defaultAppSQLiteChanged();
+
     void closeAfterDefaultAppChanged();
     void filedialogLocationChanged();
     void closeWhenLosingFocusChanged();

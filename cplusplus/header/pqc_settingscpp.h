@@ -64,6 +64,12 @@ public:
     QString getDefaultAppText() { return m_defaultAppText; }
     QString getDefaultAppUrl() { return m_defaultAppUrl; }
 
+    QString getDefaultAppAudio() { return m_defaultAppAudio; }
+    QString getDefaultAppDLL() { return m_defaultAppDLL; }
+    QString getDefaultAppICC() { return m_defaultAppICC; }
+    QString getDefaultAppMuseScore() { return m_defaultAppMuseScore; }
+    QString getDefaultAppSQLite() { return m_defaultAppSQLite; }
+
     bool getCloseAfterDefaultApp() { return m_closeAfterDefaultApp; }
 
     QString getLastDownloadFolder() { return m_lastDownloadFolder; }
@@ -90,6 +96,11 @@ private:
         opt_vid = {"_default_", "vlc", "mplayer", "photoqt"};
         opt_txt = {"_default_", "kate", "kwrite", "gedit", "sublime"};
         opt_url = {"_default_", "firefox", "chrome", "chromium"};
+        opt_aud = {"_default_", "vlc"};
+        opt_dll = {"_default_", ""};
+        opt_icc = {"_default_", ""};
+        opt_mus = {"_default_", "mscore"};
+        opt_slt = {"_default_", "sqlitebrowser"};
 #else
         // on windows custom tools are needed
         // we need empty entries here to not crash when loading the settings
@@ -102,6 +113,11 @@ private:
         opt_vid = {"_default_", ""};
         opt_txt = {"_default_", ""};
         opt_url = {"_default_", ""};
+        opt_aud = {"_default_", ""};
+        opt_dll = {"_default_", ""};
+        opt_icc = {"_default_", ""};
+        opt_mus = {"_default_", ""};
+        opt_slt = {"_default_", ""};
 #endif
 
         settings = new QSettings(PQCConfigFiles::get().CONFIG_DIR() + "/settings", QSettings::IniFormat);
@@ -126,6 +142,11 @@ private:
     QStringList opt_vid;
     QStringList opt_txt;
     QStringList opt_url;
+    QStringList opt_aud;
+    QStringList opt_dll;
+    QStringList opt_icc;
+    QStringList opt_mus;
+    QStringList opt_slt;
 
     void readSettings() {
 
@@ -143,15 +164,26 @@ private:
         m_defaultAppText = settings->value("defaultAppText", opt_txt[0]).toString();
         m_defaultAppUrl = settings->value("defaultAppUrl", opt_url[0]).toString();
 
-        if(m_defaultAppImages == "") m_defaultAppImages = "_default_";
-        if(m_defaultAppDocuments == "") m_defaultAppDocuments = "_default_";
-        if(m_defaultAppOfficeDocuments == "") m_defaultAppOfficeDocuments = "_default_";
-        if(m_defaultAppArchives == "") m_defaultAppArchives = "_default_";
-        if(m_defaultAppVideos == "") m_defaultAppVideos = "_default_";
-        if(m_defaultAppComicBooks == "") m_defaultAppComicBooks = "_default_";
-        if(m_defaultAppEBooks == "") m_defaultAppEBooks = "_default_";
-        if(m_defaultAppText == "") m_defaultAppText = "_default_";
-        if(m_defaultAppUrl == "") m_defaultAppUrl = "_default_";
+        m_defaultAppAudio = settings->value("defaultAppAudio", opt_aud[0]).toString();
+        m_defaultAppDLL = settings->value("defaultAppDLL", opt_dll[0]).toString();
+        m_defaultAppICC = settings->value("defaultAppICC", opt_icc[0]).toString();
+        m_defaultAppMuseScore = settings->value("defaultAppMuseScore", opt_mus[0]).toString();
+        m_defaultAppSQLite = settings->value("defaultAppSQLite", opt_slt[0]).toString();
+
+        if(m_defaultAppImages         .isEmpty()) m_defaultAppImages = "_default_";
+        if(m_defaultAppDocuments      .isEmpty()) m_defaultAppDocuments = "_default_";
+        if(m_defaultAppOfficeDocuments.isEmpty()) m_defaultAppOfficeDocuments = "_default_";
+        if(m_defaultAppArchives       .isEmpty()) m_defaultAppArchives = "_default_";
+        if(m_defaultAppComicBooks     .isEmpty()) m_defaultAppComicBooks = "_default_";
+        if(m_defaultAppEBooks         .isEmpty()) m_defaultAppEBooks = "_default_";
+        if(m_defaultAppVideos         .isEmpty()) m_defaultAppVideos = "_default_";
+        if(m_defaultAppText           .isEmpty()) m_defaultAppText = "_default_";
+        if(m_defaultAppUrl            .isEmpty()) m_defaultAppUrl = "_default_";
+        if(m_defaultAppAudio          .isEmpty()) m_defaultAppAudio = "_default_";
+        if(m_defaultAppDLL            .isEmpty()) m_defaultAppDLL = "_default_";
+        if(m_defaultAppICC            .isEmpty()) m_defaultAppICC = "_default_";
+        if(m_defaultAppMuseScore      .isEmpty()) m_defaultAppMuseScore = "_default_";
+        if(m_defaultAppSQLite         .isEmpty()) m_defaultAppSQLite = "_default_";
 
         m_closeAfterDefaultApp = settings->value("closeAfterDefaultApp", true).toBool();
 
@@ -187,6 +219,11 @@ private:
     QString m_defaultAppEBooks;
     QString m_defaultAppText;
     QString m_defaultAppUrl;
+    QString m_defaultAppAudio;
+    QString m_defaultAppDLL;
+    QString m_defaultAppICC;
+    QString m_defaultAppMuseScore;
+    QString m_defaultAppSQLite;
 
     bool m_customLibreOffice;
     QString m_customLibreOfficePath;
