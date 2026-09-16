@@ -45,7 +45,7 @@ class PQCFileHandlerQML : public QObject {
 public:
     PQCFileHandlerQML() {
         m_activePlugin = "";
-        QObject::connect(&PQCFileHandler::get(), &PQCFileHandler::activePluginChanged, this, [=]() {
+        QObject::connect(&PQCFileHandler::get(), &PQCFileHandler::activePluginChanged, this, [this]() {
             m_activePlugin = PQCFileHandler::get().getActivePlugin();
             Q_EMIT activePluginChanged();
         });
