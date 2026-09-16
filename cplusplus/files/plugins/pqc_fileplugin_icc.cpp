@@ -124,8 +124,8 @@ const QVariantList PQCFilePluginICC::loadData(QString path) {
         const int brd = 100;
 
         // the size of the plot points
-        const int circleR = 15;
-        const int circleD = 30;
+        const int circleR = 20;
+        const int circleD = 40;
 
         // start painting
         QPainter painter(&gammut);
@@ -158,56 +158,29 @@ const QVariantList PQCFilePluginICC::loadData(QString path) {
         painter.fillPath(path, QBrush(col));
         painter.drawPath(path);
 
-        // draw RGB points (circles and labels)
+        // draw RGB point circles
         pen.setWidth(1);
         font.setPointSize(sze/20);
         painter.setFont(font);
         mtrcs = QFontMetrics(font);
         // "R"
-        pen.setWidth(1);
+        pen.setWidth(2);
         pen.setColor(Qt::black);
         painter.setPen(pen);
         painter.setBrush(QBrush(qRgb(255,50,50)));
         painter.drawEllipse(rx-circleR, ry-circleR, circleD, circleD);
-        const QString rTxt = "R";
-        QRect rR = mtrcs.tightBoundingRect(rTxt);
-        QPainterPath rPath;
-        rPath.addText(rx+circleD, ry+rR.height()/2, font, rTxt);
-        painter.setBrush(Qt::black);
-        pen.setWidth(2);
-        pen.setColor(Qt::white);
-        painter.setPen(pen);
-        painter.drawPath(rPath);
         // "G"
-        pen.setWidth(1);
+        pen.setWidth(2);
         pen.setColor(Qt::black);
         painter.setPen(pen);
         painter.setBrush(QBrush(qRgb(50,255,50)));
         painter.drawEllipse(gx-circleR, gy-circleR, circleD, circleD);
-        const QString gTxt = "G";
-        QRect gR = mtrcs.tightBoundingRect(gTxt);
-        QPainterPath gPath;
-        gPath.addText(gx-gR.width()/2, gy-circleD, font, gTxt);
-        painter.setBrush(Qt::black);
-        pen.setWidth(2);
-        pen.setColor(Qt::white);
-        painter.setPen(pen);
-        painter.drawPath(gPath);
         // "B"
-        pen.setWidth(1);
+        pen.setWidth(2);
         pen.setColor(Qt::black);
         painter.setPen(pen);
         painter.setBrush(QBrush(qRgb(50,50,255)));
         painter.drawEllipse(bx-circleR, by-circleR, circleD, circleD);
-        const QString bTxt = "B";
-        QRect bR = mtrcs.tightBoundingRect(bTxt);
-        QPainterPath bPath;
-        bPath.addText(bx-bR.width(), by+bR.height()+circleD, font, bTxt);
-        painter.setBrush(Qt::black);
-        pen.setWidth(2);
-        pen.setColor(Qt::white);
-        painter.setPen(pen);
-        painter.drawPath(bPath);
 
         // done painting
         painter.end();
