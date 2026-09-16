@@ -23,6 +23,7 @@
 #include <fileplugins/pqc_fileplugin_dllexe.h>
 #include <QCryptographicHash>
 #include <QBuffer>
+#include <QtEndian>
 
 PQCFilePluginDLLExe::PQCFilePluginDLLExe() {
 
