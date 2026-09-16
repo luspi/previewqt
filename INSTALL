@@ -14,7 +14,7 @@
   QtMultimedia, QtQuick, QtQuick.Controls, QtQuick.Controls.Styles,
   QtQuick.Layouts, QtQuick.Window
 
-> Dependencies that are needed by default, but can be disabled via CMake:
+> Dependencies that are recommended to be made available for wider feature support:
 - LibArchive
 - Exiv2
 - ImageMagick or GraphicsMagick
@@ -22,11 +22,16 @@
 - Poppler (can be replaced by QtPDF)
 - FreeImage
 - DevIL
+- libappimage
 - KSyntaxHighlighting
+- OpenSlide
+- LCMS2
 
 > Dependencies that are disabled by default, but can be enabled via CMake:
 - LibVips
 - resvg
+- libsai
+- LibreOfficeKit
 - libmpv (requires switching off QtMultimedia)
 
 > Please note that you probably want to have as many of these enabled as possible as
@@ -43,11 +48,11 @@
   By default GraphicsMagick will be enabled in CMake.
 
 > NOTE
-  Exiv2 can be compiled with support for the BMFF format. Note that there is the
-  possibility that BMFF support may be the subject of patent rights. PreviewQt will
-  by default opt-in to reading this format (if supported by Exiv2). If you prefer
-  to not include support for this format in PreviewQt simply set the EXIV2_ENABLE_BMFF
-  CMake option to OFF.
+  Before Exiv2 v0.28.0, when compiled with support for the BMFF format, then this would
+  need to be explicitely enabled, due to concern for patent rights. Starting with
+  Exiv2 v0.28.0, this is enabled by default as long as the build of Exiv2 supports it.
+  For older versions of Exiv2, you can explicitely disable support for the BMFF format
+  by setting the WITH_EXIV2_ENABLE_BMFF CMake option to OFF.
 
 
  ADDITIONAL IMAGE FORMATS
@@ -61,7 +66,6 @@
 - Qt plug-in for AVIF images - https://github.com/novomesk/qt-avif-image-plugin
 - Qt plug-in for JPEG XL images - https://github.com/novomesk/qt-jpegxl-image-plugin
 - Qt plug-in for HEIF/HEIC images - https://github.com/novomesk/qt-heic-image-plugin
-- XCFtools - https://github.com/j-jorge/xcftools
 - libqpsd - https://github.com/Code-ReaQtor/libqpsd
 - unrar - https://www.rarlab.com
 
@@ -137,6 +141,15 @@
  5) Poppler: https://poppler.freedesktop.org/
  6) FreeImage: https://freeimage.sourceforge.io/
  7) DevIL: http://openil.sourceforge.net/
+ 8) libappimage: https://github.com/AppImageCommunity/libappimage
+ 9) OpenSlide: https://github.com/openslide/openslide
+ 10) LCMS2: https://github.com/mm2/Little-CMS
+
+ These dependencies are suggested but need to be explicitly enabled in CMake:
+
+ 1) LibVips: https://github.com/libvips/libvips
+ 2) resvg: https://github.com/linebender/resvg
+ 3) libsai: https://github.com/Wunkolo/libsai
 
  Make sure that any installed dependency is added to the system path, or otherwise you
  need to explicitely point CMake to the right location for each of them. Regardless, CMake
