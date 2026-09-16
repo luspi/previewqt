@@ -29,8 +29,9 @@ PQCFilePluginICC::PQCFilePluginICC() {
 
 #ifdef PQMLCMS2
     setData({
-        {21223,
-         {{"ICC profile"}, {"icc", "icm"}, {"application/vnd.iccprofile"}}},
+// ~~ FILETYPES ~~
+        {21223, {{"ICC profile"}, {"icc", "icm"}, {"application/vnd.iccprofile"}}},
+// ~~~~
         });
 #endif
 

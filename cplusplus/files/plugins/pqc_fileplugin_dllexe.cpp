@@ -27,11 +27,11 @@
 PQCFilePluginDLLExe::PQCFilePluginDLLExe() {
 
     setData({
-        {44125,
-            {{"Windows DLL"}, {"dll"}, {"application/vnd.microsoft.portable-executable"}}},
-        {44126,
-            {{"Windows Executable"}, {"exe"}, {"application/vnd.microsoft.portable-executable"}}},
-             });
+// ~~ FILETYPES ~~
+        {44125, {{"Windows DLL"}, {"dll"}, {"application/vnd.microsoft.portable-executable"}}},
+        {44126, {{"Windows Executable"}, {"exe"}, {"application/vnd.microsoft.portable-executable"}}},
+// ~~~~
+    });
 
 
     // based on Microsoft's current LCID/LANGID tables

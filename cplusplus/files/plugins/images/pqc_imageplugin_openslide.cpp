@@ -39,30 +39,21 @@ PQCImagePluginOpenSlide::PQCImagePluginOpenSlide() {
 #ifdef PQMOPENSLIDE
 
     setData({
-        {44478,
-             {{"ARGOS slides"}, {"avs"}, {""}}},
-        {44477,
-             {{"Aperio slides"}, {"svs"}, {""}}},
-        {44479,
-             {{"Hamamatsu slides"}, {"vms", "vmu", "ndpi"}, {""}}},
-        {44480,
-             {{"Huron slides"}, {"tif"}, {""}}},
-        {44481,
-             {{"Leica slides"}, {"scn"}, {""}}},
-        {44482,
-             {{"MIRAX slides"}, {"mrxs"}, {""}}},
-        {44484,
-             {{"Philips slides"}, {"tiff"}, {""}}},
-        {44485,
-             {{"Sakura slides"}, {"svslide"}, {""}}},
-        {44486,
-             {{"Trestle slides"}, {"tif"}, {""}}},
-        {44487,
-             {{"Ventana slides"}, {"bif", "tif"}, {""}}},
-        {44488,
-             {{"Zeiss slides"}, {"czi"}, {""}}},
-        {44562,
-             {{"Digital Imaging and Communications in Medicine (DICOM) image"}, {"dic", "dcm"}, {"application/dicom", "image/dicom-rle"}}}});
+// ~~ FILETYPES ~~
+        {44478, {{"ARGOS slides"}, {"avs"}, {""}}},
+        {44477, {{"Aperio slides"}, {"svs"}, {""}}},
+        {44479, {{"Hamamatsu slides"}, {"vms", "vmu", "ndpi"}, {""}}},
+        {44480, {{"Huron slides"}, {"tif"}, {""}}},
+        {44481, {{"Leica slides"}, {"scn"}, {""}}},
+        {44482, {{"MIRAX slides"}, {"mrxs"}, {""}}},
+        {44484, {{"Philips slides"}, {"tiff"}, {""}}},
+        {44485, {{"Sakura slides"}, {"svslide"}, {""}}},
+        {44486, {{"Trestle slides"}, {"tif"}, {""}}},
+        {44487, {{"Ventana slides"}, {"bif", "tif"}, {""}}},
+        {44488, {{"Zeiss slides"}, {"czi"}, {""}}},
+        {44562, {{"Digital Imaging and Communications in Medicine (DICOM) image"}, {"dic", "dcm"}, {"application/dicom", "image/dicom-rle"}}}
+// ~~~~
+    });
 
 #endif
 

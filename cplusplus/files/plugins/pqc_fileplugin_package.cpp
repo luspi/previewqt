@@ -39,6 +39,7 @@ using namespace Qt::StringLiterals;
 PQCFilePluginPackage::PQCFilePluginPackage() {
 
     setData({
+// ~~ FILETYPES ~~
 #ifdef PQMLIBARCHIVE
         {88877,	{{"Debian package"}, {"deb"}, {"application/vnd.debian.binary-package"}}},
         {88876, {{"RPM package"}, {"rpm"}, {""}}},
@@ -46,6 +47,7 @@ PQCFilePluginPackage::PQCFilePluginPackage() {
 #ifdef PQMLIBAPPIMAGE
         {12548, {{"AppImage file"}, {"appimage"}, {""}}},
 #endif
+// ~~~~
     });
 
 

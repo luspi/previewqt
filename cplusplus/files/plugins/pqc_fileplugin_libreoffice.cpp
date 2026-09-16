@@ -38,6 +38,7 @@ PQCFilePluginLibreOffice::PQCFilePluginLibreOffice() {
 
 #if defined(PQMLIBREOFFICEKIT) || defined(PQMLIBREOFFICE)
     setData({
+// ~~ FILETYPES ~~
         {99975, {{"Microsoft Word 97–2003"}, {"doc"}, {"application/msword"}}},
         {99974, {{"Microsoft Word"}, {"docx"}, {"application/vnd.openxmlformats-officedocument.wordprocessingml.document"}}},
         {99976, {{"OpenDocument Text"}, {"odt"}, {"application/vnd.oasis.opendocument.text"}}},
@@ -63,6 +64,7 @@ PQCFilePluginLibreOffice::PQCFilePluginLibreOffice() {
         {99955, {{"Visio Documents"}, {"vsd", "vsdx"}, {"application/vnd.visio", "application/vnd.ms-visio.drawing"}}},
         {99954, {{"Visio Stencils"}, {"vss"}, {"application/vnd.ms-office"}}},
         {99953, {{"Visio Template"}, {"vst", "vstx"}, {"application/vnd.ms-office"}}}
+// ~~~~
     });
 
     m_suffixesWithNoFixedSize << "ods" << "xls" << "xlsx" << "xlsm" << "xlst" << "xltx";

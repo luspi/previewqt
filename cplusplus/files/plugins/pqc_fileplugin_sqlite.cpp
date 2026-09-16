@@ -29,8 +29,10 @@
 PQCFilePluginSQLite::PQCFilePluginSQLite() {
 
     setData({
-        {22556,
-         {{"SQLite database"}, {"db"}, {"application/vnd.sqlite3"}}}});
+// ~~ FILETYPES ~~
+        {22556, {{"SQLite database"}, {"db"}, {"application/vnd.sqlite3"}}}
+// ~~~~
+    });
 
 }
 

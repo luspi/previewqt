@@ -39,7 +39,11 @@
 
 PQCFilePluginPDF::PQCFilePluginPDF() {
 
-    setData({{54321, {{"PDF: Adobe Portable Document Format"}, {"pdf"}, {"application/pdf", "application/x-pdf", "application/x-bzpdf", "application/x-gzpdf"}}}});
+    setData({
+// ~~ FILETYPES ~~
+        {54321, {{"PDF: Adobe Portable Document Format"}, {"pdf"}, {"application/pdf", "application/x-pdf", "application/x-bzpdf", "application/x-gzpdf"}}}
+// ~~~~
+    });
 
 }
 
