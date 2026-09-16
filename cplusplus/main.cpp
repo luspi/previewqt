@@ -207,12 +207,10 @@ int main(int argc, char *argv[]) {
 #endif
 
     // Check for upgrade to PreviewQt
-    if(PQCScriptsConfig::get().isUpgrade()) {
-
-        // Update stored version number
+    if(PQCScriptsConfig::get().isUpgrade())
         PQCSettingsCPP::get().setVersion(PQMVERSION);
 
-    }
+    PQCScriptsConfig::get().updateTranslation(PQCSettingsCPP::get().getLanguage());
 
     QQmlApplicationEngine engine;
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed, &app, []() { QApplication::exit(-1); }, Qt::QueuedConnection);
