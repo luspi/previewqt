@@ -1873,7 +1873,7 @@ QString PQCFilePluginDLLExe::formatFileFlagsMask(quint32 fileFlagsMask) {
     if(fileFlagsMask == 0x0000003F)
         return "normal file flags mask (0x0000003F)";
 
-    return QString("0x%1").arg(fileFlagsMask, 8, 16, '0');
+    return QString("0x%1").arg(fileFlagsMask, 8, 16, QLatin1Char('0'));
 
 }
 
@@ -1900,7 +1900,7 @@ QString PQCFilePluginDLLExe::formatFileOs(quint32 fileos) {
     if(fileos == VersionInfo::OsNtWindows32)
             return "Windows NT / Windows 32-bit";
 
-    return QString("Unknown (0x%1)").arg(fileos, 8, 16, '0');
+    return QString("Unknown (0x%1)").arg(fileos, 8, 16, QLatin1Char('0'));
 
 }
 
@@ -1999,7 +1999,7 @@ QString PQCFilePluginDLLExe::convertLanguageCodeToString(QString code) {
 }
 
 QString PQCFilePluginDLLExe::formatLanguageName(quint16 langId) {
-    const QString code = langId2Code.value(langId, QString("Unknown / custom language (LANGID 0x%1)").arg(langId, 4, 16, '0'));
+    const QString code = langId2Code.value(langId, QString("Unknown / custom language (LANGID 0x%1)").arg(langId, 4, 16, QLatin1Char('0')));
     if(code.startsWith(":"))
         return code.sliced(1);
     return convertLanguageCodeToString(code);
