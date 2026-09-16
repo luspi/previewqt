@@ -2028,3 +2028,80 @@ QString PQCFilePluginDLLExe::formatCodePage(quint16 codepage) {
     return QString("Code page %1").arg(codepage);
 
 }
+
+const QJsonObject PQCFilePluginDLLExe::loadJSON(QString path, QVariantMap extraArguments) {
+
+    if(!isSupported(path))
+        return {};
+
+    const QString mime = mimetypeForSupportedFile(path);
+
+    QVariantList data = loadData(path);
+    if(!data.length() || !data[0].toBool())
+        return {};
+
+    QFileInfo info(path);
+
+    QJsonObject json;
+    json["supported"] = true;
+    json["filename"] = QFileInfo(path).fileName();
+    json["type"] = info.suffix().toLower()=="dll" ? "dll" : "exe";
+    json["mimetype"] = mime;
+    json["loadpath"] = path;
+
+    const QStringList mainorder = {
+        "FileName",
+        "FileSize",
+        "TimeCreated",
+        "TimeModified",
+        "SHA256"
+    };
+
+    const QStringList versionorder =  {
+        "Comments",
+        "CompanyName",
+        "FileDescription",
+        "LegalCopyright",
+        "---",
+        "ProductName",
+        "OriginalFilename",
+        "Architecture",
+        "Timestamp",
+        "Sections",
+        "---",
+        "FileVersion",
+        "ProductVersion",
+        "FileFlagsMask",
+        "FileFlags",
+        "FileOS",
+        "FileType",
+        "FileSubtype",
+        "---",
+        "StructureVersion",
+        "VersionLanguage",
+        "VersionCodePage",
+        "FileDate"
+    };
+
+    QJsonObject versioninfo;
+
+    QVariantMap d = data[1].toMap();
+    QVariantMap v = d["VersionInfo"].toMap();
+    for(const QString &ver : versionorder) {
+        if(v.contains(ver))
+            versioninfo[ver] = v[ver].toString();
+    }
+
+    QJsonObject maininfo;
+
+    for(const QString &mai : mainorder) {
+        if(d.contains(mai))
+            maininfo[mai] = d[mai].toString();
+    }
+    maininfo["VersionInfo"] = versioninfo;
+
+    json["data"] = maininfo;
+
+    return json;
+
+}

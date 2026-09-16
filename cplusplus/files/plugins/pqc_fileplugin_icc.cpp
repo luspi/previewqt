@@ -378,3 +378,52 @@ QVariantList PQCFilePluginICC::convertXYZ2XY(const cmsCIEXYZ *xyz) {
 }
 
 #endif
+
+const QJsonObject PQCFilePluginICC::loadJSON(QString path, QVariantMap extraArguments) {
+
+    if(!isSupported(path))
+        return {};
+
+    const QString mime = mimetypeForSupportedFile(path);
+
+    QVariantList data = loadData(path);
+    if(!data.length() || !data[0].toBool())
+        return {};
+
+    QJsonObject json;
+    json["supported"] = true;
+    json["filename"] = QFileInfo(path).fileName();
+    json["type"] = "icc";
+    json["mimetype"] = mime;
+    json["loadpath"] = path;
+
+    const QStringList mainorder = {
+        "description",
+        "signature",
+        "class",
+        "version",
+        "renderingIntent",
+        "profileSize",
+        "whitepoint",
+        "copyright"
+    };
+
+
+    QJsonObject datajson;
+
+    QVariantMap d = data[1].toMap();
+    for(const QString &ele : mainorder) {
+        if(d.contains(ele)) {
+            if(ele == "whitepoint") {
+                QVariantList lst = d[ele].toList();
+                datajson[ele] = QString("X = %1 / Y = %2 / Z = %3").arg(lst[0].toDouble()).arg(lst[1].toDouble()).arg(lst[2].toDouble());
+            } else
+                datajson[ele] = d[ele].toString();
+        }
+    }
+
+    json["data"] = datajson;
+
+    return json;
+
+}
