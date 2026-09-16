@@ -1,7 +1,7 @@
  Changelog PreviewQt - Copyright (C) 2026, Lukas Spies (Lukas@previewqt.org), License: GPLv2 (or later)
 ----------------------------------------------------------------------------------------------------------
 
- Release 6.0
+ Release 6.0 - 2026-09-17
 ----------------------------
 - add: support for office documents (requires LibreOffice)
 - add: support for slides images (requires OpenSlide library)
@@ -9,7 +9,7 @@
 - add: support for AppImage files, showing information about application (requires libappimage)
 - add: support for MuseScore score files (requires MuseScore)
 - add: support for PhotoQt's backups and extensions (requires libarchive)
-- add: support for DLL/EXE files
+- add: support for Windows DLL/EXE files
 - add: support for ICC color profiles (requires LCMS2)
 - add: support for SQLite database files
 - add: loading indicator and plugin information

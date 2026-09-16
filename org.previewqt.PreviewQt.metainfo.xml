@@ -135,6 +135,12 @@
     </content_rating>
     <releases>
         <release version="6.0" date="2026-09-17">
+            <description>
+                <p>Another update of PreviewQt is ready. With an updated way of handling plugins for its various formats, PreviewQt now supports up to 234 different file formats. New formats in this version include ICC color profiles, Windows DLL/EXE, office documents, SQLite database files and more.</p>
+            </description>
+            <url>
+                https://previewqt.org/news/previewqt-6.0
+            </url>
         </release>
         <release version="5.0" date="2026-02-06">
             <description>
