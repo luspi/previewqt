@@ -22,10 +22,11 @@
 
 #include <fileplugins/pqc_fileplugin_package.h>
 
+#include <QXmlStreamReader>
+
 #ifdef PQMLIBARCHIVE
 #include <archive.h>
 #include <archive_entry.h>
-#include <QXmlStreamReader>
 #endif
 
 #ifdef PQMLIBAPPIMAGE
