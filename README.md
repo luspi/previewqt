@@ -1,3 +1,5 @@
+**IMPORTANT NOTE: The server hosting PreviewQt has experienced a cyberattack and for safety reasons has been temporarily taken offline. It will be restored again very soon. My apologies for the inconveniences.**
+
 # PreviewQt
 
 PreviewQt is a simple applications that allows you to **preview all kinds of files**, from **images** to **videos**, from **documents** to **archives**, and beyond. It is based on Qt/QML, published as open-source, and completely free.
