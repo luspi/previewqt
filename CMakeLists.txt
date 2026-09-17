@@ -347,7 +347,7 @@ qt_add_resources(previewqt_SRC img/img.qrc misc/misc.qrc)
 #############################
 
 if(WIN32)
-    qt_add_executable(previewqt ${previewqt_SRC} windowsicons.rc)
+    qt_add_executable(previewqt ${previewqt_SRC} windows/windows.rc)
 else()
     qt_add_executable(previewqt ${previewqt_SRC})
 endif()
