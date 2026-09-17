@@ -64,8 +64,14 @@ PQCSingleInstance::PQCSingleInstance(int &argc, char *argv[]) : QApplication(arg
     bool quitRemote = false;
 
 #ifdef PQMPORTABLETWEAKS
+#ifdef Q_OS_WIN
+    // the first entry is the config dir that needs to be ignored
+    // NSIS appends the exe name a second time, so on Windows we start at index 3
+    const int startLoop = 3;
+#else
     // the first entry is the config dir that needs to be ignored
     const int startLoop = 2;
+#endif
 #else
     const int startLoop = 1;
 #endif

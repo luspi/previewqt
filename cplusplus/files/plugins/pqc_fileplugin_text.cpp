@@ -25,32 +25,23 @@
 PQCFilePluginText::PQCFilePluginText() {
 
     setData({
-         {88823,
-          {{"Text document"}, {"txt"}, {"text/plain", "text/x-csrc", "application/vnd.kde.kxmlguirc"}}},
-         {11445,
-          {{"JSON file"}, {"json"}, {"application/json"}}},
-         {88736,
-          {{"XML/HTML files"}, {"html", "xml", "xhtml", "htm"}, {"application/xml", "text/xml"}}},
-         {22765,
-          {{"YAML files"}, {"yaml", "yml"}, {"application/x-yaml"}}},
-         {76245,
-          {{"SQL scripts"}, {"sql"}, {"application/sql"}}},
-         {33387,
-          {{"JavaScript"}, {"js"}, {"application/javascript"}}},
-         {62526,
-          {{"Shell/Bash scripts"}, {"sh", "bash", "fsh"}, {"application/x-sh"}}},
-         {33876,
-          {{"PHP scripts"}, {"php"}, {"application/x-httpd-php"}}},
-         {27654,
-          {{"LaTex files"}, {"tex"}, {"application/x-latex"}}},
+// ~~ FILETYPES ~~
+        {88823, {{"Text document"}, {"txt"}, {"text/plain", "text/x-csrc", "application/vnd.kde.kxmlguirc"}}},
+        {11445, {{"JSON file"}, {"json"}, {"application/json"}}},
+        {88736, {{"XML/HTML files"}, {"html", "xml", "xhtml", "htm"}, {"application/xml", "text/xml"}}},
+        {22765, {{"YAML files"}, {"yaml", "yml"}, {"application/x-yaml"}}},
+        {76245, {{"SQL scripts"}, {"sql"}, {"application/sql"}}},
+        {33387, {{"JavaScript"}, {"js"}, {"application/javascript"}}},
+        {62526, {{"Shell/Bash scripts"}, {"sh", "bash", "fsh"}, {"application/x-sh"}}},
+        {33876, {{"PHP scripts"}, {"php"}, {"application/x-httpd-php"}}},
+        {27654, {{"LaTex files"}, {"tex"}, {"application/x-latex"}}},
 #ifndef PQMLIBREOFFICE
-         {23222,
-          {{"Rich Text Format"}, {"rtf"}, {"application/rtf"}}},
+        {23222, {{"Rich Text Format"}, {"rtf"}, {"application/rtf"}}},
 #endif
-         {33233,
-          {{"Troff files"}, {"troff", "t", "man"}, {"application/x-troff", "application/x-troff-man"}}},
-         {23232,
-          {{"Desktop file"}, {"desktop"}, {"application/x-desktop"}}}});
+        {33233, {{"Troff files"}, {"troff", "t", "man"}, {"application/x-troff", "application/x-troff-man"}}},
+        {23232, {{"Desktop file"}, {"desktop"}, {"application/x-desktop"}}}
+// ~~~~
+    });
 
 }
 

@@ -51,6 +51,8 @@ public:
     bool isDebug();
     void setDebug(bool val);
     void updateTranslation(QString code);
+    bool withLibreOffice();
+    bool withLibreOfficeKit();
 
     void setQmlEngine(QQmlEngine &engine);
 

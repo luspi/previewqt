@@ -30,9 +30,10 @@
 PQCFilePluginMuseScore::PQCFilePluginMuseScore() {
 
     setData({
-        {55432,
-             {{"MuseScore score file"}, {"mscz"}, {"application/x-musescore"}}},
-        });
+// ~~ FILETYPES ~~
+        {55432, {{"MuseScore score file"}, {"mscz"}, {"application/x-musescore"}}},
+// ~~~~
+    });
 
     musescoreProcess = new QProcess;
     musescoreCommand = "";

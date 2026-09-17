@@ -35,10 +35,11 @@ PQCFilePluginPQT::PQCFilePluginPQT() {
 
 #ifdef PQMLIBARCHIVE
     setData({
-             {78785,
-              {{"PhotoQt config file"}, {"pqt"}, {}}},
-             {78786,
-              {{"PhotoQt Extension file"}, {"pqe"}, {}}}});
+// ~~ FILETYPES ~~
+             {78785, {{"PhotoQt config file"}, {"pqt"}, {}}},
+             {78786, {{"PhotoQt Extension file"}, {"pqe"}, {}}}
+// ~~~~
+    });
 #endif
 
 }

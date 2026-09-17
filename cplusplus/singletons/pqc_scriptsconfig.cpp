@@ -276,3 +276,17 @@ void PQCScriptsConfig::updateTranslation(QString code) {
         m_qmlEngine->retranslate();
 
 }
+
+bool PQCScriptsConfig::withLibreOffice() {
+#ifdef PQMLIBREOFFICE
+    return true;
+#endif
+    return false;
+}
+
+bool PQCScriptsConfig::withLibreOfficeKit() {
+#ifdef PQMLIBREOFFICEKIT
+    return true;
+#endif
+    return false;
+}

@@ -9,7 +9,7 @@ project(previewqt LANGUAGES CXX)
 ####  GLOBAL VERSION STRING FOR ALL FILES (INCLUDING CPP/QML) ####
 ##################################################################
 
-SET(APPVERSION "dev")
+SET(APPVERSION "6.0")
 
 ###################################
 ####  ENSURE BUILD TYPE IS SET ####
@@ -347,7 +347,7 @@ qt_add_resources(previewqt_SRC img/img.qrc misc/misc.qrc)
 #############################
 
 if(WIN32)
-    qt_add_executable(previewqt ${previewqt_SRC} windowsicons.rc)
+    qt_add_executable(previewqt ${previewqt_SRC} windows/windows.rc)
 else()
     qt_add_executable(previewqt ${previewqt_SRC})
 endif()
@@ -601,7 +601,7 @@ if(_WITH_LIBREOFFICEKIT)
     list(APPEND STATUS_FORMATS_ENABLED "LibreOffice (LibreOfficeKit backend)")
     target_include_directories(previewqt PRIVATE "${LibreOfficeKit_INCLUDE_DIR}")
     target_compile_definitions(previewqt PRIVATE PQMLIBREOFFICEKIT)
-    target_compile_definitions(previewqt PRIVATE PQMLIBREOFFICE_LOPATH="${LibreOffice_LOPATH}")
+    target_compile_definitions(previewqt PRIVATE PQMLIBREOFFICEKIT_LOPATH="${LibreOffice_LOPATH}")
     target_link_libraries(previewqt PRIVATE ${LibreOfficeKit_LIBRARIES})
 else()
     if(WITH_LIBREOFFICEKIT)

@@ -23,15 +23,16 @@
 #include <fileplugins/pqc_fileplugin_dllexe.h>
 #include <QCryptographicHash>
 #include <QBuffer>
+#include <QtEndian>
 
 PQCFilePluginDLLExe::PQCFilePluginDLLExe() {
 
     setData({
-        {44125,
-            {{"Windows DLL"}, {"dll"}, {"application/vnd.microsoft.portable-executable"}}},
-        {44126,
-            {{"Windows Executable"}, {"exe"}, {"application/vnd.microsoft.portable-executable"}}},
-             });
+// ~~ FILETYPES ~~
+        {44125, {{"Windows DLL"}, {"dll"}, {"application/vnd.microsoft.portable-executable"}}},
+        {44126, {{"Windows Executable"}, {"exe"}, {"application/vnd.microsoft.portable-executable"}}},
+// ~~~~
+    });
 
 
     // based on Microsoft's current LCID/LANGID tables

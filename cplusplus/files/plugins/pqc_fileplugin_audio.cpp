@@ -26,18 +26,15 @@ PQCFilePluginAudio::PQCFilePluginAudio() {
 
 #if defined(PQMQTMULTIMEDIA) || defined(PQMLIBMPV)
     setData({
-         {34432,
-            {{"Free Lossless Audio Codec"}, {"flac"}, {"audio/flac"}}},
-         {33243,
-            {{"MP3"}, {"mp3", "mpga", "bit"}, {"audio/mpeg", "audio/MPA", "audio/mpa-robust"}}},
-         {11433,
-            {{"Xiph.org OGG format"}, {"ogg"}, {"audio/ogg", "application/ogg"}}},
-         {11444,
-            {{"Waveform Audio File Format"}, {"wav"}, {"audio/x-wav", "audio/vnd.wave", "audio/wav", "audio/wave"}}},
-         {11441,
-            {{"Advanced Audio Coding"}, {"aac", "m4a", "m4b"}, {"audio/x-hx-aac-adts"}}},
-         {66622,
-            {{"Windows Media Audio"}, {"wma"}, {"audio/x-ms-wma"}}}});
+// ~~ FILETYPES ~~
+         {34432, {{"Free Lossless Audio Codec"}, {"flac"}, {"audio/flac"}}},
+         {33243, {{"MP3"}, {"mp3", "mpga", "bit"}, {"audio/mpeg", "audio/MPA", "audio/mpa-robust"}}},
+         {11433, {{"Xiph.org OGG format"}, {"ogg"}, {"audio/ogg", "application/ogg"}}},
+         {11444, {{"Waveform Audio File Format"}, {"wav"}, {"audio/x-wav", "audio/vnd.wave", "audio/wav", "audio/wave"}}},
+         {11441, {{"Advanced Audio Coding"}, {"aac", "m4a", "m4b"}, {"audio/x-hx-aac-adts"}}},
+         {66622, {{"Windows Media Audio"}, {"wma"}, {"audio/x-ms-wma"}}}
+// ~~~~
+    });
 #endif
 
 }

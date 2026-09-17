@@ -333,7 +333,8 @@ QStringList PQCHelper::extractFileListArchive(const QString archiveFile) {
     archive_read_support_format_all(a);
     // Read file
 #ifdef Q_OS_WIN
-    if(archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(path.utf16()), 10240) != ARCHIVE_OK) {
+    QByteArray tmpPath = QFile::encodeName(info.absoluteFilePath());
+    if(archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(tmpPath.constData()), 10240) != ARCHIVE_OK) {
 #else
     QByteArray tmpPath = QFile::encodeName(info.absoluteFilePath());
     if(archive_read_open_filename(a, tmpPath.constData(), 10240) != ARCHIVE_OK) {
@@ -389,7 +390,8 @@ QVariantList PQCHelper::extractFileFromArchive(const QString archiveFile, const 
     archive_read_support_format_all(a);
     // Read file
 #ifdef Q_OS_WIN
-    if(archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(path.utf16()), 10240) != ARCHIVE_OK) {
+    QByteArray tmpPath = QFile::encodeName(info.absoluteFilePath());
+    if(archive_read_open_filename_w(a, reinterpret_cast<const wchar_t*>(tmpPath.constData()), 10240) != ARCHIVE_OK) {
 #else
     QByteArray tmpPath = QFile::encodeName(info.absoluteFilePath());
     if(archive_read_open_filename(a, tmpPath.constData(), 10240) != ARCHIVE_OK) {

@@ -26,8 +26,9 @@ PQCFilePluginEBook::PQCFilePluginEBook() {
 
 #ifdef PQMLIBARCHIVE
     setData({
-         {45132,
-            {{"Electronic Publication (EPUB)"}, {"epub"}, {"application/epub+zip"}}},
+// ~~ FILETYPES ~~
+         {45132, {{"Electronic Publication (EPUB)"}, {"epub"}, {"application/epub+zip"}}},
+// ~~~~
     });
 #endif
 

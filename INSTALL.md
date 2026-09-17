@@ -11,7 +11,7 @@ The instructions below serve as a guide to compile and install PreviewQt from so
 Make sure that you have all the required QML modules installed:
 QtMultimedia, QtQuick, QtQuick.Controls, QtQuick.Controls.Styles, QtQuick.Layouts, QtQuick.Window
 
-Dependencies that are needed by default, but can be disabled via CMake:
+Dependencies that are recommended to be made available for wider feature support:
 
 - [LibArchive](https://libarchive.org)
 - [Exiv2](https://exiv2.org)
@@ -20,12 +20,17 @@ Dependencies that are needed by default, but can be disabled via CMake:
 - [Poppler](https://poppler.freedesktop.org) (can be replaced by QtPDF)
 - [FreeImage](https://freeimage.sourceforge.io)
 - [DevIL](http://openil.sourceforge.net)
+- [libappimage](https://github.com/AppImageCommunity/libappimage)
 - [KSyntaxHighlighting](https://invent.kde.org/frameworks/syntax-highlighting)
+- [OpenSlide](https://github.com/openslide/openslide)
+- [LCMS2](https://github.com/mm2/Little-CMS)
 
 Dependencies that are disabled by default, but can be enabled via CMake:
 
 - [LibVips](https://www.libvips.org/)
-- [resvg](https://github.com/RazrFalcon/resvg)
+- [resvg](https://github.com/linebender/resvg)
+- [libsai](https://github.com/Wunkolo/libsai)
+- [LibreOfficeKit](https://docs.libreoffice.org/libreofficekit.html)
 - [libmpv](https://mpv.io/) (requires switching off QtMultimedia)
 
 
@@ -41,7 +46,7 @@ PreviewQt can work with either ImageMagick and GraphicsMagick, but due to confli
 
 #### NOTE
 
-Exiv2 can be compiled with support for the BMFF format. Note that there is the possibility that BMFF support may be the subject of patent rights. PreviewQt will by default opt-in to reading this format (if supported by Exiv2). If you prefer to not include support for this format in PreviewQt simply set the `EXIV2_ENABLE_BMFF` CMake option to `OFF`.
+Before Exiv2 v0.28.0, when compiled with support for the BMFF format, then this would need to be explicitely enabled, due to concern for patent rights. Starting with Exiv2 v0.28.0, this is enabled by default as long as the build of Exiv2 supports it. For older versions of Exiv2, you can explicitely disable support for the BMFF format by setting the `WITH_EXIV2_ENABLE_BMFF` CMake option to `OFF`.
 
 ## ADDITIONAL IMAGE FORMATS
 
@@ -51,7 +56,6 @@ These are some libraries and tools that can add additional formats to PreviewQt 
 - [Qt plug-in for AVIF images](https://github.com/novomesk/qt-avif-image-plugin)
 - [Qt plug-in for JPEG XL images](https://github.com/novomesk/qt-jpegxl-image-plugin)
 - [Qt plug-in for HEIF/HEIC images](https://github.com/novomesk/qt-heic-image-plugin)
-- [XCFtools](https://github.com/j-jorge/xcftools)
 - [libqpsd](https://github.com/Code-ReaQtor/libqpsd)
 - [unrar](https://www.rarlab.com/)
 
@@ -115,6 +119,15 @@ The following dependencies are recommended but can be disabled through CMake if 
 5. [Poppler](https://poppler.freedesktop.org) (can be replaced by QtPDF)
 6. [FreeImage](https://freeimage.sourceforge.io)
 7. [DevIL](http://openil.sourceforge.net)
+8. [libappimage](https://github.com/AppImageCommunity/libappimage)
+9. [OpenSlide](https://github.com/openslide/openslide)
+10. [LCMS2](https://github.com/mm2/Little-CMS)
+
+These dependencies are suggested but need to be explicitly enabled in CMake:
+
+1. [LibVips](https://github.com/libvips/libvips)
+2. [resvg](https://github.com/linebender/resvg)
+3. [libsai](https://github.com/Wunkolo/libsai)
 
 Make sure that any installed dependency is added to the system path, or otherwise you need to explicitely point CMake to the right location for each of them. Regardless, CMake might have to be explicitely pointed to the library/include paths of some of the dependencies by specifying `target_include_directories()` and `target_link_libraries()`.
 

@@ -2,28 +2,50 @@
               PreviewQt
 -------------------------------------
 
- PreviewQt is a simple applications that allows to do a very quick preview of all kinds of files, from images to videos, from documents to archives. It is based on Qt/QML, published as open-source, and completely free.
+ PreviewQt is a simple applications that allows to do a very quick preview of all kinds of files, from images to videos,
+ from documents to archives, and beyond. It is based on Qt/QML, published as open-source, and completely free.
+
+ Visit its official website at: https://previewqt.org/
 
 
  FEATURES
 ----------
 
- PreviewQt is a very simple application for previewing a wide range of files. Its main aim is on speed, striving to provide a preview as instanteneously as possible. It tries to achieve this by being very lightweight and by the ability to sit idly in the background ready to show whatever is thrown at it.
+ PreviewQt is a very simple application for **previewing a wide range of files**. Its main aim is on speed, striving to
+ provide a preview as instanteneously as possible. It tries to achieve this by being very lightweight and by the ability
+ to sit idly in the background ready to show whatever is thrown at it.
 
  Supported file formats include:
 
- - More than 140 IMAGE FORMATS - A list of all possibly supported image formats can be found on the website for PhotoQt: https://photoqt.org/formats
- - All of the common VIDEO and AUDIO FORMATS
- - PHOTO SPHERES and 360 DEGREE PANORAMAS (that use equirectangular prohections)
- - MOTION PHOTOS, MICRO VIDEOS, and APPLE LIVE PHOTOS
- - PDF DOCUMENTS including page navigation
- - ARCHIVES (zip, tar.gz, rar, 7-zip) with the ability to explore its content
- - COMIC BOOKS (cbz, cbt, cbr, cb7) including page navigation
- - WEBSITES, including pre-processing with YT-DLP for directly streaming media
+ - IMAGES: more than 140 formats, including photo spheres, panoramas, and motion photos
+ - VIDEO/AUDIO: all common formats
+ - DOCUMENTS: PDF and office documents, including page navigation
+ - ARCHIVES: All common compressed archives (zip, etc.) by loading any supported file contained within
+ - COMIC BOOKS, including page navigation
+ - E-BOOKS (epub), including page navigation and remembering where you left off
+ - TEXT files, including syntax highlighting and prettifying output for certain formats
+ - WINDOWS DLL/EXE: Information about these files, including any embedded version information
+ - PHOTOQT: Information about PhotoQt's backup and extension files
+ - MUSESCORE: Rendering score sheets including page navigation
+ - ICC COLOR PROFILES: display information about color profiles including gammut plots
+ - PACKAGES: Display information about DEB and RPM packages including AppImage files
+ - SQLITE DATABASE FILES: Show structure and meta information about sqlite database files
+ - URL: Support for loading Websites (both local and remote), including pre-processing with yt-dlp for directly streaming contained media
 
- It is also possible to set up an external application for the categories of files. With a shortcut or button it is possible to pass a previewed file on to the provided external application for further processing.
+It is also possible to set up an external application for the categories of files. With a shortcut or button it is
+possible to pass a previewed file on to the provided external application for further processing.
 
- If you like the overall concept of PreviewQt but would like to have more features, check out the fully featured image viewer PhotoQt: https://photoqt.org
+Any file you encounter that is not yet supported by PreviewQt, please don't hesitate to get in touch. PreviewQt strives
+to one day support as many file types as possible.
+
+If you are using KDE's Dolphin file manager, PreviewQt can be invoked by shortcut to load whichever file is currently
+highlighted to allow for previewing any file easily without having to set PreviewQt as default application. You can also
+pass files to PreviewQt by simply dropping them onto the application window, or by means of a remote application (small
+square) wth any file dropped on it passed on to PreviewQt. If you are running KDE Plasma 6, there is also a plasmoid
+that integrates nicely with your desktop.
+
+If you like the overall concept of PreviewQt but would like to have more features, check out the fully featured image
+viewer PhotoQt, a sibling application to PreviewQt: https://photoqt.org/
 
 
  COMPANION APPLICATIONS
@@ -31,16 +53,22 @@
 
  There are some companion application to PreviewQt:
 
- 1) There is a remote control application (called `PreviewQtRemote`), shipped as part of the PreviewQt source code, that is anothing but a small square that stays in the foreground and can be moved anywhere out of the way. Dropping any file on that square passes that file on to PreviewQt.
- 2) If you are running KDE Plasma 6, there is a plasmoid that itegrates nicely into your desktop. Dropping any file on that plasmoid shows an immediate preview with basic interaction. Double clicking that preview open PreviewQt for further handling.
+ 1) There is a remote control application (called `PreviewQtRemote`), shipped as part of the PreviewQt source code, that
+ is anothing but a small square that stays in the foreground and can be moved anywhere out of the way. Dropping any file
+ on that square passes that file on to PreviewQt.
+ 2) If you are running KDE Plasma 6, there is a plasmoid that itegrates nicely into your desktop. Dropping any file on
+ that plasmoid shows an immediate preview with basic interaction. Double clicking that preview open PreviewQt for
+ further handling.
 
 
  DOWNLOAD AND INSTALL
 ----------------------
 
- PreviewQt can be installed in various ways. You can find a selection of them (Windows installer, Flatpak, etc.) listed on the website: https://previewqt.org/
+ PreviewQt can be installed in various ways. You can find a selection of them (Windows installer, Flatpak, etc.) listed
+ on the website: https://previewqt.org/
 
- Instructions of how to build PreviewQt from source can be found in the INSTALL file in the root of the source directory.
+ Instructions of how to build PreviewQt from source can be found in the INSTALL file in the root of the source
+ directory.
 
 
  CONTRIBUTING TO PREVIEWQT
@@ -48,10 +76,16 @@
 
  There are TWO EASY WAYS you can contribute directly to PreviewQt:
 
- 1) Join the translation team over on Crowdin: https://translate.photoqt.org/ If your language is missing you can simply request it directly on Crowdin or send me an email/message and I will add it to the project.
- 2) Give feedback about PreviewQt. To do so, send me an email or open an issue on GitLab: https://gitlab.com/lspies/previewqt/-/issues/new.
+ 1) Join the translation team over on Crowdin: https://translate.previewqt.org/ If your language is missing you can
+    simply request it directly on Crowdin or send me an email/message and I will add it to the project.
+ 2) Give feedback about PreviewQt. To do so, send me an email or open an issue on GitLab:
+    https://gitlab.com/lspies/previewqt/-/issues/new
 
- If you want to support PreviewQt financially, please consider donating to the humanitarian relief in Ukraine instead, for example to the Ukrainian Red Cross: https://go.luspi.de/ukraine
+ If you want to support PreviewQt financially, please consider donating to the humanitarian relief in Ukraine instead,
+ for example to the Ukrainian Red Cross: https://go.luspi.de/ukraine
+
+ Otherwise you can donate directly to PhotoQt through PayPal (https://paypal.me/lspies) or
+ Wise (https://wise.com/pay/me/lukass2323).
 
 
  LICENSE

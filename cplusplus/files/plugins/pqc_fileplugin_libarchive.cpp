@@ -41,33 +41,23 @@
 PQCFilePluginLibarchive::PQCFilePluginLibarchive() {
 
 #ifdef PQMLIBARCHIVE
-setData({
-        {77737,
-             {{"7z file format"}, {"7z"}, {}}},
-        {11223,
-             {{"Comic book archive"}, {"cb7","cbr","cbt","cbz"}, {}}},
-        {44556,
-             {{"RAR file format"}, {"rar"}, {}}},
-        {77889,
-             {{"TAR file format"}, {"tar"}, {"application/x-compressed-tar"}}},
-        {12213,
-             {{"TAR file format (BZIP2)"}, {"tar.bz2","tb2","tbz","tbz2","tz2"}, {}}},
-        {14473,
-             {{"TAR file format (COMPRESS)"}, {"tar.Z","tZ"}, {}}},
-        {45645,
-             {{"TAR file format (GZIP)"}, {"tar.gz","taz","tgz"}, {}}},
-        {12368,
-             {{"TAR file format (LZIP)"}, {"tar.lz"}, {}}},
-        {77512,
-             {{"TAR file format (LZMA)"}, {"tar.lzma","tlz"}, {}}},
-        {12115,
-             {{"TAR file format (LZOP)"}, {"tar.lzo"}, {}}},
-        {45785,
-             {{"TAR file format (XZ)"}, {"tar.xz","txz"}, {}}},
-        {12986,
-             {{"TAR file format (ZSTD)"}, {"tar.zst","tzst"}, {}}},
-        {23456,
-             {{"ZIP file format"}, {"zip"}, {}}}});
+    setData({
+// ~~ FILETYPES ~~
+        {77737, {{"7z file format"}, {"7z"}, {}}},
+        {11223, {{"Comic book archive"}, {"cb7","cbr","cbt","cbz"}, {}}},
+        {44556, {{"RAR file format"}, {"rar"}, {}}},
+        {77889, {{"TAR file format"}, {"tar"}, {"application/x-compressed-tar"}}},
+        {12213, {{"TAR file format (BZIP2)"}, {"tar.bz2","tb2","tbz","tbz2","tz2"}, {}}},
+        {14473, {{"TAR file format (COMPRESS)"}, {"tar.Z","tZ"}, {}}},
+        {45645, {{"TAR file format (GZIP)"}, {"tar.gz","taz","tgz"}, {}}},
+        {12368, {{"TAR file format (LZIP)"}, {"tar.lz"}, {}}},
+        {77512, {{"TAR file format (LZMA)"}, {"tar.lzma","tlz"}, {}}},
+        {12115, {{"TAR file format (LZOP)"}, {"tar.lzo"}, {}}},
+        {45785, {{"TAR file format (XZ)"}, {"tar.xz","txz"}, {}}},
+        {12986, {{"TAR file format (ZSTD)"}, {"tar.zst","tzst"}, {}}},
+        {23456, {{"ZIP file format"}, {"zip"}, {}}}
+// ~~~~
+    });
 #endif
 
     m_cachePath = "";

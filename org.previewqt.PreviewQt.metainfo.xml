@@ -9,50 +9,63 @@
         <p>PreviewQt is a very simple application for previewing a wide range of files. Its main aim is on speed, striving to provide a preview as instantaneously as possible. It achieves this by being very lightweight and by its ability to sit in the system tray, ready to show whatever is thrown at it.</p>
         <p>Supported file formats include:</p>
         <ul>
-            <li>More than 140 image formats</li>
-            <li>Most audio/video formats</li>
-            <li>Photo spheres and 360 degree panoramas (that use equirectangular projections)</li>
-            <li>Motion photos, Micro videos, and Apple live photos</li>
-            <li>PDF documents including page navigation</li>
-            <li>Archives (zip, tar.gz, rar, 7-zip) with the ability to explore its content</li>
-            <li>Comic Books (cbz, cbt, cbr, cb7) including page navigation</li>
-            <li>E-Books (epub) including navigation and font scaling</li>
-            <li>Text files including syntax highlighting and search feature</li>
-            <li>Support for loading Websites (both local and remote), including pre-processing with yt-dlp for directly streaming contained media</li>
+            <li>Images: more than 140 formats, including photo spheres, panoramas, and motion photos</li>
+            <li>Video/Audio: all common formats</li>
+            <li>Documents: PDF and office documents, including page navigation</li>
+            <li>Archives: All common compressed archives (zip, etc.) by loading any supported file contained within</li>
+            <li>Comic Books, including page navigation</li>
+            <li>E-Books (epub), including page navigation and remembering where you left off</li>
+            <li>Text files, including syntax highlighting and prettifying output for certain formats</li>
+            <li>Windows DLL/EXE: Information about these files, including any embedded version information</li>
+            <li>PhotoQt: Information about PhotoQt's backup and extension files</li>
+            <li>MuseScore: Rendering score sheets including page navigation</li>
+            <li>ICC color profiles: display information about color profiles including gammut plots</li>
+            <li>Packages: Display information about DEB and RPM packages including AppImage files</li>
+            <li>SQLite database files: Show structure and meta information about sqlite database files</li>
+            <li>URL: Support for loading Websites (both local and remote), including pre-processing with yt-dlp for directly streaming contained media</li>
         </ul>
-        <p>If you are using Dolphin file manager, PreviewQt can be invoked by shortcut to load whichever file is currently highlighted to allow for previewing any file easily without having to se PreviewQt as default application. You can pass files to PreviewQt by means of a remote application (small square) wth any file dropped on it passed on to PreviewQt. If you are running KDE Plasma 6, there is also a plasmoid that integrates nicely with your desktop.</p>
-        <p>If you like the overall concept of PreviewQt but would like to have more features, check out the fully featured image viewer PhotoQt.</p>
+        <p>Any file you encounter that is not yet supported by PreviewQt, please don't hesitate to get in touch. PreviewQt strives to one day support as many file types as possible.</p>
+        <p>If you are using KDE's Dolphin file manager, PreviewQt can be invoked by shortcut to load whichever file is currently highlighted to allow for previewing any file easily without having to set PreviewQt as default application. You can also pass files to PreviewQt by simply dropping them onto the application window, or by means of a remote application (small square) wth any file dropped on it passed on to PreviewQt. If you are running KDE Plasma 6, there is also a plasmoid that integrates nicely with your desktop.</p>
+        <p>If you like the overall concept of PreviewQt but would like to have more features, check out the fully featured image viewer PhotoQt, a sibling application to PreviewQt.</p>
     </description>
     <screenshots>
         <screenshot type="default">
-            <image>https://photoqt.org/img/previewqt/screenshots/mainwindow_loaded.png</image>
+            <image>https://previewqt.org/img/screenshots/01_mainwindow_loaded.png</image>
             <caption>The main window of PreviewQt</caption>
         </screenshot>
         <screenshot>
-            <image>https://photoqt.org/img/previewqt/screenshots/settings1.png</image>
+            <image>https://previewqt.org/img/screenshots/02_settings1.png</image>
             <caption>The first settings tab.</caption>
         </screenshot>
         <screenshot>
-            <image>https://photoqt.org/img/previewqt/screenshots/settings2.png</image>
+            <image>https://previewqt.org/img/screenshots/03_settings2.png</image>
             <caption>The second settings tab.</caption>
         </screenshot>
         <screenshot>
-            <image>https://photoqt.org/img/previewqt/screenshots/about.png</image>
+            <image>https://previewqt.org/img/screenshots/04_settings3.png</image>
+            <caption>The third settings tab.</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://previewqt.org/img/screenshots/05_about.png</image>
             <caption>The 'About' information.</caption>
         </screenshot>
         <screenshot>
-            <image>https://photoqt.org/img/previewqt/screenshots/help.png</image>
-            <caption>The integrated help text.</caption>
+            <image>https://previewqt.org/img/screenshots/06_help.png</image>
+            <caption>The 'Help' information.</caption>
+        </screenshot>
+        <screenshot>
+            <image>https://previewqt.org/img/screenshots/07_welcome.png</image>
+            <caption>The 'Welcome' message on first start.</caption>
         </screenshot>
     </screenshots>
     <launchable type="desktop-id">org.previewqt.PreviewQt.desktop</launchable>
     <developer id="lukas.previewqt">
         <name>Lukas Spies</name>
     </developer>
-    <url type="homepage">https://photoqt.org/previewqt</url>
-    <url type="translate">https://translate.photoqt.org</url>
+    <url type="homepage">https://previewqt.org/</url>
+    <url type="translate">https://translate.previewqt.org</url>
     <url type="bugtracker">https://gitlab.com/lspies/previewqt/issues</url>
-    <url type="donation">https://photoqt.org/about</url>
+    <url type="donation">https://previewqt.org/about</url>
     <url type="help">https://gitlab.com/lspies/previewqt/issues</url>
     <keywords>
         <keyword>image</keyword>
@@ -82,6 +95,21 @@
         <keyword>cbr</keyword>
         <keyword>cbt</keyword>
         <keyword>lightweight</keyword>
+        <keyword>dll</keyword>
+        <keyword>exe</keyword>
+        <keyword>icc</keyword>
+        <keyword>color profile</keyword>
+        <keyword>epub</keyword>
+        <keyword>e-book</keyword>
+        <keyword>musescore</keyword>
+        <keyword>score sheets</keyword>
+        <keyword>packages</keyword>
+        <keyword>deb</keyword>
+        <keyword>rpm</keyword>
+        <keyword>appimage</keyword>
+        <keyword>sqlite</keyword>
+        <keyword>url</keyword>
+        <keyword>text</keyword>
     </keywords>
     <content_rating type="oars-1.0">
         <content_attribute id="violence-cartoon">none</content_attribute>
@@ -106,6 +134,14 @@
         <content_attribute id="money-gambling">none</content_attribute>
     </content_rating>
     <releases>
+        <release version="6.0" date="2026-09-17">
+            <description>
+                <p>Another update of PreviewQt is ready. With an updated way of handling plugins for its various formats, PreviewQt now supports up to 234 different file formats. New formats in this version include ICC color profiles, Windows DLL/EXE, office documents, SQLite database files and more.</p>
+            </description>
+            <url>
+                https://previewqt.org/news/previewqt-6.0
+            </url>
+        </release>
         <release version="5.0" date="2026-02-06">
             <description>
                 <p>It has been a little while since the last release of PreviewQt, so it is time for some updates. This release fixes a few smaller bugs, improves a couple things based on feedback I received, and adds support for even more files and content.</p>

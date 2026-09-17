@@ -39,40 +39,26 @@
 PQCFilePluginVideo::PQCFilePluginVideo(bool mpvNotQt) : m_mpvNotQt(mpvNotQt) {
 
     setData({
-            {45123,
-                 {{"3GP: 3rd Generation Partnership Project"}, {"3gp","3g2"}, {"video/3gpp","video/3gpp2"}}},
-            {99887,
-                 {{"AMV video format"}, {"amv"}, {}}},
-            {11556,
-                 {{"Advanced Systems Format"}, {"asf"}, {"video/x-ms-asf","application/vnd.ms-asf"}}},
-            {33221,
-                 {{"Audio Video Interleave"}, {"avi"}, {"video/vnd.avi","video/avi","video/msvideo","video/x-msvideo"}}},
-            {55665,
-                 {{"Flash Video"}, {"flv","f4v"}, {"video/x-flv"}}},
-            {56478,
-                 {{"MP4: MPEG-4 Part 14"}, {"mp4","m4v"}, {"video/mp4"}}},
-            {23588,
-                 {{"MPEG Transport Stream"}, {"mts","m2ts","ts"}, {"video/mp2t"}}},
-            {15485,
-                 {{"MPEG: Moving Picture Experts Group"}, {"mpg","mp2","mpeg","mpe","mpv","m2v"}, {"video/mpeg"}}},
-            {47564,
-                 {{"MXF: Material Exchange Format"}, {"mxf"}, {"application/mxf"}}},
-            {44664,
-                 {{"Matroska Video"}, {"mkv"}, {"video/x-matroska"}}},
-            {82282,
-                 {{"QuickTime File Format"}, {"mov","qt"}, {"video/quicktime"}}},
-            {46512,
-                 {{"RealMedia"}, {"rm"}, {"application/vnd.rn-realmedia"}}},
-            {93393,
-                 {{"Theora"}, {"ogg","ogv"}, {}}},
-            {88818,
-                 {{"Video Object"}, {"vob"}, {}}},
-            {99929,
-                 {{"WebM"}, {"webm"}, {"video/webm"}}},
-            {16452,
-                 {{"Windows Media Video"}, {"wmv"}, {"video/x-ms-wmv"}}},
-            {33332,
-                 {{"JPEG-2000 MJ2 video"}, {"mj2"}, {"video/mj2"}}}});
+// ~~ FILETYPES ~~
+        {45123, {{"3GP: 3rd Generation Partnership Project"}, {"3gp","3g2"}, {"video/3gpp","video/3gpp2"}}},
+        {99887, {{"AMV video format"}, {"amv"}, {}}},
+        {11556, {{"Advanced Systems Format"}, {"asf"}, {"video/x-ms-asf","application/vnd.ms-asf"}}},
+        {33221, {{"Audio Video Interleave"}, {"avi"}, {"video/vnd.avi","video/avi","video/msvideo","video/x-msvideo"}}},
+        {55665, {{"Flash Video"}, {"flv","f4v"}, {"video/x-flv"}}},
+        {56478, {{"MP4: MPEG-4 Part 14"}, {"mp4","m4v"}, {"video/mp4"}}},
+        {23588, {{"MPEG Transport Stream"}, {"mts","m2ts","ts"}, {"video/mp2t"}}},
+        {15485, {{"MPEG: Moving Picture Experts Group"}, {"mpg","mp2","mpeg","mpe","mpv","m2v"}, {"video/mpeg"}}},
+        {47564, {{"MXF: Material Exchange Format"}, {"mxf"}, {"application/mxf"}}},
+        {44664, {{"Matroska Video"}, {"mkv"}, {"video/x-matroska"}}},
+        {82282, {{"QuickTime File Format"}, {"mov","qt"}, {"video/quicktime"}}},
+        {46512, {{"RealMedia"}, {"rm"}, {"application/vnd.rn-realmedia"}}},
+        {93393, {{"Theora"}, {"ogv"}, {}}},
+        {88818, {{"Video Object"}, {"vob"}, {}}},
+        {99929, {{"WebM"}, {"webm"}, {"video/webm"}}},
+        {16452, {{"Windows Media Video"}, {"wmv"}, {"video/x-ms-wmv"}}},
+        {33332, {{"JPEG-2000 MJ2 video"}, {"mj2"}, {"video/mj2"}}}
+// ~~~~
+    });
 }
 
 const QSize PQCFilePluginVideo::loadSize(QString path) {
