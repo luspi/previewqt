@@ -51,7 +51,7 @@ PQCFileHandler::PQCFileHandler() {
 #if defined(PQMPOPPLER) || defined(PQMQTPDF)
         << "pdf"
 #endif
-#ifdef PQMLIBREOFFICE
+#if defined(PQMLIBREOFFICE) || defined(PQMLIBREOFFICEKIT)
         << "libreoffice"
 #endif
         << "pqt"
@@ -103,7 +103,7 @@ PQCFileHandler::PQCFileHandler() {
 #ifdef PQMLIBARCHIVE
     m_plugins.insert("ebook", new PQCFilePluginEBook);
 #endif
-#ifdef PQMLIBREOFFICE
+#if defined(PQMLIBREOFFICE) || defined(PQMLIBREOFFICEKIT)
     m_plugins.insert("libreoffice", new PQCFilePluginLibreOffice);
 #endif
 #ifdef PQMLIBARCHIVE
