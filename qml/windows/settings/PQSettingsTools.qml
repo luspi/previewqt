@@ -111,6 +111,7 @@ Flickable {
             width: parent.width
             height: 1
             color: palette.text
+            visible: PQCScriptsConfig.withLibreOffice()||PQCScriptsConfig.withLibreOfficeKit()
         }
 
         /************************************/
@@ -119,6 +120,7 @@ Flickable {
             id: customLibreCheck
             text: qsTr("Custom location of LibreOffice installation folder")
             checked: PQCSettings.customLibreOffice
+            visible: PQCScriptsConfig.withLibreOffice()||PQCScriptsConfig.withLibreOfficeKit()
             onCheckedChanged: {
                 catchKeyPress.forceActiveFocus()
                 if(PQCSettings.customLibreOffice !== checked)
@@ -129,6 +131,7 @@ Flickable {
         Row {
             spacing: 5
             enabled: customLibreCheck.checked
+            visible: PQCScriptsConfig.withLibreOffice()||PQCScriptsConfig.withLibreOfficeKit()
             TextField {
                 id: customLibreLocation
                 y: (customLibreBut.height-height)/2
@@ -143,9 +146,15 @@ Flickable {
                 id: customLibreBut
                 text: "..."
                 onClicked: {
-                    selectFolder.category = "libreoffice"
-                    selectFolder.prevfolder = customLibreLocation.text
-                    selectFolder.open()
+                    if(PQCScriptsConfig.withLibreOffice()) {
+                        selectExe.category = "libreoffice"
+                        selectExe.prevexe = customLibreLocation.text
+                        selectExe.open()
+                    } else {
+                        selectFolder.category = "libreoffice"
+                        selectFolder.prevfolder = customLibreLocation.text
+                        selectFolder.open()
+                    }
                 }
             }
         }
@@ -153,6 +162,7 @@ Flickable {
         Text {
             text: qsTr("NOTE: Changing the path to LibreOffice requires a restart of PreviewQt.")
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+            visible: PQCScriptsConfig.withLibreOffice()||PQCScriptsConfig.withLibreOfficeKit()
             width: parent.width
             color: palette.text
             font.pointSize: 9
@@ -214,7 +224,7 @@ Flickable {
                                        (PQCScriptsConfig.amIOnWindows() ?
                                             StandardPaths.standardLocations(StandardPaths.HomeLocation)[0] :
                                             "/usr/bin"))
-        nameFilters: "All Files (*.*)"
+        nameFilters: PQCScriptsConfig.amIOnWindows() ? ["Executable (*.exe)", "All Files (*)"] : ["All Files (*)"]
         property string category: ""
         property string prevexe: ""
         onAccepted: {
@@ -229,6 +239,8 @@ Flickable {
                 ytdlpedit.text = PQCScriptsFilesPaths.cleanPath(file)
             else if(category == "musescore")
                 customMuseScoreLocation.text = PQCScriptsFilesPaths.cleanPath(file)
+            else if(category == "libreoffice")
+                customLibreLocation.text = PQCScriptsFilesPaths.cleanPath(file)
             else
                 console.warn("Unknown category:", category)
 

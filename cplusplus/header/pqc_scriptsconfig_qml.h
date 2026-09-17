@@ -70,4 +70,12 @@ public:
         return PQCScriptsConfig::get().updateTranslation(code);
     }
 
+    Q_INVOKABLE bool withLibreOffice() {
+        return PQCScriptsConfig::get().withLibreOffice();
+    }
+
+    Q_INVOKABLE bool withLibreOfficeKit() {
+        return PQCScriptsConfig::get().withLibreOfficeKit();
+    }
+
 };

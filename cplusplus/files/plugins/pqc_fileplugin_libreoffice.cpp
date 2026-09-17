@@ -385,7 +385,7 @@ bool PQCFilePluginLibreOffice::loadDocument(QString path) {
     }
 
     QProcess proc;
-    proc.start("libreoffice", {"--convert-to", "pdf", "--outdir", m_tempDocumentPath, path});
+    proc.start(PQCSettingsCPP::get().getCustomLibreOffice() ? PQCSettingsCPP::get().getCustomLibreOfficePath() : "libreoffice", {"--convert-to", "pdf", "--outdir", m_tempDocumentPath, path});
 
     if(!proc.waitForStarted()) {
         const QString msg = "LibreOffice process failed to start";
