@@ -45,7 +45,7 @@ If AI/LLM assistance was used:
 - Code reviewed and understood by me: [yes/no]
 ```
 
-These additional requirements help ensure that any submission is of high quality and does not waste unnecessarily waste anybody's time.
+These additional requirements help ensure that any submission is of high quality and does not unnecessarily waste anybody's time.
 
 ## Code of Conduct
 
