@@ -24,10 +24,12 @@ appimage:
     - schedules
 
   script:
+    # start of appimage recipe
     - export DEBIAN_FRONTEND=noninteractive
     - apt update &&  apt -y install git software-properties-common build-essential libgl1-mesa-dev cmake wget extra-cmake-modules apt-transport-https curl
-    - echo "deb http://archive.neon.kde.org/user noble main" | tee /etc/apt/sources.list.d/neon.list # add Neon PPA
-    - wget -qO - http://archive.neon.kde.org/public.key | apt-key add -
+    - mkdir -p /etc/apt/keyrings
+    - curl -fsSL http://archive.neon.kde.org/public.key | gpg --dearmor -o /etc/apt/keyrings/neon-archive-keyring.gpg
+    - echo "deb [signed-by=/etc/apt/keyrings/neon-archive-keyring.gpg] http://archive.neon.kde.org/user noble main" | tee /etc/apt/sources.list.d/neon.list
     - apt update && apt -y upgrade
     - apt -y install qt6-base-dev qt6-image-formats-plugins qt6-image-formats-plugin-pdf libqt6svg6-dev libqt6chartsqml6 qml6-module-qt-labs-platform qml6-module-qtcore qml6-module-qtmultimedia qml6-module-qtqml qml6-module-qtquick-controls qml6-module-qtquick-layouts qml6-module-qtquick-window qt6-multimedia-dev qml6-module-qtqml-workerscript qml6-module-qtquick-templates qml6-module-qtquick-dialogs qt6-tools-dev qt6-l10n-tools qt6-tools-dev-tools qt6-pdf-dev qml6-module-org-kde-syntaxhighlighting
     - apt -y install libarchive-dev libraw-dev libdevil-dev gstreamer1.0-tools libexiv2-dev libvips-dev gstreamer1.0-libav libopenh264-7 libreofficekit-dev libreoffice-base-core libopenslide-dev libappimage-dev
@@ -38,13 +40,6 @@ appimage:
     - ./configure --prefix=/usr --with-bzlib --with-fontconfig --with-freetype=yes --with-gslib --with-gvc --with-jpeg --with-png --with-tiff --with-xml --with-gs-font-dir --enable-hdri --disable-docs --with-webp --with-wmf --with-rsvg --with-fftw
     - make -j$(nproc) install
     - cd ..
-    # Install libsai
-    - git clone https://github.com/Wunkolo/libsai
-    - sed -i 's|FILES include/sai.hpp|& include/sai2.hpp include/util.hpp|' libsai/CMakeLists.txt
-    - mkdir -p libsai/build && cd libsai/build
-    - cmake .. -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/usr
-    - make -j$(nproc) install
-    - cd ../..
     # skip for release:
     - rm -rf lang/
     # skip for release:
@@ -64,12 +59,15 @@ appimage:
     - export EXTRA_PLATFORM_PLUGINS=libqwayland.so
     - export EXTRA_QT_MODULES="waylandcompositor;svg"
     - export DEPLOY_PLATFORM_THEMES=1
-    # change for release:
     - export UPDATE_INFORMATION="zsync|https://gitlab.com/api/v4/projects/55625295/jobs/artifacts/main/raw/PreviewQt-nightly.AppImage.zsync?job=appimage"
     - export LDAI_UPDATE_INFORMATION=$UPDATE_INFORMATION
-    # change for release:
     - export LDAI_OUTPUT=PreviewQt-nightly.AppImage
-    - LD_LIBRARY_PATH=appdir/usr/lib QML_SOURCES_PATHS=./qml ./squashfs-root/AppRun --appdir ./appdir/ --plugin=qt --output appimage
+    #- export LDAI_SIGN=1   # used by automated appimage builder
+    #- export LDAI_SIGN_KEY=GPG_KEY_ID    # used by automated appimage builder
+    - export LD_LIBRARY_PATH=appdir/usr/lib
+    - export QML_SOURCES_PATHS=./qml
+    - ./squashfs-root/AppRun --appdir ./appdir/ --plugin=qt --output appimage
+    # end of appimage recipe
 
   artifacts:
     paths:
